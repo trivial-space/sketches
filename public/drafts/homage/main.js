@@ -24,7 +24,6 @@ const context = {
   }
 }
 
-console.log('fufufu')
 
 runtime.setContext(context)
 

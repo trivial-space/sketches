@@ -2,7 +2,7 @@ SystemJS.config({
   trace: true,
   paths: {
     "npm:": "shared/js/vendor/npm/",
-    "examples": "examples/",
+    "drafts": "drafts/",
     "github:": "shared/js/vendor/github/",
     "tvs-playground/": "shared/js/src/"
   },
@@ -40,7 +40,7 @@ SystemJS.config({
         }
       }
     },
-    "examples": {
+    "drafts": {
       "main": "index.js",
       "format": "esm",
       "meta": {
