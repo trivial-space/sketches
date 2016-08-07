@@ -3,9 +3,9 @@ import 'tvs-flow-editor/dist/css/style.css!'
 
 import * as flow from 'tvs-flow'
 import flowEditor from 'tvs-flow-editor'
-import renderer from 'tvs-renderer'
+import {renderer, renderUtils} from 'tvs-renderer'
 import libs from 'tvs-libs'
-import glMatrix from 'gl-matrix'
+import {mat4} from 'gl-matrix'
 import box from 'geo-3d-box'
 import {graph} from './graph.js'
 
@@ -16,12 +16,11 @@ const localGraph = localStorage.getItem(localStorageKey)
 const runtime = flow.create()
 
 const context = {
-  renderer: renderer,
-  mat4: glMatrix.mat4,
-  geometry: {
-    plane: libs.geometry.plane,
-    box: box
-  }
+  renderer,
+  renderUtils,
+  mat4,
+  box,
+  libs
 }
 
 

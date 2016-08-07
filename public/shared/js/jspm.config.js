@@ -375,6 +375,11 @@ SystemJS.config({
       "map": {
         "inherits": "npm:inherits@2.0.1"
       }
+    },
+    "github:trivial-space/renderer@master": {
+      "map": {
+        "primitive-cube": "npm:primitive-cube@2.0.0"
+      }
     }
   }
 });
