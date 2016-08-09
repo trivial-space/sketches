@@ -1,6 +1,15 @@
 export const graph =
 {
 	"entities": {
+		"camera-perspective": {
+			"id": "camera-perspective",
+			"meta": {
+				"ui": {
+					"x": -208,
+					"y": 123
+				}
+			}
+		},
 		"screen-names": {
 			"id": "screen-names",
 			"value": [
@@ -12,8 +21,18 @@ export const graph =
 			],
 			"meta": {
 				"ui": {
-					"x": 150.72890365448507,
-					"y": -527.960620847176
+					"x": 264,
+					"y": -687
+				}
+			}
+		},
+		"frame": {
+			"id": "frame",
+			"isEvent": true,
+			"meta": {
+				"ui": {
+					"x": -579.4441819779604,
+					"y": -723.9719439671308
 				}
 			}
 		},
@@ -36,13 +55,49 @@ export const graph =
 				"type": "evaled-JSON"
 			}
 		},
-		"plane-shader-frag": {
-			"id": "plane-shader-frag",
-			"value": "uniform sampler2D video;\n\nvarying vec2 vUv;\n\nvoid main() {\n\tgl_FragColor = texture2D(video, vUv);\n}",
+		"screen-plane-positions": {
+			"id": "screen-plane-positions",
+			"value": {
+				"tworooms": [
+					-30,
+					0,
+					-10
+				],
+				"behindglass": [
+					-15,
+					0,
+					-10
+				],
+				"nanofuzz": [
+					0,
+					0,
+					-10
+				],
+				"balloon": [
+					15,
+					0,
+					-10
+				],
+				"threescreens": [
+					30,
+					0,
+					-10
+				]
+			},
 			"meta": {
 				"ui": {
-					"x": -393.9045555555556,
-					"y": -621.2427951388889
+					"x": -645,
+					"y": -172
+				}
+			}
+		},
+		"plane-shader-frag": {
+			"id": "plane-shader-frag",
+			"value": "uniform sampler2D video;\n\nvarying vec2 vUv;\n\nvoid main() {\n\tgl_FragColor = texture2D(video, vUv);\n\t//gl_FragColor = vec4(vUv, 1.0, 1.0);\n}",
+			"meta": {
+				"ui": {
+					"x": -393,
+					"y": -621
 				},
 				"type": "code"
 			}
@@ -58,12 +113,35 @@ export const graph =
 				"type": "code"
 			}
 		},
+		"screen-plane-transforms": {
+			"id": "screen-plane-transforms",
+			"meta": {
+				"ui": {
+					"x": -377,
+					"y": -149
+				}
+			}
+		},
 		"videos": {
 			"id": "videos",
 			"meta": {
 				"ui": {
 					"x": 290,
 					"y": -385
+				}
+			}
+		},
+		"perspective": {
+			"id": "perspective",
+			"value": {
+				"fovy": 60,
+				"near": 0.1,
+				"far": 1000
+			},
+			"meta": {
+				"ui": {
+					"x": -260.99992576646036,
+					"y": 320.47229899889317
 				}
 			}
 		},
@@ -85,12 +163,21 @@ export const graph =
 				}
 			}
 		},
+		"camera-transform": {
+			"id": "camera-transform",
+			"meta": {
+				"ui": {
+					"x": -297.16664890301035,
+					"y": -4.694428111299658
+				}
+			}
+		},
 		"screen-box-objects": {
 			"id": "screen-box-objects",
 			"meta": {
 				"ui": {
-					"x": -437,
-					"y": -440
+					"x": -655,
+					"y": -347
 				}
 			}
 		},
@@ -130,9 +217,10 @@ export const graph =
 			"ports": {
 				"ctx": "accumulator",
 				"names": "hot",
-				"videos": "hot"
+				"videos": "hot",
+				"frame": "hot"
 			},
-			"code": "function(ports) {\n\tports.names.forEach(name => {\n\t\tthis.renderer.updateLayer(ports.ctx, name + \"-video\", {asset: ports.videos[name]})\n\t})\n\treturn ports.ctx\n}",
+			"code": "function(ports) {\n\tports.names.forEach(name => {\n\t\tthis.renderer.updateLayer(ports.ctx, name + \"-video\", {\n\t\t\tasset: ports.videos[name],\n\t\t\tminFilter: \"LINEAR\",\n\t\t\twrap: \"CLAMP_TO_EDGE\"\n\t\t})\n\t})\n\treturn ports.ctx\n}",
 			"meta": {
 				"ui": {
 					"x": 45,
@@ -166,6 +254,59 @@ export const graph =
 				}
 			}
 		},
+		"create-camera-transform": {
+			"id": "create-camera-transform",
+			"ports": {},
+			"code": "function(ports) {\n\treturn this.mat4.create()\n}",
+			"autostart": true,
+			"meta": {
+				"ui": {
+					"x": -516.2774588414104,
+					"y": 38.19478314306207
+				}
+			}
+		},
+		"update-plane-objects": {
+			"id": "update-plane-objects",
+			"ports": {
+				"objs": "hot",
+				"ctx": "accumulator"
+			},
+			"code": "function(ports) {\n\tfor(var o in ports.objs) {\n\t\tthis.renderer.updateObject(ports.ctx, o + \"-plane\", ports.objs[o])\n\t}\n\treturn ports.ctx\n}",
+			"meta": {
+				"ui": {
+					"x": -223.9436737490105,
+					"y": -381.47139997539534
+				}
+			}
+		},
+		"create-screen-plane-objects": {
+			"id": "create-screen-plane-objects",
+			"ports": {
+				"perspective": "hot",
+				"camera": "hot",
+				"transforms": "hot"
+			},
+			"code": "function(ports) {\n\treturn this._.mapValues(function(t, name) {\n\t\treturn {\n\t\t\tshader: \"plane-shader\",\n\t\t\tgeometry: \"screen-plane-geometry\",\n\t\t\tuniforms: {\n\t\t\t\ttransform: t,\n\t\t\t\tvideo: name + \"-video\",\n\t\t\t\tperspective: ports.perspective,\n\t\t\t\tcamera: ports.camera\n\t\t\t}\n\t\t}\n\t})(ports.transforms)\n}",
+			"meta": {
+				"ui": {
+					"x": -248.5553307356604,
+					"y": -247.08309537392597
+				}
+			}
+		},
+		"amimate": {
+			"id": "amimate",
+			"ports": {},
+			"code": "function(ports, send) {\n\treturn this.libs.flow.sources.animation.animation(send)\n}",
+			"async": true,
+			"meta": {
+				"ui": {
+					"x": -632.4441819779604,
+					"y": -849.9719439671308
+				}
+			}
+		},
 		"window-size-source": {
 			"id": "window-size-source",
 			"ports": {},
@@ -196,7 +337,7 @@ export const graph =
 		"video-factory": {
 			"id": "video-factory",
 			"ports": {},
-			"code": "function(ports) {\n\treturn function createVideo(src) {\n\t\tvar video = document.createElement('video')\n\t\tvideo.loop = \"loop\"\n\t\tvar source1 = document.createElement('source')\n\t\tvar source2 = document.createElement('source')\n\t\tsource1.src = src + \".webm\"\n\t\tsource1.type = \"video/webm\"\n\t\tsource2.src = src + \".mp4\"\n\t\tsource2.type = \"video/mp4\"\n\t\tvideo.appendChild(source1)\n\t\tvideo.appendChild(source2)\n\t\tvideo.play()\n\t\treturn video\n\t}\n}",
+			"code": "function(ports) {\n\treturn function createVideo(src) {\n\t\tvar video = document.createElement('video')\n\t\tvideo.crossOrigin = \"anonymous\"\n\t\tvideo.loop = \"loop\"\n\t\tvar source1 = document.createElement('source')\n\t\tvar source2 = document.createElement('source')\n\t\tsource1.src = src + \".webm\"\n\t\tsource1.type = \"video/webm\"\n\t\tsource2.src = src + \".mp4\"\n\t\tsource2.type = \"video/mp4\"\n\t\tvideo.appendChild(source1)\n\t\tvideo.appendChild(source2)\n\t\tvideo.play()\n\t\treturn video\n\t}\n}",
 			"autostart": true,
 			"meta": {
 				"ui": {
@@ -216,6 +357,20 @@ export const graph =
 				"ui": {
 					"x": 244,
 					"y": -509
+				}
+			}
+		},
+		"render": {
+			"id": "render",
+			"ports": {
+				"ctx": "cold",
+				"frame": "hot"
+			},
+			"code": "function(ports) {\n\tthis.renderer.renderLayers(ports.ctx, ['objects'])\n}",
+			"meta": {
+				"ui": {
+					"x": -379.6109051145104,
+					"y": -472.1386710773236
 				}
 			}
 		},
@@ -242,6 +397,34 @@ export const graph =
 				"ui": {
 					"x": 368,
 					"y": -12
+				}
+			}
+		},
+		"create-camera-perspective": {
+			"id": "create-camera-perspective",
+			"ports": {
+				"window": "hot",
+				"p": "hot"
+			},
+			"code": "function(ports) {\n\tvar aspect = ports.window.width / ports.window.heigth\n\treturn this.mat4.perspective(\n\t\tthis.mat4.create(),\n\t\tports.p.fovy,\n\t\taspect,\n\t\tports.p.near,\n\t\tports.p.far\n\t)\n}",
+			"meta": {
+				"ui": {
+					"x": -82,
+					"y": 181
+				}
+			}
+		},
+		"create-screen-plane-tranfroms": {
+			"id": "create-screen-plane-tranfroms",
+			"ports": {
+				"pos": "hot",
+				"names": "hot"
+			},
+			"code": "function(ports) {\n\treturn this._.mapValues(\n\t\tpos => this.mat4.fromTranslation(this.mat4.create(), pos)\n\t)(ports.pos)\n}",
+			"meta": {
+				"ui": {
+					"x": -590.5,
+					"y": -494.078125
 				}
 			}
 		},
@@ -323,6 +506,19 @@ export const graph =
 			"port": "size",
 			"meta": {}
 		},
+		"frame->render::frame": {
+			"id": "frame->render::frame",
+			"entity": "frame",
+			"process": "render",
+			"port": "frame",
+			"meta": {}
+		},
+		"update-plane-objects->render-context": {
+			"id": "update-plane-objects->render-context",
+			"entity": "render-context",
+			"process": "update-plane-objects",
+			"meta": {}
+		},
 		"video-factory->video-factory-test::createVideo": {
 			"id": "video-factory->video-factory-test::createVideo",
 			"entity": "video-factory",
@@ -344,11 +540,45 @@ export const graph =
 			"port": "names",
 			"meta": {}
 		},
+		"plane-positions->create-screen-plane-tranfroms::pos": {
+			"id": "plane-positions->create-screen-plane-tranfroms::pos",
+			"entity": "screen-plane-positions",
+			"process": "create-screen-plane-tranfroms",
+			"port": "pos",
+			"meta": {}
+		},
+		"screen-plane-objects->update-plane-objects::objs": {
+			"id": "screen-plane-objects->update-plane-objects::objs",
+			"entity": "screen-plane-objects",
+			"process": "update-plane-objects",
+			"port": "objs",
+			"meta": {}
+		},
+		"amimate->frame": {
+			"id": "amimate->frame",
+			"entity": "frame",
+			"process": "amimate",
+			"meta": {}
+		},
 		"screen-names->update-video-layers::names": {
 			"id": "screen-names->update-video-layers::names",
 			"entity": "screen-names",
 			"process": "update-video-layers",
 			"port": "names",
+			"meta": {}
+		},
+		"screen-names->create-screen-plane-tranfroms::names": {
+			"id": "screen-names->create-screen-plane-tranfroms::names",
+			"entity": "screen-names",
+			"process": "create-screen-plane-tranfroms",
+			"port": "names",
+			"meta": {}
+		},
+		"screen-plane-transforms->create-screen-plane-objects::transforms": {
+			"id": "screen-plane-transforms->create-screen-plane-objects::transforms",
+			"entity": "screen-plane-transforms",
+			"process": "create-screen-plane-objects",
+			"port": "transforms",
 			"meta": {}
 		},
 		"create-screen-box-geometry->screen-box-geometry": {
@@ -361,6 +591,12 @@ export const graph =
 			"id": "create-context->render-context",
 			"entity": "render-context",
 			"process": "create-context",
+			"meta": {}
+		},
+		"create-camera-transform->camera-transform": {
+			"id": "create-camera-transform->camera-transform",
+			"entity": "camera-transform",
+			"process": "create-camera-transform",
 			"meta": {}
 		},
 		"create-video-layers->videos": {
@@ -382,10 +618,30 @@ export const graph =
 			"port": "vert",
 			"meta": {}
 		},
+		"create-camera-perspective->camera-perspective": {
+			"id": "create-camera-perspective->camera-perspective",
+			"entity": "camera-perspective",
+			"process": "create-camera-perspective",
+			"meta": {}
+		},
+		"frame->update-video-layers::frame": {
+			"id": "frame->update-video-layers::frame",
+			"entity": "frame",
+			"process": "update-video-layers",
+			"port": "frame",
+			"meta": {}
+		},
 		"window-size-source->window-size": {
 			"id": "window-size-source->window-size",
 			"entity": "window-size",
 			"process": "window-size-source",
+			"meta": {}
+		},
+		"camera-perspective->create-screen-plane-objects::perspective": {
+			"id": "camera-perspective->create-screen-plane-objects::perspective",
+			"entity": "camera-perspective",
+			"process": "create-screen-plane-objects",
+			"port": "perspective",
 			"meta": {}
 		},
 		"create-canvas->canvas": {
@@ -401,6 +657,19 @@ export const graph =
 			"port": "box",
 			"meta": {}
 		},
+		"camera-transform->create-screen-plane-objects::camera": {
+			"id": "camera-transform->create-screen-plane-objects::camera",
+			"entity": "camera-transform",
+			"process": "create-screen-plane-objects",
+			"port": "camera",
+			"meta": {}
+		},
+		"create-screen-plane-objects->screen-plane-objects": {
+			"id": "create-screen-plane-objects->screen-plane-objects",
+			"entity": "screen-plane-objects",
+			"process": "create-screen-plane-objects",
+			"meta": {}
+		},
 		"plane-shader-frag->update-plane-shader::frag": {
 			"id": "plane-shader-frag->update-plane-shader::frag",
 			"entity": "plane-shader-frag",
@@ -408,11 +677,32 @@ export const graph =
 			"port": "frag",
 			"meta": {}
 		},
+		"render-context->render::ctx": {
+			"id": "render-context->render::ctx",
+			"entity": "render-context",
+			"process": "render",
+			"port": "ctx",
+			"meta": {}
+		},
 		"screen-plane-geometry->update-screen-plane-geometry::plane": {
 			"id": "screen-plane-geometry->update-screen-plane-geometry::plane",
 			"entity": "screen-plane-geometry",
 			"process": "update-screen-plane-geometry",
 			"port": "plane",
+			"meta": {}
+		},
+		"perspective->create-camera-perspective::p": {
+			"id": "perspective->create-camera-perspective::p",
+			"entity": "perspective",
+			"process": "create-camera-perspective",
+			"port": "p",
+			"meta": {}
+		},
+		"window-size->create-camera-perspective::window": {
+			"id": "window-size->create-camera-perspective::window",
+			"entity": "window-size",
+			"process": "create-camera-perspective",
+			"port": "window",
 			"meta": {}
 		},
 		"create-screen-plane-geometry->screen-plane-geometry": {
@@ -431,6 +721,12 @@ export const graph =
 			"id": "update-screen-box-geometry->render-context",
 			"entity": "render-context",
 			"process": "update-screen-box-geometry",
+			"meta": {}
+		},
+		"create-screen-plane-tranfroms->screen-plane-transforms": {
+			"id": "create-screen-plane-tranfroms->screen-plane-transforms",
+			"entity": "screen-plane-transforms",
+			"process": "create-screen-plane-tranfroms",
 			"meta": {}
 		},
 		"update-objects-layer->render-context": {
@@ -483,61 +779,8 @@ export const graph =
 		"ui": {
 			"layout": [
 				{
-					"id": "window-size-source",
-					"type": "process"
-				},
-				{
-					"id": "window-size",
+					"id": "screen-plane-positions",
 					"type": "entity"
-				},
-				{
-					"id": "plane-shader-frag",
-					"type": "entity"
-				},
-				{
-					"id": "plane-shader-vert",
-					"type": "entity"
-				},
-				{
-					"id": "update-plane-shader",
-					"type": "process"
-				},
-				{
-					"id": "render-context",
-					"type": "entity",
-					"minified": true
-				},
-				{
-					"id": "update-objects-layer",
-					"type": "process"
-				},
-				{
-					"id": "update-video-layers",
-					"type": "process"
-				},
-				{
-					"id": "videos",
-					"type": "entity"
-				},
-				{
-					"id": "screen-names",
-					"type": "entity"
-				},
-				{
-					"id": "create-video-layers",
-					"type": "process"
-				},
-				{
-					"id": "video-factory",
-					"type": "entity"
-				},
-				{
-					"id": "video-factory-test",
-					"type": "process"
-				},
-				{
-					"id": "video-factory",
-					"type": "process"
 				}
 			]
 		}

@@ -8,6 +8,7 @@ import libs from 'tvs-libs'
 import {mat4} from 'gl-matrix'
 import box from 'geo-3d-box'
 import {graph} from './graph.js'
+import _ from 'lodash/fp'
 
 
 const localStorageKey = "__homage"
@@ -20,7 +21,8 @@ const context = {
   renderUtils,
   mat4,
   box,
-  libs
+  libs,
+  _: _.convert({cap: false})
 }
 
 

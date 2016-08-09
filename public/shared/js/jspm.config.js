@@ -72,6 +72,8 @@ SystemJS.config({
     "gl-matrix": "npm:gl-matrix@2.3.2",
     "http": "github:jspm/nodelibs-http@0.2.0-alpha",
     "https": "github:jspm/nodelibs-https@0.2.0-alpha",
+    "lodash": "npm:lodash@4.14.2",
+    "os": "github:jspm/nodelibs-os@0.2.0-alpha",
     "path": "github:jspm/nodelibs-path@0.2.0-alpha",
     "process": "github:jspm/nodelibs-process@0.2.0-alpha",
     "react": "npm:react@15.3.0",
@@ -174,14 +176,7 @@ SystemJS.config({
     },
     "github:jspm/nodelibs-buffer@0.2.0-alpha": {
       "map": {
-        "buffer-browserify": "npm:buffer@4.7.1"
-      }
-    },
-    "npm:buffer@4.7.1": {
-      "map": {
-        "isarray": "npm:isarray@1.0.0",
-        "base64-js": "npm:base64-js@1.1.2",
-        "ieee754": "npm:ieee754@1.1.6"
+        "buffer-browserify": "npm:buffer@4.9.0"
       }
     },
     "github:jspm/nodelibs-zlib@0.2.0-alpha": {
@@ -379,6 +374,18 @@ SystemJS.config({
     "github:trivial-space/renderer@master": {
       "map": {
         "primitive-cube": "npm:primitive-cube@2.0.0"
+      }
+    },
+    "npm:buffer@4.9.0": {
+      "map": {
+        "isarray": "npm:isarray@1.0.0",
+        "base64-js": "npm:base64-js@1.1.2",
+        "ieee754": "npm:ieee754@1.1.6"
+      }
+    },
+    "github:jspm/nodelibs-os@0.2.0-alpha": {
+      "map": {
+        "os-browserify": "npm:os-browserify@0.2.1"
       }
     }
   }
