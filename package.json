@@ -98,7 +98,7 @@
           "test.js"
         ]
       },
-      "npm:lodash@4.14.2": {
+      "npm:lodash@4.15.0": {
         "map": {
           "buffer": "@empty",
           "process": "@empty"

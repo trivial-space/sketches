@@ -72,7 +72,7 @@ SystemJS.config({
     "gl-matrix": "npm:gl-matrix@2.3.2",
     "http": "github:jspm/nodelibs-http@0.2.0-alpha",
     "https": "github:jspm/nodelibs-https@0.2.0-alpha",
-    "lodash": "npm:lodash@4.14.2",
+    "lodash": "npm:lodash@4.15.0",
     "os": "github:jspm/nodelibs-os@0.2.0-alpha",
     "path": "github:jspm/nodelibs-path@0.2.0-alpha",
     "process": "github:jspm/nodelibs-process@0.2.0-alpha",

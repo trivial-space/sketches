@@ -134,7 +134,7 @@ export const graph =
 		"perspective": {
 			"id": "perspective",
 			"value": {
-				"fovy": 60,
+				"fovy": 1.88,
 				"near": 0.1,
 				"far": 1000
 			},
@@ -220,7 +220,7 @@ export const graph =
 				"videos": "hot",
 				"frame": "hot"
 			},
-			"code": "function(ports) {\n\tports.names.forEach(name => {\n\t\tthis.renderer.updateLayer(ports.ctx, name + \"-video\", {\n\t\t\tasset: ports.videos[name],\n\t\t\tminFilter: \"LINEAR\",\n\t\t\twrap: \"CLAMP_TO_EDGE\"\n\t\t})\n\t})\n\treturn ports.ctx\n}",
+			"code": "function(ports) {\n\tports.names.forEach(name => {\n\t\tthis.renderer.updateLayer(ports.ctx, name + \"-video\", {\n\t\t\tasset: ports.videos[name],\n\t\t\tminFilter: \"LINEAR\",\n\t\t\twrap: \"CLAMP_TO_EDGE\",\n\t\t\tflipY: true\n\t\t})\n\t})\n\treturn ports.ctx\n}",
 			"meta": {
 				"ui": {
 					"x": 45,
@@ -420,7 +420,7 @@ export const graph =
 				"pos": "hot",
 				"names": "hot"
 			},
-			"code": "function(ports) {\n\treturn this._.mapValues(\n\t\tpos => this.mat4.fromTranslation(this.mat4.create(), pos)\n\t)(ports.pos)\n}",
+			"code": "function(ports) {\n\treturn this._.mapValues( pos => {\n\t\tvar m = this.mat4.fromTranslation(this.mat4.create(), pos)\n\t\treturn this.mat4.scale(m, m, [1.6, 1, 1])\n\t})(ports.pos)\n}",
 			"meta": {
 				"ui": {
 					"x": -590.5,
@@ -777,12 +777,7 @@ export const graph =
 	},
 	"meta": {
 		"ui": {
-			"layout": [
-				{
-					"id": "screen-plane-positions",
-					"type": "entity"
-				}
-			]
+			"layout": []
 		}
 	}
 }
