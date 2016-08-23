@@ -1,12 +1,13 @@
 export const graph =
+
 {
 	"entities": {
 		"camera-perspective": {
 			"id": "camera-perspective",
 			"meta": {
 				"ui": {
-					"x": -208,
-					"y": 123
+					"x": -305,
+					"y": 17
 				}
 			}
 		},
@@ -21,8 +22,8 @@ export const graph =
 			],
 			"meta": {
 				"ui": {
-					"x": 264,
-					"y": -687
+					"x": 222,
+					"y": -474
 				}
 			}
 		},
@@ -31,8 +32,8 @@ export const graph =
 			"isEvent": true,
 			"meta": {
 				"ui": {
-					"x": -579.4441819779604,
-					"y": -723.9719439671308
+					"x": 37,
+					"y": -820
 				}
 			}
 		},
@@ -40,17 +41,21 @@ export const graph =
 			"id": "screen-box-geometry",
 			"meta": {
 				"ui": {
-					"x": 85,
-					"y": -56
+					"x": -498,
+					"y": -498
 				}
 			}
 		},
 		"window-size": {
 			"id": "window-size",
+			"value": {
+				"width": 1,
+				"heigth": 1
+			},
 			"meta": {
 				"ui": {
-					"x": 90,
-					"y": -702
+					"x": 22,
+					"y": -82
 				},
 				"type": "evaled-JSON"
 			}
@@ -86,8 +91,8 @@ export const graph =
 			},
 			"meta": {
 				"ui": {
-					"x": -645,
-					"y": -172
+					"x": 167,
+					"y": -163
 				}
 			}
 		},
@@ -96,8 +101,8 @@ export const graph =
 			"value": "uniform sampler2D video;\n\nvarying vec2 vUv;\n\nvoid main() {\n\tgl_FragColor = texture2D(video, vUv);\n\t//gl_FragColor = vec4(vUv, 1.0, 1.0);\n}",
 			"meta": {
 				"ui": {
-					"x": -393,
-					"y": -621
+					"x": -471,
+					"y": -637
 				},
 				"type": "code"
 			}
@@ -107,8 +112,8 @@ export const graph =
 			"value": "attribute vec3 position;\nattribute vec2 uv;\n\nuniform mat4 transform;\nuniform mat4 perspective;\nuniform mat4 camera;\n\nvarying vec2 vUv;\n\nvoid main() {\n\tvUv = uv;\n\tgl_Position = perspective * camera * transform * vec4(position, 1.0);\n}",
 			"meta": {
 				"ui": {
-					"x": -295.0854444444445,
-					"y": -729.702795138889
+					"x": -343,
+					"y": -757
 				},
 				"type": "code"
 			}
@@ -117,8 +122,8 @@ export const graph =
 			"id": "screen-plane-transforms",
 			"meta": {
 				"ui": {
-					"x": -377,
-					"y": -149
+					"x": -160,
+					"y": -207
 				}
 			}
 		},
@@ -126,8 +131,8 @@ export const graph =
 			"id": "videos",
 			"meta": {
 				"ui": {
-					"x": 290,
-					"y": -385
+					"x": 187,
+					"y": -749
 				}
 			}
 		},
@@ -149,8 +154,8 @@ export const graph =
 			"id": "canvas",
 			"meta": {
 				"ui": {
-					"x": -118,
-					"y": -780
+					"x": -194,
+					"y": -846
 				}
 			}
 		},
@@ -158,8 +163,8 @@ export const graph =
 			"id": "video-factory",
 			"meta": {
 				"ui": {
-					"x": 338,
-					"y": -590
+					"x": 370,
+					"y": -605
 				}
 			}
 		},
@@ -167,8 +172,8 @@ export const graph =
 			"id": "camera-transform",
 			"meta": {
 				"ui": {
-					"x": -297.16664890301035,
-					"y": -4.694428111299658
+					"x": -459,
+					"y": -30
 				}
 			}
 		},
@@ -176,8 +181,8 @@ export const graph =
 			"id": "screen-box-objects",
 			"meta": {
 				"ui": {
-					"x": -655,
-					"y": -347
+					"x": -660,
+					"y": 25
 				}
 			}
 		},
@@ -191,12 +196,21 @@ export const graph =
 				"type": "evaled-JSON"
 			}
 		},
+		"screen-rotations": {
+			"id": "screen-rotations",
+			"meta": {
+				"ui": {
+					"x": 395,
+					"y": -285
+				}
+			}
+		},
 		"screen-plane-objects": {
 			"id": "screen-plane-objects",
 			"meta": {
 				"ui": {
-					"x": -378,
-					"y": -312
+					"x": -295,
+					"y": -292
 				},
 				"type": "evaled-JSON"
 			}
@@ -205,8 +219,8 @@ export const graph =
 			"id": "screen-plane-geometry",
 			"meta": {
 				"ui": {
-					"x": 286,
-					"y": -130
+					"x": -445,
+					"y": -401
 				}
 			}
 		}
@@ -216,15 +230,14 @@ export const graph =
 			"id": "update-video-layers",
 			"ports": {
 				"ctx": "accumulator",
-				"names": "hot",
 				"videos": "hot",
 				"frame": "hot"
 			},
-			"code": "function(ports) {\n\tports.names.forEach(name => {\n\t\tthis.renderer.updateLayer(ports.ctx, name + \"-video\", {\n\t\t\tasset: ports.videos[name],\n\t\t\tminFilter: \"LINEAR\",\n\t\t\twrap: \"CLAMP_TO_EDGE\",\n\t\t\tflipY: true\n\t\t})\n\t})\n\treturn ports.ctx\n}",
+			"code": "function(ports) {\n\tif (ports.videos) {\n\t\tObject.keys(ports.videos).forEach(name => {\n\t\t\tthis.renderer.updateLayer(ports.ctx, name + \"-video\", {\n\t\t\t\tasset: ports.videos[name],\n\t\t\t\tminFilter: \"LINEAR\",\n\t\t\t\twrap: \"CLAMP_TO_EDGE\",\n\t\t\t\tflipY: true\n\t\t\t})\n\t\t})\n\t}\n\treturn ports.ctx\n}",
 			"meta": {
 				"ui": {
-					"x": 45,
-					"y": -509
+					"x": 32,
+					"y": -634
 				}
 			}
 		},
@@ -235,8 +248,8 @@ export const graph =
 			"autostart": true,
 			"meta": {
 				"ui": {
-					"x": 97,
-					"y": 54
+					"x": -656,
+					"y": -480
 				}
 			}
 		},
@@ -249,8 +262,8 @@ export const graph =
 			"code": "function(ports) {\n\tvar objects = ports.names.map(name => name + \"-plane\")//.concat(ports.names.map(name => name + \"-box\"))\n\treturn this.renderer.updateLayer(ports.ctx, \"objects\", {objects: objects})\n}",
 			"meta": {
 				"ui": {
-					"x": 52,
-					"y": -583
+					"x": 55,
+					"y": -541
 				}
 			}
 		},
@@ -261,8 +274,8 @@ export const graph =
 			"autostart": true,
 			"meta": {
 				"ui": {
-					"x": -516.2774588414104,
-					"y": 38.19478314306207
+					"x": -477,
+					"y": 114
 				}
 			}
 		},
@@ -275,8 +288,35 @@ export const graph =
 			"code": "function(ports) {\n\tfor(var o in ports.objs) {\n\t\tthis.renderer.updateObject(ports.ctx, o + \"-plane\", ports.objs[o])\n\t}\n\treturn ports.ctx\n}",
 			"meta": {
 				"ui": {
-					"x": -223.9436737490105,
-					"y": -381.47139997539534
+					"x": -187,
+					"y": -394
+				}
+			}
+		},
+		"create-screen-rotations": {
+			"id": "create-screen-rotations",
+			"ports": {
+				"names": "hot"
+			},
+			"code": "function(ports) {\n\treturn ports.names.reduce((acc, n, i) => {\n\t\tacc[n] = i * Math.PI * 2 / ports.names.length\n\t\treturn acc\n\t}, {})\n}",
+			"meta": {
+				"ui": {
+					"x": 508,
+					"y": -343
+				}
+			}
+		},
+		"create-plane-positions": {
+			"id": "create-plane-positions",
+			"ports": {
+				"names": "hot",
+				"rotations": "hot"
+			},
+			"code": "function(ports) {\n\treturn this._.mapValues(r => {\n\t\tconst [x, z] = this.libs.math.coords.polarToCartesian2D([20, r])\n\t\treturn [x, 0, z]\n\t})(ports.rotations)\n}",
+			"meta": {
+				"ui": {
+					"x": 337,
+					"y": -149
 				}
 			}
 		},
@@ -287,23 +327,25 @@ export const graph =
 				"camera": "hot",
 				"transforms": "hot"
 			},
-			"code": "function(ports) {\n\treturn this._.mapValues(function(t, name) {\n\t\treturn {\n\t\t\tshader: \"plane-shader\",\n\t\t\tgeometry: \"screen-plane-geometry\",\n\t\t\tuniforms: {\n\t\t\t\ttransform: t,\n\t\t\t\tvideo: name + \"-video\",\n\t\t\t\tperspective: ports.perspective,\n\t\t\t\tcamera: ports.camera\n\t\t\t}\n\t\t}\n\t})(ports.transforms)\n}",
+			"code": "function(ports) {\n\treturn this._.mapValues((t, name) => {\n\t\treturn {\n\t\t\tshader: \"plane-shader\",\n\t\t\tgeometry: \"screen-plane-geometry\",\n\t\t\tuniforms: {\n\t\t\t\ttransform: t,\n\t\t\t\tvideo: name + \"-video\",\n\t\t\t\tperspective: ports.perspective,\n\t\t\t\tcamera: ports.camera\n\t\t\t}\n\t\t}\n\t})(ports.transforms)\n}",
 			"meta": {
 				"ui": {
-					"x": -248.5553307356604,
-					"y": -247.08309537392597
+					"x": -349,
+					"y": -177
 				}
 			}
 		},
 		"amimate": {
 			"id": "amimate",
-			"ports": {},
+			"ports": {
+				"videos": "hot"
+			},
 			"code": "function(ports, send) {\n\treturn this.libs.flow.sources.animation.animation(send)\n}",
 			"async": true,
 			"meta": {
 				"ui": {
-					"x": -632.4441819779604,
-					"y": -849.9719439671308
+					"x": 242,
+					"y": -959
 				}
 			}
 		},
@@ -315,8 +357,8 @@ export const graph =
 			"async": true,
 			"meta": {
 				"ui": {
-					"x": 206,
-					"y": -813
+					"x": 80,
+					"y": 31
 				}
 			}
 		},
@@ -329,8 +371,8 @@ export const graph =
 			"code": "function(ports) {\n\treturn this.renderer.updateGeometry(ports.ctx, \"screen-box-geometry\", ports.box)\n}",
 			"meta": {
 				"ui": {
-					"x": 72,
-					"y": -167
+					"x": -306,
+					"y": -503
 				}
 			}
 		},
@@ -341,8 +383,8 @@ export const graph =
 			"autostart": true,
 			"meta": {
 				"ui": {
-					"x": 414,
-					"y": -665
+					"x": 457,
+					"y": -706
 				}
 			}
 		},
@@ -352,11 +394,12 @@ export const graph =
 				"createVideo": "hot",
 				"names": "hot"
 			},
-			"code": "function(ports) {\n\treturn ports.names.reduce((obj, name) => {\n\t\tobj[name] = ports.createVideo(\"//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/\" + name)\n\t\treturn obj\n\t}, {})\n}",
+			"code": "function(ports, send) {\n\tvar videos = ports.names.map(name => ports.createVideo(\n\t\t\"//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/\" + name\n\t))\n\t\n\tPromise.all(videos.map(v => new Promise((res, rej) => {\n\t\tv.addEventListener('canplaythrough', e => { res(v) })\n\t\tsetTimeout(() => rej(\"Video timeout \" + v.src), 10000)\n\t}))).then(vs => {\n\t\tvar vObj = {} \n\t\tports.names.forEach((n, i) => {vObj[n] = vs[i]})\n\t\tsend(vObj)\n\t}).catch(e => console.warn(e))\n}",
+			"async": true,
 			"meta": {
 				"ui": {
-					"x": 244,
-					"y": -509
+					"x": 239,
+					"y": -605
 				}
 			}
 		},
@@ -369,8 +412,8 @@ export const graph =
 			"code": "function(ports) {\n\tthis.renderer.renderLayers(ports.ctx, ['objects'])\n}",
 			"meta": {
 				"ui": {
-					"x": -379.6109051145104,
-					"y": -472.1386710773236
+					"x": -37,
+					"y": -714
 				}
 			}
 		},
@@ -383,8 +426,8 @@ export const graph =
 			"code": "function(ports) {\n\treturn this.renderer.updateGeometry(ports.ctx, \"screen-plane-geometry\", ports.plane)\n}",
 			"meta": {
 				"ui": {
-					"x": 187,
-					"y": -248
+					"x": -281,
+					"y": -436
 				}
 			}
 		},
@@ -395,8 +438,8 @@ export const graph =
 			"autostart": true,
 			"meta": {
 				"ui": {
-					"x": 368,
-					"y": -12
+					"x": -600,
+					"y": -372
 				}
 			}
 		},
@@ -409,8 +452,8 @@ export const graph =
 			"code": "function(ports) {\n\tvar aspect = ports.window.width / ports.window.heigth\n\treturn this.mat4.perspective(\n\t\tthis.mat4.create(),\n\t\tports.p.fovy,\n\t\taspect,\n\t\tports.p.near,\n\t\tports.p.far\n\t)\n}",
 			"meta": {
 				"ui": {
-					"x": -82,
-					"y": 181
+					"x": -157,
+					"y": 95
 				}
 			}
 		},
@@ -418,13 +461,14 @@ export const graph =
 			"id": "create-screen-plane-tranfroms",
 			"ports": {
 				"pos": "hot",
-				"names": "hot"
+				"names": "hot",
+				"rot": "hot"
 			},
-			"code": "function(ports) {\n\treturn this._.mapValues( pos => {\n\t\tvar m = this.mat4.fromTranslation(this.mat4.create(), pos)\n\t\treturn this.mat4.scale(m, m, [1.6, 1, 1])\n\t})(ports.pos)\n}",
+			"code": "function(ports) {\n\treturn this._.mapValues((pos, n) => {\n\t\tvar m = this.mat4.fromTranslation(this.mat4.create(), pos)\n\t\tthis.mat4.rotateY(m, m, ports.rot[n])\n\t\treturn this.mat4.scale(m, m, [1.6, 1, 1])\n\t})(ports.pos)\n}",
 			"meta": {
 				"ui": {
-					"x": -590.5,
-					"y": -494.078125
+					"x": 88,
+					"y": -272
 				}
 			}
 		},
@@ -437,17 +481,17 @@ export const graph =
 			"code": "function(ports) {\n\treturn this.renderer.updateSize(ports.ctx, ports.size.width, ports.size.heigth)\n}",
 			"meta": {
 				"ui": {
-					"x": 8,
-					"y": -640
+					"x": -87,
+					"y": -409
 				}
 			}
 		},
 		"video-factory-test": {
 			"id": "video-factory-test",
 			"ports": {
-				"createVideo": "hot"
+				"createVideo": "cold"
 			},
-			"code": "function(ports, send) {\n \tvar video = ports.createVideo(\"//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/nanofuzz\")\n\tconsole.log(video)\n\tdocument.body.appendChild(video)\n\treturn function stop() {\n\t\tdocument.body.removeChild(video)\n\t}\n}",
+			"code": "function(ports, send) {\n \tvar video = ports.createVideo(\n\t\t\"//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/nanofuzz\"\n\t)\n\tconsole.log(video)\n\tdocument.body.appendChild(video)\n\treturn function stop() {\n\t\tdocument.body.removeChild(video)\n\t}\n}",
 			"async": true,
 			"meta": {
 				"ui": {
@@ -464,8 +508,8 @@ export const graph =
 			"async": true,
 			"meta": {
 				"ui": {
-					"x": -118,
-					"y": -902
+					"x": -215,
+					"y": -970
 				}
 			}
 		},
@@ -479,8 +523,8 @@ export const graph =
 			"code": "function(ports) {\n\treturn this.renderer.updateShader(ports.ctx, \"plane-shader\", {\n\t\tvert: ports.vert,\n\t\tfrag: ports.frag,\n\t\tattribs: {\n\t\t\tposition: \"f 3\",\n\t\t\tuv: \"f 2\"\n\t\t},\n\t\tuniforms: {\n\t\t\tvideo: \"t\",\n\t\t\ttransform: \"m 4\",\n\t\t\tperspective: \"m 4\",\n\t\t\tcamera: \"m 4\"\n\t\t}\n\t})\n}",
 			"meta": {
 				"ui": {
-					"x": -228,
-					"y": -607
+					"x": -299,
+					"y": -617
 				}
 			}
 		},
@@ -492,8 +536,8 @@ export const graph =
 			"code": "function(ports) {\n\treturn this.renderer.create(ports.canvas)\n}",
 			"meta": {
 				"ui": {
-					"x": -122,
-					"y": -647
+					"x": -161,
+					"y": -673
 				}
 			}
 		}
@@ -526,11 +570,24 @@ export const graph =
 			"port": "createVideo",
 			"meta": {}
 		},
+		"create-screen-rotations->screen-rotations": {
+			"id": "create-screen-rotations->screen-rotations",
+			"entity": "screen-rotations",
+			"process": "create-screen-rotations",
+			"meta": {}
+		},
 		"canvas->create-context::canvas": {
 			"id": "canvas->create-context::canvas",
 			"entity": "canvas",
 			"process": "create-context",
 			"port": "canvas",
+			"meta": {}
+		},
+		"screen-rotations->create-plane-positions::rotations": {
+			"id": "screen-rotations->create-plane-positions::rotations",
+			"entity": "screen-rotations",
+			"process": "create-plane-positions",
+			"port": "rotations",
 			"meta": {}
 		},
 		"screen-names->create-video-layers::names": {
@@ -560,17 +617,24 @@ export const graph =
 			"process": "amimate",
 			"meta": {}
 		},
-		"screen-names->update-video-layers::names": {
-			"id": "screen-names->update-video-layers::names",
-			"entity": "screen-names",
-			"process": "update-video-layers",
-			"port": "names",
-			"meta": {}
-		},
 		"screen-names->create-screen-plane-tranfroms::names": {
 			"id": "screen-names->create-screen-plane-tranfroms::names",
 			"entity": "screen-names",
 			"process": "create-screen-plane-tranfroms",
+			"port": "names",
+			"meta": {}
+		},
+		"screen-names->create-screen-rotations::names": {
+			"id": "screen-names->create-screen-rotations::names",
+			"entity": "screen-names",
+			"process": "create-screen-rotations",
+			"port": "names",
+			"meta": {}
+		},
+		"screen-names->create-plane-positions::names": {
+			"id": "screen-names->create-plane-positions::names",
+			"entity": "screen-names",
+			"process": "create-plane-positions",
 			"port": "names",
 			"meta": {}
 		},
@@ -648,6 +712,12 @@ export const graph =
 			"id": "create-canvas->canvas",
 			"entity": "canvas",
 			"process": "create-canvas",
+			"meta": {}
+		},
+		"create-plane-positions->screen-plane-positions": {
+			"id": "create-plane-positions->screen-plane-positions",
+			"entity": "screen-plane-positions",
+			"process": "create-plane-positions",
 			"meta": {}
 		},
 		"screen-box-geometry->update-screen-box-geometry::box": {
@@ -748,10 +818,24 @@ export const graph =
 			"port": "videos",
 			"meta": {}
 		},
+		"videos->amimate::videos": {
+			"id": "videos->amimate::videos",
+			"entity": "videos",
+			"process": "amimate",
+			"port": "videos",
+			"meta": {}
+		},
 		"update-screen-plane-geometry->render-context": {
 			"id": "update-screen-plane-geometry->render-context",
 			"entity": "render-context",
 			"process": "update-screen-plane-geometry",
+			"meta": {}
+		},
+		"screen-rotations->create-screen-plane-tranfroms::rot": {
+			"id": "screen-rotations->create-screen-plane-tranfroms::rot",
+			"entity": "screen-rotations",
+			"process": "create-screen-plane-tranfroms",
+			"port": "rot",
 			"meta": {}
 		},
 		"update-video-layers->render-context": {
