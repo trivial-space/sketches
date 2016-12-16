@@ -19,9 +19,10 @@
     "gulp": "^3.9.1",
     "gulp-connect": "^5.0.0",
     "jspm": "^0.17.0-beta.32",
+    "tvs-flow": "trivial-space/flow",
     "tvs-libs": "trivial-space/libs",
     "tvs-renderer": "trivial-space/renderer",
-    "tvs-flow": "trivial-space/flow"
+    "typescript": "^2.1.4"
   },
   "jspm": {
     "name": "tvs-playground",
