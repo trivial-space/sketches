@@ -1,6 +1,5 @@
 const gulp = require('gulp'),
-      connect = require('gulp-connect'),
-      chokidarEvEmitter = require('chokidar-socket-emitter')
+      connect = require('gulp-connect')
 
 
 const paths = {
@@ -23,7 +22,6 @@ gulp.task('reload', function() {
 
 
 gulp.task('watch', function() {
-  chokidarEvEmitter({port: 5776, path: 'public/'})
   gulp.watch(paths.livereload, ['reload'])
 })
 
