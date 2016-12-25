@@ -1,4 +1,4 @@
-import {entity, addToFlow} from 'flow'
+import {entity, addToFlow} from './flow'
 
 
 

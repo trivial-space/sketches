@@ -1,4 +1,4 @@
-import {entity, addToFlow} from 'flow'
+import {entity, addToFlow} from '../flow'
 import * as flowCamera from 'tvs-libs/lib/vr/flow-camera'
 import {Keys, KeyState} from 'tvs-libs/lib/events/keyboard'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'

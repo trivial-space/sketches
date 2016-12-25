@@ -1,4 +1,4 @@
-import {entity, addToFlow} from 'flow'
+import {entity, addToFlow} from './flow'
 import {keyboard} from 'tvs-libs/lib/events/keyboard'
 import {mouse as getMouse, MouseState} from 'tvs-libs/lib/events/mouse'
 import {windowSize as getWindowSize} from 'tvs-libs/lib/events/dom'

@@ -1,6 +1,9 @@
-import {entity, addToFlow} from 'flow'
+import {entity, addToFlow, SELF} from '../flow'
 import {renderer} from 'tvs-renderer'
 import ctx from './context'
+
+import * as boxGeo from './geometries/box'
+import * as planeGeo from './geometries/plane'
 
 
 export const settings = entity({
@@ -10,16 +13,44 @@ export const settings = entity({
 })
 
 
-export const updateSettings = entity()
-  .stream({
+ctx.stream({
+  id: 'updateSettings'
     with: {
-      ctx: ctx.context.HOT,
+      ctx: SELF,
       settings: settings.HOT
     },
     do: ({ctx, settings}) => renderer.updateSettings(ctx, settings)
   })
 
 
+// ===== Geometries =====
+
+ctx.stream({
+  id: 'updateBoxGeometry',
+  with: {
+    ctx: SELF,
+    geo: boxGeo.geometry.HOT,
+    id: boxGeo.id.HOT
+  },
+  do: ({geo, id, ctx}) => renderer.updateGeometry(ctx, id, geo)
+})
+
+
+ctx.stream({
+  id: 'updatePlaneGeometry',
+  with: {
+    ctx: SELF,
+    geo: planeGeo.geometry.HOT,
+    id: planeGeo.id.HOT
+  },
+  do: ({geo, id, ctx}) => renderer.updateGeometry(ctx, id, geo)
+})
+
+
+// ===== Shaders =====
+
+
+// ===== Layers =====
 export const layers = entity()
   .stream({
     with: {
