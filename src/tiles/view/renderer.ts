@@ -1,4 +1,4 @@
-import {renderer} from 'tvs-renderer'
+import * as renderer from 'tvs-renderer/lib/renderer'
 import {entity, SELF, addToFlow} from '../flow'
 import context from './context'
 import * as plane from './geometries/plane'
@@ -19,11 +19,14 @@ export const settings = entity({
 
 ctx.stream({
   id: 'updateSettings',
-  with: {
-    ctx: SELF,
-    settings: settings.HOT
-  },
-  do: ({ctx, settings}) => renderer.updateSettings(ctx, settings)
+  with: [
+    SELF,
+    settings.HOT
+  ],
+  do: ([ctx, settings]) => {
+    console.log("==================", ctx, settings)
+    return renderer.updateSettings(ctx, settings)
+  }
 })
 
 

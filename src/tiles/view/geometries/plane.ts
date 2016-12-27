@@ -1,5 +1,5 @@
 import {entity, addToFlow} from '../../flow'
-import {renderUtils} from 'tvs-renderer'
+import {plane} from 'tvs-renderer/lib/utils/geometry/plane'
 import * as init from '../../state/init'
 
 
@@ -14,7 +14,7 @@ export const geometry = entity()
       seg: segments.HOT,
       size: init.tileSize.HOT
     },
-    do: ({seg, size}) => renderUtils.geometry.plane( size, size, seg, seg )
+    do: ({seg, size}) => plane( size, size, seg, seg )
   })
 
 

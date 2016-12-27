@@ -1,8 +1,8 @@
-import {runtime} from 'tvs-flow'
-import {create} from 'tvs-flow/lib/utils/entity-reference'
+import * as runtime from 'tvs-flow/lib/runtime'
+import * as references from 'tvs-flow/lib/utils/entity-reference'
 
 export const flow = runtime.create()
-export const {entity, addToFlow, SELF} = create(flow)
+export const {entity, addToFlow, SELF} = references.create(flow)
 
 flow.setDebug(true)
 

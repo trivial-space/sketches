@@ -4,9 +4,22 @@ declare module 'geo-3d-box' {
 
 declare var module : {
   hot: {
-    dispose: any
-    accept: any
+    dispose: Function
+    accept: Function
   }
+}
+
+declare module "*.glsl" {
+    const content: string;
+    export default content;
+}
+declare module "*.vert" {
+    const content: string;
+    export default content;
+}
+declare module "*.frag" {
+    const content: string;
+    export default content;
 }
 
 declare var require: (string) => any
