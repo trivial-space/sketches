@@ -1,0 +1,9 @@
+[submodule "libs/tvs-flow"]
+	path = libs/tvs-flow
+	url = git@github.com:trivial-space/flow.git
+[submodule "libs/tvs-libs"]
+	path = libs/tvs-libs
+	url = git@github.com:trivial-space/libs.git
+[submodule "libs/tvs-renderer"]
+	path = libs/tvs-renderer
+	url = git@github.com:trivial-space/renderer.git

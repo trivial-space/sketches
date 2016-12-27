@@ -10,7 +10,11 @@
     "noUnusedParameters": true,
     "removeComments": true,
     "strictNullChecks": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["src/*", "libs/*"]
+    }
   },
   "exclude": [
     "node_modules"
