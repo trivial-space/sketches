@@ -49,11 +49,11 @@ ctx.react(
   'updateObjects',
   [
     tiles.ids.HOT,
+    tiles.activeTiles.COLD,
     shader.id.HOT,
     plane.id.HOT,
-    tiles.activeTiles.COLD
   ],
-  (ctx, ids, shaderId, geoId, tiles) => {
+  (ctx, ids, tiles, shaderId, geoId) => {
 
     tiles && ids.forEach((id, i) => {
       const tile: tiles.TileState = tiles[i]
@@ -97,12 +97,12 @@ export const sceneLayerId = val('sceneLayer')
 ctx.react(
   'updateSceneLayer',
   [
-    tiles.ids.HOT,
     sceneLayerId.HOT,
+    tiles.ids.HOT,
     camera.view.HOT,
     camera.perspective.HOT
   ],
-  (ctx, tiles, id, view, projection) =>
+  (ctx, id, tiles, view, projection) =>
     renderer.updateLayer(ctx, id, {
       objects: tiles,
       uniforms: {
