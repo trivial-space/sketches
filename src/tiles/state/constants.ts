@@ -1,4 +1,4 @@
-import {entity, addToFlow} from '../flow'
+import {val, addToFlow} from '../flow'
 
 
 export interface TileSpec {
@@ -7,7 +7,7 @@ export interface TileSpec {
 }
 
 
-export const specs = entity({
+export const specs = val({
   lbA1: {
     file: "tile_lb_A_1",
     connections: [0, 0, 1, 1]
@@ -91,7 +91,7 @@ export const specs = entity({
 })
 
 
-export const sets = entity([{
+export const sets = val([{
   'lbA1': 1,
   'lbA2': 1,
   'lbA3': 1,

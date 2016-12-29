@@ -1,5 +1,5 @@
 import {sign, randInt, normalRand} from 'tvs-libs/lib/math/core'
-import {entity, SELF, addToFlow} from '../flow'
+import {val, stream, addToFlow} from '../flow'
 import {mat4, quat, GLVec, GLMat} from 'tvs-libs/lib/math/gl-matrix'
 import {getRollQuat, getYawQuat} from 'tvs-libs/lib/math/geometry'
 import {pick, doTimes, yieldTimes} from 'tvs-libs/lib/utils/sequence'
@@ -81,52 +81,38 @@ const SIDES_KEY = {
 
 // ===== basic properties =====
 
-export const animationDuration = entity(1700)
+export const animationDuration = val(1700)
 
-export const animationChance = entity(0.0001)
+export const animationChance = val(0.0001)
 
-export const liftHeight = entity(2)
+export const liftHeight = val(2)
 
-export const sinkHeight = entity(-50)
+export const sinkHeight = val(-50)
 
-export const flipped = entity(false)
-
-
-export const colCount = entity()
-  .stream({
-    with: {
-      dens: init.tileDensity.HOT,
-      size: events.windowSize.HOT
-    },
-    do: ({dens, size}) => size ? Math.floor(Math.pow(size.width / 1000, 0.5) * dens) : dens
-  })
+export const flipped = val(false)
 
 
-export const rowCount = entity()
-  .stream({
-    with: {
-      cols: colCount.HOT,
-      aspect: camera.aspect.HOT
-    },
-    do: ({cols, aspect}) => {
-      return Math.ceil(cols / aspect)
-    }
-})
+export const colCount = stream(
+  [init.tileDensity.HOT, events.windowSize.HOT],
+  (dens, size) => size ? Math.floor(Math.pow(size.width / 1000, 0.5) * dens) : dens
+)
 
 
-camera.distance.stream({
-  with: {
-    cols: colCount.HOT,
-    size: init.tileSize.HOT,
-    fovy: camera.fovy.HOT,
-  },
-  do: ({cols, size}) => cols * size * 0.47
-})
+export const rowCount = stream(
+  [colCount.HOT, camera.aspect.HOT],
+  (cols, aspect) => Math.ceil(cols / aspect)
+)
+
+
+camera.distance.react(
+  [colCount.HOT, init.tileSize.HOT],
+  (_, cols, size) => cols * size * 0.47
+)
 
 
 // ===== primary state =====
 
-export const createTileState = entity(function(
+export const createTileState = val(function(
   set: {[id: string]: number},
   baseColor: Color,
   specs: {[id: string]: constants.TileSpec}
@@ -164,28 +150,27 @@ export const createTileState = entity(function(
 })
 
 
-export const grid = entity<TileState[][]>([[]])
-  .stream({
-    id: "fillGrid",
-    with: {
-      grid: SELF,
-      cols: colCount.HOT,
-      rows: rowCount.HOT,
-      color: init.color.HOT,
-      set: init.set.HOT,
-      specs: constants.specs.HOT,
-      create: createTileState.HOT
-    },
-    do: vals => {
-      const create = vals.create
-      const specs = vals.specs
-      const col = vals.color
-      const set = vals.set
-      const g: TileState[][] = vals.grid
-      const newHeight = vals.rows as number
-      const newWidth = vals.cols as number
-      const width = g.length
-      const height = g[0].length
+export const grid = val<TileState[][]>([[]])
+  .react(
+    "fillGrid",
+    [
+      colCount.HOT,
+      rowCount.HOT,
+      init.color.HOT,
+      init.set.HOT,
+      constants.specs.HOT,
+      createTileState.HOT
+    ], function(
+      grid: TileState[][],
+      newWidth: number,
+      newHeight: number,
+      color,
+      set,
+      specs,
+      create
+    ) {
+      const width = grid.length
+      const height = grid[0].length
 
       const heightDiff = newHeight - height
       const widthDiff = newWidth - width
@@ -196,12 +181,12 @@ export const grid = entity<TileState[][]>([[]])
         const up = Math.floor(heightDiff / 2)
         const down = heightDiff - up
 
-        g.forEach(row => {
-          row.unshift(...yieldTimes(up, () => create(set, col, specs)))
+        grid.forEach(row => {
+          row.unshift(...yieldTimes(up, () => create(set, color, specs)))
         })
 
-        g.forEach(row => {
-          doTimes(down, () => row.push(create(set, col, specs)))
+        grid.forEach(row => {
+          doTimes(down, () => row.push(create(set, color, specs)))
         })
       }
 
@@ -212,88 +197,86 @@ export const grid = entity<TileState[][]>([[]])
         const right = widthDiff - left
         const currentHeight = Math.max(newHeight, height)
 
-        g.unshift(...yieldTimes(left, () =>
-          yieldTimes(currentHeight, () => create(set, col, specs)))
+        grid.unshift(...yieldTimes(left, () =>
+          yieldTimes(currentHeight, () => create(set, color, specs)))
         )
 
         doTimes(right, () =>
-          g.push(yieldTimes(currentHeight, () => create(set, col, specs)))
+          grid.push(yieldTimes(currentHeight, () => create(set, color, specs)))
         )
       }
 
       if (widthDiff > 0 || heightDiff > 0) {
 
-        for (let x = 0; x < g.length; x++) {
-          for (let y = 0; y < g[x].length; y++) {
-            const tile = g[x][y]
+        for (let x = 0; x < grid.length; x++) {
+          for (let y = 0; y < grid[x].length; y++) {
+            const tile = grid[x][y]
             tile.gridIndex = [x, y]
-            tile.neighbours[SIDES_INDEX.LEFT] = g[x - 1] && g[x - 1][y]
-            tile.neighbours[SIDES_INDEX.RIGHT] = g[x + 1] && g[x + 1][y]
-            tile.neighbours[SIDES_INDEX.UP] = g[x][y - 1]
-            tile.neighbours[SIDES_INDEX.DOWN] = g[x][y + 1]
+            tile.neighbours[SIDES_INDEX.LEFT] = grid[x - 1] && grid[x - 1][y]
+            tile.neighbours[SIDES_INDEX.RIGHT] = grid[x + 1] && grid[x + 1][y]
+            tile.neighbours[SIDES_INDEX.UP] = grid[x][y - 1]
+            tile.neighbours[SIDES_INDEX.DOWN] = grid[x][y + 1]
           }
         }
       }
 
-      return g
+      return grid
     }
-  })
+  )
 
 
-export const activeTiles = entity()
-  .stream({
-    with: {
-      grid: grid.HOT,
-      cols: colCount.HOT,
-      rows: rowCount.HOT,
-    },
-    do: ({cols, rows, grid}) => {
+export const activeTiles = stream(
+  [
+    grid.HOT,
+    colCount.HOT,
+    rowCount.HOT
+  ],
+  (grid, cols, rows) => {
 
-      const tiles: TileState[] = []
-      const width = grid.length
-      const height = grid[0].length
-      const firstLeftIndex = -Math.floor(width / 2)
-      const firstUpIndex = -Math.floor(height / 2)
-      const widthDelta = width - cols
-      let activeCols = Math.floor(widthDelta / 2)
-      if ((width + 1) % 2 && widthDelta % 2) activeCols++
-      const activeRows = Math.floor((height - rows) / 2)
-      const offX = ((cols + 1) % 2) * 0.5
-      const offY = (rows % 2) * 0.5 + 0.5
+    const tiles: TileState[] = []
+    const width = grid.length
+    const height = grid[0].length
+    const firstLeftIndex = -Math.floor(width / 2)
+    const firstUpIndex = -Math.floor(height / 2)
+    const widthDelta = width - cols
+    let activeCols = Math.floor(widthDelta / 2)
+    if ((width + 1) % 2 && widthDelta % 2) activeCols++
+    const activeRows = Math.floor((height - rows) / 2)
+    const offX = ((cols + 1) % 2) * 0.5
+    const offY = (rows % 2) * 0.5 + 0.5
 
-      doTimes(cols, x => {
-        doTimes(rows, y => {
-          const tile: TileState = grid[x + activeCols][y + activeRows]
-          const [iX, iY] = tile.gridIndex
-          tile.posOffset = [offX, offY]
-          tile.updateTransform = true
-          tile.yawDelay = (x + (rows - y + 1)) * 100
-          tile.yawProgress = -tile.yawDelay
-          tile.pos = [firstLeftIndex + iX, firstUpIndex + iY]
-          tile.connected = !!(tile.height < 0.1 && tile.height > -0.1)
-          tiles.push(tile)
-        })
+    doTimes(cols, x => {
+      doTimes(rows, y => {
+        const tile: TileState = grid[x + activeCols][y + activeRows]
+        const [iX, iY] = tile.gridIndex
+        tile.posOffset = [offX, offY]
+        tile.updateTransform = true
+        tile.yawDelay = (x + (rows - y + 1)) * 100
+        tile.yawProgress = -tile.yawDelay
+        tile.pos = [firstLeftIndex + iX, firstUpIndex + iY]
+        tile.connected = !!(tile.height < 0.1 && tile.height > -0.1)
+        tiles.push(tile)
       })
+    })
 
-      return tiles
-    }
-  })
+    return tiles
+  }
+)
 
 
-export const updateActiveTiles = entity()
-  .stream({
-    id: 'animateTiles',
-    with: {
-      tick: events.tick.HOT,
-      tiles: activeTiles.COLD,
-      liftHeight: liftHeight.COLD,
-      sinkHeight: sinkHeight.COLD,
-      dur: animationDuration.COLD,
-      size: init.tileSize.COLD,
-      chance: animationChance.COLD,
-      flipped: flipped.COLD
-    },
-    do: ({tiles, tick, dur, chance, liftHeight, sinkHeight, size, flipped}) => {
+export const updateActiveTiles = stream(
+    'animateTiles',
+    [
+      activeTiles.COLD,
+      events.tick.HOT,
+      animationDuration.COLD,
+      animationChance.COLD,
+      liftHeight.COLD,
+      sinkHeight.COLD,
+      init.tileSize.COLD,
+      flipped.COLD,
+    ],
+    (tiles, tick, dur, chance, liftHeight, sinkHeight, size, flipped) => {
 
       const offset = size * 0.95
 
@@ -459,7 +442,7 @@ export const updateActiveTiles = entity()
 
         if (tile.updateTransform) {
           tile.updateTransform = false
-          quat.multiply(tile.rotation, getYawQuat(tile.yaw), getRollQuat(tile.roll))
+          quat.multiply(tile.rotation, getYawQuat([], tile.yaw), getRollQuat([], tile.roll))
           const [x, y] = tile.pos
           const [offX, offY] = tile.posOffset
           mat4.fromRotationTranslation(
@@ -470,18 +453,15 @@ export const updateActiveTiles = entity()
         }
       }
     }
-  })
+  )
 
 
 export const getTileId = n => 'tile' + n
 
-export const ids = entity()
-  .stream({
-    with: {
-      tiles: activeTiles.HOT
-    },
-    do: ({tiles}) => tiles.map((_, i) => getTileId(i))
-  })
+export const ids = stream(
+  [activeTiles.HOT],
+  (tiles) => tiles.map((_, i) => getTileId(i))
+)
 
 
 addToFlow({

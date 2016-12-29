@@ -1,11 +1,13 @@
-import {entity, addToFlow} from '../../flow'
+import {val, addToFlow} from '../../flow'
+
 import vert from './base-vert.glsl'
 import frag from './base-frag.glsl'
 
-export const id = entity('base-shader')
+
+export const id = val('base-shader')
 
 
-export const spec = entity({
+export const spec = val({
   vert, frag,
   attribs: {
     position: "f 3",

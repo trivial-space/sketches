@@ -29,7 +29,7 @@ module.exports = {
           'postcss-loader',
         ],
       },
-      { test: /\.ts$/, use: 'ts-loader' },
+      { test: /\.ts$/, use: 'ts-loader', exclude: /node_modules/ },
       { test: /\.(glsl|frag|vert)$/, use: ['raw-loader', 'glslify-loader'], exclude: /node_modules/ },
     ]
   },
