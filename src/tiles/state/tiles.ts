@@ -1,4 +1,4 @@
-import {sign, randInt, normalRand} from 'tvs-libs/lib/math/core'
+import {/*sign,*/ randInt, normalRand} from 'tvs-libs/lib/math/core'
 import {val, stream, addToFlow} from '../flow'
 import {mat4, quat, GLVec, GLMat} from 'tvs-libs/lib/math/gl-matrix'
 import {getRollQuat, getYawQuat} from 'tvs-libs/lib/math/geometry'
@@ -71,12 +71,12 @@ const SIDES_INDEX = {
 }
 
 
-const SIDES_KEY = {
-  0: 'UP',
-  1: 'RIGHT',
-  2: 'DOWN',
-  3: 'LEFT'
-}
+// const SIDES_KEY = {
+//   0: 'UP',
+//   1: 'RIGHT',
+//   2: 'DOWN',
+//   3: 'LEFT'
+// }
 
 
 // ===== basic properties =====

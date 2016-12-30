@@ -6,17 +6,13 @@ import {animateWithTPF} from 'tvs-libs/lib/utils/animation'
 import * as init from './state/init'
 
 
+export const tick = asyncStream([init.images.HOT], animateWithTPF).isEvent()
+
 export const windowSize = asyncStreamStart(getWindowSize)
 
 export const mouse = asyncStreamStart(getMouse)
 
 export const keys = asyncStreamStart(keyboard)
-
-
-export const tick = asyncStream(
-  [init.images.HOT],
-  animateWithTPF
-).isEvent()
 
 
 export const mouseDrag = asyncStream(

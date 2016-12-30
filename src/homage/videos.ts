@@ -1,17 +1,7 @@
-import {entity, addToFlow} from './flow'
+import {val, asyncStream, addToFlow} from './flow'
 
 
-
-export const names = entity([
-  "tworooms",
-  "behindglass",
-  "nanofuzz",
-  "balloon",
-  "threescreens"
-])
-
-
-export const createVideo = entity(src => {
+export function createVideo (src: string) {
   const video = document.createElement('video')
   video.crossOrigin = "anonymous"
   video.loop = true
@@ -27,60 +17,65 @@ export const createVideo = entity(src => {
   video.appendChild(source1)
   video.appendChild(source2)
   return video
-})
+}
 
 
-//export const videosUrl = entity("//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/")
-export const videosUrl = entity("/videos/")
+export const names = val([
+  "tworooms",
+  "behindglass",
+  "nanofuzz",
+  "balloon",
+  "threescreens"
+])
 
 
-export const loadTimeout = entity(60000)
+//export const videosUrl = val("//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/")
+export const videosUrl = val("/videos/")
 
 
-export const videos = entity()
-    .stream({
-      async: true,
-      with: {
-        names: names.HOT,
-        timeout: loadTimeout.HOT,
-        url: videosUrl.HOT,
-        createVideo: createVideo.HOT
-      },
-      do: ({names, createVideo, url, timeout}, send) => {
+export const loadTimeout = val(60000)
 
-        Promise.all<HTMLVideoElement>(
-          names
-            .map(name => createVideo(url + name))
-            .map((v: HTMLVideoElement) => new Promise((res, rej) => {
-              const t = setTimeout(() => {
-                console.log('timeout', v)
-                rej("Video timeout " + v)
-              }, timeout)
 
-              v.addEventListener('canplay', () => {
-                res(v)
-                clearTimeout(t)
-                console.log('loaded', v)
-              })
-            }))
+export const videos = asyncStream(
+  [
+    names.HOT,
+    loadTimeout.HOT,
+    videosUrl.HOT
+  ],
+  (send, names, timeout, url) => {
 
-        ).then(vs =>
-          names.reduce((videos, n, i) => {
-            const v = vs[i]
-            v.play()
-            videos[n] = v
-            return videos
-          }, {})
+    Promise.all<HTMLVideoElement>(
+      names
+      .map(name => createVideo(url + name))
+      .map((v: HTMLVideoElement) => new Promise((res, rej) => {
+        const t = setTimeout(() => {
+          console.log('timeout', v)
+          rej("Video timeout " + v)
+        }, timeout)
 
-        ).then(send)
+        v.addEventListener('canplay', () => {
+          res(v)
+          clearTimeout(t)
+          console.log('loaded', v)
+        })
+      }))
 
-      }
-    })
+    ).then(vs =>
+      names.reduce((videos, n, i) => {
+        const v = vs[i]
+        v.play()
+        videos[n] = v
+        return videos
+      }, {})
+
+    ).then(send)
+
+  }
+)
 
 
 addToFlow({
   names,
-  createVideo,
   videosUrl,
   loadTimeout,
   videos

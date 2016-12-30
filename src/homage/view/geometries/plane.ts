@@ -1,11 +1,11 @@
-import {entity, addToFlow} from '../../flow'
+import {val, stream, addToFlow} from '../../flow'
 import {renderUtils} from 'tvs-renderer'
 
 
-export const id = entity('plane-geometry')
+export const id = val('plane-geometry')
 
 
-export const props = entity({
+export const props = val({
   width: 10,
   height: 10,
   segX: 5,
@@ -13,15 +13,12 @@ export const props = entity({
 })
 
 
-export const geometry = entity()
-  .stream({
-    with: {
-      props: props.HOT
-    },
-    do: ({props}) => renderUtils.geometry.plane(
-      props.width, props.height, props.segX, props.segY
-    )
-  })
+export const geometry = stream(
+  [props.HOT],
+  props => renderUtils.geometry.plane(
+    props.width, props.height, props.segX, props.segY
+  )
+)
 
 
 addToFlow({

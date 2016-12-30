@@ -1,36 +1,36 @@
-import {entity, addToFlow} from '../flow'
+import * as flow from '../flow'
 import * as flowCamera from 'tvs-libs/lib/vr/flow-camera'
+import ctx from './context'
 import {Keys, KeyState} from 'tvs-libs/lib/events/keyboard'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'
+import {keys, tick, mouseDrag} from '../events'
 // import {MouseState} from 'tvs-libs/lib/events/mouse'
 
-
-const camera: Spec = flowCamera.camera
-
-
-camera['props.fovy'].val = Math.PI * 0.4
-
-camera['position'].val[2] = 0
+const {val, asyncStream, addToFlow} = flow
 
 
-camera['props.aspect'].stream = {
-  with: {
-    size: 'H renderer.canvasSize' },
-  do: ({size}) => size.width / size.height }
+const firstPersonView = flowCamera.makeFirstPersonView(flow)
+export const {
+  position, yaw, pitch, yawQuat, pitchQuat, rotationQuat, view
+} = firstPersonView
 
 
-camera['props.moveSpeed'] = { val: 0.05 }
+const perspectiveView = flowCamera.makePerspective(flow, ctx.canvasSize)
+export const {
+  fovy, aspect, near, far, perspective
+} = perspectiveView
 
-camera['props.lookSpeed'] = { val: 0.003 }
+
+fovy.val(Math.PI * 0.4)
+
+export const moveSpeed = val(0.05)
+
+export const lookSpeed = val(0.003)
 
 
-camera['props.moveForward'].stream = {
-  async: true,
-  with: {
-    tick: 'H events.tick',
-    keys: 'C events.keys',
-    speed: 'C #props.moveSpeed' },
-  do: ({keys, speed}: {keys: KeyState, speed: number}, send) => {
+export const moveForward = asyncStream(
+  [keys.COLD, moveSpeed.COLD, tick.HOT],
+  (send, keys: KeyState, speed: number) => {
 
     if (!keys) return
     if (keys[Keys.UP] || keys[Keys.W]) {
@@ -39,16 +39,13 @@ camera['props.moveForward'].stream = {
     if (keys[Keys.DOWN] || keys[Keys.S]) {
       send(-speed)
     }
-  } }
+  }
+)
 
 
-camera['props.moveLeft'].stream = {
-  async: true,
-  with: {
-    tick: 'H events.tick',
-    keys: 'C events.keys',
-    speed: 'C #props.moveSpeed' },
-  do: ({keys, speed}: {keys: KeyState, speed: number}, send) => {
+export const moveLeft = asyncStream(
+  [keys.COLD, moveSpeed.COLD, tick.HOT],
+  (send, keys: KeyState, speed: number) => {
 
     if (!keys) return
     if (keys[Keys.LEFT] || keys[Keys.A]) {
@@ -57,36 +54,36 @@ camera['props.moveLeft'].stream = {
     if (keys[Keys.RIGHT] || keys[Keys.D]) {
       send(-speed)
     }
-  } }
+  }
+)
 
 
-camera['props.rotationY'].stream = {
-  with: {
-    drag: 'H events.mouseDrag',
-    speed: 'C #props.lookSpeed',
-    rot: 'A' },
-  do: ({drag, speed, rot}) => drag ? rot + drag.x * speed : rot }
+yaw.react(
+  [mouseDrag.HOT, lookSpeed.COLD],
+  (rot, drag, speed) => drag ? rot + drag.x * speed : rot
+)
 
 
-camera['props.rotationX'].stream = {
-  with: {
-    drag: 'H events.mouseDrag',
-    speed: 'C #props.lookSpeed',
-    rot: 'A' },
-  do: ({drag, speed, rot}) => drag ? rot + drag.y * speed : rot }
+pitch.react(
+  [mouseDrag.HOT, lookSpeed.COLD],
+  (rot, drag, speed) => drag ? rot + drag.y * speed : rot
+)
 
 
-camera['groundMirrorView'] = {
-  val: mat4.create(),
-  stream: {
-    with: {
-      mat: 'A',
-      view: 'H #view',
-      mirrorMatrix: 'H objects.ground.mirrorMatrix' },
-
-    do: ({mat, view, mirrorMatrix}) => mat4.multiply(mat, view, mirrorMatrix) } }
+export const groundMirrorView = val(mat4.create())
+  .react(
+    [view.HOT, mirrorTransform.HOT],
+    mat4.multiply
+  )
 
 
 
-flow.addGraph(toGraph(camera, 'camera'))
-console.log('adding graph: camera')
+addToFlow({
+  ...perspectiveView,
+  ...firstPersonView,
+  moveSpeed,
+  lookSpeed,
+  moveForward,
+  moveLeft,
+  groundMirrorView
+}, 'camera')
