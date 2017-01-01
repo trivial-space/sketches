@@ -1,39 +1,28 @@
-import {entity, addToFlow} from '../../flow'
-import {renderer} from 'tvs-renderer'
+import {val, addToFlow} from '../../flow'
+import assets from 'tvs-renderer/lib/asset-lib'
+import frag from './ground-reflection-frag.glsl'
 
 
-export const id = entity('ground-reflection-shader')
-
-export const frag = entity<string>(require('./ground-reflection-frag.glsl'))
-
-export const update = entity()
-  .stream({
-    with: {
-      id: 'H #id',
-      ctx: 'H renderer.context',
-      frag: 'H #frag'
-    },
-    do: ({id, ctx, frag}) => {
-      renderer.updateShader(ctx, id, Object.assign({}, renderer.lib.shaders.basicEffect, {
-        frag,
-        uniforms: {
-          size: 'f 2',
-          source: 't',
-          direction: 'i',
-          strength: 'f'
-        }
-      }))
-    }
-  })
+export const id = val('ground-reflection-shader')
 
 
-flow.addGraph(toGraph(spec, 'shaders.groundReflection'))
-console.log('adding graph: shaders.groundReflection')
+export const spec = val({
+  ...assets.shaders.basicEffect,
+  frag,
+  uniforms: {
+    size: 'f 2',
+    source: 't',
+    direction: 'i',
+    strength: 'f'
+  }
+})
+
+
+addToFlow({id, spec}, 'view.shaders.groundReflection')
 
 
 if (module.hot) {
-  console.log('reseting shaders.groundReflection')
   requestAnimationFrame(function() {
-    window['entities'] && window['entities'].shaders.groundReflection.reset()
+    window['entities'] && window['entities'].view.shaders.groundReflection.reset()
   })
 }

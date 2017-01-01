@@ -1,46 +1,31 @@
-import {entity, addToFlow} from '../../flow'
-import {renderer} from 'tvs-renderer'
+import {val, addToFlow} from '../../flow'
+import vert from './object-vert.glsl'
+import frag from './object-frag.glsl'
 
 
-const spec: Spec = {
-
-  'id': {val: 'object-shader'},
-
-  'vert': {val: require('./object-vert.glsl')},
-
-  'frag': {val: require('./object-frag.glsl')},
-
-  'update': {
-    stream: {
-      with: {
-        id: 'H #id',
-        ctx: 'H renderer.context',
-        vert: 'H #vert',
-        frag: 'H #frag' },
-      do: ({id, ctx, vert, frag}) => {
-
-        renderer.updateShader(ctx, id, {
-          vert, frag,
-          attribs: {
-            position: "f 3"
-          },
-          uniforms: {
-            transform: "m 4",
-            projection: "m 4",
-            view: "m 4",
-            withDistance: "i",
-            groundHeight: 'f'
-          }
-        }) } } } }
+export const id = val('object-shader')
 
 
-flow.addGraph(toGraph(spec, 'shaders.object'))
-console.log('adding graph: shaders.object')
+export const spec = val({
+  vert, frag,
+  attribs: {
+    position: "f 3"
+  },
+  uniforms: {
+    transform: "m 4",
+    projection: "m 4",
+    view: "m 4",
+    withDistance: "i",
+    groundHeight: 'f'
+  }
+})
+
+
+addToFlow({id, spec}, 'view.shaders.object')
 
 
 if (module.hot) {
-  console.log('reseting shaders.object')
   requestAnimationFrame(function() {
-    window['entities'] && window['entities'].shaders.object.reset()
+    window['entities'] && window['entities'].view.shaders.object.reset()
   })
 }

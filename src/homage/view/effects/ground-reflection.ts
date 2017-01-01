@@ -27,4 +27,4 @@ export const layersData = stream(
 )
 
 
-addToFlow({idPrefix, ids, passes, layersData},'layers.groundReflection')
+addToFlow({idPrefix, ids, passes, layersData},'view.effects.groundReflection')

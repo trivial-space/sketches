@@ -4,6 +4,7 @@ import ctx from './context'
 import {Keys, KeyState} from 'tvs-libs/lib/events/keyboard'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'
 import {keys, tick, mouseDrag} from '../events'
+import * as ground from '../state/ground'
 // import {MouseState} from 'tvs-libs/lib/events/mouse'
 
 const {val, asyncStream, addToFlow} = flow
@@ -22,6 +23,7 @@ export const {
 
 
 fovy.val(Math.PI * 0.4)
+
 
 export const moveSpeed = val(0.05)
 
@@ -72,7 +74,7 @@ pitch.react(
 
 export const groundMirrorView = val(mat4.create())
   .react(
-    [view.HOT, mirrorTransform.HOT],
+    [view.HOT, ground.mirrorMatrix.HOT],
     mat4.multiply
   )
 
@@ -86,4 +88,4 @@ addToFlow({
   moveForward,
   moveLeft,
   groundMirrorView
-}, 'camera')
+}, 'view.camera')

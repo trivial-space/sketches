@@ -1,15 +1,24 @@
 import {val, stream, addToFlow} from '../flow'
-import {renderer} from 'tvs-renderer'
+import * as renderer from 'tvs-renderer/lib/renderer'
 import context from './context'
 import {tick} from '../events'
-
 import * as boxGeo from './geometries/box'
 import * as planeGeo from './geometries/plane'
 import * as videos from '../videos'
 import * as camera from './camera'
+import * as groundShader from './shaders/ground'
+import * as groundReflectionShader from './shaders/ground-reflection'
+import * as objectShader from './shaders/object'
+import * as screenShader from './shaders/screen'
+import * as ground from '../state/ground'
+import * as screens from '../state/screens'
+import * as pedestals from '../state/pedestals'
+import * as reflectionEffect from './effects/ground-reflection'
 
 const ctx = context.context
 
+
+// ===== rendering settings =====
 
 export const settings = val({
   clearColor: [0, 0, 0, 1],
@@ -43,33 +52,135 @@ ctx.react(
 
 // ===== Shaders =====
 
+ctx.react(
+  'updatereflectionShader',
+  [groundReflectionShader.id.HOT, groundReflectionShader.spec.HOT],
+  renderer.updateShader
+)
+
+ctx.react(
+  'updateGroundShader',
+  [groundShader.id.HOT, groundShader.spec.HOT],
+  renderer.updateShader
+)
+
+ctx.react(
+  'updateObjectShader',
+  [objectShader.id.HOT, objectShader.spec.HOT],
+  renderer.updateShader
+)
+
+ctx.react(
+  'updateScreenShader',
+  [screenShader.id.HOT, screenShader.spec.HOT],
+  renderer.updateShader
+)
+
+
+// ===== Objects =====
+
+const groundId = val('ground')
+
+ctx.react(
+  'updateGround',
+  [
+    groundId.HOT,
+    groundShader.id.HOT,
+    planeGeo.id.HOT,
+    ground.transform.HOT,
+    context.canvasSize.HOT,
+  ],
+  (ctx, id, shaderId, geoId, transform, size) =>
+
+    renderer.updateObject(ctx, id, {
+      shader: shaderId,
+      geometry: geoId,
+      uniforms: {
+        transform,
+        size: size ? [size.width, size.height] : [100, 100]
+      }
+    })
+)
+
+
+const getScreenId = screenName => screenName + '-screen'
+
+ctx.react(
+  'updateScreens',
+  [screenShader.id.HOT, planeGeo.id.HOT, screens.transforms.HOT, videos.names.HOT],
+  (ctx, shaderId, geometryId, transforms, videoNames) => {
+
+    videoNames && videoNames.forEach(n => {
+      renderer.updateObject(ctx, getScreenId(n), {
+          shader: shaderId,
+          geometry: geometryId,
+          uniforms: {
+            transform: transforms[n],
+            video: getVideoLayerId(n)
+          }
+      })
+    })
+
+    return ctx
+  }
+)
+
+
+export const getPedestalId = screenName => screenName + '-pedestal'
+
+ctx.react(
+  'updatePedestals',
+  [objectShader.id.HOT, boxGeo.id.HOT, videos.names.HOT, pedestals.transforms.HOT],
+  (ctx, shaderId, geometryId, videoNames, transforms) => {
+
+    videoNames && videoNames.forEach(n => {
+      renderer.updateObject(ctx, getPedestalId(n), {
+        shader: shaderId,
+        geometry: geometryId,
+        uniforms: {
+          transform: transforms[n]
+        }
+      })
+    })
+
+    return ctx
+  }
+)
+
 
 // ===== Layers =====
 
 export const getVideoLayerId = videoName => videoName + '-video'
 
-
 ctx.react(
   'updateVideoLayer',
   [videos.videos.HOT],
   (ctx, vs) => {
-    Object.keys(vs).forEach(n => {
-      const v = vs[n], name = getId(n)
+
+    vs && Object.keys(vs).forEach(n => {
+      const v = vs[n], name = getVideoLayerId(n)
       renderer.updateLayer(ctx, name, {asset: v, flipY: true})
     })
+
+    return ctx
   }
 )
 
 
 export const sceneLayerId = val('scene')
 
-
 ctx.react(
   'updateSceneLayer',
-  [sceneLayerId.HOT, videos.names.HOT],
-  (id, ground, videoNames, view, projection) => {
+  [
+    sceneLayerId.HOT,
+    videos.names.HOT,
+    groundId.HOT,
+    camera.view.COLD,
+    camera.perspective.COLD
+  ],
+  (ctx, id, videoNames, ground, view, projection) => {
 
-    renderer.updateLayer(ctx, id, {
+    videoNames && renderer.updateLayer(ctx, id, {
       objects: videoNames.map(getScreenId)
       .concat([ground])
       .concat(videoNames.map(getPedestalId)),
@@ -80,76 +191,76 @@ ctx.react(
         groundHeight: 0
       }
     })
+
+    return ctx
   }
 )
-ground: 'H objects.ground.id',
-view: 'C camera.view',
-projection: 'C camera.perspective' },
-
-  'id': {val: 'mirror-scene'},
-
-  'update': {
-    stream: {
-      with: {
-        id: 'H #id',
-        ctx: 'H renderer.context',
-        videoNames: 'H videos.names',
-        getScreenId: 'H objects.screens.getId',
-        getPedestalId: 'H objects.pedestals.getId',
-        groundPosition: 'H objects.ground.position',
-        view: 'C camera.groundMirrorView',
-        projection: 'C camera.perspective' },
-
-      do: ({ctx, groundPosition, videoNames, id, getScreenId, getPedestalId, view, projection}) => {
-
-        renderer.updateLayer(ctx, id, {
-          flipY: true,
-          objects: videoNames.map(getScreenId)
-            .concat(videoNames.map(getPedestalId)),
-          uniforms: {
-            view,
-            projection,
-            withDistance: 1,
-            groundHeight: groundPosition[1]
-          }
-        }) } } } }
 
 
-  'update': {
-    stream: {
-      with: {
-        ids: 'H #ids',
-        ctx: 'H renderer.context',
-        shader: 'H shaders.groundReflection.id',
-        size: 'H renderer.canvasSize' },
+export const mirrorSceneLayerId = val('mirror-scene')
 
-      do: ({ctx, ids, size, shader}) => {
+ctx.react(
+  'updateMirrorSceneLayer',
+  [
+    mirrorSceneLayerId.HOT,
+    ground.position.HOT,
+    videos.names.HOT,
+    camera.groundMirrorView.COLD,
+    camera.perspective.COLD
+  ],
+  (ctx, id, groundPosition, videoNames, view, projection) => {
 
-        size = [size.width, size.height]
+    videoNames && renderer.updateLayer(ctx, id, {
+      flipY: true,
+      objects: videoNames.map(getScreenId)
+      .concat(videoNames.map(getPedestalId)),
+      uniforms: {
+        view,
+        projection,
+        withDistance: 1,
+        groundHeight: groundPosition[1]
+      }
+    })
 
-        ids.forEach((id, i) => {
-          renderer.updateLayer(ctx, id, {
-            shader,
-            uniforms: {
-              size,
-              direction: i % 2,
-              strength: ids.length - i
-            }
-          })
-        })
+    return ctx
+  }
+)
 
-      } } } }
+
+// ===== effects =====
+
+ctx.react(
+  'updateReflectionEffect',
+  [
+    reflectionEffect.ids.HOT,
+    reflectionEffect.layersData.HOT,
+    groundReflectionShader.id.HOT,
+    context.canvasSize.HOT
+  ],
+  (ctx, ids, layerData, shaderId, size) => {
+
+    ids.forEach((id, i) => {
+      renderer.updateLayer(ctx, id, {
+        shader: shaderId,
+        uniforms: {
+          ...layerData[i],
+          size: size ? [size.width, size.height] : [100, 100]
+        }
+      })
+    })
+
+    return ctx
+  }
+)
+
 
 
 // ===== Rendering =====
 
 export const layers = stream(
-  [
-    'H layers.scene.id',
-    'H layers.groundReflection.ids',
-    'H layers.mirrorScene.id'
-  ],
+  [sceneLayerId.HOT, reflectionEffect.ids.HOT, mirrorSceneLayerId.HOT],
   (scene, reflections, mirrorScene) =>
+
     [mirrorScene].concat(reflections).concat([scene])
 )
 
@@ -161,5 +272,5 @@ export const render = stream(
 
 
 addToFlow({
-  render
-}, 'renderer')
+  settings, groundId, render, layers, sceneLayerId, mirrorSceneLayerId
+}, 'view.renderer')

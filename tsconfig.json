@@ -18,7 +18,8 @@
   },
   "exclude": [
     "node_modules",
-    "libs/tvs-flow/node_modules"
+    "libs/tvs-flow/node_modules",
+    "libs/tvs-renderer"
   ],
   "compileOnSave": false,
   "buildOnSave": false,

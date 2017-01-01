@@ -1,5 +1,5 @@
 import {val, stream, addToFlow} from '../../flow'
-import {renderUtils} from 'tvs-renderer'
+import {plane} from 'tvs-renderer/lib/utils/geometry/plane'
 
 
 export const id = val('plane-geometry')
@@ -15,9 +15,7 @@ export const props = val({
 
 export const geometry = stream(
   [props.HOT],
-  props => renderUtils.geometry.plane(
-    props.width, props.height, props.segX, props.segY
-  )
+  props => plane(props.width, props.height, props.segX, props.segY)
 )
 
 
@@ -25,4 +23,4 @@ addToFlow({
   id,
   geometry,
   props
-}, 'geometries.plane')
+}, 'view.geometries.plane')

@@ -1,46 +1,32 @@
-import {entity, addToFlow} from '../../flow'
-import {renderer} from 'tvs-renderer'
+import {val, addToFlow} from '../../flow'
+import vert from './ground-vert.glsl'
+import frag from './ground-frag.glsl'
 
 
-const spec: Spec = {
 
-  'id': {val: 'ground-shader'},
-
-  'vert': {val: require('./ground-vert.glsl')},
-
-  'frag': {val: require('./ground-frag.glsl')},
-
-  'update': {
-    stream: {
-      with: {
-        id: 'H #id',
-        ctx: 'H renderer.context',
-        vert: 'H #vert',
-        frag: 'H #frag' },
-      do: ({id, ctx, vert, frag}) => {
-
-        renderer.updateShader(ctx, id, {
-          vert, frag,
-          attribs: {
-            position: "f 3"
-          },
-          uniforms: {
-            transform: "m 4",
-            projection: "m 4",
-            view: "m 4",
-            reflection: "t",
-            size: 'f 2'
-          }
-        }) } } } }
+export const id = val('ground-shader')
 
 
-flow.addGraph(toGraph(spec, 'shaders.ground'))
-console.log('adding graph: shaders.ground')
+export const spec = val({
+  vert, frag,
+  attribs: {
+    position: "f 3"
+  },
+  uniforms: {
+    transform: "m 4",
+    projection: "m 4",
+    view: "m 4",
+    reflection: "t",
+    size: 'f 2'
+  }
+})
+
+
+addToFlow({id, spec}, 'view.shaders.ground')
 
 
 if (module.hot) {
-  console.log('reseting shaders.ground')
   requestAnimationFrame(function() {
-    window['entities'] && window['entities'].shaders.ground.reset()
+    window['entities'] && window['entities'].view.shaders.ground.reset()
   })
 }
