@@ -16,7 +16,10 @@ module.exports = {
 
   output: {
     path: resolve(__dirname, 'public'),
-    filename: '[name]/main.js'
+    publicPath: '/',
+    filename: '[name]/main.js',
+    hotUpdateChunkFilename: "[id].[hash].hot-update.js",
+    hotUpdateMainFilename: "[hash].hot-update.json"
   },
 
   module: {

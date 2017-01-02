@@ -19,7 +19,7 @@ import {flow} from './flow'
 
 setTimeout(function() {
   flow.setDebug(false)
-}, 100)
+}, 1000)
 
 window['entities'] = flowTree.create(flow)
 

@@ -13,15 +13,12 @@ import * as flowTree from 'tvs-libs/lib/flow/tree'
 import { flow } from './flow'
 
 setTimeout(function() {
+  // window['entities'].events.tick.streams.tickStream.stop()
   flow.setDebug(false)
 }, 300)
 
 
 window['entities'] = flowTree.create(flow)
-
-setTimeout(function(){
-  window['entities'].events.tick.streams.tickStream.stop()
-}, 1000)
 
 
 if (module.hot) {
