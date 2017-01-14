@@ -62,13 +62,13 @@ export const moveLeft = asyncStream(
 
 yaw.react(
   [mouseDrag.HOT, lookSpeed.COLD],
-  (rot, drag, speed) => drag ? rot + drag.x * speed : rot
+  (rot, drag, speed) => rot + drag.x * speed
 )
 
 
 pitch.react(
   [mouseDrag.HOT, lookSpeed.COLD],
-  (rot, drag, speed) => drag ? rot + drag.y * speed : rot
+  (rot, drag, speed) => rot + drag.y * speed
 )
 
 

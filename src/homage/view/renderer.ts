@@ -1,7 +1,7 @@
 import {val, stream, addToFlow} from '../flow'
 import * as renderer from 'tvs-renderer/lib/renderer'
 import context from './context'
-import {tick} from '../events'
+import {tick, slowTick} from '../events'
 import * as boxGeo from './geometries/box'
 import * as planeGeo from './geometries/plane'
 import * as videos from '../videos'
@@ -97,7 +97,7 @@ ctx.react(
       geometry: geoId,
       uniforms: {
         transform,
-        size: size ? [size.width, size.height] : [100, 100]
+        size: [size.width, size.height]
       }
     })
 )
@@ -109,8 +109,7 @@ ctx.react(
   'updateScreens',
   [screenShader.id.HOT, planeGeo.id.HOT, screens.transforms.HOT, videos.names.HOT],
   (ctx, shaderId, geometryId, transforms, videoNames) => {
-
-    videoNames && videoNames.forEach(n => {
+    videoNames.forEach(n => {
       renderer.updateObject(ctx, getScreenId(n), {
           shader: shaderId,
           geometry: geometryId,
@@ -133,7 +132,7 @@ ctx.react(
   [objectShader.id.HOT, boxGeo.id.HOT, videos.names.HOT, pedestals.transforms.HOT],
   (ctx, shaderId, geometryId, videoNames, transforms) => {
 
-    videoNames && videoNames.forEach(n => {
+    videoNames.forEach(n => {
       renderer.updateObject(ctx, getPedestalId(n), {
         shader: shaderId,
         geometry: geometryId,
@@ -154,10 +153,10 @@ export const getVideoLayerId = videoName => videoName + '-video'
 
 ctx.react(
   'updateVideoLayer',
-  [videos.videos.HOT],
+  [videos.videos.HOT, slowTick.HOT],
   (ctx, vs) => {
 
-    vs && Object.keys(vs).forEach(n => {
+    Object.keys(vs).forEach(n => {
       const v = vs[n], name = getVideoLayerId(n)
       renderer.updateLayer(ctx, name, {asset: v, flipY: true})
     })
@@ -178,9 +177,9 @@ ctx.react(
     camera.view.COLD,
     camera.perspective.COLD
   ],
-  (ctx, id, videoNames, ground, view, projection) => {
+  (ctx, id, videoNames, ground, view, projection) =>
 
-    videoNames && renderer.updateLayer(ctx, id, {
+    renderer.updateLayer(ctx, id, {
       objects: videoNames.map(getScreenId)
       .concat([ground])
       .concat(videoNames.map(getPedestalId)),
@@ -191,9 +190,6 @@ ctx.react(
         groundHeight: 0
       }
     })
-
-    return ctx
-  }
 )
 
 
@@ -208,9 +204,9 @@ ctx.react(
     camera.groundMirrorView.COLD,
     camera.perspective.COLD
   ],
-  (ctx, id, groundPosition, videoNames, view, projection) => {
+  (ctx, id, groundPosition, videoNames, view, projection) =>
 
-    videoNames && renderer.updateLayer(ctx, id, {
+    renderer.updateLayer(ctx, id, {
       flipY: true,
       objects: videoNames.map(getScreenId)
       .concat(videoNames.map(getPedestalId)),
@@ -221,9 +217,6 @@ ctx.react(
         groundHeight: groundPosition[1]
       }
     })
-
-    return ctx
-  }
 )
 
 
@@ -244,7 +237,7 @@ ctx.react(
         shader: shaderId,
         uniforms: {
           ...layerData[i],
-          size: size ? [size.width, size.height] : [100, 100]
+          size: [size.width, size.height]
         }
       })
     })

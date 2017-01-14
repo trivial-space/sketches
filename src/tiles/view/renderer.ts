@@ -55,7 +55,7 @@ ctx.react(
   ],
   (ctx, ids, tiles, shaderId, geoId) => {
 
-    tiles && ids.forEach((id, i) => {
+    ids.forEach((id, i) => {
       const tile: tiles.TileState = tiles[i]
       renderer.updateObject(ctx, id, {
         shader: shaderId,
@@ -83,9 +83,9 @@ ctx.react(
   'updateTileTextureLayers',
   [init.images.HOT],
   (ctx, imgs) => {
-    imgs && imgs.forEach(([id, img]) => {
+    imgs.forEach(([id, img]) =>
       renderer.updateLayer(ctx, getTileTextureId(id), { asset: img })
-    })
+    )
     return ctx
   }
 )
