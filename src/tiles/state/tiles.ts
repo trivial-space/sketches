@@ -94,7 +94,7 @@ export const flipped = val(false)
 
 export const colCount = stream(
   [init.tileDensity.HOT, events.windowSize.HOT],
-  (dens, size) => size ? Math.floor(Math.pow(size.width / 1000, 0.5) * dens) : dens
+  (dens, size) => Math.floor(Math.pow(size.width / 1000, 0.5) * dens)
 )
 
 
@@ -117,6 +117,7 @@ export const createTileState = val(function(
   baseColor: Color,
   specs: {[id: string]: constants.TileSpec}
 ): TileState {
+  
   const [r, g, b] = baseColor
   const color = [
     r + (normalRand() - 0.6) * 0.25,
@@ -125,6 +126,7 @@ export const createTileState = val(function(
   ]
   const turn = randInt(3)
   const tileSpecId = pick(Object.keys(set))
+  
   return {
     gridIndex: [0, 0],
     pos: [0, 0],
@@ -169,6 +171,7 @@ export const grid = val<TileState[][]>([[]])
       specs,
       create
     ) {
+      
       const width = grid.length
       const height = grid[0].length
 
@@ -333,7 +336,7 @@ export const updateActiveTiles = stream(
 
 
         if (flipped) {
-          if (!tile.flipped) {
+          if (!tile.flipped && tile.yawProgress != null) {
 
             if (tile.yawProgress < 0) {
               tile.yawProgress += Math.min(tick, -tile.yawProgress)
@@ -370,7 +373,7 @@ export const updateActiveTiles = stream(
           }
 
         } else {
-          if (tile.flipped) {
+          if (tile.flipped && tile.yawProgress != null) {
 
             if (tile.yawProgress < 0) {
               tile.yawProgress += Math.min(tick, -tile.yawProgress)

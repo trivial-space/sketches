@@ -1,5 +1,5 @@
-const { resolve } = require('path');
-const webpack = require('webpack');
+const { resolve } = require('path')
+const webpack = require('webpack')
 
 const hotCodeEntry = [
   'webpack-dev-server/client?http://localhost:8080',
@@ -66,4 +66,4 @@ module.exports = {
     new webpack.NamedModulesPlugin(),
     // prints more readable module names in the browser console on HMR updates
   ],
-};
+}
