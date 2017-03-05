@@ -25,6 +25,6 @@ export const spec = val({
 
 if (module.hot) {
   requestAnimationFrame(function() {
-    //window['entities'] && window['entities'].view.shaders.screen.reset()
+    window['entities'] && window['entities'].view.shaders.screen.reset()
   })
 }
