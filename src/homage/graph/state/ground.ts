@@ -1,4 +1,4 @@
-import {val, stream, addToFlow} from '../flow'
+import {val, stream} from 'homage/flow'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'
 import * as geo from 'tvs-libs/lib/math/geometry'
 
@@ -31,8 +31,3 @@ export const mirrorMatrix = stream(
   [planeEquation.HOT],
   geo.mirrorMatrixFromPlane
 )
-
-
-addToFlow({
-  position, normal, scale, transform, planeEquation, mirrorMatrix
-}, 'state.ground')

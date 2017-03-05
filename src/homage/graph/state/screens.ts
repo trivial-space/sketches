@@ -1,4 +1,4 @@
-import {val, stream, addToFlow} from '../flow'
+import {val, stream} from 'homage/flow'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'
 import * as coords from 'tvs-libs/lib/math/coords'
 import * as videos from '../videos'
@@ -43,8 +43,3 @@ export const transforms = stream(
     return ts
   }, {})
 )
-
-
-addToFlow({
-  radius, height, scale, rotations, positions, transforms
-}, 'state.screens')

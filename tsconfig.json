@@ -4,6 +4,7 @@
     "lib": ["es6", "dom"],
     "module": "es6",
     "moduleResolution": "node",
+    "alwaysStrict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noUnusedLocals": true,
@@ -14,12 +15,15 @@
     "baseUrl": ".",
     "paths": {
       "*": ["src/*", "libs/*"]
-    }
+    },
+    "types": [ "webpack-env" ]
   },
   "exclude": [
     "node_modules",
     "libs/tvs-flow/node_modules",
-    "libs/tvs-renderer"
+    "libs/tvs-renderer/node_modules",
+    "libs/tvs-renderer/examples",
+    "libs/tvs-libs/node_modules"
   ],
   "compileOnSave": false,
   "buildOnSave": false,

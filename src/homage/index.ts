@@ -1,28 +1,32 @@
-import './videos'
-import './state/pedestals'
-import './state/screens'
-import './state/ground'
-import './view/effects/ground-reflection'
-import './view/geometries/box'
-import './view/geometries/plane'
-import './view/shaders/object'
-import './view/shaders/ground'
-import './view/shaders/ground-reflection'
-import './view/shaders/screen'
-import './view/renderer'
-import './view/camera'
-import './view/context'
-import './events'
 import * as flowTree from 'tvs-libs/lib/flow/tree'
-import {flow} from './flow'
+import {flow, addToFlow} from './flow'
+
+const requireGraph = require.context('./graph', true, /\.ts$/)
 
 
-setTimeout(function() {
+function modulePathToNamespace(path) {
+  return path.split('.')[1].split('/').filter(v => v).join('.')
+}
+
+function updateFlow(graph) {
+  graph.keys().forEach(path => {
+    const module = graph(path)
+    addToFlow(module, modulePathToNamespace(path))
+  })
+  window['entities'] = flowTree.create(flow)
+}
+
+
+flow.setDebug(true)
+updateFlow(requireGraph)
+setTimeout(function () {
   flow.setDebug(false)
 }, 1000)
-
-window['entities'] = flowTree.create(flow)
-
+  
+  
 if (module.hot) {
-  module.hot.accept()
+  module.hot.accept((requireGraph as any).id, function() {
+    const newGraph = require.context('./graph', true, /\.ts$/)
+    updateFlow(newGraph)
+  })
 }

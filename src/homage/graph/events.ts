@@ -1,4 +1,4 @@
-import {val, stream, asyncStream, asyncStreamStart, addToFlow} from './flow'
+import {val, stream, asyncStream, asyncStreamStart} from 'homage/flow'
 import {keyboard} from 'tvs-libs/lib/events/keyboard'
 import {mouse as getMouse, MouseState} from 'tvs-libs/lib/events/mouse'
 import {windowSize as getWindowSize} from 'tvs-libs/lib/events/dom'
@@ -38,15 +38,3 @@ export const mouseDrag = asyncStream(
     mouse.dragDelta.x = mouse.dragDelta.y = 0
   }
 )
-
-
-addToFlow({
-  tick,
-  tickStep,
-  tickCounter,
-  slowTick,
-  windowSize,
-  mouse,
-  mouseDrag,
-  keys
-}, 'events')

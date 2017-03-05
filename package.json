@@ -23,6 +23,7 @@
     "raw-loader": "^0.5.1"
   },
   "devDependencies": {
+    "@types/webpack-env": "^1.13.0",
     "ts-loader": "^2.0.0",
     "typescript": "^2.2.0",
     "webpack": "^2.2.0",

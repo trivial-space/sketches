@@ -1,4 +1,4 @@
-import {val, stream, addToFlow} from '../../flow'
+import {val, stream} from 'homage/flow'
 
 
 export const idPrefix = val('ground-reflection')
@@ -25,6 +25,3 @@ export const layersData = stream(
     strength: ids.length - i
   }))
 )
-
-
-addToFlow({idPrefix, ids, passes, layersData},'view.effects.groundReflection')

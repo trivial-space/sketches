@@ -1,6 +1,6 @@
-import {val, stream, addToFlow} from '../flow'
+import {val, stream} from 'homage/flow'
 import * as renderer from 'tvs-renderer/lib/renderer'
-import context from './context'
+import {context, canvasSize} from './context'
 import {tick, slowTick} from '../events'
 import * as boxGeo from './geometries/box'
 import * as planeGeo from './geometries/plane'
@@ -15,7 +15,7 @@ import * as screens from '../state/screens'
 import * as pedestals from '../state/pedestals'
 import * as reflectionEffect from './effects/ground-reflection'
 
-const ctx = context.context
+const ctx = context
 
 
 // ===== rendering settings =====
@@ -79,7 +79,7 @@ ctx.react(
 
 // ===== Objects =====
 
-const groundId = val('ground')
+export const groundId = val('ground')
 
 ctx.react(
   'updateGround',
@@ -88,7 +88,7 @@ ctx.react(
     groundShader.id.HOT,
     planeGeo.id.HOT,
     ground.transform.HOT,
-    context.canvasSize.HOT,
+    canvasSize.HOT,
   ],
   (ctx, id, shaderId, geoId, transform, size) =>
 
@@ -228,7 +228,7 @@ ctx.react(
     reflectionEffect.ids.HOT,
     reflectionEffect.layersData.HOT,
     groundReflectionShader.id.HOT,
-    context.canvasSize.HOT
+    canvasSize.HOT
   ],
   (ctx, ids, layerData, shaderId, size) => {
 
@@ -262,8 +262,3 @@ export const render = stream(
   [ctx.COLD, layers.COLD, tick.HOT],
   renderer.renderLayers
 )
-
-
-addToFlow({
-  settings, groundId, render, layers, sceneLayerId, mirrorSceneLayerId
-}, 'view.renderer')

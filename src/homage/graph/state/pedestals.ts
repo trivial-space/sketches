@@ -1,4 +1,4 @@
-import {val, stream, addToFlow} from '../flow'
+import {val, stream} from 'homage/flow'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'
 import * as vec from 'tvs-libs/lib/math/vectors'
 import * as screens from './screens'
@@ -23,6 +23,3 @@ export const transforms = stream(
       return ts
     }, {})
 )
-
-
-addToFlow({scale, transforms}, 'state.pedestals')

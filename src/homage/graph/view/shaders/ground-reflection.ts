@@ -1,4 +1,4 @@
-import {val, addToFlow} from '../../flow'
+import {val} from 'homage/flow'
 import assets from 'tvs-renderer/lib/asset-lib'
 import frag from './ground-reflection-frag.glsl'
 
@@ -18,11 +18,8 @@ export const spec = val({
 })
 
 
-addToFlow({id, spec}, 'view.shaders.groundReflection')
-
-
 if (module.hot) {
   requestAnimationFrame(function() {
-    window['entities'] && window['entities'].view.shaders.groundReflection.reset()
+    //window['entities'] && window['entities'].view.shaders.groundReflection.reset()
   })
 }

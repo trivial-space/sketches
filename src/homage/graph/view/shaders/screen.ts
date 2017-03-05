@@ -1,4 +1,4 @@
-import {val, addToFlow} from '../../flow'
+import {val} from 'homage/flow'
 import vert from './screen-vert.glsl'
 import frag from './screen-frag.glsl'
 
@@ -23,11 +23,8 @@ export const spec = val({
 })
 
 
-addToFlow({id, spec}, 'view.shaders.screen')
-
-
 if (module.hot) {
   requestAnimationFrame(function() {
-    window['entities'] && window['entities'].view.shaders.screen.reset()
+    //window['entities'] && window['entities'].view.shaders.screen.reset()
   })
 }

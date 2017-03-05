@@ -1,4 +1,4 @@
-import {val, addToFlow} from '../../flow'
+import {val} from 'homage/flow'
 import vert from './ground-vert.glsl'
 import frag from './ground-frag.glsl'
 
@@ -22,11 +22,8 @@ export const spec = val({
 })
 
 
-addToFlow({id, spec}, 'view.shaders.ground')
-
-
 if (module.hot) {
   requestAnimationFrame(function() {
-    window['entities'] && window['entities'].view.shaders.ground.reset()
+    //window['entities'] && window['entities'].view.shaders.ground.reset()
   })
 }

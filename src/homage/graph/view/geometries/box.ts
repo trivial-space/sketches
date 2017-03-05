@@ -1,4 +1,4 @@
-import {val, stream, addToFlow} from '../../flow'
+import {val, stream} from 'homage/flow'
 import {convertStackGLGeometry} from 'tvs-renderer/lib/utils/stackgl/helpers'
 import * as geo3dBox from 'geo-3d-box'
 
@@ -16,11 +16,3 @@ export const geometry = stream(
   [size.HOT, segments.HOT],
   (size, segments) => convertStackGLGeometry(makeBox({ size, segments }))
 )
-
-
-addToFlow({
-  id,
-  geometry,
-  size,
-  segments
-}, 'view.geometries.box')

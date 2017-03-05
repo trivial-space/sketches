@@ -1,4 +1,4 @@
-import {val, asyncStream, addToFlow} from './flow'
+import {val, asyncStream} from 'homage/flow'
 
 
 export function createVideo (src: string) {
@@ -36,8 +36,7 @@ export const videosUrl = val("videos/")
 export const loadTimeout = val(60000)
 
 
-export const videos = asyncStream(
-  [
+export const videos = asyncStream([
     names.HOT,
     loadTimeout.HOT,
     videosUrl.HOT
@@ -72,11 +71,3 @@ export const videos = asyncStream(
 
   }
 )
-
-
-addToFlow({
-  names,
-  videosUrl,
-  loadTimeout,
-  videos
-}, 'videos')

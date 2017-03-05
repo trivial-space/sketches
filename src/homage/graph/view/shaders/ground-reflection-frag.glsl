@@ -5,7 +5,7 @@ uniform vec2 size;
 uniform int direction;
 uniform float strength;
 
-varying float distance;
+varying float dist;
 varying vec2 vUv;
 
 void main() {

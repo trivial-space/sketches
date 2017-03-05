@@ -1,25 +1,23 @@
-import * as flow from '../flow'
+import * as flow from 'homage/flow'
 import * as flowCamera from 'tvs-libs/lib/vr/flow-camera'
-import ctx from './context'
+import {canvasSize} from './context'
 import {Keys, KeyState} from 'tvs-libs/lib/events/keyboard'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'
 import {keys, tick, mouseDrag} from '../events'
 import * as ground from '../state/ground'
 // import {MouseState} from 'tvs-libs/lib/events/mouse'
 
-const {val, asyncStream, addToFlow} = flow
+const {val, asyncStream} = flow
 
 
-const firstPersonView = flowCamera.makeFirstPersonView(flow)
 export const {
   position, yaw, pitch, yawQuat, pitchQuat, rotationQuat, view
-} = firstPersonView
+} = flowCamera.makeFirstPersonView(flow)
 
 
-const perspectiveView = flowCamera.makePerspective(flow, ctx.canvasSize)
 export const {
   fovy, aspect, near, far, perspective
-} = perspectiveView
+} = flowCamera.makePerspective(flow, canvasSize)
 
 
 fovy.val(Math.PI * 0.4)
@@ -77,15 +75,3 @@ export const groundMirrorView = val(mat4.create())
     [view.HOT, ground.mirrorMatrix.HOT],
     mat4.multiply
   )
-
-
-
-addToFlow({
-  ...perspectiveView,
-  ...firstPersonView,
-  moveSpeed,
-  lookSpeed,
-  moveForward,
-  moveLeft,
-  groundMirrorView
-}, 'view.camera')
