@@ -1,4 +1,4 @@
-import {val, addToFlow} from '../flow'
+import {val} from 'tiles/flow'
 
 
 export interface TileSpec {
@@ -110,9 +110,3 @@ export const sets = val([{
   ltbA1: 1,
   ltbB1: 1
 }])
-
-
-addToFlow({
-  specs,
-  sets
-}, 'state.constants')

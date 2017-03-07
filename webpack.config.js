@@ -2,6 +2,7 @@ const { resolve } = require('path')
 const webpack = require('webpack')
 
 const hotCodeEntry = [
+  'es6-shim', 'es7-shim/browser',
   'webpack-dev-server/client?http://localhost:8080',
   'webpack/hot/only-dev-server'
 ]

@@ -1,4 +1,4 @@
-import * as flow from 'homage/flow'
+import {val, asyncStream} from 'homage/flow'
 import * as flowCamera from 'tvs-libs/lib/vr/flow-camera'
 import {canvasSize} from './context'
 import {Keys, KeyState} from 'tvs-libs/lib/events/keyboard'
@@ -7,17 +7,15 @@ import {keys, tick, mouseDrag} from '../events'
 import * as ground from '../state/ground'
 // import {MouseState} from 'tvs-libs/lib/events/mouse'
 
-const {val, asyncStream} = flow
-
 
 export const {
   position, yaw, pitch, yawQuat, pitchQuat, rotationQuat, view
-} = flowCamera.makeFirstPersonView(flow)
+} = flowCamera.makeFirstPersonView()
 
 
 export const {
   fovy, aspect, near, far, perspective
-} = flowCamera.makePerspective(flow, canvasSize)
+} = flowCamera.makePerspective(canvasSize)
 
 
 fovy.val(Math.PI * 0.4)

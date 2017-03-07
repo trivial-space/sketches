@@ -1,32 +1,20 @@
-import * as flowTree from 'tvs-libs/lib/flow/tree'
-import {flow, addToFlow} from './flow'
-
-const requireGraph = require.context('./graph', true, /\.ts$/)
+import { flow } from './flow'
+import { updateFlow } from "shared-utils/reload";
 
 
-function modulePathToNamespace(path) {
-  return path.split('.')[1].split('/').filter(v => v).join('.')
-}
-
-function updateFlow(graph) {
-  graph.keys().forEach(path => {
-    const module = graph(path)
-    addToFlow(module, modulePathToNamespace(path))
-  })
-  window['entities'] = flowTree.create(flow)
-}
+const graphModules = require.context('./graph', true, /\.ts$/)
 
 
 flow.setDebug(true)
-updateFlow(requireGraph)
+updateFlow(flow, graphModules)
 setTimeout(function () {
   flow.setDebug(false)
 }, 1000)
-  
-  
+
+
 if (module.hot) {
-  module.hot.accept((requireGraph as any).id, function() {
-    const newGraph = require.context('./graph', true, /\.ts$/)
-    updateFlow(newGraph)
+  module.hot.accept((graphModules as any).id, function() {
+    const newGraphModules = require.context('./graph', true, /\.ts$/)
+    updateFlow(flow, newGraphModules)
   })
 }

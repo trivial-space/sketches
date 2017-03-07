@@ -1,6 +1,6 @@
 import * as renderer from 'tvs-renderer/lib/renderer'
-import {val, stream, addToFlow} from '../flow'
-import context from './context'
+import {val, stream} from 'tiles/flow'
+import {context} from './context'
 import * as plane from './geometries/plane'
 import * as tiles from '../state/tiles'
 import * as init from '../state/init'
@@ -9,7 +9,7 @@ import * as events from '../events'
 import * as camera from './camera'
 
 
-const ctx = context.context
+const ctx = context
 
 export const settings = val({
   clearColor: [1, 1, 1, 1],
@@ -125,11 +125,3 @@ export const render = stream(
   [ctx.COLD, layers.COLD, events.tick.HOT],
   renderer.renderLayers
 )
-
-
-addToFlow({
-  settings,
-  sceneLayerId,
-  layers,
-  render
-}, 'view.renderer')

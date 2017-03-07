@@ -1,4 +1,4 @@
-import {asyncStream, asyncStreamStart, addToFlow} from './flow'
+import {asyncStream, asyncStreamStart} from 'tiles/flow'
 import {keyboard} from 'tvs-libs/lib/events/keyboard'
 import {mouse as getMouse, MouseState} from 'tvs-libs/lib/events/mouse'
 import {windowSize as getWindowSize} from 'tvs-libs/lib/events/dom'
@@ -6,7 +6,7 @@ import {animateWithTPF} from 'tvs-libs/lib/utils/animation'
 import * as init from './state/init'
 
 
-export const tick = asyncStream([init.images.HOT], animateWithTPF).isEvent()
+export const tick = asyncStream([init.images.HOT], animateWithTPF)
 
 export const windowSize = asyncStreamStart(getWindowSize)
 
@@ -24,13 +24,4 @@ export const mouseDrag = asyncStream(
     }
     mouse.dragDelta.x = mouse.dragDelta.y = 0
   }
-).isEvent()
-
-
-addToFlow({
-  tick,
-  windowSize,
-  mouse,
-  mouseDrag,
-  keys
-}, 'events')
+)

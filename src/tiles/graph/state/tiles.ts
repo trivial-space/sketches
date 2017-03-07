@@ -1,5 +1,5 @@
 import {/*sign,*/ randInt, normalRand} from 'tvs-libs/lib/math/core'
-import {val, stream, addToFlow} from '../flow'
+import {val, stream} from 'tiles/flow'
 import {mat4, quat, GLVec, GLMat} from 'tvs-libs/lib/math/gl-matrix'
 import {getRollQuat, getYawQuat} from 'tvs-libs/lib/math/geometry'
 import {pick, doTimes, yieldTimes} from 'tvs-libs/lib/utils/sequence'
@@ -117,7 +117,7 @@ export const createTileState = val(function(
   baseColor: Color,
   specs: {[id: string]: constants.TileSpec}
 ): TileState {
-  
+
   const [r, g, b] = baseColor
   const color = [
     r + (normalRand() - 0.6) * 0.25,
@@ -126,7 +126,7 @@ export const createTileState = val(function(
   ]
   const turn = randInt(3)
   const tileSpecId = pick(Object.keys(set))
-  
+
   return {
     gridIndex: [0, 0],
     pos: [0, 0],
@@ -171,7 +171,7 @@ export const grid = val<TileState[][]>([[]])
       specs,
       create
     ) {
-      
+
       const width = grid.length
       const height = grid[0].length
 
@@ -465,19 +465,3 @@ export const ids = stream(
   [activeTiles.HOT],
   (tiles) => tiles.map((_, i) => getTileId(i))
 )
-
-
-addToFlow({
-  colCount,
-  rowCount,
-  flipped,
-  animationDuration,
-  animationChance,
-  liftHeight,
-  sinkHeight,
-  updateActiveTiles,
-  createTileState,
-  grid,
-  activeTiles,
-  ids,
-}, 'state.tiles')

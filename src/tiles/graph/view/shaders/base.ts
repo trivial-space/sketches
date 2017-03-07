@@ -1,4 +1,4 @@
-import {val, addToFlow} from '../../flow'
+import {val} from 'tiles/flow'
 
 import vert from './base-vert.glsl'
 import frag from './base-frag.glsl'
@@ -22,9 +22,6 @@ export const spec = val({
     view: "m 4"
   }
 })
-
-
-addToFlow({ id, spec }, 'view.shaders.base')
 
 
 if (module.hot) {

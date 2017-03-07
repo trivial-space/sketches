@@ -1,5 +1,5 @@
 import {normalRand} from 'tvs-libs/lib/math/core'
-import {val, stream, asyncStream, addToFlow} from '../flow'
+import {val, stream, asyncStream} from 'tiles/flow'
 import {pick} from 'tvs-libs/lib/utils/sequence'
 import * as constants from './constants'
 
@@ -28,12 +28,3 @@ export const images = asyncStream(
 
   }
 )
-
-
-addToFlow({
-  tileSize,
-  tileDensity,
-  color,
-  set,
-  images
-}, 'state.init')

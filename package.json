@@ -16,6 +16,8 @@
     "start": "webpack-dev-server"
   },
   "dependencies": {
+    "es6-shim": "^0.35.3",
+    "es7-shim": "^6.0.0",
     "geo-3d-box": "^2.0.2",
     "gl-matrix": "^2.3.2",
     "glsl-fast-gaussian-blur": "^1.0.2",
