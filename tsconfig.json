@@ -15,8 +15,7 @@
     "baseUrl": ".",
     "paths": {
       "*": ["src/*", "libs/*"]
-    },
-    "types": [ "webpack-env" ]
+    }
   },
   "exclude": [
     "node_modules",
