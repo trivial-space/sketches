@@ -7,3 +7,6 @@
 [submodule "libs/tvs-renderer"]
 	path = libs/tvs-renderer
 	url = git@github.com:trivial-space/renderer.git
+[submodule "libs/tvs-flow-tools"]
+	path = libs/tvs-flow-tools
+	url = git@github.com:trivial-space/flow-tools.git

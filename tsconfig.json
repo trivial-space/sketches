@@ -10,6 +10,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "removeComments": true,
+    "allowJs": true,
     "strictNullChecks": true,
     "sourceMap": true,
     "baseUrl": ".",
@@ -21,10 +22,13 @@
     "node_modules",
     "libs/tvs-flow/node_modules",
     "libs/tvs-flow/test",
-    "libs/tvs-flow/dist",
+    "libs/tvs-flow-tools/node_modules",
+    "libs/tvs-flow-tools/examples",
+    "libs/tvs-flow-tools/dist/examples",
     "libs/tvs-renderer/node_modules",
     "libs/tvs-renderer/examples",
-    "libs/tvs-libs/node_modules"
+    "libs/tvs-libs/node_modules",
+    "libs/tvs-libs/spec"
   ],
   "compileOnSave": false,
   "buildOnSave": false,
