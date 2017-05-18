@@ -16,8 +16,7 @@
     "start": "webpack-dev-server"
   },
   "dependencies": {
-    "es6-shim": "^0.35.3",
-    "es7-shim": "^6.0.0",
+    "core-js": "^2.4.1",
     "geo-3d-box": "^2.0.2",
     "gl-matrix": "^2.3.2",
     "glsl-fast-gaussian-blur": "^1.0.2",
@@ -27,8 +26,8 @@
   "devDependencies": {
     "@types/webpack-env": "^1.13.0",
     "ts-loader": "^2.0.3",
-    "typescript": "^2.2.2",
-    "webpack": "^2.3.3",
-    "webpack-dev-server": "^2.4.2"
+    "typescript": "^2.3.2",
+    "webpack": "^2.4.1",
+    "webpack-dev-server": "^2.4.5"
   }
 }
