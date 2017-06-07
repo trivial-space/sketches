@@ -1,6 +1,6 @@
 import {val, stream, asyncStream, asyncStreamStart} from 'homage/flow'
 import {keyboard} from 'tvs-libs/lib/events/keyboard'
-import {mouse as getMouse, MouseState} from 'tvs-libs/lib/events/mouse'
+import {mouse as getMouse} from 'tvs-libs/lib/events/mouse'
 import {windowSize as getWindowSize} from 'tvs-libs/lib/events/dom'
 import {animateWithTPF} from 'tvs-libs/lib/utils/animation'
 import {videos} from './videos'
@@ -22,16 +22,16 @@ export const slowTick = stream(
   cnt => cnt === 0 ? true : null
 )
 
-export const windowSize = asyncStreamStart(getWindowSize)
+export const windowSize = asyncStreamStart(null, getWindowSize)
 
-export const mouse = asyncStreamStart(getMouse)
+export const mouse = asyncStreamStart(null, getMouse)
 
-export const keys = asyncStreamStart(keyboard)
+export const keys = asyncStreamStart(null, keyboard)
 
 
 export const mouseDrag = asyncStream(
   [mouse.COLD, tick.HOT],
-  (send, mouse: MouseState) => {
+  (send, mouse, _) => {
     if (mouse.dragDelta.x || mouse.dragDelta.y) {
       send({x: mouse.dragDelta.x, y: mouse.dragDelta.y})
     }

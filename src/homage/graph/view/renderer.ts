@@ -28,7 +28,6 @@ export const settings = val({
 
 
 ctx.react(
-  'updateSettings',
   [settings.HOT],
   renderer.updateSettings
 )
@@ -37,14 +36,12 @@ ctx.react(
 // ===== Geometries =====
 
 ctx.react(
-  'updateBoxGeometry',
   [boxGeo.id.HOT, boxGeo.geometry.HOT],
   renderer.updateGeometry
 )
 
 
 ctx.react(
-  'updatePlaneGeometry',
   [planeGeo.id.HOT, planeGeo.geometry.HOT],
   renderer.updateGeometry
 )
@@ -53,25 +50,21 @@ ctx.react(
 // ===== Shaders =====
 
 ctx.react(
-  'updatereflectionShader',
   [groundReflectionShader.id.HOT, groundReflectionShader.spec.HOT],
   renderer.updateShader
 )
 
 ctx.react(
-  'updateGroundShader',
   [groundShader.id.HOT, groundShader.spec.HOT],
   renderer.updateShader
 )
 
 ctx.react(
-  'updateObjectShader',
   [objectShader.id.HOT, objectShader.spec.HOT],
   renderer.updateShader
 )
 
 ctx.react(
-  'updateScreenShader',
   [screenShader.id.HOT, screenShader.spec.HOT],
   renderer.updateShader
 )
@@ -82,7 +75,6 @@ ctx.react(
 export const groundId = val('ground')
 
 ctx.react(
-  'updateGround',
   [
     groundId.HOT,
     groundShader.id.HOT,
@@ -106,7 +98,6 @@ ctx.react(
 const getScreenId = screenName => screenName + '-screen'
 
 ctx.react(
-  'updateScreens',
   [screenShader.id.HOT, planeGeo.id.HOT, screens.transforms.HOT, videos.names.HOT],
   (ctx, shaderId, geometryId, transforms, videoNames) => {
     videoNames.forEach(n => {
@@ -128,7 +119,6 @@ ctx.react(
 export const getPedestalId = screenName => screenName + '-pedestal'
 
 ctx.react(
-  'updatePedestals',
   [objectShader.id.HOT, boxGeo.id.HOT, videos.names.HOT, pedestals.transforms.HOT],
   (ctx, shaderId, geometryId, videoNames, transforms) => {
 
@@ -152,7 +142,6 @@ ctx.react(
 export const getVideoLayerId = videoName => videoName + '-video'
 
 ctx.react(
-  'updateVideoLayer',
   [videos.videos.HOT, slowTick.HOT],
   (ctx, vs) => {
 
@@ -169,7 +158,6 @@ ctx.react(
 export const sceneLayerId = val('scene')
 
 ctx.react(
-  'updateSceneLayer',
   [
     sceneLayerId.HOT,
     videos.names.HOT,
@@ -196,7 +184,6 @@ ctx.react(
 export const mirrorSceneLayerId = val('mirror-scene')
 
 ctx.react(
-  'updateMirrorSceneLayer',
   [
     mirrorSceneLayerId.HOT,
     ground.position.HOT,
@@ -223,7 +210,6 @@ ctx.react(
 // ===== effects =====
 
 ctx.react(
-  'updateReflectionEffect',
   [
     reflectionEffect.ids.HOT,
     reflectionEffect.layersData.HOT,

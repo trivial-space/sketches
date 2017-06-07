@@ -1,6 +1,7 @@
 import {val} from 'homage/flow'
 import vert from './object-vert.glsl'
 import frag from './object-frag.glsl'
+import { ShaderData } from "tvs-renderer/lib";
 
 
 export const id = val('object-shader')
@@ -18,7 +19,7 @@ export const spec = val({
     withDistance: "i",
     groundHeight: 'f'
   }
-})
+} as ShaderData)
 
 
 if (module.hot) {

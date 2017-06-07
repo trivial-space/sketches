@@ -1,6 +1,7 @@
 import {val} from 'homage/flow'
 import vert from './ground-vert.glsl'
 import frag from './ground-frag.glsl'
+import { ShaderData } from "tvs-renderer/lib";
 
 
 
@@ -19,7 +20,7 @@ export const spec = val({
     reflection: "t",
     size: 'f 2'
   }
-})
+} as ShaderData)
 
 
 if (module.hot) {

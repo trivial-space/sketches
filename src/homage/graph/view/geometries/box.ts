@@ -2,7 +2,7 @@ import {val, stream} from 'homage/flow'
 import {convertStackGLGeometry} from 'tvs-renderer/lib/utils/stackgl/helpers'
 import * as geo3dBox from 'geo-3d-box'
 
-const makeBox = geo3dBox as any
+const makeBox = geo3dBox
 
 
 export const id = val('box-geometry')

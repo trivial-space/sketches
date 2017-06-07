@@ -3,6 +3,7 @@ import {mat4} from 'tvs-libs/lib/math/gl-matrix'
 import * as vec from 'tvs-libs/lib/math/vectors'
 import * as screens from './screens'
 import * as videos from '../videos'
+import { GLMat } from "gl-matrix";
 
 
 export const scale = val([1.65, 1, 1])
@@ -21,5 +22,5 @@ export const transforms = stream(
       mat4.scale(t, t, scale)
       ts[n] = t
       return ts
-    }, {})
+    }, {} as {[id: string]: GLMat})
 )

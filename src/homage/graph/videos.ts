@@ -65,7 +65,7 @@ export const videos = asyncStream([
         v.play()
         videos[n] = v
         return videos
-      }, {})
+      }, {} as {[id: string]: HTMLVideoElement})
 
     ).then(send)
 

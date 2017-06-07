@@ -28,7 +28,7 @@ export const lookSpeed = val(0.003)
 
 export const moveForward = asyncStream(
   [keys.COLD, moveSpeed.COLD, tick.HOT],
-  (send, keys: KeyState, speed: number) => {
+  (send, keys, speed, _) => {
 
     if (!keys) return
     if (keys[Keys.UP] || keys[Keys.W]) {

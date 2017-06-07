@@ -2,6 +2,7 @@ import {val, stream} from 'homage/flow'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'
 import * as coords from 'tvs-libs/lib/math/coords'
 import * as videos from '../videos'
+import { GLMat } from "gl-matrix";
 
 
 export const radius = val(25)
@@ -16,7 +17,7 @@ export const rotations = stream(
   videoNames => videoNames.reduce((rs, n, i) => {
     rs[n] = Math.PI * 2 * i / videoNames.length
     return rs
-  }, {})
+  }, {} as {[key: string]: number})
 )
 
 
@@ -28,7 +29,7 @@ export const positions = stream(
       const [x, z] = coords.polarToCartesian2D([radius, phi])
       ps[n] = [x, height, z]
       return ps
-    }, {})
+    }, {} as {[key: string]: [number, number, number]})
 )
 
 
@@ -41,5 +42,5 @@ export const transforms = stream(
     mat4.scale(t, t, scale)
     ts[n] = t
     return ts
-  }, {})
+  }, {} as {[key: string]: GLMat})
 )
