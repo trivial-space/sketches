@@ -1,9 +1,9 @@
-import {val, asyncStream} from 'homage/flow'
+import { val, asyncStream } from 'homage/flow'
 import * as flowCamera from 'tvs-libs/lib/vr/flow-camera'
-import {canvasSize} from './context'
-import {Keys, KeyState} from 'tvs-libs/lib/events/keyboard'
-import {mat4} from 'tvs-libs/lib/math/gl-matrix'
-import {keys, tick, mouseDrag} from '../events'
+import { canvasSize } from './context'
+import { Keys } from 'tvs-libs/lib/events/keyboard'
+import { mat4 } from 'tvs-libs/lib/math/gl-matrix'
+import { keys, tick, mouseDrag } from '../events'
 import * as ground from '../state/ground'
 // import {MouseState} from 'tvs-libs/lib/events/mouse'
 
@@ -29,7 +29,6 @@ export const lookSpeed = val(0.003)
 export const moveForward = asyncStream(
   [keys.COLD, moveSpeed.COLD, tick.HOT],
   (send, keys, speed, _) => {
-
     if (!keys) return
     if (keys[Keys.UP] || keys[Keys.W]) {
       send(speed)
@@ -43,7 +42,7 @@ export const moveForward = asyncStream(
 
 export const moveLeft = asyncStream(
   [keys.COLD, moveSpeed.COLD, tick.HOT],
-  (send, keys: KeyState, speed: number) => {
+  (send, keys, speed) => {
 
     if (!keys) return
     if (keys[Keys.LEFT] || keys[Keys.A]) {
@@ -69,7 +68,7 @@ pitch.react(
 
 
 export const groundMirrorView = val(mat4.create())
-  .react(
-    [view.HOT, ground.mirrorMatrix.HOT],
-    mat4.multiply
-  )
+.react(
+  [view.HOT, ground.mirrorMatrix.HOT],
+  mat4.multiply
+)

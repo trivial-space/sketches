@@ -4,6 +4,7 @@ import {mouse as getMouse} from 'tvs-libs/lib/events/mouse'
 import {windowSize as getWindowSize} from 'tvs-libs/lib/events/dom'
 import {animateWithTPF} from 'tvs-libs/lib/utils/animation'
 import {videos} from './videos'
+import { EntityRef } from "tvs-flow/lib/utils/entity-reference";
 
 
 export const tick = asyncStream([videos.HOT], animateWithTPF)
@@ -29,7 +30,7 @@ export const mouse = asyncStreamStart(null, getMouse)
 export const keys = asyncStreamStart(null, keyboard)
 
 
-export const mouseDrag = asyncStream(
+export const mouseDrag: EntityRef<{x: number, y: number}> = asyncStream(
   [mouse.COLD, tick.HOT],
   (send, mouse, _) => {
     if (mouse.dragDelta.x || mouse.dragDelta.y) {

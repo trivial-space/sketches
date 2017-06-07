@@ -1,5 +1,6 @@
 declare module 'geo-3d-box' {
-  function box(params: {size: number[], segments: number}): any
+  export function box(params: {size: number[], segments: number}): any
+  export default box
 }
 
 declare module "*.glsl" {
