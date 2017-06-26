@@ -1,9 +1,9 @@
-import {val, stream, asyncStream, asyncStreamStart} from 'homage/flow'
-import {keyboard} from 'tvs-libs/lib/events/keyboard'
-import {mouse as getMouse} from 'tvs-libs/lib/events/mouse'
-import {windowSize as getWindowSize} from 'tvs-libs/lib/events/dom'
-import {animateWithTPF} from 'tvs-libs/lib/utils/animation'
-import {videos} from './videos'
+import { val, stream, asyncStream, asyncStreamStart } from 'homage/flow'
+import { keyboard } from 'tvs-libs/lib/events/keyboard'
+import { mouse as getMouse } from 'tvs-libs/lib/events/mouse'
+import { windowSize as getWindowSize } from 'tvs-libs/lib/events/dom'
+import { animateWithTPF } from 'tvs-libs/lib/utils/animation'
+import { videos } from './videos'
 import { EntityRef } from "tvs-flow/lib/utils/entity-reference";
 
 
