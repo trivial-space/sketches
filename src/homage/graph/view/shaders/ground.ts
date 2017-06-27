@@ -1,30 +1,9 @@
-import {val} from 'homage/flow'
+import { val } from 'tvs-flow/lib/utils/entity-reference'
 import vert from './ground-vert.glsl'
 import frag from './ground-frag.glsl'
-import { ShaderData } from "tvs-renderer/lib";
-
-
-
-export const id = val('ground-shader')
 
 
 export const spec = val({
-  vert, frag,
-  attribs: {
-    position: "f 3"
-  },
-  uniforms: {
-    transform: "m 4",
-    projection: "m 4",
-    view: "m 4",
-    reflection: "t",
-    size: 'f 2'
-  }
-} as ShaderData)
+	vert, frag
+}).reset()
 
-
-if (module.hot) {
-  requestAnimationFrame(function() {
-    window['entities'] && window['entities'].view.shaders.ground.reset()
-  })
-}

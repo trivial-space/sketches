@@ -1,5 +1,5 @@
-import {val, stream} from 'homage/flow'
-import {mat4} from 'tvs-libs/lib/math/gl-matrix'
+import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
+import { mat4 } from 'tvs-libs/lib/math/gl-matrix'
 import * as geo from 'tvs-libs/lib/math/geometry'
 
 
@@ -11,23 +11,23 @@ export const scale = val(10)
 
 
 export const transform = val(mat4.create())
-  .react(
-    [position.HOT, scale.HOT],
-    (mat, pos, scale) => {
-      mat4.fromTranslation(mat, pos)
-      mat4.rotateX(mat, mat, Math.PI / 2)
-      return mat4.scale(mat, mat, [scale, scale, scale])
-    }
-  )
+.react(
+	[position.HOT, scale.HOT],
+	(mat, pos, scale) => {
+		mat4.fromTranslation(mat, pos)
+		mat4.rotateX(mat, mat, Math.PI / 2)
+		return mat4.scale(mat, mat, [scale, scale, scale])
+	}
+)
 
 
 export const planeEquation = stream(
-  [normal.HOT, position.HOT],
-  geo.planeFromNormalAndCoplanarPoint
+	[normal.HOT, position.HOT],
+	geo.planeFromNormalAndCoplanarPoint
 )
 
 
 export const mirrorMatrix = stream(
-  [planeEquation.HOT],
-  geo.mirrorMatrixFromPlane
+	[planeEquation.HOT],
+	geo.mirrorMatrixFromPlane
 )

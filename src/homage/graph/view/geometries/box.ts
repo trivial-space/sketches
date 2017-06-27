@@ -1,9 +1,7 @@
-import {val, stream} from 'homage/flow'
-import {convertStackGLGeometry} from 'tvs-renderer/lib/utils/stackgl/helpers'
+import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
 import box from 'geo-3d-box'
+import { convertStackGLGeometry } from 'tvs-renderer/lib/utils/stackgl'
 
-
-export const id = val('box-geometry')
 
 export const size = val([10, 14, 2])
 

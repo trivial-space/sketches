@@ -1,8 +1,5 @@
-import {val, stream} from 'homage/flow'
-import {plane} from 'tvs-renderer/lib/utils/geometry/plane'
-
-
-export const id = val('plane-geometry')
+import { plane } from 'tvs-renderer/lib/utils/geometry/plane'
+import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
 
 
 export const props = val({
