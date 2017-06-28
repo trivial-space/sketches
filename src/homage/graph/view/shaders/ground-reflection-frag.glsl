@@ -1,3 +1,4 @@
+precision mediump float;
 #pragma glslify: blur = require('glsl-fast-gaussian-blur')
 
 uniform sampler2D source;
@@ -6,10 +7,10 @@ uniform int direction;
 uniform float strength;
 
 varying float dist;
-varying vec2 vUv;
+varying vec2 coords;
 
 void main() {
-	vec2 uv = vUv;
+	vec2 uv = coords;
 	vec4 refl = texture2D(source, uv);
 	float dist = refl.a * strength + 0.2;
 

@@ -1,3 +1,5 @@
+precision mediump float;
+
 uniform sampler2D video;
 uniform int withDistance;
 

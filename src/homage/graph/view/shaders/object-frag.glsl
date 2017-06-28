@@ -1,3 +1,5 @@
+precision mediump float;
+
 uniform int withDistance;
 
 varying float dist;

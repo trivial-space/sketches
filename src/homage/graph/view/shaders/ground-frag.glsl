@@ -1,3 +1,5 @@
+precision mediump float;
+
 uniform sampler2D reflection;
 uniform vec2 size;
 
