@@ -1,11 +1,11 @@
 import { stream } from 'tvs-flow/lib/utils/entity-reference'
-import { painter, canvasSize } from 'homage/graph/view/painter'
+import { painter, canvasSize, gl } from 'homage/graph/view/painter'
 import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity } from 'tvs-libs/lib/vr/flow-painter-utils'
 import * as events from '../events'
 import * as videos from '../videos'
 import * as camera from 'homage/graph/view/camera'
 import * as box from 'homage/graph/view/geometries/box'
-import * as plane from 'homage/graph/view/geometries/box'
+import * as plane from 'homage/graph/view/geometries/plane'
 import * as reflectionShader from 'homage/graph/view/shaders/ground-reflection'
 import * as groundShader from 'homage/graph/view/shaders/ground'
 import * as objectShader from 'homage/graph/view/shaders/object'
@@ -15,6 +15,7 @@ import * as screens from '../state/screens'
 import * as pedestals from '../state/pedestals'
 import * as reflectionEffect from './effects/ground-reflection'
 import { zip } from 'tvs-libs/lib/utils/sequence'
+import { makeClear } from 'tvs-renderer/lib/utils/context'
 
 
 // Forms
@@ -41,26 +42,26 @@ export const videoTextures = stream(
 		() => painter.createStaticLayer().update({
 			flipY: true,
 			minFilter: 'LINEAR',
-			magFilter: 'LINEAR',
 			wrap: 'CLAMP_TO_EDGE'
 		})
 	)
 )
 .react(
-  [videos.videos.HOT, events.slowTick.HOT],
-  (ts, vs, _) => {
-    ts.forEach((t, i) => t.update({asset: vs[i]}))
+	[videos.videos.HOT, events.slowTick.HOT],
+	(ts, vs, _) => {
+		ts.forEach((t, i) => t.update({asset: vs[i]}))
 		return ts
-  }
+	}
 )
 
 
 
 // Sketches
 
-export const groundData = stream(
+export const groundSketch = makeSketchEntity(painter)
+.react(
 	[groundShade.HOT, planeForm.HOT, ground.transform.HOT, canvasSize.HOT],
-	(shade, form, transform, size) => ({
+	(sketch, shade, form, transform, size) => sketch.update({
 		form, shade,
 		uniforms: {
 			transform,
@@ -70,26 +71,24 @@ export const groundData = stream(
 	})
 )
 
-export const groundSketch = makeSketchEntity(painter, groundData)
 
-
-export const screenData = stream(
-	[screenShade.HOT, boxForm.HOT, screens.transforms.HOT, videoTextures.HOT],
-	(shade, form, transforms, textures) => ({
+export const screenSketch = makeSketchEntity(painter)
+.react(
+	[screenShade.HOT, planeForm.HOT, screens.transforms.HOT, videoTextures.HOT],
+	(sketch, shade, form, transforms, textures) => sketch.update({
 		form, shade,
 		uniforms: zip(transforms, textures, (transform, tex) => ({
 			transform,
 			video: tex.texture()
 		}))
-
 	})
 )
 
-export const screenSketch = makeSketchEntity(painter, screenData)
 
-export const pedestalData = stream(
+export const pedestalSketch = makeSketchEntity(painter)
+.react(
 	[objectShade.HOT, boxForm.HOT, pedestals.transforms.HOT],
-	(shade, form, transforms) => ({
+	(sketch, shade, form, transforms) => sketch.update({
 		form, shade,
 		uniforms: transforms.map(transform => ({
 			transform
@@ -97,19 +96,30 @@ export const pedestalData = stream(
 	})
 )
 
-export const pedestalSketch = makeSketchEntity(painter, pedestalData)
+
+// Layers
 
 
-export const sceneData = stream(
+export const drawSettings = stream(
+	[gl.HOT],
+	gl => ({
+		clearBits: makeClear(gl, 'color', 'depth')
+	})
+)
+
+export const sceneLayer = makeDrawingLayerEntity(painter)
+.react(
 	[
 		screenSketch.HOT,
 		pedestalSketch.HOT,
 		groundSketch.HOT,
+		drawSettings.HOT,
 		camera.view.COLD,
 		camera.perspective.COLD
 	],
-	(screens, pedestals, ground, view, projection) => ({
+	(layer, screens, pedestals, ground, settings, view, projection) => layer.update({
 		sketches: [screens, pedestals, ground],
+		drawSettings: settings,
 		uniforms: {
 			view, projection,
 			withDistance: 0,
@@ -118,19 +128,21 @@ export const sceneData = stream(
 	})
 )
 
-export const sceneLayer = makeDrawingLayerEntity(painter, sceneData)
 
-
-export const mirrorSceneData = stream(
+export const mirrorSceneLayer = makeDrawingLayerEntity(painter)
+.react(
 	[
 		screenSketch.HOT,
 		pedestalSketch.HOT,
 		ground.position.HOT,
-		camera.view.COLD,
+		drawSettings.HOT,
+		camera.groundMirrorView.COLD,
 		camera.perspective.COLD
 	],
-	(screens, pedestals, groundPos, view, projection) => ({
+	(layer, screens, pedestals, groundPos, settings, view, projection) => layer.update({
+		flipY: true,
 		sketches: [screens, pedestals],
+		drawSettings: settings,
 		uniforms: {
 			view, projection,
 			withDistance: 1,
@@ -139,17 +151,26 @@ export const mirrorSceneData = stream(
 	})
 )
 
-export const mirrorSceneLayer = makeDrawingLayerEntity(painter, mirrorSceneData)
+
+export const effectSettings = stream(
+	[gl.HOT],
+	gl => ({
+		disable: [gl.DEPTH_TEST]
+	})
+)
 
 
-export const effectData = stream(
-  [
-    reflectionEffect.layersData.HOT,
-    reflectionShader.frag.HOT,
-    canvasSize.HOT
-  ],
-  (layerData, frag, size) => ({
+export const effectLayer = makeEffectLayerEntity(painter)
+.react(
+	[
+		reflectionEffect.layersData.HOT,
+		reflectionShader.frag.HOT,
+		canvasSize.HOT,
+		effectSettings.HOT
+	],
+	(layer, layerData, frag, size, settings) => layer.update({
 		frag,
+		drawSettings: settings,
 		uniforms: layerData.map(d => ({
 			source: null,
 			...d,
@@ -158,14 +179,14 @@ export const effectData = stream(
 	})
 )
 
-export const effectLayer = makeEffectLayerEntity(painter, effectData)
-
 
 export const layers = stream(
 	[mirrorSceneLayer.HOT, effectLayer.HOT, sceneLayer.HOT],
-	(mirrorScene, effect, scene) => {
-		return [mirrorScene, effect, scene]
-	}
+	(mirrorScene, effect, scene) => [
+		[mirrorScene, true],
+		[effect, true],
+		[scene, true]
+	].filter(l => l[1]).map(l => l[0])
 )
 
 

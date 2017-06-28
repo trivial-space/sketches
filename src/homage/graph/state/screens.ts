@@ -20,7 +20,7 @@ export const rotations = stream(
 
 export const positions = stream(
 	[radius.HOT, rotations.HOT, height.HOT],
-	(radius, rotations, height) =>
+	(radius: number, rotations: number[], height: number) =>
 		rotations.map(rot => {
 			const phi = -rot - Math.PI / 2
 			const [x, z] = coords.polarToCartesian2D([radius, phi])
@@ -31,7 +31,7 @@ export const positions = stream(
 
 export const transforms = stream(
 	[rotations.HOT, positions.HOT, scale.HOT],
-	(rotations, positions, scale) =>
+	(rotations: number[], positions: number[][], scale: number[]) =>
 		zip(rotations, positions, (rot, pos) => {
 			const t = mat4.fromTranslation(mat4.create(), pos)
 			mat4.rotateY(t, t, rot)

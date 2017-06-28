@@ -10,7 +10,7 @@ export const scale = val([1.65, 1, 1])
 
 export const transforms = stream(
 	[screens.rotations.HOT, screens.positions.HOT, scale.HOT],
-	(rotations, positions, scale) =>
+	(rotations: number[], positions: number[][], scale: number[]) =>
 
 		zip(rotations, positions, (rot, pos) => {
 			const p = vec.mul(pos, 1.045)
