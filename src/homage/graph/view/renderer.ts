@@ -16,6 +16,7 @@ import * as pedestals from '../state/pedestals'
 import * as reflectionEffect from './effects/ground-reflection'
 import { zip } from 'tvs-libs/lib/utils/sequence'
 import { makeClear } from 'tvs-renderer/lib/utils/context'
+import { defined } from 'tvs-libs/lib/utils/predicates'
 
 
 // Forms
@@ -50,9 +51,8 @@ export const videoTextures = stream(
 	[videos.videos.HOT, events.slowTick.HOT],
 	(ts, vs, _) => {
 		ts.forEach((t, i) => t.update({asset: vs[i]}))
-		return ts
 	}
-)
+).accept(defined)
 
 
 
@@ -191,6 +191,6 @@ export const layers = stream(
 
 
 painter.react(
-	[layers.HOT, events.tick.HOT],
+	[layers.COLD, events.tick.HOT],
 	(p, layers, _) => p.compose.apply(null, layers)
 )

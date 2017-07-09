@@ -1,9 +1,9 @@
-import { val, asyncStream, EntityRef } from 'tvs-flow/lib/utils/entity-reference'
+import { val, asyncStream, EntityRef, delta, stream } from 'tvs-flow/lib/utils/entity-reference'
 import * as flowCamera from 'tvs-libs/lib/vr/flow-camera'
 import { canvasSize } from './painter'
 import { Keys } from 'tvs-libs/lib/events/keyboard'
 import { mat4, vec3 } from 'tvs-libs/lib/math/gl-matrix'
-import { keys, tick, mouseDrag } from '../events'
+import { keys, tick, mouse } from '../events'
 import * as ground from '../state/ground'
 
 
@@ -22,7 +22,7 @@ perspectiveSettings.updateVal(s => ({ ...s, fovy: Math.PI * 0.4 }))
 
 export const moveSpeed = val(0.05)
 
-export const lookSpeed = val(0.003)
+export const lookSpeed = val(0.002)
 
 
 export const moveForward: EntityRef<number> = asyncStream(
@@ -54,14 +54,29 @@ export const moveLeft: EntityRef<number> = asyncStream(
 )
 
 
+export const mouseDrag = stream(
+	[mouse.HOT], m => ({
+		x: m.drag.x,
+		y: m.drag.y
+	})
+)
+
+
+export const dragDeltas = delta(mouseDrag, (n, o) => ({
+	x: n.x === 0 ? n.x : o.x - n.x,
+	y: n.y === 0 ? n.y : o.y - n.y
+}))
+.accept(drag => !!(drag && (drag.x || drag.y)))
+
+
 rotX.react(
-	[mouseDrag.HOT, lookSpeed.COLD],
+	[dragDeltas.HOT, lookSpeed.COLD],
 	(rot, drag, speed) => rot + drag.y * speed
 )
 
 
 rotY.react(
-	[mouseDrag.HOT, lookSpeed.COLD],
+	[dragDeltas.HOT, lookSpeed.COLD],
 	(rot, drag, speed) => rot + drag.x * speed
 )
 

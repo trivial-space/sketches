@@ -1,4 +1,4 @@
-import { EntityRef, asyncStream, stream, val, asyncStreamStart } from 'tvs-flow/lib/utils/entity-reference'
+import { asyncStream, stream, val, asyncStreamStart } from 'tvs-flow/lib/utils/entity-reference'
 import { keyboard } from 'tvs-libs/lib/events/keyboard'
 import { mouse as getMouse } from 'tvs-libs/lib/events/mouse'
 import { windowSize as getWindowSize } from 'tvs-libs/lib/events/dom'
@@ -27,14 +27,3 @@ export const windowSize = asyncStreamStart(null, getWindowSize)
 export const mouse = asyncStreamStart(null, getMouse)
 
 export const keys = asyncStreamStart(null, keyboard)
-
-
-export const mouseDrag: EntityRef<{ x: number, y: number }> = asyncStream(
-	[mouse.COLD, tick.HOT],
-	(send, mouse, _) => {
-		if (mouse.dragDelta.x || mouse.dragDelta.y) {
-			send({ x: mouse.dragDelta.x, y: mouse.dragDelta.y })
-		}
-		mouse.dragDelta.x = mouse.dragDelta.y = 0
-	}
-)
