@@ -1,3 +1,5 @@
+precision mediump float;
+
 uniform sampler2D image;
 uniform vec3 color;
 uniform vec4 connections;

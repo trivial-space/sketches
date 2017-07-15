@@ -1,13 +1,16 @@
 import { flow, tools } from './flow'
-import { updateFlow } from "shared-utils/reload";
+import { updateFlow } from 'shared-utils/reload'
 
 
 const graphModules = require.context('./graph', true, /\.ts$/)
 
 
 flow.setDebug(true)
+
 updateFlow(flow, graphModules)
+
 tools.updateFlow(flow)
+
 setTimeout(function () {
   flow.setDebug(false)
 }, 1000)

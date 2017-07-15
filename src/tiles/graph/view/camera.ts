@@ -1,13 +1,13 @@
 import {canvasSize} from './context'
 import {mat4} from 'tvs-libs/lib/math/gl-matrix'
 import { makePerspective } from 'tvs-libs/lib/vr/flow-camera'
-import { val } from "tiles/flow";
+import { val } from 'tvs-flow/lib/utils/entity-reference'
 
 
-export const { fovy, aspect, near, far, perspective } = makePerspective(canvasSize)
+export const { perspectiveSettings, perspective } = makePerspective(canvasSize)
 
 
-fovy.val(Math.PI * 0.5)
+perspectiveSettings.updateVal(s => ({ ...s, fovy: Math.PI * 0.5 }))
 
 
 export const distance = val(103)
@@ -15,9 +15,9 @@ export const distance = val(103)
 
 export const view = val(mat4.create())
   .react(
-    [aspect.HOT, distance.HOT],
-    (m, aspect, dist) => {
-      mat4.fromTranslation(m, [0, 0, dist / aspect])
+    [perspectiveSettings.HOT, distance.HOT],
+    (m, settings, dist) => {
+      mat4.fromTranslation(m, [0, 0, dist / settings.aspect])
       mat4.invert(m, m)
       return m
     }

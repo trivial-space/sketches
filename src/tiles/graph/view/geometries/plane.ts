@@ -1,9 +1,7 @@
-import {val, stream} from 'tiles/flow'
 import {plane} from 'tvs-renderer/lib/utils/geometry/plane'
 import * as init from '../../state/init'
+import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
 
-
-export const id = val('plane-geometry')
 
 export const segments = val(3)
 

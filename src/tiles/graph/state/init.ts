@@ -1,6 +1,6 @@
-import {normalRand} from 'tvs-libs/lib/math/core'
-import {val, stream, asyncStream} from 'tiles/flow'
-import {pick} from 'tvs-libs/lib/utils/sequence'
+import { val, stream, asyncStream, EntityRef } from 'tvs-flow/lib/utils/entity-reference'
+import { normalRand } from 'tvs-libs/lib/math/core'
+import { pickRandom } from 'tvs-libs/lib/utils/sequence'
 import * as constants from './constants'
 
 
@@ -9,22 +9,22 @@ export const tileSize = val(10)
 export const tileDensity = val(11)
 
 
-export const color = val( [normalRand(), normalRand(), normalRand()] )
+export const color = val([normalRand(), normalRand(), normalRand()])
 
 
-export const set = stream( [constants.sets.HOT], pick )
+export const set = stream([constants.sets.HOT], pickRandom)
 
 
-export const images = asyncStream(
-  [constants.specs.HOT, set.HOT],
-  (send, specs, set) => {
+export const images: EntityRef<[string, HTMLImageElement][]> = asyncStream(
+	[constants.specs.HOT, set.HOT],
+	(send, specs, set) => {
 
-    Promise.all(Object.keys(set).map(key => new Promise(res => {
-      const img = new Image()
-      img.onload = () => {res([key, img])}
-      img.src = 'img/' + specs[key].file + '.jpg'
-    })))
-    .then(send)
+		Promise.all(Object.keys(set).map(key => new Promise<[string, HTMLImageElement]>(res => {
+			const img = new Image()
+			img.onload = () => { res([key, img]) }
+			img.src = 'img/' + specs[key].file + '.jpg'
+		})))
+		.then(send)
 
-  }
+	}
 )

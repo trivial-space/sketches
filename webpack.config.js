@@ -9,7 +9,7 @@ const hotCodeEntry = [
 module.exports = {
   entry: {
     'homage': [...hotCodeEntry, './homage/index.ts'],
-    //'tiles': [...hotCodeEntry, './tiles/index.ts']
+    'tiles': [...hotCodeEntry, './tiles/index.ts']
   },
 
   context: resolve(__dirname, 'src'),

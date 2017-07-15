@@ -35,8 +35,7 @@
 		"libs/tvs-renderer/node_modules",
 		"libs/tvs-renderer/examples",
 		"libs/tvs-libs/node_modules",
-		"libs/tvs-libs/spec",
-		"src/tiles"
+		"libs/tvs-libs/spec"
 	],
 	"compileOnSave": false,
 	"buildOnSave": false,

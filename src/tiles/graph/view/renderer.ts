@@ -1,127 +1,105 @@
-import * as renderer from 'tvs-renderer/lib/renderer'
-import {val, stream} from 'tiles/flow'
-import {context} from './context'
+import { stream } from 'tvs-flow/lib/utils/entity-reference'
+import { painter, gl } from './context'
 import * as plane from './geometries/plane'
 import * as tiles from '../state/tiles'
 import * as init from '../state/init'
 import * as shader from './shaders/base'
 import * as events from '../events'
 import * as camera from './camera'
+import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/lib/vr/flow-painter-utils'
+import { Layer, LayerData, DrawSettings } from 'tvs-renderer/lib'
 
 
-const ctx = context
 
-export const settings = val({
-  clearColor: [1, 1, 1, 1],
-  enable: ['DEPTH_TEST', 'CULL_FACE'],
-})
+export const settings = stream(
+	[gl.HOT],
+	gl => ({
+		clearColor: [1, 1, 1, 1],
+		enable: [gl.DEPTH_TEST, gl.CULL_FACE]
+	} as DrawSettings))
 
-
-ctx.react(
-  'updateSettings',
-  [settings.HOT],
-  renderer.updateSettings
+painter.react(
+	[settings.HOT],
+	(painter, settings) => painter.updateDrawSettings(settings)
 )
 
 
 // ===== shaders =====
 
-ctx.react(
-  'updateShader',
-  [shader.id.HOT, shader.spec.HOT],
-  renderer.updateShader
-)
+export const shade = makeShadeEntity(painter, shader.spec)
 
 
 // ===== geometries =====
 
-ctx.react(
-  'updateGeometry',
-  [plane.id.HOT, plane.geometry.HOT],
-  renderer.updateGeometry
+export const form = makeFormEntity(painter, plane.geometry)
+
+
+// ===== textures =====
+
+
+export const textures = stream(
+	[painter.HOT, init.images.HOT],
+	(painter, imgs) => imgs.reduce((obj, [key, img]) => {
+		obj[key] = painter.createStaticLayer().update({
+			minFilter: 'LINEAR',
+			magFilter: 'LINEAR',
+			asset: img
+		})
+		return obj
+	}, {} as {[key: string]: Layer})
 )
+
+
 
 
 // ===== objects =====
 
 
-ctx.react(
-  'updateObjects',
-  [
-    tiles.ids.HOT,
-    tiles.activeTiles.COLD,
-    shader.id.HOT,
-    plane.id.HOT,
-  ],
-  (ctx, ids, tiles, shaderId, geoId) => {
-
-    ids.forEach((id, i) => {
-      const tile: tiles.TileState = tiles[i]
-      renderer.updateObject(ctx, id, {
-        shader: shaderId,
-        geometry: geoId,
-        blend: true,
-        uniforms: {
-          transform: tile.transform,
-          image: getTileTextureId(tile.tileSpecId),
-          color: tile.color,
-          connections: tile.connections
-        }
-      })
-    })
-
-    return ctx
-  }
+export const tilesData = stream(
+	[
+		form.HOT,
+		shade.HOT,
+		textures.HOT,
+		tiles.activeTiles.HOT
+	],
+	(form, shade, textures, tiles) => ({
+		form, shade,
+		uniforms: tiles.map(tile => ({
+			transform: tile.transform,
+			image: textures[tile.tileSpecId].texture(),
+			color: tile.color,
+			connections: tile.connections
+		}))
+	})
 )
+
+
+export const tilesSketch = makeSketchEntity(painter, tilesData)
 
 
 // ===== layers =====
 
-export const getTileTextureId = name => name + '-texture'
-
-ctx.react(
-  'updateTileTextureLayers',
-  [init.images.HOT],
-  (ctx, imgs) => {
-    imgs.forEach(([id, img]) =>
-      renderer.updateLayer(ctx, getTileTextureId(id), { asset: img })
-    )
-    return ctx
-  }
+export const sceneData = stream(
+	[
+		tilesSketch.HOT,
+		camera.view.HOT,
+		camera.perspective.HOT
+	],
+	(tiles, view, projection) => ({
+		sketches: [tiles],
+		uniforms: {
+			view,
+			projection
+		}
+	} as LayerData)
 )
 
-
-export const sceneLayerId = val('sceneLayer')
-
-
-ctx.react(
-  'updateSceneLayer',
-  [
-    sceneLayerId.HOT,
-    tiles.ids.HOT,
-    camera.view.HOT,
-    camera.perspective.HOT
-  ],
-  (ctx, id, tiles, view, projection) =>
-    renderer.updateLayer(ctx, id, {
-      objects: tiles,
-      uniforms: {
-        view,
-        projection
-      }
-    })
-)
+export const scene = makeDrawingLayerEntity(painter, sceneData)
 
 
 // ===== render =====
 
-export const layers = stream(
-  [sceneLayerId.HOT],
-  scene => [scene]
-)
-
-
 export const render = stream(
-  [ctx.COLD, layers.COLD, events.tick.HOT],
-  renderer.renderLayers
+	[painter.COLD, scene.COLD, events.tick.HOT],
+	(painter, scene, _) => painter.compose(scene)
 )
