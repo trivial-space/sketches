@@ -10,6 +10,7 @@ import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEnti
 import { Layer, LayerData, DrawSettings } from 'tvs-renderer/lib'
 
 
+// ===== Settings =====
 
 export const settings = stream(
 	[gl.HOT],
@@ -17,6 +18,7 @@ export const settings = stream(
 		clearColor: [1, 1, 1, 1],
 		enable: [gl.DEPTH_TEST, gl.CULL_FACE]
 	} as DrawSettings))
+
 
 painter.react(
 	[settings.HOT],
@@ -36,7 +38,6 @@ export const form = makeFormEntity(painter, plane.geometry)
 
 // ===== textures =====
 
-
 export const textures = stream(
 	[painter.HOT, init.images.HOT],
 	(painter, imgs) => imgs.reduce((obj, [key, img]) => {
@@ -50,10 +51,7 @@ export const textures = stream(
 )
 
 
-
-
 // ===== objects =====
-
 
 export const tilesData = stream(
 	[
@@ -72,7 +70,6 @@ export const tilesData = stream(
 		}))
 	})
 )
-
 
 export const tilesSketch = makeSketchEntity(painter, tilesData)
 
