@@ -298,9 +298,6 @@ export const updateActiveTiles = stream([
 				onComplete: () => {
 					tile.riseAnimation = undefined
 					tile.connected = true
-					for (let i = 0; i < 4; i++) {
-						tile.connections[i] = 0
-					}
 					tile.turn = tile.rollDirection > 0 ?
 						(tile.turn + 1) % 4 :
 						tile.rollDirection < 0 ?
@@ -326,9 +323,6 @@ export const updateActiveTiles = stream([
 					tile.flipped = !tile.flipped
 					tile.connected = !tile.rotateAnimation
 					tile.connected = true
-					for (let i = 0; i < 4; i++) {
-						tile.connections[i] = 0
-					}
 				}
 			})
 		}
@@ -340,33 +334,20 @@ export const updateActiveTiles = stream([
 		if (tile.connected) {
 			//console.log('tile position, turn: ', tile.pos, tile.turn, tile)
 			for (let i = 0; i < 4; i++) {
-				if (tile.tileSpec.connections[i]) {
-					//console.log('side index', i)
-					const side = (4 + i - tile.turn) % 4
-					const opposite = (side + 2) % 4
-					//console.log('computed side, opposite', side, opposite)
-					const neighbour = tile.neighbours[side]
-					//console.log('neighbour position', neighbour && neighbour.pos)
-					//console.log('neighbour opposite',
-					//   neighbour && neighbour.tileSpec.connections[(opposite + neighbour.turn) % 4]
-					//)
-					if (tile.connections[i] > 0) {
-
-					} else if (neighbour && neighbour.connected &&
-						tile.connections[i] === 0 &&
-						neighbour.tileSpec.connections[(opposite + neighbour.turn) % 4]
-					) {
-						tile.connections[i] = 1
-						neighbour.connections[(opposite + neighbour.turn) % 4] = 0
-					} else {
-						tile.connections[i] = -1
-					}
+				const index = (i + 4 - tile.turn) % 4
+				const side = tile.tileSpec.connections[index]
+				const neighbour = tile.neighbours[i]
+				if (neighbour && neighbour.connected) {
+					const neighbourSide = neighbour.tileSpec.connections[(i + 6 - neighbour.turn) % 4]
+					tile.connections[index] = side && neighbourSide
+				} else {
+					tile.connections[index] = 0
 				}
 			}
 
 		} else {
 			for (let i = 0; i < 4; i++) {
-				tile.connections[i] = -1
+				tile.connections[i] = 0
 			}
 		}
 
@@ -382,4 +363,5 @@ export const updateActiveTiles = stream([
 			)
 		}
 	}
+	return tiles
 })

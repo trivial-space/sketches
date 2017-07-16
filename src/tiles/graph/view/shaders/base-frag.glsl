@@ -57,7 +57,16 @@ void main() {
   /* col /= resolution.x * resolution.y * 0.5; */
   /* col = sqrt(col); */
 
-  gl_FragColor = vec4(up + right + left + down, 0.8 - color.gb * (1.0 - tex.r), 1.0);
+	float glow = up + right + left + down;
+
+	vec3 result = 0.8 - color.rgb * (1.0 - tex.r);
+	float red = result.r;
+
+	if (abs(tex.g - tex.r) > 0.1 && tex.g > 0.9) {
+		red = mix(red, 1.0, glow);
+	}
+
+  gl_FragColor = vec4(red, result.gb, 1.0);
   // gl_FragColor = vec4(color, 1.0);
   // gl_FragColor = connections;
 }
