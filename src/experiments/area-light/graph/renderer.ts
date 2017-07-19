@@ -74,8 +74,8 @@ export const sceneLayer = makeDrawingLayerEntity(painter)
 		camera.view.COLD,
 		camera.perspective.COLD
 	],
-	(layer, screens, ground, settings, view, projection) => layer.update({
-		sketches: [screens, ground],
+	(layer, light, ground, settings, view, projection) => layer.update({
+		sketches: [light, ground],
 		drawSettings: settings,
 		uniforms: {
 			view, projection
