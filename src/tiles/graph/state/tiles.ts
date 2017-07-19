@@ -35,6 +35,7 @@ export interface TileState {
 	connections: number[]
 	connected: boolean
 	rotateAnimation?: Animation
+	connectionAnimations: (Animation | null)[]
 	riseAnimation?: Animation
 	flipAnimation?: Animation
 }
@@ -143,8 +144,9 @@ export const createTileState = function(
 		rotation: quat.create(),
 		updateTransform: false,
 		neighbours: [],
+		connected: false,
 		connections: [0, 0, 0, 0],
-		connected: false
+		connectionAnimations: []
 	}
 }
 
