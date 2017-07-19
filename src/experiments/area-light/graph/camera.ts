@@ -11,6 +11,9 @@ export const {
 } = flowCamera.makeFirstPersonView()
 
 
+position.val([0, 2, 10])
+
+
 export const {
 	perspectiveSettings, perspective
 } = flowCamera.makePerspective(canvasSize)
