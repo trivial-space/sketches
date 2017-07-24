@@ -1,0 +1,12 @@
+{
+	"name": "trivial-space-construction",
+	"scripts": {
+		"start": "serve -i \".gitignore,package.json,package-lock.json,node_modules/\""
+	},
+	"now": {
+		"alias": "construction.trivialspace.net"
+	},
+	"devDependencies": {
+		"serve": "latest"
+	}
+}

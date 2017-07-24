@@ -13,7 +13,9 @@
     "url": "https://github.com/trivial-space/playground/issues"
   },
   "scripts": {
-    "dev": "webpack-dev-server"
+    "dev": "webpack-dev-server --config webpack.dev.js",
+    "build": "webpack",
+    "start": "cd public; serve"
   },
   "dependencies": {
     "core-js": "^2.4.1",
@@ -24,7 +26,6 @@
     "raw-loader": "^0.5.1"
   },
   "devDependencies": {
-    "@types/gl-matrix": "^2.2.34",
     "@types/webpack-env": "^1.13.0",
     "ts-loader": "^2.3.1",
     "tslint": "^5.5.0",

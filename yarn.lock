@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-"@types/gl-matrix@^2.2.34":
-  version "2.2.34"
-  resolved "https://registry.yarnpkg.com/@types/gl-matrix/-/gl-matrix-2.2.34.tgz#8d1b5557d9143e9692b7b2083c56a5adc8113104"
-
 "@types/webpack-env@^1.13.0":
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/@types/webpack-env/-/webpack-env-1.13.0.tgz#3044381647e11ee973c5af2e925323930f691d80"
@@ -2426,8 +2422,8 @@ selfsigned@^1.9.1:
     node-forge "0.6.33"
 
 "semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.3.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-5.3.0.tgz#9b2ce5d3de02d17c6012ad326aa6b4d0cf54f94f"
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.0.tgz#4b753f9bc8dc4c0b30cf460124ed17ae65444ae8"
 
 send@0.15.3:
   version "0.15.3"

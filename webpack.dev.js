@@ -1,70 +1,48 @@
 const { resolve } = require('path')
 const webpack = require('webpack')
+const config = require('./webpack.config')
+
 
 const hotCodeEntry = [
-  'webpack-dev-server/client?http://localhost:8080',
-  'webpack/hot/only-dev-server'
+	'webpack-dev-server/client?http://localhost:8080',
+	'webpack/hot/only-dev-server'
 ]
 
+const entry = Object.keys(config.entry).reduce((entries, key) => {
+	entries[key] = hotCodeEntry.concat(config.entry[key])
+	return entries
+}, {})
+
 module.exports = {
-  entry: {
-    'homage': [...hotCodeEntry, './homage/index.ts'],
-    'tiles': [...hotCodeEntry, './tiles/index.ts'],
-    'experiments/area-light': [...hotCodeEntry, './experiments/area-light/index.ts']
-  },
+	context: config.context,
+	module: config.module,
+	resolve: config.resolve,
 
-  context: resolve(__dirname, 'src'),
+	entry: entry,
 
-  output: {
-    path: resolve(__dirname, 'public'),
-    publicPath: '/',
-    filename: '[name]/main.js',
-    hotUpdateChunkFilename: "[id].[hash].hot-update.js",
-    hotUpdateMainFilename: "[hash].hot-update.json"
-  },
+	output: Object.assign({}, config.output, {
+		hotUpdateChunkFilename: "[id].[hash].hot-update.js",
+		hotUpdateMainFilename: "[hash].hot-update.json"
+	}),
 
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader?modules',
-          'postcss-loader',
-        ],
-      },
-      { test: /\.ts$/, use: 'ts-loader', exclude: /node_modules/ },
-      { test: /\.(glsl|frag|vert)$/, use: ['raw-loader', 'glslify-loader'], exclude: /node_modules/ },
-    ]
-  },
+	devtool: 'inline-source-map',
 
-  resolve: {
-    modules: [
-      'node_modules',
-      resolve(__dirname, 'libs'),
-      resolve(__dirname, 'src')
-    ],
-    extensions: ['.ts', '.js']
-  },
+	devServer: {
+		hot: true,
+		// enable HMR on the server
 
-  devtool: 'inline-source-map',
+		contentBase: resolve(__dirname, 'public'),
+		// match the output path
 
-  devServer: {
-    hot: true,
-    // enable HMR on the server
+		publicPath: '/'
+		// match the output `publicPath`
+	},
 
-    contentBase: resolve(__dirname, 'public'),
-    // match the output path
+	plugins: [
+		new webpack.HotModuleReplacementPlugin(),
+		// enable HMR globally
 
-    publicPath: '/'
-    // match the output `publicPath`
-  },
-
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    // enable HMR globally
-
-    new webpack.NamedModulesPlugin(),
-    // prints more readable module names in the browser console on HMR updates
-  ],
+		new webpack.NamedModulesPlugin(),
+		// prints more readable module names in the browser console on HMR updates
+	],
 }
