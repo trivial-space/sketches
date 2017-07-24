@@ -29,8 +29,9 @@ export const names = val([
 ])
 
 
-//export const videosUrl = val("//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/")
-export const videosUrl = val('videos/')
+export const videosUrl = process.env.NODE_ENV === 'production'
+	? val('//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/')
+	: val('videos/')
 
 
 export const loadTimeout = val(60000)

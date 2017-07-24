@@ -13,11 +13,12 @@
     "url": "https://github.com/trivial-space/playground/issues"
   },
   "scripts": {
-    "dev": "webpack-dev-server --config webpack.dev.js",
+    "start": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack",
-    "start": "cd public; serve"
+    "deploy": "npm run-script build; cd public; now"
   },
   "dependencies": {
+    "@types/node": "^8.0.16",
     "core-js": "^2.4.1",
     "geo-3d-box": "^2.0.2",
     "gl-matrix": "2.3",
