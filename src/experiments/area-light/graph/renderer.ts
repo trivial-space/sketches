@@ -1,13 +1,13 @@
-import { stream } from 'tvs-flow/lib/utils/entity-reference'
+import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity } from 'tvs-libs/lib/vr/flow-painter-utils'
 import { painter, gl } from './painter'
 import * as events from './events'
 import * as camera from './camera'
 import * as box from './geometries/box'
 import * as plane from './geometries/plane'
-import { makeClear } from 'tvs-renderer/lib/utils/context'
+import { makeClear } from 'tvs-renderer/dist/lib/utils/context'
 import { groundTransform, lightTransform, groundColor, lightColor } from './state'
-import { DrawSettings } from 'tvs-renderer/lib'
+import { DrawSettings } from 'tvs-renderer/dist/lib'
 import { geoSpec, lightFrag } from './shaders/shaders'
 
 

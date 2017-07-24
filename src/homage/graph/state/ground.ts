@@ -1,6 +1,6 @@
-import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
-import { mat4 } from 'tvs-libs/lib/math/gl-matrix'
-import * as geo from 'tvs-libs/lib/math/geometry'
+import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
+import { mat4 } from 'gl-matrix'
+import * as geo from 'tvs-libs/dist/lib/math/geometry'
 
 
 export const position = val([0, -3.4, 0])

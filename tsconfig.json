@@ -33,6 +33,7 @@
 		"libs/tvs-renderer/node_modules",
 		"libs/tvs-renderer/examples",
 		"libs/tvs-libs/node_modules",
+		"libs/tvs-libs/node_modules/@types",
 		"libs/tvs-libs/spec"
 	],
 	"compileOnSave": false,

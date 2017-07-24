@@ -1,4 +1,4 @@
-import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
+import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 
 
 export const blurStrength = val(10)

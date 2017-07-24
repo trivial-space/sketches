@@ -1,4 +1,4 @@
-import { makePainterCanvas } from 'tvs-libs/lib/vr/flow-painter-utils'
+import { makePainterCanvas } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
 import * as events from '../events'
 
 

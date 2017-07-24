@@ -1,4 +1,4 @@
-import { stream } from 'tvs-flow/lib/utils/entity-reference'
+import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { painter, canvasSize, gl } from 'homage/graph/view/painter'
 import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity } from 'tvs-libs/lib/vr/flow-painter-utils'
 import * as events from '../events'
@@ -14,9 +14,9 @@ import * as ground from '../state/ground'
 import * as screens from '../state/screens'
 import * as pedestals from '../state/pedestals'
 import * as reflectionEffect from './effects/ground-reflection'
-import { zip } from 'tvs-libs/lib/utils/sequence'
-import { makeClear } from 'tvs-renderer/lib/utils/context'
-import { defined } from 'tvs-libs/lib/utils/predicates'
+import { zip } from 'tvs-libs/dist/lib/utils/sequence'
+import { makeClear } from 'tvs-renderer/dist/lib/utils/context'
+import { defined } from 'tvs-libs/dist/lib/utils/predicates'
 
 
 // Forms

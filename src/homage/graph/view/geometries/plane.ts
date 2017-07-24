@@ -1,5 +1,5 @@
-import { plane } from 'tvs-renderer/lib/utils/geometry/plane'
-import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
+import { plane } from 'tvs-renderer/dist/lib/utils/geometry/plane'
+import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 
 
 export const props = val({

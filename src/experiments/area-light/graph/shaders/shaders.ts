@@ -1,4 +1,4 @@
-import { val } from 'tvs-flow/lib/utils/entity-reference'
+import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import vert from './geo-vert.glsl'
 import frag from './geo-frag.glsl'
 import light from './light-frag.glsl'

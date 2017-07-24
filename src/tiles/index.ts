@@ -9,7 +9,6 @@ flow.setDebug(true)
 
 updateFlow(flow, graphModules)
 
-tools.updateFlow(flow)
 
 setTimeout(function () {
   flow.setDebug(false)
@@ -17,6 +16,7 @@ setTimeout(function () {
 
 
 if (module.hot) {
+	tools.updateFlow(flow)
   module.hot.accept((graphModules as any).id, function() {
     const newGraphModules = require.context('./graph', true, /\.ts$/)
     updateFlow(flow, newGraphModules)

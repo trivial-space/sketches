@@ -1,8 +1,8 @@
-import { val, asyncStream, EntityRef, delta, stream } from 'tvs-flow/lib/utils/entity-reference'
-import * as flowCamera from 'tvs-libs/lib/vr/flow-camera'
+import { val, asyncStream, EntityRef, delta, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
+import * as flowCamera from 'tvs-libs/dist/lib/vr/flow-camera'
 import { canvasSize } from './painter'
-import { Keys } from 'tvs-libs/lib/events/keyboard'
-import { vec3 } from 'tvs-libs/lib/math/gl-matrix'
+import { Keys } from 'tvs-libs/dist/lib/events/keyboard'
+import { vec3 } from 'gl-matrix'
 import { keys, tick, mouse } from './events'
 
 
@@ -11,7 +11,7 @@ export const {
 } = flowCamera.makeFirstPersonView()
 
 
-position.val([0, 2, 10])
+position.val(vec3.fromValues(0, 2, 10))
 
 
 export const {
@@ -85,15 +85,15 @@ rotY.react(
 position.react(
 	[moveLeft.HOT, rotation.COLD],
 	(pos, left, rotation) => {
-		const v = [rotation.rotY[0], rotation.rotY[1], rotation.rotY[2]]
-		return vec3.add(pos, pos, vec3.scale(v, v, -left)) as number[]
+		const v = vec3.fromValues(rotation.rotY[0], rotation.rotY[1], rotation.rotY[2])
+		return vec3.add(pos, pos, vec3.scale(v, v, -left))
 	}
 )
 
 position.react(
 	[moveForward.HOT, rotation.COLD],
 	(pos, forward, rotation) => {
-		const v = [rotation.rotY[8], rotation.rotY[9], rotation.rotY[10]]
-		return vec3.add(pos, pos, vec3.scale(v, v, -forward)) as number[]
+		const v = vec3.fromValues(rotation.rotY[8], rotation.rotY[9], rotation.rotY[10])
+		return vec3.add(pos, pos, vec3.scale(v, v, -forward))
 	}
 )

@@ -1,4 +1,4 @@
-import { stream } from 'tvs-flow/lib/utils/entity-reference'
+import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { painter, gl } from './context'
 import * as plane from './geometries/plane'
 import * as tiles from '../state/tiles'
@@ -6,8 +6,8 @@ import * as init from '../state/init'
 import * as shader from './shaders/base'
 import * as events from '../events'
 import * as camera from './camera'
-import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/lib/vr/flow-painter-utils'
-import { Layer, LayerData, DrawSettings } from 'tvs-renderer/lib'
+import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
+import { Layer, LayerData, DrawSettings } from 'tvs-renderer/dist/lib'
 
 
 // ===== Settings =====

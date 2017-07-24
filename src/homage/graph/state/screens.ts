@@ -1,8 +1,8 @@
-import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
-import { mat4 } from 'tvs-libs/lib/math/gl-matrix'
-import * as coords from 'tvs-libs/lib/math/coords'
+import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
+import { mat4 } from 'gl-matrix'
+import * as coords from 'tvs-libs/dist/lib/math/coords'
 import * as videos from '../videos'
-import { zip } from 'tvs-libs/lib/utils/sequence'
+import { zip } from 'tvs-libs/dist/lib/utils/sequence'
 
 
 export const radius = val(25)

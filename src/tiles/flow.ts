@@ -1,4 +1,4 @@
-import * as runtime from 'tvs-flow/lib/runtime'
+import * as runtime from 'tvs-flow/dist/lib/runtime'
 import * as tvsTools from 'tvs-flow-tools'
 
 export const flow = runtime.create()

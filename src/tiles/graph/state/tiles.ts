@@ -1,8 +1,8 @@
-import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
-import {/*sign,*/ randInt, normalRand } from 'tvs-libs/lib/math/core'
-import { mat4, quat, GLVec, GLMat } from 'tvs-libs/lib/math/gl-matrix'
-import { getRollQuat, getYawQuat } from 'tvs-libs/lib/math/geometry'
-import { pickRandom, doTimes, yieldTimes } from 'tvs-libs/lib/utils/sequence'
+import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
+import {/*sign,*/ randInt, normalRand } from 'tvs-libs/dist/lib/math/core'
+import { mat4, quat } from 'gl-matrix'
+import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
+import { pickRandom, doTimes, yieldTimes } from 'tvs-libs/dist/lib/utils/sequence'
 import * as events from '../events'
 import * as init from './init'
 import * as camera from '../view/camera'
@@ -28,8 +28,8 @@ export interface TileState {
 	roll: number
 	height: number
 	color: Color
-	rotation: GLVec
-	transform: GLMat
+	rotation: quat
+	transform: mat4
 	updateTransform: boolean
 	neighbours: (TileState | undefined)[]
 	connections: number[]
@@ -355,7 +355,7 @@ export const updateActiveTiles = stream([
 
 		if (tile.updateTransform) {
 			tile.updateTransform = false
-			quat.multiply(tile.rotation, getYawQuat([], tile.yaw), getRollQuat([], tile.roll))
+			quat.multiply(tile.rotation, getYawQuat(quat.create(), tile.yaw), getRollQuat(quat.create(), tile.roll))
 			const [x, y] = tile.pos
 			const [offX, offY] = tile.posOffset
 			mat4.fromRotationTranslation(

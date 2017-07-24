@@ -1,4 +1,4 @@
-import * as flowTree from 'tvs-libs/lib/flow/tree'
+import * as flowTree from 'tvs-libs/dist/lib/flow/tree'
 import { getGraphFromModules } from 'tvs-flow-tools/dist/lib/utils/webpack'
 
 

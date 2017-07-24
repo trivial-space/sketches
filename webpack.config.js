@@ -1,16 +1,14 @@
 const { resolve } = require('path')
 const webpack = require('webpack')
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
-const hotCodeEntry = [
-  'webpack-dev-server/client?http://localhost:8080',
-  'webpack/hot/only-dev-server'
-]
+
 
 module.exports = {
   entry: {
-    'homage': [...hotCodeEntry, './homage/index.ts'],
-    'tiles': [...hotCodeEntry, './tiles/index.ts'],
-    'experiments/area-light': [...hotCodeEntry, './experiments/area-light/index.ts']
+    'homage': ['./homage/index.ts'],
+    'tiles': ['./tiles/index.ts'],
+    'experiments/area-light': ['./experiments/area-light/index.ts']
   },
 
   context: resolve(__dirname, 'src'),
@@ -18,9 +16,7 @@ module.exports = {
   output: {
     path: resolve(__dirname, 'public'),
     publicPath: '/',
-    filename: '[name]/main.js',
-    hotUpdateChunkFilename: "[id].[hash].hot-update.js",
-    hotUpdateMainFilename: "[hash].hot-update.json"
+    filename: '[name]/main.js'
   },
 
   module: {
@@ -47,24 +43,19 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
 
-  devtool: 'inline-source-map',
-
-  devServer: {
-    hot: true,
-    // enable HMR on the server
-
-    contentBase: resolve(__dirname, 'public'),
-    // match the output path
-
-    publicPath: '/'
-    // match the output `publicPath`
-  },
+  devtool: 'source-map',
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    // enable HMR globally
-
-    new webpack.NamedModulesPlugin(),
-    // prints more readable module names in the browser console on HMR updates
+		// build optimization plugins
+		new webpack.optimize.CommonsChunkPlugin({
+			name: 'vendor',
+			filename: 'shared.min.js',
+		}),
+		new webpack.DefinePlugin({
+			'process.env.NODE_ENV': '"production"',
+		}),
+		new UglifyJSPlugin({
+			sourceMap: true
+		})
   ],
 }

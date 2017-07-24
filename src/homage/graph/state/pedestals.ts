@@ -1,8 +1,8 @@
-import { val, stream } from 'tvs-flow/lib/utils/entity-reference'
-import { mat4 } from 'tvs-libs/lib/math/gl-matrix'
-import * as vec from 'tvs-libs/lib/math/vectors'
+import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
+import { mat4 } from 'gl-matrix'
+import * as vec from 'tvs-libs/dist/lib/math/vectors'
 import * as screens from './screens'
-import { zip } from 'tvs-libs/lib/utils/sequence'
+import { zip } from 'tvs-libs/dist/lib/utils/sequence'
 
 
 export const scale = val([1.65, 1, 1])

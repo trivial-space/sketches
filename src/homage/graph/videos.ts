@@ -1,4 +1,4 @@
-import { val, EntityRef, asyncStream } from 'tvs-flow/lib/utils/entity-reference'
+import { val, EntityRef, asyncStream } from 'tvs-flow/dist/lib/utils/entity-reference'
 
 
 export function createVideo (src: string) {

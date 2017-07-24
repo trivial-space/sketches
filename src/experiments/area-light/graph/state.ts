@@ -1,5 +1,5 @@
-import { stream, streamStart, val } from 'tvs-flow/lib/utils/entity-reference'
-import { mat4 } from 'tvs-libs/lib/math/gl-matrix'
+import { stream, streamStart, val } from 'tvs-flow/dist/lib/utils/entity-reference'
+import { mat4 } from 'gl-matrix'
 
 
 export const groundColor = val([0.5, 0.5, 0.5, 1.0])
