@@ -11,32 +11,13 @@
 		"noImplicitAny": false,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"allowSyntheticDefaultImports": true,
-		"removeComments": true,
-		"allowJs": true,
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"*": [
-				"src/*",
-				"libs/*"
-			]
+			"*": [ "src/*" ]
 		}
 	},
-	"include": ["src"],
-	"exclude": [
-		"node_modules",
-		"libs/tvs-flow/node_modules",
-		"libs/tvs-flow/test",
-		"libs/tvs-flow-tools/node_modules",
-		"libs/tvs-flow-tools/examples",
-		"libs/tvs-flow-tools/dist/examples",
-		"libs/tvs-renderer/node_modules",
-		"libs/tvs-renderer/examples",
-		"libs/tvs-libs/node_modules",
-		"libs/tvs-libs/node_modules/@types",
-		"libs/tvs-libs/spec"
-	],
+	"exclude": ["node_modules"],
 	"compileOnSave": false,
 	"buildOnSave": false,
 	"atom": {

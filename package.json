@@ -18,15 +18,20 @@
     "deploy": "npm run-script build; cd public; now"
   },
   "dependencies": {
-    "@types/node": "^8.0.16",
     "core-js": "^2.4.1",
     "geo-3d-box": "^2.0.2",
     "gl-matrix": "2.3",
     "glsl-fast-gaussian-blur": "^1.0.2",
     "glslify-loader": "^1.0.2",
-    "raw-loader": "^0.5.1"
+    "raw-loader": "^0.5.1",
+    "tvs-flow": "github:trivial-space/flow",
+    "tvs-flow-tools": "github:trivial-space/flow-tools",
+    "tvs-libs": "github:trivial-space/libs",
+    "tvs-renderer": "github:trivial-space/renderer"
   },
   "devDependencies": {
+    "@types/gl-matrix": "^2.2.34",
+    "@types/node": "^8.0.16",
     "@types/webpack-env": "^1.13.0",
     "ts-loader": "^2.3.1",
     "tslint": "^5.5.0",
