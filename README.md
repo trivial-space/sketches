@@ -23,13 +23,13 @@ To install the playground locally and play with the sketches and technologies, c
 	yarn install
 	yarn start
 
-The drafts within a working live coding environment will be available at `localhost:8080`.
+The drafts within a (hopefully) working live coding environment will be available at `localhost:8080`.
 
 ## Acknowledgements
 
 A special thanks goes to the people and teams behind [TypeScript](https://github.com/Microsoft/TypeScript) and [Webpack](https://github.com/webpack/webpack). These tools provided a major upgrade in terms of productivity and development comfort, and build the foundation which the trivial space workflow can stand upon.
 
-Great inspiration was drawn from the creative and encouraging communities behind [Three.js](https://threejs.org/), [Stack.gl](http://stack.gl/) and others pioneering immersive WebGL experiences.
+Great inspiration was drawn from the creative and encouraging communities behind [Three.js](https://threejs.org/), [Stack.gl](https://github.com/stackgl) and others pioneering immersive WebGL experiences.
 
 ## License
 
