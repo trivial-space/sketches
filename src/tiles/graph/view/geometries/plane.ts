@@ -1,4 +1,4 @@
-import { plane } from 'tvs-renderer/dist/lib/utils/geometry/plane'
+import { plane } from 'tvs-painter/dist/lib/utils/geometry/plane'
 import * as init from '../../state/init'
 import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 

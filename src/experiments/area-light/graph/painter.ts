@@ -1,7 +1,7 @@
 import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { makePainterCanvas } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
 import * as events from './events'
-import { DrawSettings } from 'tvs-renderer/dist/lib'
+import { DrawSettings } from 'tvs-painter/dist/lib'
 
 
 export const {canvas, painter, gl, canvasSize} =

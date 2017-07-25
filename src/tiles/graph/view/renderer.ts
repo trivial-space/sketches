@@ -7,7 +7,7 @@ import * as shader from './shaders/base'
 import * as events from '../events'
 import * as camera from './camera'
 import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
-import { Layer, LayerData, DrawSettings } from 'tvs-renderer/dist/lib'
+import { Layer, LayerData, DrawSettings } from 'tvs-painter/dist/lib'
 
 
 // ===== Settings =====

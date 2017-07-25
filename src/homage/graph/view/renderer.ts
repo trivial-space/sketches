@@ -14,7 +14,7 @@ import * as screens from '../state/screens'
 import * as pedestals from '../state/pedestals'
 import * as reflectionEffect from './effects/ground-reflection'
 import { zip } from 'tvs-libs/dist/lib/utils/sequence'
-import { makeClear } from 'tvs-renderer/dist/lib/utils/context'
+import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import { defined } from 'tvs-libs/dist/lib/utils/predicates'
 import { painter, canvasSize, gl } from './painter'
 

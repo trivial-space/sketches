@@ -5,9 +5,9 @@ import * as events from './events'
 import * as camera from './camera'
 import * as box from './geometries/box'
 import * as plane from './geometries/plane'
-import { makeClear } from 'tvs-renderer/dist/lib/utils/context'
+import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import { groundTransform, lightTransform, groundColor, lightColor } from './state'
-import { DrawSettings } from 'tvs-renderer/dist/lib'
+import { DrawSettings } from 'tvs-painter/dist/lib'
 import { geoSpec, lightFrag } from './shaders/shaders'
 
 
