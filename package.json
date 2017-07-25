@@ -27,7 +27,7 @@
     "tvs-flow": "github:trivial-space/flow",
     "tvs-flow-tools": "github:trivial-space/flow-tools",
     "tvs-libs": "github:trivial-space/libs",
-    "tvs-renderer": "github:trivial-space/renderer"
+    "tvs-painter": "github:trivial-space/painter"
   },
   "devDependencies": {
     "@types/gl-matrix": "^2.2.34",
