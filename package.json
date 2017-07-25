@@ -1,7 +1,7 @@
 {
   "name": "tvs-playground",
   "version": "0.1.0",
-  "description": "A collection of examples using flow, renderer and libs in action",
+  "description": "A collection of examples using flow, painter and libs in action",
   "author": "Thomas Gorny",
   "license": "MIT",
   "homepage": "https://trivialspace.net",
