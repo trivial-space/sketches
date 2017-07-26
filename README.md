@@ -12,7 +12,7 @@ The core of this workflow consists of the trivial space library collection:
 
 This playground is the primary testing environment for these libraries. Here first sketches and experiments are tested, while working both on the programming tools as well as on new artistic expressions.
 
-Basically everything here is work in progress, probably incomplete, or not fully functional. There are some satisfying intermediate results though. They are published frequently to [construction.trivialspace.net](https://construction.trivialspace.net), which is just a statically hosted version of the public folder of this repository.
+Basically everything here is work in progress, probably incomplete, or not fully functional. There are some satisfying intermediate results though. These are published frequently to [construction.trivialspace.net](https://construction.trivialspace.net), which is just a statically hosted version of the `public` folder of this repository.
 
 Eventually, the work evolving here will lead to a relaunch of the [trivial space](https://trivialspace.net) platform. Until then, this playground and the [trivial space repository](https://github.com/trivial-space) are the main places where progress and updates can be observed.
 
