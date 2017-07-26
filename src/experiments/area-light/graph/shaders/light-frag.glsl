@@ -43,16 +43,15 @@ float areaLampEnergy(mat4 lampMat, vec3 V, vec3 N, vec3 lampPos, vec2 areaSize) 
 	return max(nDotL, 0.0) * attenuation;
 }
 
-void areaDiff(vec3 V, vec3 lampPos, vec3 lampVec, vec3 N, mat4 lampMat, float areaSizeX, float areaSizeY, float dist, float k, out float inp) {
+void areaDiff(vec3 V, vec3 lampPos, vec3 lampVec, vec3 N, mat4 lampMat, vec2 areaSize, float dist, float k, out float inp) {
 	vec3 vec = V - lampPos;
-	vec2 asize = vec2(areaSizeX, areaSizeY);
 
 	float strength = dist * dist / 4.0;
 
 	if (dot(vec, lampVec) < 0.0) {
 		inp = 0.0;
 	} else {
-		float intens = areaLampEnergy(lampMat, V, N, lampPos, asize);
+		float intens = areaLampEnergy(lampMat, V, N, lampPos, areaSize);
 		inp = pow(intens * strength, k);
 	}
 }
@@ -70,9 +69,8 @@ void main() {
 
 	float diff = 1.0;
 
-	areaDiff(position.xyz, lightPosition, lightNormal, normalize(normal.xyz), lightMat, 10.0, 10.0, dist, 1.0, diff);
-	//gl_FragColor = texture2D(colors, coords);
-	//gl_FragColor = vec4((texture2D(normals, coords).xyz + 1.0) / 2.0, 1.0);
-	//gl_FragColor = vec4(color.xyz * diff, 1.0);
-	gl_FragColor = vec4(color.xyz * (lightPosition / 5.0), 1.0);
+	areaDiff(position.xyz, lightPosition, -lightNormal, normalize(normal.xyz), lightMat, vec2(10.0), dist, 1.0, diff);
+	//gl_FragColor = vec4(abs(normal.xyz), 1.0);
+	gl_FragColor = vec4(color.xyz * diff, 1.0);
+	//gl_FragColor = vec4(color.xyz * (lightPosition / 5.0), 1.0);
 }
