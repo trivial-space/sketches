@@ -22,7 +22,7 @@ export const {
 perspectiveSettings.updateVal(s => ({ ...s, fovy: Math.PI * 0.4 }))
 
 
-export const moveSpeed = val(0.05)
+export const moveSpeed = val(0.15)
 
 export const lookSpeed = val(0.002)
 

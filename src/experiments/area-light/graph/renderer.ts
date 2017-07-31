@@ -6,7 +6,7 @@ import * as camera from './camera'
 import * as box from './geometries/box'
 import * as plane from './geometries/plane'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
-import { groundTransform, lightTransform, groundColor, lightColor } from './state'
+import { groundTransform, lightTransforms, groundColor, lightColor, lightBackColor } from './state'
 import { DrawSettings } from 'tvs-painter/dist/lib'
 import { geoSpec, lightFrag } from './shaders/shaders'
 
@@ -43,12 +43,19 @@ export const groundSketch = makeSketchEntity(painter)
 
 export const lightSketch = makeSketchEntity(painter)
 .react(
-	[lightTransform.HOT, lightColor.HOT, geoShade.HOT, planeForm.HOT],
-	(sketch, transform, color, shade, form) => sketch.update({
+	[lightTransforms.HOT, lightColor.HOT, lightBackColor.HOT, geoShade.HOT, planeForm.HOT, gl.HOT],
+	(sketch, [frontMat, backMat], color, backColor, shade, form, gl) => sketch.update({
 		form, shade,
-		uniforms: {
-			transform,
+		uniforms: [{
+			transform: frontMat,
 			color
+		},
+		{
+			transform: backMat,
+			color: backColor
+		}],
+		drawSettings: {
+			enable: [gl.CULL_FACE]
 		}
 	})
 )
@@ -96,16 +103,16 @@ export const sceneLayer = makeDrawingLayerEntity(painter)
 export const lightLayer = makeEffectLayerEntity(painter)
 	.react([
 		camera.position.HOT,
-		lightTransform.HOT,
+		lightTransforms.HOT,
 		sceneLayer.HOT,
 		camera.view.COLD,
 		gl.HOT,
 		lightFrag.HOT
-	], (layer, eyePosition, lightMat, scene, view, gl, frag) => layer.update({
+	], (layer, eyePosition, lightMats, scene, view, gl, frag) => layer.update({
 		frag,
 		uniforms: {
 			eyePosition,
-			lightMat,
+			lightMat: lightMats[0],
 			view,
 			positions: scene.texture(0),
 			normals: scene.texture(1),

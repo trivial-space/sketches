@@ -1,4 +1,4 @@
-import { stream, streamStart, val } from 'tvs-flow/dist/lib/utils/entity-reference'
+import { streamStart, val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { mat4 } from 'gl-matrix'
 import { tick } from './events'
 
@@ -18,11 +18,14 @@ export const lightRotation = val(-Math.PI * 0.8)
 export const lightPosition = val([0, 5.5, 0])
 
 export const lightColor = val([1.0, 1.0, 1.0, 0.0])
+export const lightBackColor = val([0.0, 0.0, 0.2, 0.0])
 
-export const lightTransform = stream(
+export const lightTransforms = val([mat4.create(), mat4.create()])
+.react(
 	[lightRotation.HOT, lightPosition.HOT],
-	(rot, pos) => {
-		const t = mat4.fromTranslation(mat4.create(), pos)
-		mat4.rotateX(t, t, rot)
-		return t
+	(mats, rot, pos) => {
+		mat4.fromTranslation(mats[0], pos)
+		mat4.rotateX(mats[0], mats[0], rot)
+		mat4.rotateX(mats[1], mats[0], Math.PI)
+		return mats
 	})
