@@ -1,34 +1,39 @@
-float specularAreaLight(mat4 lightMat, vec3 V, vec3 N, vec3 eyePosition, vec2 areaSize, float hard, float gloss) {
+vec3 nearestPointInsideArea(vec3 pointOnPlane, mat4 areaMat, vec2 areaSize) {
+	float width = areaSize.x / 2.0;
+	float height = areaSize.y / 2.0;
 
-	hard /= gloss;
+	vec3 right = normalize(areaMat[0].xyz);
+	vec3 up = normalize(areaMat[1].xyz);
+	vec3 pos = areaMat[3].xyz;
 
-	vec3 right = normalize(lightMat[0].xyz);
-	vec3 up = normalize(lightMat[1].xyz);
+	/*calculate distance from area*/
+	vec2 diagonal = vec2(dot(pointOnPlane, right), dot(pointOnPlane, up));
+	vec2 nearest2D = vec2(clamp(diagonal.x, -width, width), clamp(diagonal.y, -height, height));
+	return pos + (right * nearest2D.x + up * nearest2D.y);
+}
+
+
+float specularAreaLight(mat4 lightMat, vec3 V, vec3 N, vec3 eyePosition, vec2 areaSize, float gloss) {
 
 	vec3 normal = normalize(lightMat[2].xyz);
 	vec3 pos = lightMat[3].xyz;
 
-	float width = areaSize.x / 2.0;
-	float height = areaSize.y / 2.0;
+	vec3 direction = eyePosition - V;
 
-	vec3 R = reflect(eyePosition - V, -N);
-	vec3 E = V + R * (dot(normal, pos - V) / dot(normal, R)); //line-plane intersection
+	vec3 R = reflect(normalize(direction), -N);
+	float rDotN = dot(normal, R);
 
-	if (dot(V - pos, normal) >= 0.0 && dot(R, normal) > 0.0) {
-		vec3 dirSpec = E - pos;
-		vec2 dirSpec2D = vec2(dot(dirSpec, right), dot(dirSpec, up));
-		vec3 specPlane = pos + (right * dirSpec2D.x + up * dirSpec2D.y);
+	if (rDotN > 0.0) {
+		vec3 E = V + R * (dot(normal, pos - V) / rDotN); // line-plane intersection
+		vec3 dir = E - pos;
 
-		float dist = max(distance(V, specPlane), 0.0); //real distance to specular rectangle
+		vec3 nearestPointInside = nearestPointInsideArea(dir, lightMat, areaSize);
+		float dist = distance(V, nearestPointInside); //real distance to area rectangle
 
-		width -= ((1.0 / hard) / 2.0) * (dist / gloss);
-		height -= ((1.0 / hard) / 2.0) * (dist / gloss);
+		float rDotL = max(dot(R, normalize(V - nearestPointInside)), 0.0);
+		float attenuation = 1.0 / (pow(dist, 0.5));
 
-		width = max(width, 0.0);
-		height = max(height, 0.0);
-
-		vec2 nearestSpec2D = vec2(clamp(dirSpec2D.x, -width, width), clamp(dirSpec2D.y, -height, height));
-		return 1.0 - clamp(length(nearestSpec2D - dirSpec2D) * (hard / (dist / gloss)), 0.0, 1.0);
+		return pow(max(rDotL, 0.0), gloss) * attenuation;
 	} else {
 		return 0.0;
 	}
