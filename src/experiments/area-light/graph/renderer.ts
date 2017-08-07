@@ -43,7 +43,7 @@ export const groundSketch = makeSketchEntity(painter)
 
 export const lightSketch = makeSketchEntity(painter)
 .react(
-	[lightTransforms.HOT, lightColor.HOT, lightBackColor.HOT, geoShade.HOT, planeForm.HOT, gl.HOT],
+	[lightTransforms.COLD, lightColor.HOT, lightBackColor.HOT, geoShade.HOT, planeForm.HOT, gl.HOT],
 	(sketch, [frontMat, backMat], color, backColor, shade, form, gl) => sketch.update({
 		form, shade,
 		uniforms: [{
@@ -102,13 +102,13 @@ export const sceneLayer = makeDrawingLayerEntity(painter)
 
 export const lightLayer = makeEffectLayerEntity(painter)
 	.react([
-		camera.position.HOT,
-		lightTransforms.HOT,
 		sceneLayer.HOT,
+		camera.position.COLD,
+		lightTransforms.COLD,
 		camera.view.COLD,
 		gl.HOT,
 		lightFrag.HOT
-	], (layer, eyePosition, lightMats, scene, view, gl, frag) => layer.update({
+	], (layer, scene, eyePosition, lightMats, view, gl, frag) => layer.update({
 		frag,
 		uniforms: {
 			eyePosition,

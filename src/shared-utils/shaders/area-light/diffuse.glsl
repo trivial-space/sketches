@@ -31,7 +31,6 @@ float diffuseAreaLight(mat4 lightMat, vec3 V, vec3 N, vec2 areaSize) {
 	float nDotL = dot(-normal, L);
 
 	if (nDotL > 0.0) {
-		//nDotL *= clamp(dot(-N,L),0.0,1.0); //how blender internal works, but too hard falloff
 		nDotL *= clamp(dot(-N, L) * 0.5 + 0.5, 0.0, 1.0); //distribute over hemisphere, looks better. Should be dependant of area size.
 
 		float d = distance(V, nearestPointInside); //real distance to area rectangle

@@ -11,7 +11,9 @@ export const {
 } = flowCamera.makeFirstPersonView()
 
 
-position.val(vec3.fromValues(0, 2, 10))
+position.val(vec3.fromValues(11, 2, -9))
+rotX.val(0)
+rotY.val(2)
 
 
 export const {

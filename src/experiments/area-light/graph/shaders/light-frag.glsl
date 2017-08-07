@@ -22,21 +22,26 @@ void main() {
 
 	vec3 position = texture2D(positions, coords).xyz;
 	vec3 normal = normalize(texture2D(normals, coords).xyz);
-	//vec4 uv = texture2D(uvs, coords);
+	vec4 uv = texture2D(uvs, coords);
 	vec4 color = texture2D(colors, coords);
 
 	if (color.a < 1.0) {
 		gl_FragColor = vec4(color.rgb, 1.0);
 	} else {
+		// paint ground grid
+		float vertical = fract(uv.x * 100.0);
+		float horizontal = fract(uv.y * 100.0);
+		if (vertical >= 0.95 || horizontal >= 0.95) gl_FragColor.b += 0.3;
+
+		// light calculation
 		float diffusePower = pow(diffuseAreaLight(lightMat, position, normal, lightSize), 0.7);
-		vec3 diffuseColor = color.xyz * min(1.2, max(0.2, diffusePower * lightDistance));
+		vec3 diffuseColor = color.xyz * diffusePower * lightDistance;
 		float specularPower = 0.0;
 		if (diffusePower > 0.0) {
 			specularPower = specularAreaLight(lightMat, position, normal, eyePosition, lightSize, 100.0);
 		}
-		vec3 specularColor = vec3(0.9, 0.0, 0.0) * specularPower;
-		//gl_FragColor = vec4(abs(normal.xyz), 1.0);
-		gl_FragColor = vec4(diffuseColor + specularColor, 1.0);
-		//gl_FragColor = vec4(color.xyz * (lightPosition / 5.0), 1.0);
+		vec3 specularColor = vec3(0.9) * specularPower * color.xyz;
+		gl_FragColor += vec4(specularColor / 2.0, 1.0);
+		gl_FragColor += vec4(diffuseColor / 1.5, 1.0);
 	}
 }
