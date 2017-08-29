@@ -15,9 +15,10 @@ export const groundTransform = streamStart(null, () => {
 
 
 export const animate = val(true)
+export const rotationSpeed = val(0.0002)
 
 export const lightRotation = val(-Math.PI * 0.8)
-.react([animate.COLD, tick.HOT], (rot, animate, _) => animate ? rot + 0.02 : rot)
+.react([animate.COLD, rotationSpeed.COLD, tick.HOT], (rot, animate, speed, tick) => animate ? rot + speed * tick : rot)
 
 export const time = val(0)
 .react([tick.HOT, animate.COLD], (t, tick, animate) => animate ? t + tick : t)

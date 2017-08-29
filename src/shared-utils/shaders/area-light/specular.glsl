@@ -25,7 +25,6 @@ float specularAreaLight(mat4 lightMat, vec3 V, vec3 N, vec3 eyePosition, vec2 ar
 
 		float dist = distance(V, nearestPointInside); //real distance to area rectangle
 
-		//gl_FragColor = vec4(normalize(E) * 0.5 + 0.5, 1.0);
 		float rDotL = max(0.0, dot(R, normalize(V - nearestPointInside)));
 
 		// reduce glow of reflected points that are fare outside of the light area

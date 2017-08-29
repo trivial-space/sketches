@@ -37,9 +37,11 @@ void main() {
 		float diffusePower = pow(diffuseAreaLight(lightMat, position, normal, lightSize), 0.7);
 		vec3 diffuseColor = color.xyz * diffusePower * lightDistance;
 		float specularPower = 0.0;
+
 		if (diffusePower > 0.0) {
 			specularPower = specularAreaLight(lightMat, position, normal, eyePosition, lightSize, 100.0);
 		}
+
 		vec3 specularColor = vec3(0.9) * specularPower * color.xyz;
 		gl_FragColor += vec4(specularColor / 2.0, 1.0);
 		gl_FragColor += vec4(diffuseColor / 1.5, 1.0);

@@ -63,7 +63,6 @@ export const lightSketch = makeSketchEntity(painter)
 
 // Layers
 
-
 export const drawSettings = stream(
 	[gl.HOT],
 	gl => ({
