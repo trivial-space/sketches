@@ -1,5 +1,5 @@
-import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
+import { stream, val, asyncStreamStart } from 'tvs-flow/dist/lib/utils/entity-reference'
+import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity, makeStaticLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
 import { painter, gl } from './painter'
 import * as events from './events'
 import * as camera from './camera'
@@ -7,7 +7,7 @@ import * as box from './geometries/box'
 import * as plane from './geometries/plane'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import { groundTransform, lightTransforms, groundColor, lightColor, lightBackColor } from './state'
-import { DrawSettings } from 'tvs-painter/dist/lib'
+import { DrawSettings, TextureData } from 'tvs-painter/dist/lib'
 import { geoSpec, lightFrag } from './shaders/shaders'
 
 
@@ -24,6 +24,25 @@ export const geoShade = makeShadeEntity(painter, geoSpec)
 
 
 // Textures
+
+export const image = asyncStreamStart<HTMLImageElement>(null, send => {
+	const img = new Image()
+	img.onload = () => send(img)
+	img.src = 'tree.jpg'
+})
+
+
+export const textureData = val({
+	minFilter: 'LINEAR_MIPMAP_LINEAR',
+	magFilter: 'LINEAR'
+} as TextureData)
+.react([image.HOT], (tex, img) => ({
+	...tex,
+	asset: img
+}))
+
+
+export const texture = makeStaticLayerEntity(painter, textureData)
 
 
 // Sketches
@@ -106,13 +125,15 @@ export const lightLayer = makeEffectLayerEntity(painter)
 		lightTransforms.COLD,
 		camera.view.COLD,
 		gl.HOT,
+		texture.HOT,
 		lightFrag.HOT
-	], (layer, scene, eyePosition, lightMats, view, gl, frag) => layer.update({
+	], (layer, scene, eyePosition, lightMats, view, gl, tex, frag) => layer.update({
 		frag,
 		uniforms: {
 			eyePosition,
 			lightMat: lightMats[0],
 			view,
+			tex: tex.texture(),
 			positions: scene.texture(0),
 			normals: scene.texture(1),
 			uvs: scene.texture(2),
