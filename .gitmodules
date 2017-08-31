@@ -1,0 +1,12 @@
+[submodule "libs/flow"]
+	path = libs/flow
+	url = git@github.com:trivial-space/flow.git
+[submodule "libs/painter"]
+	path = libs/painter
+	url = git@github.com:trivial-space/painter.git
+[submodule "libs/libs"]
+	path = libs/libs
+	url = git@github.com:trivial-space/libs.git
+[submodule "libs/flow-tools"]
+	path = libs/flow-tools
+	url = git@github.com:trivial-space/flow-tools.git
