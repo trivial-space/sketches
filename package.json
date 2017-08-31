@@ -20,7 +20,7 @@
   "dependencies": {
     "core-js": "^2.5.0",
     "geo-3d-box": "^2.0.2",
-    "gl-matrix": "^2.4.0",
+    "gl-matrix": "2.3.2",
     "glsl-fast-gaussian-blur": "^1.0.2",
     "glslify-loader": "^1.0.2",
     "raw-loader": "^0.5.1"

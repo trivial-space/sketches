@@ -1,9 +1,9 @@
-import * as flowTree from 'tvs-libs/dist/lib/flow/tree'
+import * as flowTree from 'tvs-flow-tools/dist/lib/console/tree'
 import { getGraphFromModules } from 'tvs-flow-tools/dist/lib/utils/webpack'
 
 
 export function updateFlow (flow, graphModules) {
-	flow.addGraph(getGraphFromModules(graphModules))
+	flow.replaceGraph(getGraphFromModules(graphModules))
 	window['entities'] = flowTree.create(flow)
 }
 
