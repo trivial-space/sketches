@@ -17,7 +17,19 @@
 			"*": [ "src/*" ]
 		}
 	},
-	"exclude": ["node_modules"],
+	"exclude": [
+		"node_modules",
+		"libs/flow/node_modules",
+		"libs/flow/test",
+		"libs/flow-tools/node_modules",
+		"libs/flow-tools/examples",
+		"libs/flow-tools/dist/examples",
+		"libs/painter/node_modules",
+		"libs/painter/examples",
+		"libs/libs/node_modules",
+		"libs/libs/node_modules/@types",
+		"libs/libs/spec"
+	],
 	"compileOnSave": false,
 	"buildOnSave": false,
 	"atom": {

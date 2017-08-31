@@ -18,26 +18,26 @@
     "deploy": "npm run-script build; cd public; now"
   },
   "dependencies": {
-    "core-js": "^2.4.1",
+    "core-js": "^2.5.0",
     "geo-3d-box": "^2.0.2",
-    "gl-matrix": "2.3",
+    "gl-matrix": "^2.4.0",
     "glsl-fast-gaussian-blur": "^1.0.2",
     "glslify-loader": "^1.0.2",
-    "raw-loader": "^0.5.1",
-    "tvs-flow": "github:trivial-space/flow",
-    "tvs-flow-tools": "github:trivial-space/flow-tools",
-    "tvs-libs": "github:trivial-space/libs",
-    "tvs-painter": "github:trivial-space/painter"
+    "raw-loader": "^0.5.1"
   },
   "devDependencies": {
     "@types/gl-matrix": "^2.2.34",
-    "@types/node": "^8.0.16",
+    "@types/node": "^8.0.26",
     "@types/webpack-env": "^1.13.0",
-    "ts-loader": "^2.3.1",
-    "tslint": "^5.5.0",
+    "ts-loader": "^2.3.4",
+    "tslint": "^5.7.0",
     "typescript": "^2.4.2",
     "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.3.0",
-    "webpack-dev-server": "^2.6.1"
-  }
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1"
+  },
+  "workspaces": [
+    "libs/*"
+  ],
+  "private": true
 }
