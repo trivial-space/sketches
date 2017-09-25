@@ -60,11 +60,13 @@ export const videoTextures = stream(
 
 export const groundSketch = makeSketchEntity(painter)
 .react(
-	[groundShade.HOT, planeForm.HOT, ground.transform.HOT, canvasSize.HOT],
-	(sketch, shade, form, transform, size) => sketch.update({
+	[groundShade.HOT, planeForm.HOT, ground.transform.HOT, canvasSize.HOT, screens.positions.HOT, screens.rotations.HOT],
+	(sketch, shade, form, transform, size, lightPositions, lightRotations) => sketch.update({
 		form, shade,
 		uniforms: {
 			transform,
+			lightPositions,
+			lightRotations,
 			reflection: null,
 			size: [size.width, size.height]
 		}

@@ -1,11 +1,7 @@
 import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { makePainterCanvas } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
-import * as events from '../events'
+import { setupPainter } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
 import { DrawSettings } from 'tvs-painter/dist/lib'
-
-
-export const {canvas, painter, gl, canvasSize} =
-	makePainterCanvas(events.windowSize)
+import { canvas, windowSize } from '../events'
 
 
 export const settings = val<DrawSettings>({
@@ -13,7 +9,6 @@ export const settings = val<DrawSettings>({
 }).reset()
 
 
-painter.react(
-	[settings.HOT],
-	(p, settings) => p.updateDrawSettings(settings)
-)
+export const {painter, gl, canvasSize} = setupPainter(canvas, windowSize, settings)
+
+

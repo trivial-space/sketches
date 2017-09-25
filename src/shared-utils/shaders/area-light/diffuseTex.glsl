@@ -29,7 +29,7 @@ vec4 diffuseAreaLight(sampler2D tex, mat4 lightMat, vec3 V, vec3 N, vec2 areaSiz
 		float lod = pow(d, 0.03) * 6.0;
 
 		vec2 co = ((diagonal.xy / (d + 1.0)) + vec2(width, height)) / areaSize;
-		co.x = 1.0 - co.x;
+		//co.x = 1.0 - co.x;
 
 		vec4 t00 = texture2D(tex, co, lod);
 		vec4 t01 = texture2D(tex, co, lod + 1.0);
