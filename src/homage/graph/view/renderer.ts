@@ -17,6 +17,8 @@ import { zip } from 'tvs-libs/dist/lib/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import { defined } from 'tvs-libs/dist/lib/utils/predicates'
 import { painter, canvasSize, gl } from './painter'
+import { scale } from '../state/screens'
+import { props } from './geometries/plane'
 
 
 // Forms
@@ -58,15 +60,29 @@ export const videoTextures = stream(
 
 // Sketches
 
+export const lightSize = stream(
+	[props.HOT, scale.HOT],
+	(geometry, scale) => [geometry.width * scale[0], geometry.height * scale[1]]
+)
+
 export const groundSketch = makeSketchEntity(painter)
-.react(
-	[groundShade.HOT, planeForm.HOT, ground.transform.HOT, canvasSize.HOT, screens.positions.HOT, screens.rotations.HOT],
-	(sketch, shade, form, transform, size, lightPositions, lightRotations) => sketch.update({
+.react([
+		groundShade.HOT,
+		lightSize.HOT,
+		planeForm.HOT,
+		ground.transform.HOT,
+		canvasSize.HOT,
+		screens.positions.HOT,
+		screens.rotations.HOT,
+		videoTextures.HOT
+	],
+	(sketch, shade, lightSize, form, transform, size, lightPositions, lightRotations, videos) => sketch.update({
 		form, shade,
 		uniforms: {
 			transform,
-			lightPositions: [].concat.apply([], lightPositions),
-			lightRotations,
+			lights: [].concat.apply([], zip(lightPositions, lightRotations, (p: any[], r) => [...p, r])),
+			lightSize,
+			lightTex: videos.map(v => v.texture()),
 			reflection: null,
 			size: [size.width, size.height]
 		}
