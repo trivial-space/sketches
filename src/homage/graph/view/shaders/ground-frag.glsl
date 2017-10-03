@@ -7,7 +7,7 @@ uniform float lightRotations[5];
 varying vec3 V;
 
 const vec3 N = vec3(0.0, 1.0, 0.0);
-const float lightDistance = 30.0;
+const float lightDistance = 20.0;
 
 void main() {
 	float scale = (50.0 - length(V)) / 50.0;
@@ -15,8 +15,8 @@ void main() {
 	//vec4 ground = vec4(vec3(scale * 0.5), 1.0);
 	vec3 ground = vec3(0.0);
 	for (int i = 0; i < 5; i++) {
-		ground += (lightDistance - length(lightPositions[i] - V)) / (lightDistance * 10.0);
+		ground += max(0.0, (lightDistance - length(lightPositions[i].xz - V.xz)) / lightDistance / 2.0);
 	}
-	//gl_FragColor = mix(ground, vec4(refl.rgb, 1.0), refl / 2.0 + 0.25);
-	gl_FragColor = vec4(ground, 1.0);
+	gl_FragColor = mix(vec4(ground, 1.0), vec4(refl.rgb, 1.0), refl / 2.0 + 0.25);
+	// gl_FragColor = vec4(ground, 1.0);
 }

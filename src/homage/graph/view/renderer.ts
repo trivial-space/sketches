@@ -65,7 +65,7 @@ export const groundSketch = makeSketchEntity(painter)
 		form, shade,
 		uniforms: {
 			transform,
-			lightPositions,
+			lightPositions: [].concat.apply([], lightPositions),
 			lightRotations,
 			reflection: null,
 			size: [size.width, size.height]
