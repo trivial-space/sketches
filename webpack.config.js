@@ -8,7 +8,8 @@ module.exports = {
 	entry: {
 		'homage': ['./homage/index.ts'],
 		'tiles': ['./tiles/index.ts'],
-		'experiments/area-light': ['./experiments/area-light/index.ts']
+		'experiments/area-light': ['./experiments/area-light/index.ts'],
+		'experiments/graph-sort': ['./experiments/graph-sort/index.ts']
 	},
 
 	context: resolve(__dirname, 'src'),

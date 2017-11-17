@@ -6,4 +6,3 @@ export function updateFlow (flow, graphModules) {
 	flow.replaceGraph(getGraphFromModules(graphModules))
 	window['entities'] = flowTree.create(flow)
 }
-
