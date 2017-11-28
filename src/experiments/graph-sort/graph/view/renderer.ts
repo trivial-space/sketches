@@ -3,7 +3,6 @@ import { painter, gl, canvasSize } from './context'
 import * as geometries from './geometries'
 import * as pointShader from './shaders/point'
 import * as lineShader from './shaders/line'
-import * as events from '../events'
 import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
 import { LayerData } from 'tvs-painter/dist/lib'
 
@@ -63,6 +62,6 @@ export const scene = makeDrawingLayerEntity(painter, sceneData)
 // ===== render =====
 
 export const render = stream(
-	[painter.COLD, scene.COLD, events.tick.HOT],
-	(painter, scene, _) => painter.compose(scene)
+	[painter.COLD, scene.HOT],
+	(painter, scene) => painter.compose(scene)
 )

@@ -11,9 +11,9 @@ updateFlow(flow, graphModules)
 
 tools.setFlow(flow, 'graph-sort')
 
-setTimeout(function () {
-  flow.setDebug(false)
-}, 1000)
+// setTimeout(function () {
+//   flow.setDebug(false)
+// }, 1000)
 
 
 if (module.hot) {
