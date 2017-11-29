@@ -7,7 +7,7 @@ import * as shader from './shaders/base'
 import * as events from '../events'
 import * as camera from './camera'
 import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
-import { Layer, LayerData, DrawSettings } from 'tvs-painter/dist/lib'
+import { Layer, LayerData, DrawSettings, SketchData } from 'tvs-painter/dist/lib'
 
 
 // ===== Settings =====
@@ -68,7 +68,7 @@ export const tilesData = stream(
 			color: tile.color,
 			connections: tile.connections
 		}))
-	})
+	} as SketchData)
 )
 
 export const tilesSketch = makeSketchEntity(painter, tilesData)

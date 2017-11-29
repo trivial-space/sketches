@@ -4,7 +4,7 @@ import * as geometries from './geometries'
 import * as pointShader from './shaders/point'
 import * as lineShader from './shaders/line'
 import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
-import { LayerData } from 'tvs-painter/dist/lib'
+import { LayerData, SketchData } from 'tvs-painter/dist/lib'
 
 
 // ===== shaders =====
@@ -27,14 +27,14 @@ export const pointsData = stream(
 	[pointsForm.HOT, pointsShade.HOT],
 	(form, shade) => ({
 		form, shade
-	})
+	} as SketchData)
 )
 
 export const linesData = stream(
 	[linesForm.HOT, linesShade.HOT],
 	(form, shade) => ({
 		form, shade
-	})
+	} as SketchData)
 )
 
 export const pointsSketch = makeSketchEntity(painter, pointsData)
