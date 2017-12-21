@@ -18,7 +18,8 @@ export const nodes = stream(
 	(count, nsCount, size) => yieldTimes(i => ({
 		id: i,
 		pos: [Math.random() * size.width, Math.random() * size.height],
-		ns: randInt(nsCount)
+		ns: randInt(nsCount),
+		force: [0, 0]
 	}), count)
 )
 
@@ -47,19 +48,15 @@ export const springLength = val(200)
 nodes.react(
 	[events.tick.HOT, springLength.COLD, connections.COLD],
 	(nodes, tpf, springLength, connections) => {
-		const forces = yieldTimes(
-			() => [0, 0],
-			nodes.length
-		)
 
-		function updateForces(force, dir, fromIdx, toIdx) {
+		function updateForces(force, dir, from, to) {
 			const update = f => v =>
 				f.combine(mul, dir)
 				.pull(add, v)
 				.value
 
-			alter(forces, fromIdx, update(force))
-			alter(forces, toIdx, update(force.map(f => -f)))
+			alter(from, 'force', update(force))
+			alter(to, 'force', update(force.map(f => -f)))
 		}
 
 		for (const c of connections) {
@@ -77,7 +74,7 @@ nodes.react(
 				.map(l => l - springLength)
 				.map(v => v * 2)
 
-			updateForces(force, dir, n1.id, n2.id)
+			updateForces(force, dir, n1, n2)
 		}
 
 
@@ -93,24 +90,25 @@ nodes.react(
 				const dist = vec.map(length)
 				const force = dist.map(l => -Math.max(100 - l, 0))
 
-				updateForces(force, dir, n1.id, n2.id)
+				updateForces(force, dir, n1, n2)
 
 				if (n2.ns === n1.ns) {
 					const force = dist.map(d => d - 100)
-					updateForces(force, dir, n1.id, n2.id)
+					updateForces(force, dir, n1, n2)
 				} else {
 					const force = dist.map(d => -Math.max(200 - d, 0))
-					updateForces(force, dir, n1.id, n2.id)
+					updateForces(force, dir, n1, n2)
 				}
 			}
 		}
 
-		for (let i = 0; i < forces.length; i++) {
-			const force = forces[i]
+		for (const node of nodes) {
+			const force = node.force
 			const l = length(force) - 3
 			if (l > 0) {
 				const n = div(l + 3, force)
-				nodes[i].pos = add(nodes[i].pos, mul(l * (tpf / 500), n))
+				node.pos = add(node.pos, mul(l * (tpf / 500), n))
+				node.force = [0, 0]
 			}
 		}
 		return nodes
