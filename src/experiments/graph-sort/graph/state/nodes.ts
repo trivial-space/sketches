@@ -3,7 +3,8 @@ import { yieldTimes, flatten } from 'tvs-libs/dist/lib/utils/sequence'
 import { canvasSize } from 'experiments/graph-sort/graph/view/context'
 import { randInt, randIntInRange } from 'tvs-libs/dist/lib/math/random'
 import * as events from '../events'
-import { sub, length, normalize, mul, add } from 'tvs-libs/dist/lib/math/vectors'
+import { sub, length, normalize, mul, add, div } from 'tvs-libs/dist/lib/math/vectors'
+import { M, alter } from 'shared-utils/fp'
 
 
 export const nodeCount = val(40)
@@ -51,40 +52,56 @@ nodes.react(
 			nodes.length
 		)
 
+		function updateForces(force, dir, fromIdx, toIdx) {
+			const update = f => v =>
+				f.combine(mul, dir)
+				.pull(add, v)
+				.value
+
+			alter(forces, fromIdx, update(force))
+			alter(forces, toIdx, update(force.map(f => -f)))
+		}
+
 		for (const c of connections) {
 			const n1 = nodes[c[0]]
 			const n2 = nodes[c[1]]
-			const vec = sub(n2.pos, n1.pos)
-			const dist = length(vec)
-			const dir = normalize(vec)
-			const diff = dist - springLength
-			const force = diff * 2
-			forces[n1.id] = add(forces[n1.id], mul(force, dir))
-			forces[n2.id] = add(forces[n2.id], mul(force * -1, dir))
+
+			const vec = M.of(n2.pos)
+				.pull(sub, n1.pos)
+
+			const dir = vec
+				.map(normalize)
+
+			const force = vec
+				.map(length)
+				.map(l => l - springLength)
+				.map(v => v * 2)
+
+			updateForces(force, dir, n1.id, n2.id)
 		}
+
 
 		for (let i = 0; i < nodes.length - 1; i++) {
 			const n1 = nodes[i]
 			for (let j = i + 1; j < nodes.length; j++) {
 				const n2 = nodes[j]
 
-				const vec = sub(n2.pos, n1.pos)
-				const dist = length(vec)
-				const dir = normalize(vec)
-				const force = Math.max(100 - dist, 0)
-				forces[n1.id] = add(forces[n1.id], mul(force * -1, dir))
-				forces[n2.id] = add(forces[n2.id], mul(force, dir))
+				const vec = M.of(n2.pos)
+					.pull(sub, n1.pos)
+
+				const dir = vec.map(normalize)
+				const dist = vec.map(length)
+				const force = dist.map(l => -Math.max(100 - l, 0))
+
+				updateForces(force, dir, n1.id, n2.id)
 
 				if (n2.ns === n1.ns) {
-					const force = dist - 100
-					forces[n1.id] = add(forces[n1.id], mul(force, dir))
-					forces[n2.id] = add(forces[n2.id], mul(force * -1, dir))
+					const force = dist.map(d => d - 100)
+					updateForces(force, dir, n1.id, n2.id)
 				} else {
-					const force = Math.max(200 - dist, 0)
-					forces[n1.id] = add(forces[n1.id], mul(force * -1, dir))
-					forces[n2.id] = add(forces[n2.id], mul(force, dir))
+					const force = dist.map(d => -Math.max(200 - d, 0))
+					updateForces(force, dir, n1.id, n2.id)
 				}
-
 			}
 		}
 
@@ -92,7 +109,7 @@ nodes.react(
 			const force = forces[i]
 			const l = length(force) - 3
 			if (l > 0) {
-				const n = normalize(force)
+				const n = div(l + 3, force)
 				nodes[i].pos = add(nodes[i].pos, mul(l * (tpf / 500), n))
 			}
 		}
