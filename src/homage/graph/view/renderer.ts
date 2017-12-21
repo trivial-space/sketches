@@ -80,7 +80,7 @@ export const groundSketch = makeSketchEntity(painter)
 		form, shade,
 		uniforms: {
 			transform,
-			lights: [].concat.apply([], zip(lightPositions, lightRotations, (p: any[], r) => [...p, r])),
+			lights: [].concat.apply([], zip((p: any[], r) => [...p, r], lightPositions, lightRotations)),
 			lightSize,
 			lightTex: videos.map(v => v.texture()),
 			reflection: null,
@@ -95,10 +95,10 @@ export const screenSketch = makeSketchEntity(painter)
 	[screenShade.HOT, planeForm.HOT, screens.transforms.HOT, videoTextures.HOT],
 	(sketch, shade, form, transforms, textures) => sketch.update({
 		form, shade,
-		uniforms: zip(transforms, textures, (transform, tex) => ({
+		uniforms: zip((transform, tex) => ({
 			transform,
 			video: tex.texture()
-		}))
+		}), transforms, textures)
 	})
 )
 

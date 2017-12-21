@@ -25,7 +25,7 @@ export const geoShade = makeShadeEntity(painter, geoSpec)
 
 // Textures
 
-export const image = asyncStreamStart<HTMLImageElement>(null, send => {
+export const image = asyncStreamStart<HTMLImageElement>([], send => {
 	const img = new Image()
 	img.onload = () => send(img)
 	img.src = 'tree.jpg'

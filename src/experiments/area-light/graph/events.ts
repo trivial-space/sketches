@@ -14,7 +14,7 @@ export const tick = asyncStreamStart(null, animateWithTPF)
 export const windowSize = asyncStreamStart(null, getWindowSize)
 
 export const mouse: EntityRef<MouseState> = asyncStream([canvas.HOT],
-	(send, canvas) => getMouse(send, {element: canvas, enableRightButton: true})
+	(send, canvas) => getMouse({element: canvas, enableRightButton: true}, send)
 )
 
 export const keys = asyncStreamStart(null, keyboard)

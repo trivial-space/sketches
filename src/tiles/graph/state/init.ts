@@ -1,5 +1,5 @@
 import { val, stream, asyncStream, EntityRef } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { normalRand } from 'tvs-libs/dist/lib/math/core'
+import { normalRand } from 'tvs-libs/dist/lib/math/random'
 import { pickRandom } from 'tvs-libs/dist/lib/utils/sequence'
 import * as constants from './constants'
 

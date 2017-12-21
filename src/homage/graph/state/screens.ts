@@ -32,10 +32,10 @@ export const positions = stream(
 export const transforms = stream(
 	[rotations.HOT, positions.HOT, scale.HOT],
 	(rotations: number[], positions: number[][], scale: number[]) =>
-		zip(rotations, positions, (rot, pos) => {
+		zip((rot, pos) => {
 			const t = mat4.fromTranslation(mat4.create(), pos)
 			mat4.rotateY(t, t, rot)
 			mat4.scale(t, t, scale)
 			return t
-		})
+		}, rotations, positions)
 )

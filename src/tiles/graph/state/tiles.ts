@@ -1,5 +1,5 @@
 import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import {/*sign,*/ randInt, normalRand } from 'tvs-libs/dist/lib/math/core'
+import { randInt, normalRand } from 'tvs-libs/dist/lib/math/random'
 import { mat4, quat } from 'gl-matrix'
 import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
 import { pickRandom, doTimes, yieldTimes } from 'tvs-libs/dist/lib/utils/sequence'
@@ -8,6 +8,7 @@ import * as init from './init'
 import * as camera from '../view/camera'
 import * as constants from './constants'
 import { Animation, createAnimation } from 'shared-utils/animation'
+import { partial } from 'tvs-libs/dist/lib/utils/fp'
 
 
 type Color = number[]
@@ -173,6 +174,8 @@ export const grid = val<TileState[][]>([[]])
 		const heightDiff = newHeight - height
 		const widthDiff = newWidth - width
 
+		const createTile = partial(createTileState, set, color, specs)
+
 		// create new gid rows at top and bottom
 		if (heightDiff > 0) {
 
@@ -180,11 +183,8 @@ export const grid = val<TileState[][]>([[]])
 			const down = heightDiff - up
 
 			grid.forEach(row => {
-				row.unshift(...yieldTimes(up, () => createTileState(set, color, specs)))
-			})
-
-			grid.forEach(row => {
-				doTimes(down, () => row.push(createTileState(set, color, specs)))
+				row.unshift(...yieldTimes(createTile, up))
+				row.push(...yieldTimes(createTile, down))
 			})
 		}
 
@@ -195,13 +195,11 @@ export const grid = val<TileState[][]>([[]])
 			const right = widthDiff - left
 			const currentHeight = Math.max(newHeight, height)
 
-			grid.unshift(...yieldTimes(left, () =>
-				yieldTimes(currentHeight, () => createTileState(set, color, specs)))
-			)
+			const newCol = () => yieldTimes(createTile, currentHeight)
 
-			doTimes(right, () =>
-				grid.push(yieldTimes(currentHeight, () => createTileState(set, color, specs)))
-			)
+			grid.unshift(...yieldTimes(newCol, left))
+			grid.push(...yieldTimes(newCol, right))
+
 		}
 
 		if (widthDiff > 0 || heightDiff > 0) {
@@ -223,10 +221,10 @@ export const grid = val<TileState[][]>([[]])
 
 
 export const activeTiles = stream([
-	grid.HOT,
-	colCount.HOT,
-	rowCount.HOT
-], (grid, cols, rows) => {
+	colCount.COLD,
+	rowCount.COLD,
+	grid.HOT
+], (cols, rows, grid) => {
 
 	const tiles: TileState[] = []
 	const width = grid.length
@@ -240,18 +238,20 @@ export const activeTiles = stream([
 	const offX = ((cols + 1) % 2) * 0.5
 	const offY = (rows % 2) * 0.5 + 0.5
 
-	doTimes(cols, x => {
-		doTimes(rows, y => {
-			const tile: TileState = grid[x + activeCols][y + activeRows]
-			const [iX, iY] = tile.gridIndex
-			tile.posOffset = [offX, offY]
-			tile.updateTransform = true
-			tile.yawDelay = (x + (rows - y + 1)) * 100
-			tile.pos = [firstLeftIndex + iX, firstUpIndex + iY]
-			tile.connected = !!(tile.height < 0.1 && tile.height > -0.1)
-			tiles.push(tile)
-		})
-	})
+	doTimes(x => {
+		doTimes(y => {
+			const tile = grid[x + activeCols][y + activeRows]
+			if (tile) {
+				const [iX, iY] = tile.gridIndex
+				tile.posOffset = [offX, offY]
+				tile.updateTransform = true
+				tile.yawDelay = (x + (rows - y + 1)) * 100
+				tile.pos = [firstLeftIndex + iX, firstUpIndex + iY]
+				tile.connected = !!(tile.height < 0.1 && tile.height > -0.1)
+				tiles.push(tile)
+			}
+		}, rows)
+	}, cols)
 
 	return tiles
 })
