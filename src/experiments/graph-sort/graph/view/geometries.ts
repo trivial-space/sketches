@@ -48,7 +48,7 @@ export const lines = stream(
 					const p2 = add(n1.pos, mul(-width / 2, normal))
 					const p3 = add(n2.pos, mul(width / 2, normal))
 					const p4 = add(n2.pos, mul(-width / 2, normal))
-					return flatten([p1, p2, p3, p2, p3, p4])
+					return flatten([p3, p2, p1, p2, p3, p4])
 				}, connections)),
 				storeType: 'DYNAMIC'
 			}

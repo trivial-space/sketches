@@ -4,7 +4,7 @@ export class M<A> {
 		return new M(a)
 	}
 
-	value: A
+	readonly value: A
 
 	constructor (a: A) {
 		this.value = a

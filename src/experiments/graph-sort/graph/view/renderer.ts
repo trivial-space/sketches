@@ -1,17 +1,16 @@
 import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { painter, gl, canvasSize } from './context'
 import * as geometries from './geometries'
-import * as pointShader from './shaders/point'
-import * as lineShader from './shaders/line'
+import * as shaders from './shaders'
 import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
 import { LayerData, SketchData } from 'tvs-painter/dist/lib'
 
 
 // ===== shaders =====
 
-export const pointsShade = makeShadeEntity(painter, pointShader.spec)
+export const pointsShade = makeShadeEntity(painter, shaders.point)
 
-export const linesShade = makeShadeEntity(painter, lineShader.spec)
+export const linesShade = makeShadeEntity(painter, shaders.line)
 
 
 // ===== geometries =====
@@ -51,7 +50,9 @@ export const sceneData = stream(
 		uniforms: { size: [size.width, size.height] },
 		drawSettings : {
 			clearColor: [0, 0, 0, 1],
-			clearBits: gl.COLOR_BUFFER_BIT
+			clearBits: gl.COLOR_BUFFER_BIT,
+			cullFace: gl.BACK,
+			enable: [gl.CULL_FACE]
 		}
 	} as LayerData)
 )
