@@ -1,5 +1,5 @@
 import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
+import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import * as events from '../events'
 import * as videos from '../videos'
 import * as camera from './camera'

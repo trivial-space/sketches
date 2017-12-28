@@ -355,7 +355,7 @@ export const updateActiveTiles = stream([
 
 		if (tile.updateTransform) {
 			tile.updateTransform = false
-			quat.multiply(tile.rotation, getYawQuat(quat.create(), tile.yaw), getRollQuat(quat.create(), tile.roll))
+			quat.multiply(tile.rotation, getYawQuat(tile.yaw) as quat, getRollQuat(tile.roll) as quat)
 			const [x, y] = tile.pos
 			const [offX, offY] = tile.posOffset
 			mat4.fromRotationTranslation(

@@ -6,7 +6,7 @@ import * as init from '../state/init'
 import * as shader from './shaders/base'
 import * as events from '../events'
 import * as camera from './camera'
-import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
+import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { Layer, LayerData, DrawSettings, SketchData } from 'tvs-painter/dist/lib'
 
 

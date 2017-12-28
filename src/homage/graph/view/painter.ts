@@ -1,5 +1,5 @@
 import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { setupPainter } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
+import { setupPainter } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { DrawSettings } from 'tvs-painter/dist/lib'
 import { canvas, windowSize } from '../events'
 

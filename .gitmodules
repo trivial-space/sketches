@@ -10,3 +10,6 @@
 [submodule "libs/flow-tools"]
 	path = libs/flow-tools
 	url = git@github.com:trivial-space/flow-tools.git
+[submodule "libs/utils"]
+	path = libs/utils
+	url = git@github.com:trivial-space/utils.git

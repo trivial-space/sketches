@@ -1,5 +1,5 @@
 import { val, asyncStream, EntityRef, delta, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import * as flowCamera from 'tvs-libs/dist/lib/vr/flow-camera'
+import * as flowCamera from 'tvs-utils/dist/lib/vr/flow-camera'
 import { canvasSize } from './painter'
 import { Keys } from 'tvs-libs/dist/lib/events/keyboard'
 import { mat4, vec3 } from 'gl-matrix'
@@ -100,5 +100,5 @@ position.react(
 export const groundMirrorView = val(mat4.create())
 .react(
 	[view.HOT, ground.mirrorMatrix.HOT],
-	mat4.multiply
+	(self, view, mirror) => mat4.multiply(self, view, mirror as any)
 )

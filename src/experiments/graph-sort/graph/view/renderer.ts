@@ -2,7 +2,7 @@ import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { painter, gl, canvasSize } from './context'
 import * as geometries from './geometries'
 import * as shaders from './shaders'
-import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
+import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { LayerData, SketchData } from 'tvs-painter/dist/lib'
 
 

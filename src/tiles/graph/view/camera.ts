@@ -1,6 +1,6 @@
 import { canvasSize } from './context'
 import { mat4 } from 'gl-matrix'
-import { makePerspective } from 'tvs-libs/dist/lib/vr/flow-camera'
+import { makePerspective } from 'tvs-utils/dist/lib/vr/flow-camera'
 import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
 
 

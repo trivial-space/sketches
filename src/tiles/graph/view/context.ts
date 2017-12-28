@@ -1,4 +1,4 @@
-import { setupPainter } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
+import { setupPainter } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { canvas, windowSize } from '../events'
 
 

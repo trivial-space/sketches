@@ -1,5 +1,5 @@
 import { stream, val, asyncStreamStart } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity, makeStaticLayerEntity } from 'tvs-libs/dist/lib/vr/flow-painter-utils'
+import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity, makeStaticLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { painter, gl } from './painter'
 import * as events from './events'
 import * as camera from './camera'
