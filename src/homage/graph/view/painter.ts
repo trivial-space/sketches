@@ -9,6 +9,4 @@ export const settings = val<DrawSettings>({
 }).reset()
 
 
-export const {painter, gl, canvasSize} = setupPainter(canvas, windowSize, settings)
-
-
+export const { painter, gl, canvasSize } = setupPainter(canvas, windowSize, settings)

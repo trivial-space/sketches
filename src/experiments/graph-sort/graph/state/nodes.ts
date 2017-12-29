@@ -1,5 +1,5 @@
 import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { yieldTimes, flatten } from 'tvs-libs/dist/lib/utils/sequence'
+import { times, flatten } from 'tvs-libs/dist/lib/utils/sequence'
 import { canvasSize } from 'experiments/graph-sort/graph/view/context'
 import { randInt, randIntInRange } from 'tvs-libs/dist/lib/math/random'
 import * as events from '../events'
@@ -15,7 +15,7 @@ export const nameSpaceCount = val(6)
 
 export const nodes = stream(
 	[nodeCount.HOT, nameSpaceCount.HOT, canvasSize.HOT],
-	(count, nsCount, size) => yieldTimes(i => ({
+	(count, nsCount, size) => times(i => ({
 		id: i,
 		pos: [Math.random() * size.width, Math.random() * size.height],
 		ns: randInt(nsCount),
@@ -26,7 +26,7 @@ export const nodes = stream(
 
 export const connections = stream(
 	[nodeCount.HOT],
-	(count) => flatten(yieldTimes(i => {
+	(count) => flatten(times(i => {
 		if (i < count - 3) {
 			const i1 = randIntInRange(i + 1, count - 1)
 			const cs = [[i, i1] as [number, number]]

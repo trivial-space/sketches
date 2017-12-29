@@ -2,7 +2,7 @@ import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { randInt, normalRand } from 'tvs-libs/dist/lib/math/random'
 import { mat4, quat } from 'gl-matrix'
 import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
-import { pickRandom, doTimes, yieldTimes } from 'tvs-libs/dist/lib/utils/sequence'
+import { pickRandom, doTimes, times } from 'tvs-libs/dist/lib/utils/sequence'
 import * as events from '../events'
 import * as init from './init'
 import * as camera from '../view/camera'
@@ -183,8 +183,8 @@ export const grid = val<TileState[][]>([[]])
 			const down = heightDiff - up
 
 			grid.forEach(row => {
-				row.unshift(...yieldTimes(createTile, up))
-				row.push(...yieldTimes(createTile, down))
+				row.unshift(...times(createTile, up))
+				row.push(...times(createTile, down))
 			})
 		}
 
@@ -195,10 +195,10 @@ export const grid = val<TileState[][]>([[]])
 			const right = widthDiff - left
 			const currentHeight = Math.max(newHeight, height)
 
-			const newCol = () => yieldTimes(createTile, currentHeight)
+			const newCol = () => times(createTile, currentHeight)
 
-			grid.unshift(...yieldTimes(newCol, left))
-			grid.push(...yieldTimes(newCol, right))
+			grid.unshift(...times(newCol, left))
+			grid.push(...times(newCol, right))
 
 		}
 
