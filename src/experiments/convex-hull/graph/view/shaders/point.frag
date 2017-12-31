@@ -8,7 +8,7 @@ void main() {
 	float x = pos.x;
 	float y = pos.y;
 	float light = x * x + y * y - r * r;
- 	light = clamp(-(light * 2.0), 0.0, 1.0);
+ 	light = clamp(-(light * 4.0), 0.0, 1.0);
 
 	// smooth out border
 	/* col /= resolution.x * resolution.y * 0.5; */

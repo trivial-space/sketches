@@ -11,9 +11,9 @@ updateFlow(flow, graphModules)
 
 tools.setFlow(flow, 'convex-hull')
 
-// setTimeout(function () {
-// 	flow.setDebug(false)
-// }, 1000)
+setTimeout(function () {
+	flow.setDebug(false)
+}, 1000)
 
 flow.flush()
 
@@ -22,7 +22,7 @@ if (module.hot) {
 		const newGraphModules = require.context('./graph', true, /\.ts$/)
 		updateFlow(flow, newGraphModules)
 		tools.setFlow(flow, 'convex-hull')
-		console.log('flow is newly set!', flow)
+
 		flow.flush()
 	})
 }
