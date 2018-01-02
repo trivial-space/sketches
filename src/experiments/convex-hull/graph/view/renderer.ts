@@ -5,22 +5,22 @@ import * as shaders from './shaders'
 import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { makeEffectLayerEntity } from 'tvs-utils/lib/vr/flow-painter-utils'
 import { tripleStream } from '../state/nodes'
-import { DrawSettings, LayerData } from 'tvs-painter/lib'
+import { LayerData } from 'tvs-painter/lib'
 import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
 
 
-export const drawSettings = stream(
-	[gl.HOT],
-	gl => ({
-		enable: [gl.BLEND, gl.DEPTH_TEST],
-		blendFunc: [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA]
-	} as DrawSettings)
-)
+// export const drawSettings = stream(
+// 	[gl.HOT],
+// 	gl => ({
+// 		enable: [gl.BLEND, gl.DEPTH_TEST],
+// 		blendFunc: [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA]
+// 	} as DrawSettings)
+// )
 
-painter.react(
-	[drawSettings.HOT],
-	(p, settings) => p.updateDrawSettings(settings)
-)
+// painter.react(
+// 	[drawSettings.HOT],
+// 	(p, settings) => p.updateDrawSettings(settings)
+// )
 
 
 // ===== shaders =====
@@ -57,7 +57,7 @@ export const points = makeDrawingLayerEntity(painter)
 		drawSettings: {
 			clearColor: [0, 0, 0, 1],
 			clearBits: gl.COLOR_BUFFER_BIT,
-			enable: [gl.BLEND, gl.DEPTH_TEST],
+			enable: [gl.BLEND],
 			blendFunc: [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA]
 		}
 	})
@@ -69,19 +69,20 @@ export const sides = makeEffectLayerEntity(painter)
 	[tripleStream.HOT, canvasSize.HOT, shaders.sides.HOT],
 	(l, triple, size, frag) => l.update({
 		frag,
-		uniforms: {
+		uniforms: { //triples.map(triple => ({
 			size: [size.width, size.height],
 			p1: triple[0],
 			p2: triple[1],
-			p3: triple[2]
-		}
+			p3: triple[2],
+			source: null
+		}//))
 	})
 )
 
 export const outBuffer1 = makeEffectLayerEntity(painter)
 export const outBuffer2 = makeEffectLayerEntity(painter)
 
-const updateOutBuffer = (l, out, size, frag, gl) => l.update({
+const updateOutBuffer = (l, out, size, frag) => l.update({
 	buffered: true,
 	...size,
 	frag,
@@ -91,11 +92,7 @@ const updateOutBuffer = (l, out, size, frag, gl) => l.update({
 	},
 	magFilter: 'NEAREST',
 	minFilter: 'NEAREST',
-	wrap: 'CLAMP_TO_EDGE',
-	drawSettings: {
-		clearColor: [0, 0, 0, 1],
-		clearBits: gl.COLOR_BUFFER_BIT
-	}
+	wrap: 'CLAMP_TO_EDGE'
 } as LayerData)
 
 outBuffer1.react(
@@ -114,14 +111,14 @@ outBuffer2.react(
 // ===== render =====
 
 export const renderLayers = stream(
-	[sides.COLD, outBuffer1.HOT, points.HOT, outBuffer2.HOT],
+	[points.HOT, sides.HOT, outBuffer1.HOT, outBuffer2.HOT],
 	(...args) => args
 )
 .react(
 	[tripleStream.HOT],
 	self => {
-		const [s, o1, p, o2] = self
-		return [s, o2, p, o1]
+		const [p, s, o1, o2] = self
+		return [p, s, o2, o1]
 	}
 )
 
