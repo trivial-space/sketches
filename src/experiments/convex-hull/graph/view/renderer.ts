@@ -5,7 +5,8 @@ import * as shaders from './shaders'
 import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { makeEffectLayerEntity } from 'tvs-utils/lib/vr/flow-painter-utils'
 import { tripleStream } from '../state/nodes'
-import { DrawSettings } from 'tvs-painter/lib'
+import { DrawSettings, LayerData } from 'tvs-painter/lib'
+import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
 
 
 export const drawSettings = stream(
@@ -47,15 +48,17 @@ export const pointsSketch = makeSketchEntity(painter)
 
 // ===== layers =====
 
-export const scene = makeDrawingLayerEntity(painter)
+export const points = makeDrawingLayerEntity(painter)
 .react(
 	[pointsSketch.HOT, canvasSize.HOT, gl.COLD],
 	(l, points, size, gl) => l.update({
 		sketches: [points],
 		uniforms: { size: [size.width, size.height] },
-		drawSettings : {
+		drawSettings: {
 			clearColor: [0, 0, 0, 1],
-			clearBits: gl.COLOR_BUFFER_BIT
+			clearBits: gl.COLOR_BUFFER_BIT,
+			enable: [gl.BLEND, gl.DEPTH_TEST],
+			blendFunc: [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA]
 		}
 	})
 )
@@ -75,14 +78,54 @@ export const sides = makeEffectLayerEntity(painter)
 	})
 )
 
+export const outBuffer1 = makeEffectLayerEntity(painter)
+export const outBuffer2 = makeEffectLayerEntity(painter)
+
+const updateOutBuffer = (l, out, size, frag, gl) => l.update({
+	buffered: true,
+	...size,
+	frag,
+	uniforms: {
+		previous: out.texture(),
+		current: null
+	},
+	magFilter: 'NEAREST',
+	minFilter: 'NEAREST',
+	wrap: 'CLAMP_TO_EDGE',
+	drawSettings: {
+		clearColor: [0, 0, 0, 1],
+		clearBits: gl.COLOR_BUFFER_BIT
+	}
+} as LayerData)
+
+outBuffer1.react(
+	[outBuffer2.HOT, canvasSize.HOT, shaders.compose.HOT, gl.HOT],
+	updateOutBuffer
+)
+.accept(unequal)
+
+outBuffer2.react(
+	[outBuffer1.HOT, canvasSize.HOT, shaders.compose.HOT, gl.HOT],
+	updateOutBuffer
+)
+.accept(unequal)
+
+
 // ===== render =====
 
-export const renderPoints = stream(
-	[painter.COLD, scene.HOT],
-	(painter, scene) => painter.compose(scene)
+export const renderLayers = stream(
+	[sides.COLD, outBuffer1.HOT, points.HOT, outBuffer2.HOT],
+	(...args) => args
+)
+.react(
+	[tripleStream.HOT],
+	self => {
+		const [s, o1, p, o2] = self
+		return [s, o2, p, o1]
+	}
 )
 
 export const renderSides = stream(
-	[painter.COLD, sides.HOT, scene.COLD],
-	(painter, sides, scene) => painter.compose(scene, sides)
+	[painter.COLD, renderLayers.HOT],
+	(painter, layers) => painter.compose(...layers)
 )
