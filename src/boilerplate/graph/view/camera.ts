@@ -78,7 +78,8 @@ rotY.react(
 	(rot, drag, speed) => rot + drag.x * speed
 )
 
-position.react(
+position.val(vec3.fromValues(0, 0, 30))
+.react(
 	[moveLeft.HOT, rotation.COLD],
 	(pos, left, rotation) => {
 		const v = vec3.fromValues(rotation.rotY[0], rotation.rotY[1], rotation.rotY[2])

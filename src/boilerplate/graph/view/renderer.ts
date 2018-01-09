@@ -2,12 +2,10 @@ import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import * as geometries from './geometries'
 import * as init from '../state/init'
 import * as shaders from './shaders'
-import * as events from '../events'
 import * as camera from './camera'
 import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { DrawSettings } from 'tvs-painter/dist/lib'
 import { gl, painter } from './context'
-
 
 
 // ===== Settings =====
@@ -15,8 +13,8 @@ import { gl, painter } from './context'
 export const settings = stream(
 	[gl.HOT],
 	gl => ({
-		clearColor: [1, 1, 1, 1],
-		enable: [gl.DEPTH_TEST, gl.CULL_FACE]
+		clearColor: [0, 0, 0, 1],
+		enable: [gl.DEPTH_TEST]
 	} as DrawSettings))
 
 
@@ -38,13 +36,16 @@ export const form = makeFormEntity(painter, geometries.plane)
 
 // ===== objects =====
 
-export const tilesSketch = makeSketchEntity(painter)
+export const sketch = makeSketchEntity(painter)
 .react(
-	[form.HOT, shade.HOT, init.transform.HOT],
-	(s, form, shade, transform) => s.update({
+	[form.HOT, shade.HOT, init.transform.HOT, gl.HOT],
+	(s, form, shade, transform, gl) => s.update({
 		form, shade,
 		uniforms: {
 			transform
+		},
+		drawSettings: {
+			clearBits: gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT
 		}
 	})
 )
@@ -54,9 +55,9 @@ export const tilesSketch = makeSketchEntity(painter)
 
 export const scene = makeDrawingLayerEntity(painter)
 .react(
-	[tilesSketch.HOT, camera.view.HOT, camera.perspective.HOT],
-	(s, tiles, view, projection) => s.update({
-		sketches: [tiles],
+	[sketch.HOT, camera.view.HOT, camera.perspective.HOT],
+	(s, sketch, view, projection) => s.update({
+		sketches: [sketch],
 		uniforms: {
 			view,
 			projection
@@ -68,6 +69,6 @@ export const scene = makeDrawingLayerEntity(painter)
 // ===== render =====
 
 export const render = stream(
-	[painter.COLD, scene.COLD, events.tick.HOT],
-	(painter, scene, _) => painter.compose(scene)
+	[painter.COLD, scene.HOT],
+	(painter, scene) => painter.compose(scene)
 )

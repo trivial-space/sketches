@@ -6,6 +6,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
 	entry: {
+		'boilerplate': ['./boilerplate/index.ts'],
 		'homage': ['./homage/index.ts'],
 		'tiles': ['./tiles/index.ts'],
 		'experiments/area-light': ['./experiments/area-light/index.ts'],

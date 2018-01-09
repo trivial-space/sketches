@@ -3,7 +3,6 @@ import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEnti
 import { painter, gl } from './painter'
 import * as events from './events'
 import * as camera from './camera'
-import * as box from './geometries/box'
 import * as plane from './geometries/plane'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import { groundTransform, lightTransforms, groundColor, lightColor, lightBackColor } from './state'
@@ -12,8 +11,6 @@ import { geoSpec, lightFrag } from './shaders/shaders'
 
 
 // Forms
-
-export const boxForm = makeFormEntity(painter, box.geometry)
 
 export const planeForm = makeFormEntity(painter, plane.geometry)
 

@@ -8,7 +8,7 @@ import * as init from './init'
 import * as camera from '../view/camera'
 import * as constants from './constants'
 import { Animation, createAnimation } from 'shared-utils/animation'
-import { partial } from 'tvs-libs/dist/lib/utils/fp'
+import { partial } from 'tvs-libs/dist/lib/fp/core'
 
 
 type Color = number[]

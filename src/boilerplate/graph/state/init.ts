@@ -2,7 +2,7 @@ import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { normalRand } from 'tvs-libs/dist/lib/math/random'
 import { extrudeBottom } from 'tvs-libs/dist/lib/geometry/quad'
 import { normal } from 'tvs-libs/dist/lib/geometry/primitives'
-import { tick } from 'tiles/graph/events'
+import { tick } from '../events'
 import { mat4 } from 'gl-matrix'
 
 
@@ -17,7 +17,7 @@ export const faceNormal = stream([quad.HOT], q => normal(q))
 export const rotation = val(0)
 .react(
 	[tick.HOT],
-	(s, tpf) => s + tpf * 0.01
+	(_s, tpf) => tpf * 0.0003
 )
 
 export const transform = stream(

@@ -7,12 +7,13 @@ import { animateWithTPF } from 'tvs-libs/dist/lib/events/animation'
 
 export const canvas = val(document.getElementById('canvas') as HTMLCanvasElement)
 
-export const tick = asyncStream([], animateWithTPF)
+export const tick = asyncStream([canvas.HOT], animateWithTPF)
 
-export const windowSize = asyncStream([], getWindowSize)
+export const windowSize = asyncStream([canvas.HOT], getWindowSize)
 
 export const mouse: EntityRef<MouseState> = asyncStream([canvas.HOT],
 	(send, canvas) => getMouse({element: canvas, enableRightButton: true}, send)
 )
 
-export const keys: EntityRef<KeyState> = asyncStream([], keyboard)
+export const keys: EntityRef<KeyState> = asyncStream([canvas.HOT],
+	send => keyboard(send))
