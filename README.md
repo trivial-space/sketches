@@ -20,6 +20,8 @@ Eventually, the work evolving here will lead to a relaunch of the [trivial space
 
 To install the playground locally and play with the sketches and technologies, clone this repository, and run
 
+	git submodule init
+	git submodule update
 	yarn install
 	yarn start
 
