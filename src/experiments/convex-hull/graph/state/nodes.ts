@@ -15,7 +15,7 @@ export const nodes = stream(
 		return times(() => add(polarToCartesian2D([
 			Math.sqrt(Math.abs(normalRand() * 2 - 1)) * radius,
 			Math.random() * 2 * Math.PI
-		]), [s.width / 2, s.height / 2]), count)
+		]), [s.width / 2, s.height / 2]), count) as number[][]
 	}
 )
 

@@ -10,9 +10,9 @@ varying vec2 coords;
 
 void main() {
 	vec2 v = p2 - p1;
-	bool left = dot(v, p3) >= 0.0;
+	vec2 p = p3 - p1;
+	bool left = v.x * p.y - v.y * p.x >= 0.0; // 2D Cross product
 	bool light = dot((coords * size - p3), v) >= 0.0;
-	//if (!left) light = !light;
 	vec4 color = vec4(1.0, coords, 0.41);
 	if (!light) {
 		color = vec4(0.0);
