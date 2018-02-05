@@ -1,5 +1,5 @@
 declare module 'geo-3d-box' {
-	export function box (params: { size: number[], segments: number }): any
+	export function box (params: { size: number[], segments: number[] }): any
 	export default box
 }
 

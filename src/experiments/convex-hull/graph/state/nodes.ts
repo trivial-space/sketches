@@ -12,10 +12,13 @@ export const nodes = stream(
 	[pointCount.HOT, canvasSize.COLD],
 	(count, s) => {
 		const radius = Math.min(s.height, s.width) * 0.4
-		return times(() => add(polarToCartesian2D([
-			Math.sqrt(Math.abs(normalRand() * 2 - 1)) * radius,
-			Math.random() * 2 * Math.PI
-		]), [s.width / 2, s.height / 2]), count) as number[][]
+		return times(() => add(
+			polarToCartesian2D([
+				Math.sqrt(Math.abs(normalRand() * 2 - 1)) * radius,
+				Math.random() * 2 * Math.PI
+			]),
+			[s.width / 2, s.height / 2]
+		), count)
 	}
 )
 
@@ -40,7 +43,7 @@ export const tripleStream = asyncStream(
 		let i = 0
 		function tick () {
 			if (i < triples.length) send(triples[i++])
-			requestAnimationFrame(tick)
+			setTimeout(tick, 1000)
 		}
 		requestAnimationFrame(tick)
 		return () => i = triples.length

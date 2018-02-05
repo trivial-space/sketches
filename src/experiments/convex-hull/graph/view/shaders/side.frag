@@ -11,14 +11,20 @@ varying vec2 coords;
 void main() {
 	vec2 v = p2 - p1;
 	vec2 p = p3 - p1;
-	bool left = v.x * p.y - v.y * p.x >= 0.0; // 2D Cross product
-	bool light = dot((coords * size - p3), v) >= 0.0;
-	vec4 color = vec4(1.0, coords, 0.41);
-	if (!light) {
-		color = vec4(0.0);
+	vec2 pos = coords * size;
+	vec2 f = pos - p1;
+
+	// 2D Cross product
+	float directionPoint = v.x * p.y - v.y * p.x;
+	float directionFrag = v.x * f.y - v.y * f.x;
+
+	vec3 color = vec3(1.0, coords) * abs(directionFrag) / (size.x * size.y * 0.1);
+	if (directionPoint == 0.0 || sign(directionFrag) != sign(directionPoint)) {
+		color = vec3(0.0);
 	}
 
+	float alpha = 0.4;
 	vec4 old = texture2D(source, coords);
-	gl_FragColor = vec4(mix(color.rgb, old.rgb, 1.0 - color.a), max(old.a, color.a));
+	gl_FragColor = vec4(mix(color, old.rgb, 1.0 - alpha), max(old.a, alpha));
 }
 
