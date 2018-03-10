@@ -6,7 +6,7 @@ import { add } from 'tvs-libs/dist/lib/math/vectors'
 import { normalRand } from 'tvs-libs/dist/lib/math/random'
 
 
-export const pointCount = val(100)
+export const pointCount = val(40)
 
 export const nodes = stream(
 	[pointCount.HOT, canvasSize.COLD],
@@ -43,7 +43,7 @@ export const tripleStream = asyncStream(
 		let i = 0
 		function tick () {
 			if (i < triples.length) send(triples[i++])
-			setTimeout(tick, 1000)
+			requestAnimationFrame(tick)
 		}
 		requestAnimationFrame(tick)
 		return () => i = triples.length

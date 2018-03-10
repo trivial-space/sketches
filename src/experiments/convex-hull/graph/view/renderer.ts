@@ -9,20 +9,6 @@ import { LayerData } from 'tvs-painter/lib'
 import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
 
 
-// export const drawSettings = stream(
-// 	[gl.HOT],
-// 	gl => ({
-// 		enable: [gl.BLEND, gl.DEPTH_TEST],
-// 		blendFunc: [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA]
-// 	} as DrawSettings)
-// )
-
-// painter.react(
-// 	[drawSettings.HOT],
-// 	(p, settings) => p.updateDrawSettings(settings)
-// )
-
-
 // ===== shaders =====
 
 export const pointsShade = makeShadeEntity(painter, shaders.point)

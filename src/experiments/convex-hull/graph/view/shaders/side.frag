@@ -14,17 +14,28 @@ void main() {
 	vec2 pos = coords * size;
 	vec2 f = pos - p1;
 
+	// f - (f * v) * v
+
 	// 2D Cross product
 	float directionPoint = v.x * p.y - v.y * p.x;
 	float directionFrag = v.x * f.y - v.y * f.x;
 
-	vec3 color = vec3(1.0, coords) * abs(directionFrag) / (size.x * size.y * 0.1);
-	if (directionPoint == 0.0 || sign(directionFrag) != sign(directionPoint)) {
+	float vLength = length(v);
+	vec2 vn = v / vLength;
+	float dist = length(pos - (p1 + vn * clamp(dot(f, vn), 0.0, vLength)));
+	vec3 color = vec3(1.0, coords) * max(100.0 - dist, 0.0) / 100.0;
+	if (
+		directionPoint == 0.0
+		|| sign(directionFrag) != sign(directionPoint)
+		|| vLength < length(f)
+		|| vLength < length(pos - p2)
+	) {
 		color = vec3(0.0);
 	}
 
 	float alpha = 0.4;
 	vec4 old = texture2D(source, coords);
-	gl_FragColor = vec4(mix(color, old.rgb, 1.0 - alpha), max(old.a, alpha));
+	color = pow(color, vec3(2.0));
+	gl_FragColor = vec4(mix(color, old.rgb, 1.0 - alpha), 1.0);
 }
 
