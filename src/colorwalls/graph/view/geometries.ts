@@ -9,8 +9,9 @@ export const plane = stream(
 	[box.HOT, colors.HOT, faceNormal.HOT, boxSliceCount.HOT],
 	(b, c, n, sliceCount) => convertStackGLGeometry({
 		position: flatten(flatten(b)),
+		// color: flatten(b.map((side) => flatten(side.map((slice) => flatten(slice.map((q) => (q as any[]).map(() => pickRandom(c)))))))),
 		color: flatten(b.map((side, i) => flatten(side.map((slice, j) => slice.map(() => c[i * sliceCount + j]))))),
 		normal: flatten(b.map((side, i) => flatten(side).map(() => n[i]))),
-		cells: triangulate(4 * sliceCount * 4)
+		cells: triangulate(4 * sliceCount * 4 * 2)
 	})
 )

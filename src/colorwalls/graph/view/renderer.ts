@@ -37,18 +37,18 @@ export const form = makeFormEntity(painter, geometries.plane)
 // ===== objects =====
 
 export const sketch = makeSketchEntity(painter)
-.react(
-	[form.HOT, shade.HOT, init.transform.HOT, gl.HOT],
-	(s, form, shade, transform, gl) => s.update({
-		form, shade,
-		uniforms: {
-			transform
-		},
-		drawSettings: {
-			clearBits: gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT
-		}
-	})
-)
+	.react(
+		[form.HOT, shade.HOT, init.transform.HOT, gl.HOT],
+		(s, form, shade, transform, gl) => s.update({
+			form, shade,
+			uniforms: {
+				transform
+			},
+			drawSettings: {
+				clearBits: gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT
+			}
+		})
+	)
 
 
 // ===== layers =====
