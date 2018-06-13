@@ -31,14 +31,30 @@ export const shade = makeShadeEntity(painter, shaders.base)
 
 // ===== geometries =====
 
-export const form = makeFormEntity(painter, geometries.plane)
+export const wallsForm = makeFormEntity(painter, geometries.walls)
+
+export const floorForm = makeFormEntity(painter, geometries.ground)
 
 
 // ===== objects =====
 
-export const sketch = makeSketchEntity(painter)
+export const wallsSketch = makeSketchEntity(painter)
 	.react(
-		[form.HOT, shade.HOT, init.transform.HOT, gl.HOT],
+		[wallsForm.HOT, shade.HOT, init.transform.HOT, gl.HOT],
+		(s, form, shade, transform, gl) => s.update({
+			form, shade,
+			uniforms: {
+				transform
+			},
+			drawSettings: {
+				clearBits: gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT
+			}
+		})
+	)
+
+export const groundSketch = makeSketchEntity(painter)
+	.react(
+		[floorForm.HOT, shade.HOT, init.transformFloor.HOT, gl.HOT],
 		(s, form, shade, transform, gl) => s.update({
 			form, shade,
 			uniforms: {
@@ -55,9 +71,9 @@ export const sketch = makeSketchEntity(painter)
 
 export const scene = makeDrawingLayerEntity(painter)
 .react(
-	[sketch.HOT, camera.view.HOT, camera.perspective.HOT],
-	(s, sketch, view, projection) => s.update({
-		sketches: [sketch],
+	[wallsSketch.HOT, groundSketch.HOT, camera.view.HOT, camera.perspective.HOT],
+	(s, _walls, ground, view, projection) => s.update({
+		sketches: [_walls, ground],
 		uniforms: {
 			view,
 			projection
