@@ -1,8 +1,8 @@
 import { repeat } from 'shared-utils/scheduler'
 import { update } from 'tvs-utils/dist/lib/vr/camera'
-import { camera } from 'colorwalls/camera'
-import { painter } from 'colorwalls/context'
-import { scene } from 'colorwalls/renderer'
+import { camera } from './camera'
+import { painter } from './context'
+import { scene } from './renderer'
 import './events'
 
 

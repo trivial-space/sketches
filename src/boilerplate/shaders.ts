@@ -5,15 +5,7 @@ import { painter } from './context'
 
 
 export const baseShade = getShade(painter, 'baseShade')
-	.update({
-		vert, frag
-	})
-
-
-export const groundShade = getShade(painter, 'groundShade')
-	.update({
-		vert, frag
-	})
+	.update({ vert, frag })
 
 
 if (module.hot) {

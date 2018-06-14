@@ -1,4 +1,4 @@
-import { flow, tools } from 'experiments/convex-hull/flow'
+import { flow, tools, flowTitle } from 'flow/boilerplate/flow'
 import { updateFlow } from 'shared-utils/reload'
 
 
@@ -9,11 +9,12 @@ flow.setDebug(true)
 
 updateFlow(flow, graphModules)
 
-tools.setFlow(flow, 'convex-hull')
+tools.setFlow(flow, flowTitle)
 
-setTimeout(function () {
+setTimeout(function() {
 	flow.setDebug(false)
 }, 1000)
+
 
 flow.flush()
 
@@ -21,9 +22,6 @@ if (module.hot) {
 	module.hot.accept((graphModules as any).id, function() {
 		const newGraphModules = require.context('./graph', true, /\.ts$/)
 		updateFlow(flow, newGraphModules)
-		tools.setFlow(flow, 'convex-hull')
-
-		flow.flush()
+		tools.setFlow(flow, flowTitle)
 	})
 }
-

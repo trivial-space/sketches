@@ -1,10 +1,9 @@
 {
 	"rules": {
-		"no-unused-expression": true,
 		"no-duplicate-variable": true,
 		"no-unused-variable": true,
 		"curly": [true, "ignore-same-line"],
-		"class-name": true,
+		"class-name": false,
 		"semicolon": [
 			true,
 			"never"
@@ -22,7 +21,7 @@
 		"no-var-keyword": true,
 		"trailing-comma": [ true, {"multiline": "never", "singleline": "never"} ],
 		"prefer-for-of": true,
-		"prefer-const": true,
+		"prefer-const": false,
 		"no-unused-expression": false,
 		"whitespace": [
 			true,

@@ -1,4 +1,4 @@
-import { flow, tools } from 'experiments/graph-sort/flow'
+import { flow, tools } from 'flow/homage/flow'
 import { updateFlow } from 'shared-utils/reload'
 
 
@@ -9,17 +9,17 @@ flow.setDebug(true)
 
 updateFlow(flow, graphModules)
 
-tools.setFlow(flow, 'graph-sort')
+tools.setFlow(flow, 'hommage')
 
-// setTimeout(function () {
-//   flow.setDebug(false)
-// }, 1000)
+setTimeout(function () {
+  flow.setDebug(false)
+}, 1000)
 
 
 if (module.hot) {
   module.hot.accept((graphModules as any).id, function() {
     const newGraphModules = require.context('./graph', true, /\.ts$/)
     updateFlow(flow, newGraphModules)
-    tools.setFlow(flow, 'graph-sort')
+    tools.setFlow(flow, 'hommage')
   })
 }

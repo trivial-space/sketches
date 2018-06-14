@@ -1,9 +1,9 @@
-import * as init from './state'
+import { transform } from './state'
 import { camera } from './camera'
 import { gl, painter } from './context'
 import { getSketch, getDrawingLayer } from 'shared-utils/painterState'
-import { wallsForm, groundForm } from './geometries'
-import { baseShade, groundShade } from './shaders'
+import { planeForm } from './geometries'
+import { baseShade } from './shaders'
 
 
 // ===== Settings =====
@@ -16,23 +16,11 @@ painter.updateDrawSettings({
 
 // ===== objects =====
 
-export const wallsSketch = getSketch(painter, 'wallsSketch')
+const sketch = getSketch(painter, 'wallsSketch')
 	.update({
-		form: wallsForm,
+		form: planeForm,
 		shade: baseShade,
-		uniforms: {
-			transform: init.wallsTransform
-		}
-	})
-
-
-export const groundSketch = getSketch(painter, 'groundSketch')
-	.update({
-		form: groundForm,
-		shade: groundShade,
-		uniforms: {
-			transform: init.floorTransform
-		}
+		uniforms: { transform }
 	})
 
 
@@ -40,7 +28,7 @@ export const groundSketch = getSketch(painter, 'groundSketch')
 
 export const scene = getDrawingLayer(painter, 'scene')
 	.update({
-		sketches: [groundSketch, wallsSketch],
+		sketches: [sketch],
 		uniforms: {
 			view: camera.state.view,
 			projection: camera.state.perspective
@@ -54,4 +42,3 @@ export const scene = getDrawingLayer(painter, 'scene')
 if (module.hot) {
 	module.hot.accept()
 }
-

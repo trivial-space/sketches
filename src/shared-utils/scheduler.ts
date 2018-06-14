@@ -12,20 +12,22 @@ let oldTime = 0
 
 
 function processUpdates (time: number) {
+	const tpf = oldTime ? time - oldTime : oldTime
+	oldTime = time
+
 	if (updateOnce) {
 		for (const id in updateOnce) {
-			updateOnce[id](time)
+			updateOnce[id](tpf)
 		}
 		updateOnce = null
 	}
 
 	let updates = 0
-	const tpf = oldTime ? time - oldTime : oldTime
-	oldTime = time
 	for (const id in updateRepeat) {
 		updates++
 		updateRepeat[id](tpf)
 	}
+
 	if (!updates) {
 		willUpdate = false
 		oldTime = 0
