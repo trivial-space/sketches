@@ -3,29 +3,20 @@ const webpack = require('webpack')
 const config = require('./webpack.config')
 
 
-const hotCodeEntry = [
-	'webpack-dev-server/client?http://localhost:8080',
-	'webpack/hot/only-dev-server'
-]
-
-const entry = Object.keys(config.entry).reduce((entries, key) => {
-	entries[key] = hotCodeEntry.concat(config.entry[key])
-	return entries
-}, {})
-
 module.exports = {
+	mode: 'development',
+
 	context: config.context,
 	module: config.module,
 	resolve: config.resolve,
+	entry: config.entry,
 
-	entry: entry,
-
-	output: Object.assign({}, config.output, {
+	output: Object.assign(config.output, {
 		hotUpdateChunkFilename: "[id].[hash].hot-update.js",
 		hotUpdateMainFilename: "[hash].hot-update.json"
 	}),
 
-	devtool: 'inline-source-map',
+	devtool: 'cheap-module-eval-source-map',
 
 	devServer: {
 		hot: true,
@@ -41,8 +32,5 @@ module.exports = {
 	plugins: [
 		new webpack.HotModuleReplacementPlugin(),
 		// enable HMR globally
-
-		new webpack.NamedModulesPlugin(),
-		// prints more readable module names in the browser console on HMR updates
-	],
+	]
 }
