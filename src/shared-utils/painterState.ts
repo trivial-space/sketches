@@ -31,3 +31,19 @@ export function getDrawingLayer(painter: Painter, id: string) {
 	}
 	return drawingLayers[id] = painter.createDrawingLayer()
 }
+
+const staticLayers: {[id: string]: Layer} = {}
+export function getStaticLayer(painter: Painter, id: string) {
+	if (staticLayers[id]) {
+		return staticLayers[id]
+	}
+	return staticLayers[id] = painter.createStaticLayer()
+}
+
+const effectLayers: {[id: string]: Layer} = {}
+export function getEffectLayer(painter: Painter, id: string) {
+	if (effectLayers[id]) {
+		return effectLayers[id]
+	}
+	return effectLayers[id] = painter.createEffectLayer()
+}

@@ -1,25 +1,34 @@
-import { flow, tools } from 'homage/flow'
-import { updateFlow } from 'shared-utils/reload'
+import { repeat } from 'shared-utils/scheduler'
+import { update } from 'tvs-utils/dist/lib/vr/camera'
+import { camera, groundMirrorView } from './camera'
+import { painter } from './context'
+import { layers, videoTextures } from './renderer'
+import './events'
+import { mat4 } from 'gl-matrix'
+import { mirrorMatrix } from './state/ground'
+import { videos } from './state/videos'
 
 
-const graphModules = require.context('./graph', true, /\.ts$/)
+const tickStep = 2
+let tickCounter = 0
 
+videos.then(vs => {
+	repeat(() => {
+		update(camera)
+		mat4.multiply(groundMirrorView, camera.state.view, mirrorMatrix as any)
 
-flow.setDebug(true)
+		if (tickCounter === 0) {
+			videoTextures.forEach((t, i) => t.update({
+				asset: vs[i]
+			}))
+		}
+		tickCounter = tickCounter === tickStep ? 0 : tickCounter + 1
 
-updateFlow(flow, graphModules)
-
-tools.setFlow(flow, 'hommage')
-
-setTimeout(function () {
-  flow.setDebug(false)
-}, 1000)
+		painter.compose.apply(null, layers)
+	}, 'render')
+})
 
 
 if (module.hot) {
-  module.hot.accept((graphModules as any).id, function() {
-    const newGraphModules = require.context('./graph', true, /\.ts$/)
-    updateFlow(flow, newGraphModules)
-    tools.setFlow(flow, 'hommage')
-  })
+	module.hot.accept()
 }

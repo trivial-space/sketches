@@ -1,4 +1,4 @@
-import { flow, tools } from 'flow/homage/flow'
+import { flow, tools } from './flow'
 import { updateFlow } from 'shared-utils/reload'
 
 

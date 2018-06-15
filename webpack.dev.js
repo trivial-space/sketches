@@ -16,7 +16,8 @@ module.exports = {
 		hotUpdateMainFilename: "[hash].hot-update.json"
 	}),
 
-	devtool: 'cheap-module-eval-source-map',
+	// devtool: 'cheap-eval-source-map',
+	devtool: 'eval',
 
 	devServer: {
 		hot: true,
