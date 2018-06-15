@@ -2,7 +2,7 @@ import { mat4 } from 'gl-matrix'
 import * as geo from 'tvs-libs/dist/lib/math/geometry'
 
 
-export const position = [0, -1.6, 0]
+export const position = [0, -3.4, 0]
 
 const normal = [0, 1, 0]
 
