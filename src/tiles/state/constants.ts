@@ -1,13 +1,10 @@
-import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
-
-
 export interface TileSpec {
 	file: string,
 	connections: [number, number, number, number]
 }
 
 
-export const specs = val({
+export const specs = {
 	lbA1: {
 		file: 'tile_lb_A_1',
 		connections: [0, 0, 1, 1]
@@ -88,10 +85,10 @@ export const specs = val({
 		file: 'tile_ltb_B_1',
 		connections: [1, 0, 1, 1]
 	}
-} as { [k: string]: TileSpec })
+} as { [k: string]: TileSpec }
 
 
-export const sets = val([{
+export const sets = [{
 	lbA1: 1,
 	lbA2: 1,
 	lbA3: 1,
@@ -109,4 +106,4 @@ export const sets = val([{
 	lrtbC1: 1,
 	ltbA1: 1,
 	ltbB1: 1
-}])
+}]

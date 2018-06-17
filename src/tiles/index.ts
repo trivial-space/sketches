@@ -1,25 +1,19 @@
-import { flow, tools } from 'tiles/flow'
-import { updateFlow } from 'shared-utils/reload'
+import { repeat } from 'shared-utils/scheduler'
+import { update } from 'tvs-utils/dist/lib/vr/camera'
+import { camera } from './camera'
+import { painter } from './context'
+import { scene } from './renderer'
+import { updateActiveTiles } from './state/tiles'
+import './events'
 
 
-const graphModules = require.context('./graph', true, /\.ts$/)
-
-
-flow.setDebug(true)
-
-updateFlow(flow, graphModules)
-
-tools.setFlow(flow, 'tiles')
-
-setTimeout(function () {
-  flow.setDebug(false)
-}, 1000)
+repeat(tpf => {
+	update(camera)
+	updateActiveTiles(tpf)
+	painter.compose(scene)
+}, 'render')
 
 
 if (module.hot) {
-  module.hot.accept((graphModules as any).id, function() {
-    const newGraphModules = require.context('./graph', true, /\.ts$/)
-    updateFlow(flow, newGraphModules)
-    tools.setFlow(flow, 'tiles')
-  })
+	module.hot.accept()
 }
