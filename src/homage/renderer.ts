@@ -106,6 +106,3 @@ export const layers = [
 	effectLayer,
 	sceneLayer
 ]
-
-
-painter.compose.apply(null, layers)

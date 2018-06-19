@@ -1,56 +1,63 @@
-export interface AnimationOptions {
-	duration?: number
-	easeFn?: (step: number) => number
-	delay?: number
-	onUpdate?: (step: number) => void
-	onComplete?: () => void
-}
-
-
-export interface Animation {
-	(step: number): number
-}
-
-
 export const linear = (step: number) => step
 
 
-export function createAnimation ({
-	duration = 1000,
-	easeFn = linear,
-	delay = 0,
-	onComplete,
-	onUpdate
-}: AnimationOptions) {
+export class Animation {
 
-	let progress = -delay
-	let oldValue = 0
+	easeFn = linear
+	duration = 1000
+	delay = 0
+	repeat = false
+	onComplete?: () => void
+	onUpdate?: (step: number) => void
 
-	return function animate (step: number) {
+	progress: number
+	oldValue: number
 
-		if (progress >= duration) {
+	done = false
+
+	constructor(options: Partial<Animation>) {
+		Object.assign(this, options)
+
+		this.progress = -this.delay
+		this.oldValue = this.easeFn(0)
+	}
+
+	update (step: number) {
+		if (this.done) {
 			return 0
 		}
 
-		if (progress < 0) {
-			progress += Math.min(step, -progress)
+		this.progress += step
+
+		if (this.progress <= 0) {
 			return 0
 		}
 
-		const newValue = (progress < duration - step)
-			? easeFn((progress + step) / duration)
-			:	easeFn(1)
+		const newValue = (this.progress < this.duration)
+			? this.easeFn(this.progress / this.duration)
+			: this.easeFn(1)
 
-		const value = newValue - oldValue
-		progress += step
-		oldValue = newValue
+		const value = newValue - this.oldValue
+		this.oldValue = newValue
 
-		if (onUpdate) onUpdate(value)
+		if (this.onUpdate) this.onUpdate(value)
 
-		if (progress >= duration && onComplete) {
-			onComplete()
+		if (this.progress >= this.duration) {
+
+			if (this.repeat === true || (typeof this.repeat === 'number' && this.repeat > 0)) {
+				if (typeof this.repeat === 'number') {
+					this.repeat--
+				}
+				this.progress = 0
+
+			} else {
+				if (this.onComplete) {
+					this.onComplete()
+				}
+				this.done = true
+			}
 		}
+
 		return value
-
-	} as Animation
+	}
 }

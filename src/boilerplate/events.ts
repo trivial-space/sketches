@@ -1,10 +1,9 @@
-import { keyboard } from 'tvs-libs/dist/lib/events/keyboard'
-import { mouse } from 'tvs-libs/dist/lib/events/mouse'
+import { keyboardObserver } from 'tvs-libs/dist/lib/events/keyboard'
+import { mouseObserver } from 'tvs-libs/dist/lib/events/mouse'
 import { windowSize } from 'tvs-libs/dist/lib/events/dom'
 import { painter, canvas } from './context'
-import { once, repeat } from 'shared-utils/scheduler'
-import { camera, lookSpeed, moveSpeed } from './camera'
-import { updateRotFromMouse, updatePosFromKeys } from 'tvs-utils/lib/vr/camera'
+import { once } from 'shared-utils/scheduler'
+import { camera } from './camera'
 
 
 
@@ -15,15 +14,6 @@ windowSize(() => once(() => {
 }, 'resize'))
 
 
-mouse({element: canvas, enableRightButton: true}, m => {
-	updateRotFromMouse(camera, lookSpeed, m)
-})
+export const mouse = mouseObserver({element: canvas, enableRightButton: true})
 
-
-let keys
-keyboard(ks => keys = ks)
-
-repeat(tpf => {
-	const speed = moveSpeed * tpf / 16
-	updatePosFromKeys(camera, speed, keys)
-}, 'updateKeys')
+export const keyboard = keyboardObserver()

@@ -5,7 +5,7 @@ import { pickRandom, doTimes, times } from 'tvs-libs/dist/lib/utils/sequence'
 import * as init from './init'
 import * as cam from '../camera'
 import * as constants from './constants'
-import { Animation, createAnimation } from 'shared-utils/animation'
+import { Animation } from 'shared-utils/animation'
 import { partial } from 'tvs-libs/dist/lib/fp/core'
 
 
@@ -259,7 +259,7 @@ export function updateActiveTiles (tpf: number) {
 			tile.rollDirection = 1
 			tile.connected = false
 
-			tile.rotateAnimation = createAnimation({
+			tile.rotateAnimation = new Animation({
 				duration,
 				easeFn: smooth,
 				onUpdate: rot => {
@@ -271,7 +271,7 @@ export function updateActiveTiles (tpf: number) {
 				}
 			})
 
-			tile.riseAnimation = createAnimation({
+			tile.riseAnimation = new Animation({
 				duration,
 				easeFn: rotateHalf,
 				onUpdate: rise => {
@@ -292,7 +292,7 @@ export function updateActiveTiles (tpf: number) {
 
 		if (flipped !== tile.flipped && !tile.flipAnimation) {
 			tile.connected = false
-			tile.flipAnimation = createAnimation({
+			tile.flipAnimation = new Animation({
 				duration,
 				easeFn: flipped ? acc : slow,
 				delay: tile.yawDelay,
@@ -310,9 +310,9 @@ export function updateActiveTiles (tpf: number) {
 			})
 		}
 
-		tile.rotateAnimation && tile.rotateAnimation(tpf)
-		tile.riseAnimation && tile.riseAnimation(tpf)
-		tile.flipAnimation && tile.flipAnimation(tpf)
+		tile.rotateAnimation && tile.rotateAnimation.update(tpf)
+		tile.riseAnimation && tile.riseAnimation.update(tpf)
+		tile.flipAnimation && tile.flipAnimation.update(tpf)
 
 		if (tile.connected) {
 			//console.log('tile position, turn: ', tile.pos, tile.turn, tile)

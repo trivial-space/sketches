@@ -7,7 +7,7 @@ import * as events from '../events'
 import * as init from './init'
 import * as camera from '../view/camera'
 import * as constants from './constants'
-import { Animation, createAnimation } from 'shared-utils/animation'
+import { Animation } from 'shared-utils/animation'
 import { partial } from 'tvs-libs/dist/lib/fp/core'
 
 
@@ -278,7 +278,7 @@ export const updateActiveTiles = stream([
 			tile.rollDirection = 1
 			tile.connected = false
 
-			tile.rotateAnimation = createAnimation({
+			tile.rotateAnimation = new Animation({
 				duration,
 				easeFn: smooth,
 				onUpdate: rot => {
@@ -290,7 +290,7 @@ export const updateActiveTiles = stream([
 				}
 			})
 
-			tile.riseAnimation = createAnimation({
+			tile.riseAnimation = new Animation({
 				duration,
 				easeFn: rotateHalf,
 				onUpdate: rise => {
@@ -311,7 +311,7 @@ export const updateActiveTiles = stream([
 
 		if (flipped !== tile.flipped && !tile.flipAnimation) {
 			tile.connected = false
-			tile.flipAnimation = createAnimation({
+			tile.flipAnimation = new Animation({
 				duration,
 				easeFn: flipped ? acc : slow,
 				delay: tile.yawDelay,
@@ -329,9 +329,9 @@ export const updateActiveTiles = stream([
 			})
 		}
 
-		tile.rotateAnimation && tile.rotateAnimation(tick)
-		tile.riseAnimation && tile.riseAnimation(tick)
-		tile.flipAnimation && tile.flipAnimation(tick)
+		tile.rotateAnimation && tile.rotateAnimation.update(tick)
+		tile.riseAnimation && tile.riseAnimation.update(tick)
+		tile.flipAnimation && tile.flipAnimation.update(tick)
 
 		if (tile.connected) {
 			//console.log('tile position, turn: ', tile.pos, tile.turn, tile)
