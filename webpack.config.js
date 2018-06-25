@@ -7,8 +7,8 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 module.exports = {
 	entry: {
 		'boilerplate': ['./boilerplate/index.ts'],
-		'homage': ['./homage/index.ts'],
-		'tiles': ['./tiles/index.ts'],
+		// 'homage': ['./homage/index.ts'],
+		// 'tiles': ['./tiles/index.ts'],
 		'colorwalls': ['./colorwalls/index.ts'],
 		'experiments/area-light': ['./experiments/area-light/index.ts'],
 		'experiments/graph-sort': ['./experiments/graph-sort/index.ts'],
