@@ -4,7 +4,7 @@ import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
 import { pickRandom, doTimes, times } from 'tvs-libs/dist/lib/utils/sequence'
 import * as init from './init'
 import * as cam from '../camera'
-import * as constants from './constants'
+import * as data from './data'
 import { Animation } from 'shared-utils/animation'
 import { partial } from 'tvs-libs/dist/lib/fp/core'
 
@@ -17,7 +17,7 @@ export interface TileState {
 	pos: Position
 	posOffset: Position
 	tileSpecId: string
-	tileSpec: constants.TileSpec
+	tileSpec: data.TileSpec
 	turn: number
 	flipped: boolean
 	yawDirection: number
@@ -106,7 +106,7 @@ export const rowCount =
 export const createTileState = function(
 	set: { [id: string]: number },
 	baseColor: Color,
-	specs: { [id: string]: constants.TileSpec }
+	specs: { [id: string]: data.TileSpec }
 ): TileState {
 
 	const [r, g, b] = baseColor
@@ -207,7 +207,7 @@ export const grid = function(
 	rowCount,
 	init.color,
 	init.set,
-	constants.specs
+	data.specs
 )
 
 
