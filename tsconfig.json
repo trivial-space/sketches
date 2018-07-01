@@ -14,11 +14,13 @@
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"*": [ "src/*" ]
+			"*": [ "*", "src/*", "node_modules/*" ]
 		}
 	},
 	"exclude": [
 		"node_modules",
+		"libs",
+		"src/tiles",
 		"libs/flow/node_modules",
 		"libs/flow/test",
 		"libs/flow-tools/node_modules",

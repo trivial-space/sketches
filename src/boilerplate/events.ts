@@ -1,19 +1,21 @@
-import { keyboardObserver } from 'tvs-libs/dist/lib/events/keyboard'
-import { mouseObserver } from 'tvs-libs/dist/lib/events/mouse'
+import { keyboard } from 'tvs-libs/dist/lib/events/keyboard'
+import { mouse } from 'tvs-libs/dist/lib/events/mouse'
 import { windowSize } from 'tvs-libs/dist/lib/events/dom'
-import { painter, canvas } from './context'
+import { painter, canvas, state } from './context'
 import { once } from 'shared-utils/scheduler'
-import { camera } from './camera'
-
 
 
 windowSize(() => once(() => {
 	painter.resize()
-	camera.props.aspect = canvas.width / canvas.height
-	camera.props.needsUpdatePerspective = true
+	state.viewPort.updateSize(canvas)
 }, 'resize'))
 
 
-export const mouse = mouseObserver({element: canvas, enableRightButton: true})
+state.input = {} as any
 
-export const keyboard = keyboardObserver()
+mouse(
+	{element: canvas, enableRightButton: true},
+	m => state.input.mouse = m
+)
+
+keyboard(k => state.input.keys = k)

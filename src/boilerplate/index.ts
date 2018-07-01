@@ -1,18 +1,16 @@
+import './events'
+import './camera'
+import './state'
 import { repeat } from 'shared-utils/scheduler'
-import * as cam from 'tvs-utils/dist/lib/vr/camera'
-import { camera, lookSpeed, moveSpeed } from './camera'
-import { painter } from './context'
 import { scene } from './renderer'
-import { keyboard, mouse } from './events'
+import { state, painter } from './context'
 
 
 repeat(tpf => {
-	cam.updateRotFromMouse(camera, lookSpeed, mouse.state)
-	const speed = moveSpeed * tpf / 16
-	cam.updatePosFromKeys(camera, speed, keyboard.state.pressed)
-	cam.update(camera)
+	state.viewPort.update(tpf)
+	state.entities.update(tpf)
 	painter.compose(scene)
-}, 'render')
+}, 'loop')
 
 
 if (module.hot) {

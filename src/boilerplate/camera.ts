@@ -1,13 +1,26 @@
-import { create } from 'tvs-utils/dist/lib/vr/camera'
-import { canvas } from './context'
+import { state } from './context'
+import { WithKeyNavigation, PerspectiveCamera, WithMouseRotation } from 'shared-utils/vr/camera'
 
 
-export const moveSpeed = 0.02
+export class ViewPort {
+	moveSpeed = 0.02
+	lookSpeed = 0.002
+	camera = new (WithKeyNavigation(WithMouseRotation(PerspectiveCamera)))({
+		fovy: Math.PI * 0.4,
+		position: [0, 0, 5]
+	})
 
-export const lookSpeed = 0.002
+	updateSize(canvas: HTMLCanvasElement) {
+		this.camera.aspect = canvas.width / canvas.height
+		this.camera.needsUpdateProjection = true
+	}
 
-export const camera = create({
-	fovy: Math.PI * 0.4,
-	aspect: canvas.width / canvas.height,
-	moveForward: -5
-})
+	update(tpf: number) {
+		this.camera.updatePosFromKeys(this.moveSpeed * tpf * 0.06, state.input.keys)
+		this.camera.updateRotFromMouse(this.lookSpeed * tpf * 0.06, state.input.mouse)
+		this.camera.update()
+	}
+}
+
+
+state.viewPort = new ViewPort()
