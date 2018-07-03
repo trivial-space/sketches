@@ -4,9 +4,9 @@ import { WithKeyNavigation, PerspectiveCamera, WithMouseRotation } from 'shared-
 
 export class ViewPort {
 	moveSpeed = 0.02
-	lookSpeed = 0.002
+	lookSpeed = 0.001
 	camera = new (WithKeyNavigation(WithMouseRotation(PerspectiveCamera)))({
-		fovy: Math.PI * 0.4,
+		fovy: Math.PI * 0.3,
 		position: [0, 0, 5]
 	})
 

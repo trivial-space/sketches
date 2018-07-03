@@ -1,4 +1,8 @@
-import { Painter, Form, Shade, Sketch, Layer } from 'tvs-painter'
+import { Layer } from 'tvs-painter'
+import { Form } from 'tvs-painter/dist/lib/form'
+import { Painter } from 'tvs-painter/dist/lib/painter'
+import { Shade } from 'tvs-painter/dist/lib/shade'
+import { Sketch } from 'tvs-painter/dist/lib/sketch'
 
 const forms: {[id: string]: Form} = {}
 export function getForm(painter: Painter, id: string) {

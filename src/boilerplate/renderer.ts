@@ -18,7 +18,7 @@ const sketch = getSketch(painter, 'quad')
 	.update({
 		form: planeForm,
 		shade: baseShade,
-		uniforms: { transform: state.entities.quad.transform }
+		uniforms: () => ({ transform: state.entities.quad.transform })
 	})
 
 
@@ -27,10 +27,10 @@ const sketch = getSketch(painter, 'quad')
 export const scene = getDrawingLayer(painter, 'scene')
 	.update({
 		sketches: [sketch],
-		uniforms: {
+		uniforms: () => ({
 			view: state.viewPort.camera.viewMat,
 			projection: state.viewPort.camera.projectionMat
-		},
+		}),
 		drawSettings: {
 			clearBits: gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT
 		}
