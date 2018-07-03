@@ -68,7 +68,8 @@ export class PerspectiveCamera extends Camera {
 	needsUpdateProjection = true
 
 	constructor(props?: Partial<PerspectiveCamera>) {
-		super(props)
+		super()
+		Object.assign(this, props)
 	}
 
 	update () {
