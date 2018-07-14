@@ -18,8 +18,3 @@ export const planeForm = getForm(painter, 'plane')
 		cells: quadTriangles
 	})
 )
-
-
-if (module.hot) {
-	module.hot.accept()
-}

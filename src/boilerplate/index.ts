@@ -7,12 +7,7 @@ import { get, dispatch } from 'shared-utils/painterState'
 
 
 repeat(tpf => {
-	get('device').tpf = tpf / 60
+	get('device').tpf = tpf
 	dispatch(events.FRAME)
 	painter.compose(scene)
 }, 'loop')
-
-
-if (module.hot) {
-	module.hot.accept()
-}

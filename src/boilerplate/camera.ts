@@ -1,7 +1,6 @@
 import { WithKeyNavigation, PerspectiveCamera, WithMouseRotation } from 'shared-utils/vr/camera'
 import { set, addSystem } from 'shared-utils/painterState'
-import { State } from './types'
-import { events } from './context'
+import { events, State } from './context'
 
 
 export class ViewPort {
@@ -19,7 +18,7 @@ addSystem<State>('viewPort', (e, s) => {
 	switch (e) {
 
 		case events.FRAME:
-			const tpf = s.device.tpf
+			const tpf = s.device.tpf / 60
 			v.camera.updatePosFromKeys(v.moveSpeed * tpf, s.device.keys)
 			v.camera.updateRotFromMouse(v.lookSpeed * tpf, s.device.mouse)
 			v.camera.update()
@@ -33,5 +32,3 @@ addSystem<State>('viewPort', (e, s) => {
 
 
 set<State>('viewPort', new ViewPort())
-
-if (module.hot) module.hot.accept()

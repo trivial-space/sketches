@@ -1,5 +1,14 @@
 import { getPainter, getState, baseEvents } from 'shared-utils/painterState'
-import { State } from './types'
+import { BaseState } from 'shared-utils/painterState'
+import { ViewPort } from './camera'
+import { Entities } from './state'
+
+
+export interface State extends BaseState {
+	viewPort: ViewPort
+	entities: Entities
+}
+
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 

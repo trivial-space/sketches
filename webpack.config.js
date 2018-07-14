@@ -15,6 +15,8 @@ module.exports = {
 		'experiments/convex-hull': ['./experiments/convex-hull/index.ts']
 	},
 
+	mode: 'production',
+
 	context: resolve(__dirname, 'src'),
 
 	output: {
@@ -33,7 +35,7 @@ module.exports = {
 					'postcss-loader',
 				],
 			},
-			{ test: /\.ts$/, use: 'ts-loader', exclude: /node_modules/ },
+			{ test: /\.ts$/, use: ['ts-loader', 'webpack-module-hot-accept'], exclude: /node_modules/ },
 			{ test: /\.(glsl|frag|vert)$/, use: ['raw-loader', 'glslify-loader'], exclude: /node_modules/ },
 		]
 	},
@@ -46,14 +48,5 @@ module.exports = {
 		extensions: ['.ts', '.js']
 	},
 
-	devtool: 'source-map',
-
-	plugins: [
-		new webpack.DefinePlugin({
-			'process.env.NODE_ENV': '"production"',
-		}),
-		new UglifyJSPlugin({
-			sourceMap: true
-		})
-	],
+	devtool: 'source-map'
 }

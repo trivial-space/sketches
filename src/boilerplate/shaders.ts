@@ -6,8 +6,3 @@ import { painter } from './context'
 
 export const baseShade = getShade(painter, 'baseShade')
 	.update({ vert, frag })
-
-
-if (module.hot) {
-	module.hot.accept()
-}

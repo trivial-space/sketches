@@ -35,8 +35,3 @@ export const scene = getDrawingLayer(painter, 'scene')
 			clearBits: gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT
 		}
 	})
-
-
-if (module.hot) {
-	module.hot.accept()
-}
