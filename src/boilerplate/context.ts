@@ -1,14 +1,14 @@
-import { getContext } from 'tvs-painter/dist/lib/utils/context'
-import { Painter } from 'tvs-painter/dist/lib/painter'
+import { getPainter, getState, baseEvents } from 'shared-utils/painterState'
 import { State } from './types'
-
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 
-export const gl = getContext(canvas)
+export const painter = getPainter(canvas)
 
-export const painter = new Painter(gl)
+export const gl = painter.gl
 
-export const state = {} as State
+export const state = getState<State>()
 
-window['state'] = state
+export const events = {
+	...baseEvents
+}

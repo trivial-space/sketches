@@ -1,14 +1,14 @@
-import './events'
 import './camera'
 import './state'
 import { repeat } from 'shared-utils/scheduler'
 import { scene } from './renderer'
-import { state, painter } from './context'
+import { painter, events } from './context'
+import { get, dispatch } from 'shared-utils/painterState'
 
 
 repeat(tpf => {
-	state.viewPort.update(tpf)
-	state.entities.update(tpf)
+	get('device').tpf = tpf / 60
+	dispatch(events.FRAME)
 	painter.compose(scene)
 }, 'loop')
 
