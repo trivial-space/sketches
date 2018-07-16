@@ -7,6 +7,7 @@ import { getContext } from 'tvs-painter/dist/lib/utils/context'
 import { MouseState } from 'tvs-libs/dist/lib/events/mouse'
 import { KeyState } from 'tvs-libs/dist/lib/events/keyboard'
 import { keyboard } from 'tvs-libs/dist/lib/events/keyboard'
+import { deepOverride } from 'tvs-libs/dist/lib/utils/object'
 import { mouse } from 'tvs-libs/dist/lib/events/mouse'
 import { windowSize } from 'tvs-libs/dist/lib/events/dom'
 import { once } from 'shared-utils/scheduler'
@@ -75,8 +76,15 @@ export function get<S extends BaseState = BaseState, K extends keyof S = keyof S
 	return (state as S)[prop]
 }
 
-export function set<S extends BaseState = BaseState, K extends keyof S = keyof S>(key: K, val: S[K]) {
-	(state as S)[key] = val
+export function set<S extends BaseState = BaseState, K extends keyof S = keyof S>(key: K, val: S[K], opts?: {reset: any}) {
+	const s = state as S
+	if (s[key]) {
+		const reset = opts && opts.reset
+		if (reset !== true) {
+			val = deepOverride(val, s[key], { ignore: reset })
+		}
+	}
+	s[key] = val
 }
 
 export function getState<S extends BaseState>() {

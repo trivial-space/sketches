@@ -31,4 +31,4 @@ addSystem<State>('entities', (e, s) => {
 })
 
 
-set<State>('entities', new Entities())
+set<State>('entities', new Entities(), {reset: {quad: {color: true}}})
