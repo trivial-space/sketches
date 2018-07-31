@@ -1,22 +1,19 @@
+import './state/tiles'
+import './viewPort'
 import { repeat } from 'shared-utils/scheduler'
-import * as cam from 'tvs-utils/dist/lib/vr/camera'
-import { camera } from './camera'
-import { painter } from './context'
+import { painter, events, State } from './context'
 import { scene } from './renderer'
-import { updateActiveTiles } from './state/tiles'
-import './events'
-import { imagesLoaded } from './state/init'
+import { addSystem, dispatch } from 'shared-utils/painterState'
 
 
-imagesLoaded.then(() => {
-	repeat(tpf => {
-		cam.update(camera)
-		updateActiveTiles(tpf)
-		painter.compose(scene)
-	}, 'render')
+addSystem<State>('start', (e, s) => {
+ if (e === events.START) {
+	 repeat(tpf => {
+		 s.device.tpf = tpf
+		 dispatch(events.FRAME)
+		 painter.compose(scene)
+	 }, 'loop')
+ }
 })
 
-
-if (module.hot) {
-	module.hot.accept()
-}
+dispatch(events.INIT)

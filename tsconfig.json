@@ -3,7 +3,8 @@
 		"target": "es5",
 		"lib": [
 			"esnext",
-			"dom"
+			"dom",
+			"es2018"
 		],
 		"module": "es6",
 		"moduleResolution": "node",
@@ -20,7 +21,6 @@
 	"exclude": [
 		"node_modules",
 		"libs",
-		"src/tiles",
 		"libs/flow/node_modules",
 		"libs/flow/test",
 		"libs/flow-tools/node_modules",

@@ -1,12 +1,10 @@
 import vert from './glsl/base-vert.glsl'
 import frag from './glsl/base-frag.glsl'
-import { painter, gl } from './context'
-import { getShade, getForm, getStaticLayer, getSketch, getDrawingLayer } from 'shared-utils/painterState'
+import { painter, gl, state, events, State } from './context'
+import { getShade, getForm, getStaticLayer, getSketch, getDrawingLayer, addSystem } from 'shared-utils/painterState'
 import { plane } from 'tvs-painter/dist/lib/utils/geometry/plane'
-import { tileSize, images, imagesLoaded } from './state/init'
-import { map, each } from 'tvs-libs/dist/lib/utils/sequence'
-import { activeTiles } from './state/tiles'
-import { camera } from './camera'
+import { each } from 'tvs-libs/dist/lib/utils/sequence'
+import { StaticLayer } from 'tvs-painter/dist/lib/layer'
 
 // ===== Settings =====
 
@@ -18,45 +16,25 @@ painter.updateDrawSettings({
 
 // ===== shaders =====
 
-export const shade = getShade(painter, 'shade')
+const shade = getShade(painter, 'shade')
 .update({frag, vert})
 
 
 // ===== geometries =====
 
-export const form = getForm(painter, 'form')
+const tileSize = state.tiles.tileSize
+const form = getForm(painter, 'form')
 .update(plane(tileSize, tileSize, 3, 3))
 
 
 // ===== textures =====
 
-export const textures = map((img, key) => getStaticLayer(painter, key)
-	.update({
-		minFilter: 'LINEAR',
-		magFilter: 'LINEAR',
-		asset: img
-	}), images)
-
-imagesLoaded.then(() => {
-	each((t, key) => t.update({
-		asset: images[key]
-	}), textures)
-})
+const textures: {[id: string]: StaticLayer} = {}
 
 
 // ===== objects =====
 
-export const tilesSketch = getSketch(painter, 'tiles')
-	.update({
-		form, shade,
-		uniforms: activeTiles.map(tile => ({
-			transform: tile.transform,
-			image: textures[tile.tileSpecId].texture(),
-			color: tile.color,
-			connections: tile.connections
-		}))
-	})
-
+const tilesSketch = getSketch(painter, 'tiles')
 
 
 // ===== layers =====
@@ -65,12 +43,34 @@ export const scene = getDrawingLayer(painter, 'scene')
 	.update({
 		sketches: [tilesSketch],
 		uniforms: {
-			view: camera.state.view,
-			projection: camera.state.perspective
+			view: () => state.viewPort.camera.viewMat,
+			projection: () => state.viewPort.camera.projectionMat
 		}
 	})
 
 
-if (module.hot) {
-	module.hot.accept()
-}
+addSystem<State>('render', (e, s) => {
+	switch (e) {
+		case events.START:
+			each((img, key) => {
+				textures[key] = getStaticLayer(painter, key)
+					.update({
+						minFilter: 'LINEAR',
+						magFilter: 'LINEAR',
+						asset: img
+					})
+			}, s.tiles.images)
+			break
+
+		case events.NEW_ACTIVE_TILES:
+			tilesSketch.update({
+					form, shade,
+					uniforms: s.tiles.activeTiles.map(tile => ({
+						transform: tile.transform,
+						image: textures[tile.tileSpecId] && textures[tile.tileSpecId].texture(),
+						color: tile.color,
+						connections: tile.connections
+					}))
+				})
+	}
+})

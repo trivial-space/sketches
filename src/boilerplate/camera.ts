@@ -31,4 +31,4 @@ addSystem<State>('viewPort', (e, s) => {
 })
 
 
-set<State>('viewPort', new ViewPort())
+set<State>('viewPort', new ViewPort(), {reset: {moveSpeed: true, lookSpeed: true}})
