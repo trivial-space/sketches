@@ -1,13 +1,16 @@
+import { addSystem, baseEvents } from 'shared-utils/painterState'
+
 export const linear = (step: number) => step
 
 
-export class Animation {
+export class Transition {
 
 	easeFn = linear
 	duration = 1000
 	delay = 0
 	repeat = false
 	onComplete?: () => void
+	onStart?: () => void
 	onUpdate?: (step: number) => void
 
 	progress: number
@@ -15,7 +18,7 @@ export class Animation {
 
 	done = false
 
-	constructor(options: Partial<Animation>) {
+	constructor(options: Partial<Transition>) {
 		Object.assign(this, options)
 
 		this.progress = -this.delay
@@ -32,6 +35,8 @@ export class Animation {
 		if (this.progress <= 0) {
 			return 0
 		}
+
+		if (this.progress <= step && this.onStart) { this.onStart() }
 
 		const newValue = (this.progress < this.duration)
 			? this.easeFn(this.progress / this.duration)
@@ -60,4 +65,24 @@ export class Animation {
 
 		return value
 	}
+}
+
+
+let transitions: Transition[] = []
+let initialized = false
+
+export function pushTransition (transitionProps: Partial<Transition>) {
+	if (!initialized) {
+		addSystem('_transitionRunner', (e, s) => {
+			if (e === baseEvents.FRAME) {
+				transitions = transitions.filter(t => !t.done)
+				transitions.forEach(t => t.update(s.device.tpf))
+			}
+		})
+		initialized = true
+	}
+
+	const t = new Transition(transitionProps)
+	transitions.push(t)
+	return t
 }

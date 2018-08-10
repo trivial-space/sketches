@@ -21,7 +21,7 @@ void main() {
 
   if (connections[0] > 0.0) {
     up = x * x * 2.0 + y * y * 2.0;
-    up = 1.0 - up;
+    up = connections[0] - up;
     up = max(0.0, up);
     up *= up;
   }
@@ -30,7 +30,7 @@ void main() {
     x = vUv.x - 1.0;
     y = vUv.y - 0.5;
     right = x * x * 2.0 + y * y * 2.0;
-    right = 1.0 - right;
+    right = connections[1] - right;
     right = max(0.0, right);
     right *= right;
   }
@@ -39,7 +39,7 @@ void main() {
     x = vUv.x - 0.5;
     y = vUv.y - 1.0;
     down = x * x * 2.0 + y * y * 2.0;
-    down = 1.0 - down;
+    down = connections[2] - down;
     down = max(0.0, down);
     down *= down;
   }
@@ -48,7 +48,7 @@ void main() {
     x = vUv.x;
     y = vUv.y - 0.5;
     left = x * x * 2.0 + y * y * 2.0;
-    left = 1.0 - left;
+    left = connections[3] - left;
     left = max(0.0, left);
     left *= left;
   }

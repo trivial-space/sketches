@@ -7,7 +7,7 @@ import * as events from '../events'
 import * as init from './init'
 import * as camera from '../view/camera'
 import * as constants from './constants'
-import { Animation } from 'shared-utils/animation'
+import { Transition } from 'shared-utils/transitions'
 import { partial } from 'tvs-libs/dist/lib/fp/core'
 
 
@@ -35,10 +35,10 @@ export interface TileState {
 	neighbours: (TileState | undefined)[]
 	connections: number[]
 	connected: boolean
-	rotateAnimation?: Animation
-	connectionAnimations: (Animation | null)[]
-	riseAnimation?: Animation
-	flipAnimation?: Animation
+	rotateAnimation?: Transition
+	connectionAnimations: (Transition | null)[]
+	riseAnimation?: Transition
+	flipAnimation?: Transition
 }
 
 
@@ -278,7 +278,7 @@ export const updateActiveTiles = stream([
 			tile.rollDirection = 1
 			tile.connected = false
 
-			tile.rotateAnimation = new Animation({
+			tile.rotateAnimation = new Transition({
 				duration,
 				easeFn: smooth,
 				onUpdate: rot => {
@@ -290,7 +290,7 @@ export const updateActiveTiles = stream([
 				}
 			})
 
-			tile.riseAnimation = new Animation({
+			tile.riseAnimation = new Transition({
 				duration,
 				easeFn: rotateHalf,
 				onUpdate: rise => {
@@ -311,7 +311,7 @@ export const updateActiveTiles = stream([
 
 		if (flipped !== tile.flipped && !tile.flipAnimation) {
 			tile.connected = false
-			tile.flipAnimation = new Animation({
+			tile.flipAnimation = new Transition({
 				duration,
 				easeFn: flipped ? acc : slow,
 				delay: tile.yawDelay,

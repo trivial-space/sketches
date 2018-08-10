@@ -1,6 +1,6 @@
 import { getPainter, getState, baseEvents } from 'shared-utils/painterState'
 import { BaseState } from 'shared-utils/painterState'
-import { ViewPort } from './viewPort'
+import { ViewPort } from './viewport'
 import { Tiles } from './state/tiles'
 
 

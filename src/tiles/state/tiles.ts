@@ -1,15 +1,34 @@
 import { randInt, normalRand } from 'tvs-libs/dist/lib/math/random'
+import { sign } from 'tvs-libs/dist/lib/math/core'
 import { mat4, quat } from 'gl-matrix'
 import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
 import { pickRandom, doTimes, times, map } from 'tvs-libs/dist/lib/utils/sequence'
 import { sets, TileSpec, specs } from './data'
-import { Animation } from 'shared-utils/animation'
+import { pushTransition } from 'shared-utils/transitions'
 import { addSystem, dispatch, set } from 'shared-utils/painterState'
 import { State, events } from '../context'
 
 
 type Color = number[]
 type Position = [number, number]
+
+
+export class Tiles {
+	tileSize = 3
+	tileDensity = 15
+	color = [normalRand(), normalRand(), normalRand()]
+	set = pickRandom(sets)
+	animationDuration = 1700
+	animationChance = 0.1
+	liftHeight = 2
+	sinkHeight = -100
+	flipped = false
+	colCount = 0
+	rowCount = 0
+	images: { [id: string]: HTMLImageElement } = {}
+	activeTiles: TileState[] = []
+	grid: TileState[][] = []
+}
 
 
 class TileState {
@@ -23,10 +42,6 @@ class TileState {
 	roll: number
 	color: Color
 	neighbours: (TileState | undefined)[] = []
-	rotateAnimation?: Animation
-	connectionAnimations: (Animation | null)[] = []
-	riseAnimation?: Animation
-	flipAnimation?: Animation
 	flipped = false
 	yawDirection = 0
 	yawDelay = 0
@@ -35,7 +50,6 @@ class TileState {
 	height = 0
 	rotation = quat.create()
 	updateTransform = false
-	connected = false
 	connections = [0, 0, 0, 0]
 
 	constructor(
@@ -55,6 +69,57 @@ class TileState {
 
 		this.roll = this.turn * Math.PI / 2
 	}
+
+	isConnected () {
+		return !!(this.height < 0.1 && this.height > -0.1)
+	}
+
+	connect (skipNeighbours?: true) {
+		if (!this.isConnected) { return }
+		for (let i = 0; i < 4; i++) {
+			const index = (i + 4 - this.turn) % 4
+			const side = this.tileSpec.connections[index]
+			const neighbour = this.neighbours[i]
+			const current = this.connections[i]
+			let next: number
+			if (neighbour && neighbour.isConnected()) {
+				if (!skipNeighbours) neighbour.connect(true)
+				const neighbourSide = neighbour.tileSpec.connections[(i + 6 - neighbour.turn) % 4]
+				next = side && neighbourSide
+			} else {
+				next = 0
+			}
+			if (current !== next) {
+				next === 0
+					? pushTransition({
+						duration: 300,
+						onUpdate: p => {
+							this.connections[i] -= p
+						}
+					})
+					: pushTransition({
+						duration: 300,
+						onUpdate: p => {
+							this.connections[i] += p
+						}
+					})
+			}
+		}
+	}
+
+	disconnect () {
+		for (let i = 0; i < 4; i++) {
+			const current = this.connections[i]
+			if (current !== 0) {
+				pushTransition({
+					duration: 300,
+					onUpdate: p => {
+						this.connections[i] -= p
+					}
+				})
+			}
+		}
+	}
 }
 
 const SIDES_INDEX = {
@@ -64,46 +129,18 @@ const SIDES_INDEX = {
 	LEFT: 3
 }
 
-// const SIDES_KEY = {
-//   0: 'UP',
-//   1: 'RIGHT',
-//   2: 'DOWN',
-//   3: 'LEFT'
-// }
-
-
-export class Tiles {
-	tileSize = 10
-	tileDensity = 20
-	color = [normalRand(), normalRand(), normalRand()]
-	set = pickRandom(sets)
-	animationDuration = 1700
-	animationChance = 0.0001
-	liftHeight = 2
-	sinkHeight = -50
-	flipped = false
-	colCount = 0
-	rowCount = 0
-	images: { [id: string]: HTMLImageElement } = {}
-	activeTiles: TileState[] = []
-	grid: TileState[][] = []
-}
-
 
 function rotateHalf (part) {
 	return -Math.cos(part * Math.PI * 2) * 0.5 + 0.5
 }
 
-
 function smooth (part) {
 	return -Math.cos(part * Math.PI) * 0.5 + 0.5
 }
 
-
 function acc (part) {
 	return part * part * part * part
 }
-
 
 function slow (part) {
 	return Math.pow(part, 0.25)
@@ -139,7 +176,7 @@ addSystem<State>('tiles', (e, s) => {
 			createActiveTiles(t)
 
 		case events.FRAME:
-			updateActiveTiles(s.device.tpf, t)
+			updateTiles(t)
 	}
 })
 
@@ -229,43 +266,40 @@ function createActiveTiles (t: Tiles) {
 				tile.updateTransform = true
 				tile.yawDelay = (x + (t.rowCount - y + 1)) * 100
 				tile.pos = [firstLeftIndex + iX, firstUpIndex + iY]
-				tile.connected = !!(tile.height < 0.1 && tile.height > -0.1)
 				tiles.push(tile)
 			}
 		}, t.rowCount)
 	}, t.colCount)
 
+	tiles.forEach(t => t.connect(true))
+
 	dispatch(events.NEW_ACTIVE_TILES)
 }
 
 
-export function updateActiveTiles (tpf: number, t: Tiles) {
+export function updateTiles (t: Tiles) {
 	const tiles = t.activeTiles
 	const duration = t.animationDuration
-	const chance = t.animationChance
+	const chance = t.animationChance / t.activeTiles.length
 	const offset = t.tileSize * 0.95
 
 	for (const i in tiles) {
 		const tile: TileState = tiles[i]
 
-		if (!tile.rotateAnimation && Math.random() < chance) {
-			//tile.rollDirection = sign(Math.random() - 0.5)
-			tile.rollDirection = 1
-			tile.connected = false
+		if (Math.random() < chance) {
+			tile.rollDirection = sign(Math.random() - 0.5)
+			tile.disconnect()
 
-			tile.rotateAnimation = new Animation({
+			pushTransition({
 				duration,
 				easeFn: smooth,
 				onUpdate: rot => {
 					tile.roll += rot * Math.PI / 2 * tile.rollDirection
 					tile.updateTransform = true
-				},
-				onComplete: () => {
-					tile.rotateAnimation = undefined
 				}
 			})
 
-			tile.riseAnimation = new Animation({
+			pushTransition({
 				duration,
 				easeFn: rotateHalf,
 				onUpdate: rise => {
@@ -273,8 +307,7 @@ export function updateActiveTiles (tpf: number, t: Tiles) {
 					tile.updateTransform = true
 				},
 				onComplete: () => {
-					tile.riseAnimation = undefined
-					tile.connected = true
+					tile.connect()
 					tile.turn = tile.rollDirection > 0 ?
 						(tile.turn + 1) % 4 :
 						tile.rollDirection < 0 ?
@@ -284,48 +317,23 @@ export function updateActiveTiles (tpf: number, t: Tiles) {
 			})
 		}
 
-		if (t.flipped !== tile.flipped && !tile.flipAnimation) {
-			tile.connected = false
-			tile.flipAnimation = new Animation({
+		if (t.flipped !== tile.flipped) {
+			tile.flipped = t.flipped
+			pushTransition({
 				duration,
 				easeFn: t.flipped ? acc : slow,
 				delay: tile.yawDelay,
+				onStart: () => tile.disconnect(),
 				onUpdate: rot => {
 					tile.yaw += rot * Math.PI
-					tile.height += rot * t.sinkHeight * (tile.flipped ? -1 : 1)
+					tile.height += rot * t.sinkHeight * (tile.flipped ? 1 : -1)
 					tile.updateTransform = true
 				},
 				onComplete: () => {
-					tile.flipAnimation = undefined
-					tile.flipped = !tile.flipped
-					tile.connected = !tile.rotateAnimation
-					tile.connected = true
+					if (!tile.flipped) {}
+					tile.connect()
 				}
 			})
-		}
-
-		tile.rotateAnimation && tile.rotateAnimation.update(tpf)
-		tile.riseAnimation && tile.riseAnimation.update(tpf)
-		tile.flipAnimation && tile.flipAnimation.update(tpf)
-
-		if (tile.connected) {
-			//console.log('tile position, turn: ', tile.pos, tile.turn, tile)
-			for (let i = 0; i < 4; i++) {
-				const index = (i + 4 - tile.turn) % 4
-				const side = tile.tileSpec.connections[index]
-				const neighbour = tile.neighbours[i]
-				if (neighbour && neighbour.connected) {
-					const neighbourSide = neighbour.tileSpec.connections[(i + 6 - neighbour.turn) % 4]
-					tile.connections[index] = side && neighbourSide
-				} else {
-					tile.connections[index] = 0
-				}
-			}
-
-		} else {
-			for (let i = 0; i < 4; i++) {
-				tile.connections[i] = 0
-			}
 		}
 
 		if (tile.updateTransform) {

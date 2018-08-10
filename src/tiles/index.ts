@@ -1,5 +1,5 @@
 import './state/tiles'
-import './viewPort'
+import './viewport'
 import { repeat } from 'shared-utils/scheduler'
 import { painter, events, State } from './context'
 import { scene } from './renderer'
