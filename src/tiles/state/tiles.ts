@@ -243,9 +243,7 @@ export function updateActiveTiles (tpf: number, t: Tiles) {
 	const tiles = t.activeTiles
 	const duration = t.animationDuration
 	const chance = t.animationChance
-	const size = t.tileSize
-
-	const offset = size * 0.95
+	const offset = t.tileSize * 0.95
 
 	for (const i in tiles) {
 		const tile: TileState = tiles[i]
