@@ -1,7 +1,6 @@
 import frag from './glsl/ground-reflection-frag.glsl'
 import { getEffectLayer } from 'shared-utils/painterState'
-import { painter, gl } from './context'
-import { canvasSize } from './events'
+import { painter, gl, getCanvasSize } from './context'
 
 
 let strength = 10
@@ -32,11 +31,6 @@ export const effectLayer = getEffectLayer(painter, 'reflection')
 		uniforms: passData.map(data => ({
 			...data,
 			source: null,
-			size: canvasSize
+			size: getCanvasSize
 		}))
 	})
-
-
-if (module.hot) {
-	module.hot.accept()
-}

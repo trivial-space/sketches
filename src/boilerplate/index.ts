@@ -1,4 +1,4 @@
-import './camera'
+import './viewport'
 import './state'
 import { repeat } from 'shared-utils/scheduler'
 import { scene } from './renderer'

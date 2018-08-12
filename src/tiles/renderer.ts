@@ -17,19 +17,19 @@ painter.updateDrawSettings({
 // ===== shaders =====
 
 const shade = getShade(painter, 'shade')
-.update({frag, vert})
+	.update({ frag, vert })
 
 
 // ===== geometries =====
 
 const tileSize = state.tiles.tileSize
 const form = getForm(painter, 'form')
-.update(plane(tileSize, tileSize, 3, 3))
+	.update(plane(tileSize, tileSize, 3, 3))
 
 
 // ===== textures =====
 
-const textures: {[id: string]: StaticLayer} = {}
+const textures: { [id: string]: StaticLayer } = {}
 
 
 // ===== objects =====
@@ -64,13 +64,13 @@ addSystem<State>('render', (e, s) => {
 
 		case events.NEW_ACTIVE_TILES:
 			tilesSketch.update({
-					form, shade,
-					uniforms: s.tiles.activeTiles.map(tile => ({
-						transform: tile.transform,
-						image: textures[tile.tileSpecId] && textures[tile.tileSpecId].texture(),
-						color: tile.color,
-						connections: tile.connections
-					}))
-				})
+				form, shade,
+				uniforms: s.tiles.activeTiles.map(tile => ({
+					transform: tile.transform,
+					image: textures[tile.tileSpecId] && textures[tile.tileSpecId].texture(),
+					color: tile.color,
+					connections: tile.connections
+				}))
+			})
 	}
 })

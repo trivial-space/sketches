@@ -1,16 +1,11 @@
 import * as videos from './state/videos'
-import * as ground from './state/ground'
-import * as screens from './state/screens'
-import * as pedestals from './state/pedestals'
-import { zip, flatten } from 'tvs-libs/dist/lib/utils/sequence'
+import { zip } from 'tvs-libs/dist/lib/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
-import { painter, gl } from './context'
-import * as cam from './camera'
+import { painter, gl, state, getCanvasSize } from './context'
 import { getStaticLayer, getSketch, getDrawingLayer } from 'shared-utils/painterState'
 import { groundShade, screenShade, objectShade } from './shaders'
-import { planeForm, planeSize, boxForm } from './geometries'
+import { planeForm, boxForm } from './geometries'
 import { effectLayer } from './effects'
-import { canvasSize } from './events'
 
 
 painter.updateDrawSettings({
@@ -37,11 +32,11 @@ export const groundSketch = getSketch(painter, 'ground')
 		shade: groundShade,
 		uniforms: {
 			reflection: null,
-			transform: ground.transform,
-			lights: flatten(zip((p, r) => [...p, r], screens.positions, screens.rotations)),
-			lightSize: [planeSize.width * screens.scale[0], planeSize.height * screens.scale[1]],
+			transform: () => state.ground.transform,
+			lights: () => state.screens.lights,
+			lightSize: () => state.screens.lightSize,
 			lightTex: videoTextures.map(v => v.texture()),
-			size: canvasSize
+			size: getCanvasSize
 		}
 	})
 
@@ -53,7 +48,7 @@ export const screenSketch = getSketch(painter, 'screens')
 		uniforms: zip((transform, tex) => ({
 			transform,
 			video: tex.texture()
-		}), screens.transforms, videoTextures)
+		}), state.screens.screenTransforms, videoTextures)
 	})
 
 
@@ -61,7 +56,7 @@ export const pedestalSketch = getSketch(painter, 'pedestals')
 	.update({
 		form: boxForm,
 		shade: objectShade,
-		uniforms: pedestals.transforms.map(transform => ({
+		uniforms: state.screens.pedestalTransforms.map(transform => ({
 			transform
 		}))
 	})
@@ -79,8 +74,8 @@ export const sceneLayer = getDrawingLayer(painter, 'scene')
 		sketches: [screenSketch, pedestalSketch, groundSketch],
 		drawSettings,
 		uniforms: {
-			view: cam.camera.state.view,
-			projection: cam.camera.state.perspective,
+			view: () => state.viewPort.camera.viewMat,
+			projection: () => state.viewPort.camera.projectionMat,
 			withDistance: 0,
 			groundHeight: 0
 		}
@@ -93,10 +88,10 @@ export const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene')
 		sketches: [screenSketch, pedestalSketch],
 		drawSettings,
 		uniforms: {
-			view: cam.groundMirrorView,
-			projection: cam.camera.state.perspective,
+			view: () => state.ground.groundMirrorView,
+			projection: () => state.viewPort.camera.projectionMat,
 			withDistance: 1,
-			groundHeight: ground.position[1]
+			groundHeight: () => state.ground.position[1]
 		}
 	})
 

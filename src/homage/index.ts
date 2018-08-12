@@ -1,21 +1,20 @@
+import './viewport'
+import './state/ground'
+import './state/screens'
 import { repeat } from 'shared-utils/scheduler'
-import { update } from 'tvs-utils/dist/lib/vr/camera'
-import { camera, groundMirrorView } from './camera'
-import { painter } from './context'
+import { painter, events } from './context'
 import { layers, videoTextures } from './renderer'
-import './events'
-import { mat4 } from 'gl-matrix'
-import { mirrorMatrix } from './state/ground'
 import { videos } from './state/videos'
+import { get, dispatch } from 'shared-utils/painterState'
 
 
 const tickStep = 2
 let tickCounter = 0
 
 videos.then(vs => {
-	repeat(() => {
-		update(camera)
-		mat4.multiply(groundMirrorView, camera.state.view, mirrorMatrix as any)
+	repeat(tpf => {
+		get('device').tpf = tpf
+		dispatch(events.FRAME)
 
 		if (tickCounter === 0) {
 			videoTextures.forEach((t, i) => t.update({
@@ -24,11 +23,6 @@ videos.then(vs => {
 		}
 		tickCounter = tickCounter === tickStep ? 0 : tickCounter + 1
 
-		painter.compose.apply(null, layers)
+		painter.compose.apply(painter, layers)
 	}, 'render')
 })
-
-
-if (module.hot) {
-	module.hot.accept()
-}

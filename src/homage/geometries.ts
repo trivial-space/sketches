@@ -19,8 +19,3 @@ const segments = [5, 7, 1]
 
 export const boxForm = getForm(painter, 'box')
 	.update(convertStackGLGeometry(box({ size, segments })))
-
-
-if (module.hot) {
-	module.hot.accept()
-}

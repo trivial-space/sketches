@@ -4,5 +4,5 @@ import { getShade } from 'shared-utils/painterState'
 import { painter } from './context'
 
 
-export const baseShade = getShade(painter, 'baseShade')
+export const baseShade = getShade(painter, 'base')
 	.update({ vert, frag })

@@ -16,9 +16,3 @@ export const objectShade = getShade(painter, 'object')
 
 export const screenShade = getShade(painter, 'screen')
 	.update({ vert: screenVert, frag: screenFrag })
-
-
-if (module.hot) {
-	module.hot.accept()
-}
-
