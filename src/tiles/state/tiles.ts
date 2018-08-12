@@ -19,7 +19,7 @@ export class Tiles {
 	color = [normalRand(), normalRand(), normalRand()]
 	set = pickRandom(sets)
 	animationDuration = 1700
-	animationChance = 0.1
+	animationChance = 0.01
 	liftHeight = 2
 	sinkHeight = -100
 	flipped = false
@@ -46,7 +46,6 @@ class TileState {
 	yawDirection = 0
 	yawDelay = 0
 	yaw = 0
-	rollDirection = 0
 	height = 0
 	rotation = quat.create()
 	updateTransform = false
@@ -74,17 +73,16 @@ class TileState {
 		return !!(this.height < 0.1 && this.height > -0.1)
 	}
 
-	connect (skipNeighbours?: true) {
-		if (!this.isConnected) { return }
+	connect () {
 		for (let i = 0; i < 4; i++) {
 			const index = (i + 4 - this.turn) % 4
 			const side = this.tileSpec.connections[index]
 			const neighbour = this.neighbours[i]
-			const current = this.connections[i]
+			const nIndex = neighbour ? (i + 6 - neighbour.turn) % 4 : 0
+			const current = this.connections[index]
 			let next: number
-			if (neighbour && neighbour.isConnected()) {
-				if (!skipNeighbours) neighbour.connect(true)
-				const neighbourSide = neighbour.tileSpec.connections[(i + 6 - neighbour.turn) % 4]
+			if (this.isConnected() && neighbour && neighbour.isConnected()) {
+				const neighbourSide = neighbour.tileSpec.connections[nIndex]
 				next = side && neighbourSide
 			} else {
 				next = 0
@@ -94,13 +92,19 @@ class TileState {
 					? pushTransition({
 						duration: 300,
 						onUpdate: p => {
-							this.connections[i] -= p
+							this.connections[index] = Math.max(0, this.connections[index] - p)
+							if (neighbour) {
+								neighbour.connections[nIndex] = Math.max(0, neighbour.connections[nIndex] - p)
+							}
 						}
 					})
 					: pushTransition({
 						duration: 300,
 						onUpdate: p => {
-							this.connections[i] += p
+							this.connections[index] = Math.min(1, this.connections[index] + p)
+							if (neighbour) {
+								neighbour.connections[nIndex] = Math.min(1, neighbour.connections[nIndex] + p)
+							}
 						}
 					})
 			}
@@ -109,15 +113,17 @@ class TileState {
 
 	disconnect () {
 		for (let i = 0; i < 4; i++) {
-			const current = this.connections[i]
-			if (current !== 0) {
-				pushTransition({
-					duration: 300,
-					onUpdate: p => {
-						this.connections[i] -= p
+			const neighbour = this.neighbours[i]
+			const nIndex = neighbour ? (i + 6 - neighbour.turn) % 4 : 0
+			pushTransition({
+				duration: 300,
+				onUpdate: p => {
+					this.connections[i] = Math.max(0, this.connections[i] - p)
+					if (neighbour) {
+						neighbour.connections[nIndex] = Math.max(0, neighbour.connections[nIndex] - p)
 					}
-				})
-			}
+				}
+			})
 		}
 	}
 }
@@ -271,7 +277,7 @@ function createActiveTiles (t: Tiles) {
 		}, t.rowCount)
 	}, t.colCount)
 
-	tiles.forEach(t => t.connect(true))
+	tiles.forEach(t => t.connect())
 
 	dispatch(events.NEW_ACTIVE_TILES)
 }
@@ -287,15 +293,23 @@ export function updateTiles (t: Tiles) {
 		const tile: TileState = tiles[i]
 
 		if (Math.random() < chance) {
-			tile.rollDirection = sign(Math.random() - 0.5)
 			tile.disconnect()
+			const dir = sign(Math.random() - 0.5)
 
 			pushTransition({
 				duration,
 				easeFn: smooth,
 				onUpdate: rot => {
-					tile.roll += rot * Math.PI / 2 * tile.rollDirection
+					tile.roll += rot * Math.PI / 2 * dir
 					tile.updateTransform = true
+				},
+				onComplete: () => {
+					tile.turn = dir > 0 ?
+						(tile.turn + 1) % 4 :
+						dir < 0 ?
+							(tile.turn + 3) % 4 :
+							tile.turn
+					tile.connect()
 				}
 			})
 
@@ -305,14 +319,6 @@ export function updateTiles (t: Tiles) {
 				onUpdate: rise => {
 					tile.height += rise * t.liftHeight
 					tile.updateTransform = true
-				},
-				onComplete: () => {
-					tile.connect()
-					tile.turn = tile.rollDirection > 0 ?
-						(tile.turn + 1) % 4 :
-						tile.rollDirection < 0 ?
-							(tile.turn + 3) % 4 :
-							tile.turn
 				}
 			})
 		}
@@ -330,8 +336,9 @@ export function updateTiles (t: Tiles) {
 					tile.updateTransform = true
 				},
 				onComplete: () => {
-					if (!tile.flipped) {}
-					tile.connect()
+					if (!tile.flipped) {
+						tile.connect()
+					}
 				}
 			})
 		}
