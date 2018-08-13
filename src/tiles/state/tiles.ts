@@ -20,7 +20,7 @@ export class Tiles {
 	set = pickRandom(sets)
 	animationDuration = 1700
 	animationChance = 0.01
-	liftHeight = 2
+	liftHeight = 1
 	sinkHeight = -100
 	flipped = false
 	colCount = 0

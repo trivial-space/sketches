@@ -17,9 +17,7 @@ videos.then(vs => {
 		dispatch(events.FRAME)
 
 		if (tickCounter === 0) {
-			videoTextures.forEach((t, i) => t.update({
-				asset: vs[i]
-			}))
+			videoTextures.forEach((t, i) => t.update({ asset: vs[i] }))
 		}
 		tickCounter = tickCounter === tickStep ? 0 : tickCounter + 1
 
