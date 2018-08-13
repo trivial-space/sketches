@@ -42,6 +42,11 @@ export const videoReflections = videoTextures.map(
 			size: reflSize
 		}, {
 			source: null,
+			direction: 0,
+			strength: 1.25,
+			size: reflSize
+		}, {
+			source: null,
 			direction: 1,
 			strength: 1.5,
 			size: reflSize
