@@ -5,7 +5,7 @@ import { painter, gl, state, getCanvasSize } from './context'
 import { getStaticLayer, getSketch, getDrawingLayer, getEffectLayer } from 'shared-utils/painterState'
 import { groundShade, screenShade, objectShade } from './shaders'
 import { planeForm, boxForm } from './geometries'
-import { effectLayer } from './effects'
+// import { effectLayer } from './effects'
 import refFrag from './glsl/video-light-source.glsl'
 
 
@@ -33,10 +33,9 @@ export const videoReflections = videoTextures.map(
 		height: 256,
 		minFilter: 'LINEAR',
 		magFilter: 'LINEAR',
-		wrap: 'CLAMP_TO_EDGE',
 		frag: refFrag,
 		uniforms: [{
-			source: t.texture(),
+			source: () => t.texture(),
 			direction: 0,
 			strength: 2.5,
 			size: reflSize
@@ -70,7 +69,7 @@ export const groundSketch = getSketch(painter, 'ground')
 			transform: () => state.ground.transform,
 			lights: () => state.screens.lights,
 			lightSize: () => state.screens.lightSize,
-			lightTex: () => videoReflections.map(v => v.texture()),
+			lightTex: () => videoTextures.map(v => v.texture()),
 			size: getCanvasSize
 		}
 	})
@@ -82,7 +81,7 @@ export const screenSketch = getSketch(painter, 'screens')
 		shade: screenShade,
 		uniforms: zip((transform, tex) => ({
 			transform,
-			video: tex.texture()
+			video: () => tex.texture()
 		}), state.screens.screenTransforms, videoReflections)
 	})
 
@@ -132,8 +131,8 @@ export const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene')
 
 
 export const layers = [
-	...videoReflections,
-	mirrorSceneLayer,
-	effectLayer,
-	sceneLayer
+	...videoReflections
+	// mirrorSceneLayer
+	// effectLayer,
+	// sceneLayer
 ]
