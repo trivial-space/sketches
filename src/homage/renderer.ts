@@ -48,7 +48,12 @@ export const videoReflections = videoTextures.map(
 		}, {
 			source: null,
 			direction: 1,
-			strength: 1.5,
+			strength: 3,
+			size: reflSize
+		}, {
+			source: null,
+			direction: 1,
+			strength: 2,
 			size: reflSize
 		}]
 	})
@@ -78,7 +83,7 @@ export const screenSketch = getSketch(painter, 'screens')
 		uniforms: zip((transform, tex) => ({
 			transform,
 			video: tex.texture()
-		}), state.screens.screenTransforms, videoTextures)
+		}), state.screens.screenTransforms, videoReflections)
 	})
 
 
