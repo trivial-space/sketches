@@ -5,9 +5,8 @@ import { painter, gl, state, getCanvasSize } from './context'
 import { getStaticLayer, getSketch, getDrawingLayer, getEffectLayer } from 'shared-utils/painterState'
 import { groundShade, screenShade, objectShade } from './shaders'
 import { planeForm, boxForm } from './geometries'
-// import { effectLayer } from './effects'
+import { effectLayer } from './effects'
 import refFrag from './glsl/video-light-source.glsl'
-
 
 painter.updateDrawSettings({
 	clearColor: [0, 0, 0, 1]
@@ -26,7 +25,7 @@ export const videoTextures = videos.names.map(
 
 
 const reflSize = [256, 256]
-export const videoReflections = videoTextures.map(
+const videoLight = videoTextures.map(
 	(t, i) => getEffectLayer(painter, 'vref' + i).update({
 		buffered: true,
 		width: 256,
@@ -34,25 +33,38 @@ export const videoReflections = videoTextures.map(
 		minFilter: 'LINEAR',
 		magFilter: 'LINEAR',
 		frag: refFrag,
+		drawSettings: {
+			disable: [gl.DEPTH_TEST]
+		},
 		uniforms: [{
 			source: () => t.texture(),
 			direction: 0,
-			strength: 2.5,
+			strength: 4,
 			size: reflSize
 		}, {
 			source: null,
 			direction: 0,
-			strength: 1.25,
+			strength: 2,
+			size: reflSize
+		}, {
+			source: null,
+			direction: 0,
+			strength: 1,
 			size: reflSize
 		}, {
 			source: null,
 			direction: 1,
-			strength: 3,
+			strength: 4,
 			size: reflSize
 		}, {
 			source: null,
 			direction: 1,
 			strength: 2,
+			size: reflSize
+		}, {
+			source: null,
+			direction: 1,
+			strength: 1,
 			size: reflSize
 		}]
 	})
@@ -60,7 +72,7 @@ export const videoReflections = videoTextures.map(
 
 // Sketches
 
-export const groundSketch = getSketch(painter, 'ground')
+const groundSketch = getSketch(painter, 'ground')
 	.update({
 		form: planeForm,
 		shade: groundShade,
@@ -69,24 +81,24 @@ export const groundSketch = getSketch(painter, 'ground')
 			transform: () => state.ground.transform,
 			lights: () => state.screens.lights,
 			lightSize: () => state.screens.lightSize,
-			lightTex: () => videoTextures.map(v => v.texture()),
+			lightTex: () => videoLight.map(v => v.texture()),
 			size: getCanvasSize
 		}
 	})
 
 
-export const screenSketch = getSketch(painter, 'screens')
+const screenSketch = getSketch(painter, 'screens')
 	.update({
 		form: planeForm,
 		shade: screenShade,
 		uniforms: zip((transform, tex) => ({
 			transform,
 			video: () => tex.texture()
-		}), state.screens.screenTransforms, videoReflections)
+		}), state.screens.screenTransforms, videoTextures)
 	})
 
 
-export const pedestalSketch = getSketch(painter, 'pedestals')
+const pedestalSketch = getSketch(painter, 'pedestals')
 	.update({
 		form: boxForm,
 		shade: objectShade,
@@ -103,7 +115,7 @@ const drawSettings = {
 }
 
 
-export const sceneLayer = getDrawingLayer(painter, 'scene')
+const sceneLayer = getDrawingLayer(painter, 'scene')
 	.update({
 		sketches: [screenSketch, pedestalSketch, groundSketch],
 		drawSettings,
@@ -116,7 +128,7 @@ export const sceneLayer = getDrawingLayer(painter, 'scene')
 	})
 
 
-export const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene')
+const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene')
 	.update({
 		flipY: true,
 		sketches: [screenSketch, pedestalSketch],
@@ -131,8 +143,8 @@ export const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene')
 
 
 export const layers = [
-	...videoReflections
-	// mirrorSceneLayer
-	// effectLayer,
-	// sceneLayer
+	...videoLight,
+	mirrorSceneLayer,
+	effectLayer,
+	sceneLayer
 ]

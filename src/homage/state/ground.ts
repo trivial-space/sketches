@@ -7,7 +7,7 @@ import { State, events } from '../context'
 export class Ground {
 	position = [0, -3.6, 0]
 	normal = [0, 1, 0]
-	scale = 10
+	scale = 100
 	transform = mat4.create()
 	planeEquation!: number[]
 	mirrorMatrix!: number[]

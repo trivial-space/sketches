@@ -25,32 +25,32 @@ export function getPainter(canvas: HTMLCanvasElement) {
 
 const forms: {[id: string]: Form} = {}
 export function getForm(painter: Painter, id: string) {
-	return forms[id] || (forms[id] = painter.createForm())
+	return forms[id] || (forms[id] = painter.createForm('Form_' + id))
 }
 
 const shades: {[id: string]: Shade} = {}
 export function getShade(painter: Painter, id: string) {
-	return shades[id] || (shades[id] = painter.createShade())
+	return shades[id] || (shades[id] = painter.createShade('Shade_' + id))
 }
 
 const sketches: {[id: string]: Sketch} = {}
 export function getSketch(painter: Painter, id: string) {
-	return sketches[id] || (sketches[id] = painter.createSketch())
+	return sketches[id] || (sketches[id] = painter.createSketch('Sketch_' + id))
 }
 
 const drawingLayers: {[id: string]: Layer} = {}
 export function getDrawingLayer(painter: Painter, id: string) {
-	return drawingLayers[id] = (drawingLayers[id] = painter.createDrawingLayer())
+	return drawingLayers[id] = (drawingLayers[id] = painter.createDrawingLayer('DrawLayer_' + id))
 }
 
 const staticLayers: {[id: string]: Layer} = {}
 export function getStaticLayer(painter: Painter, id: string) {
-	return staticLayers[id] = (staticLayers[id] = painter.createStaticLayer())
+	return staticLayers[id] = (staticLayers[id] = painter.createStaticLayer('StaticLayer_' + id))
 }
 
 const effectLayers: {[id: string]: Layer} = {}
 export function getEffectLayer(painter: Painter, id: string) {
-	return effectLayers[id] = (effectLayers[id] = painter.createEffectLayer())
+	return effectLayers[id] = (effectLayers[id] = painter.createEffectLayer('EffectLayer_' + id))
 }
 
 
