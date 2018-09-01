@@ -58,6 +58,7 @@ export function getEffectLayer(painter: Painter, id: string) {
 
 export interface BaseState {
 	device: {
+		sizeMultiplier: number
 		canvas: HTMLCanvasElement,
 		mouse: MouseState,
 		keys: KeyState,
@@ -67,7 +68,8 @@ export interface BaseState {
 
 export const state: BaseState = {
 	device: {
-		tpf: 0
+		tpf: 0,
+		sizeMultiplier: 1
 	}
 } as BaseState
 window['state'] = state
@@ -131,7 +133,7 @@ export function init (canvas: HTMLCanvasElement) {
 		cancelKeys && cancelKeys()
 
 		cancelWindow = windowSize(() => once(() => {
-			painter.resize()
+			painter.resize(state.device.sizeMultiplier)
 			dispatch(baseEvents.RESIZE)
 		}, 'resize'))
 

@@ -19,6 +19,8 @@ function createVideo (src: string) {
 	const video = document.createElement('video')
 	video.crossOrigin = 'anonymous'
 	video.loop = true
+	; (video as any).playsinline = true
+	video.autoplay
 
 	const source1 = document.createElement('source')
 	source1.src = src + '.webm'
@@ -45,7 +47,6 @@ export const videos = Promise.all(
 
 			v.addEventListener('canplay', () => {
 				res(v)
-				v.play()
 				clearTimeout(t)
 				console.log('loaded', v)
 			})
