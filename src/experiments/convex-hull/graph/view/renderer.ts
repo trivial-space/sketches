@@ -1,12 +1,12 @@
 import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { painter, gl, canvasSize } from './context'
-import * as geometries from './geometries'
-import * as shaders from './shaders'
-import { makeShadeEntity, makeFormEntity, makeSketchEntity, makeDrawingLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
+import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
+import { LayerData } from 'tvs-painter/lib'
+import { makeDrawingLayerEntity, makeFormEntity, makeShadeEntity, makeSketchEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { makeEffectLayerEntity } from 'tvs-utils/lib/vr/flow-painter-utils'
 import { tripleStream } from '../state/nodes'
-import { LayerData } from 'tvs-painter/lib'
-import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
+import { canvasSize, gl, painter } from './context'
+import * as geometries from './geometries'
+import * as shaders from './shaders'
 
 
 // ===== shaders =====
@@ -14,11 +14,9 @@ import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
 export const pointsShade = makeShadeEntity(painter, shaders.point)
 
 
-
 // ===== geometries =====
 
 export const pointsForm = makeFormEntity(painter, geometries.points)
-
 
 
 // ===== objects =====

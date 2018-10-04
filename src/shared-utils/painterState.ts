@@ -1,16 +1,16 @@
+import { once } from 'shared-utils/scheduler'
+import { windowSize } from 'tvs-libs/dist/lib/events/dom'
+import { keyboard } from 'tvs-libs/dist/lib/events/keyboard'
+import { KeyState } from 'tvs-libs/dist/lib/events/keyboard'
+import { MouseState } from 'tvs-libs/dist/lib/events/mouse'
+import { mouse } from 'tvs-libs/dist/lib/events/mouse'
+import { deepOverride } from 'tvs-libs/dist/lib/utils/object'
 import { Layer } from 'tvs-painter'
 import { Form } from 'tvs-painter/dist/lib/form'
 import { Painter } from 'tvs-painter/dist/lib/painter'
 import { Shade } from 'tvs-painter/dist/lib/shade'
 import { Sketch } from 'tvs-painter/dist/lib/sketch'
 import { getContext } from 'tvs-painter/dist/lib/utils/context'
-import { MouseState } from 'tvs-libs/dist/lib/events/mouse'
-import { KeyState } from 'tvs-libs/dist/lib/events/keyboard'
-import { keyboard } from 'tvs-libs/dist/lib/events/keyboard'
-import { deepOverride } from 'tvs-libs/dist/lib/utils/object'
-import { mouse } from 'tvs-libs/dist/lib/events/mouse'
-import { windowSize } from 'tvs-libs/dist/lib/events/dom'
-import { once } from 'shared-utils/scheduler'
 
 
 // === Painter ===
@@ -96,10 +96,10 @@ export function getState<S extends BaseState>() {
 
 // === Systems ===
 
-type System<S extends BaseState = BaseState> = (event: string, state: S) => void
-const systems: {[id: string]: System<any>} = {}
+type ActionHandler<S extends BaseState = BaseState> = (event: string, state: S) => void
+const systems: {[id: string]: ActionHandler<any>} = {}
 
-export function addSystem<S extends BaseState = BaseState>(id: string, s: System<S>) {
+export function addSystem<S extends BaseState = BaseState>(id: string, s: ActionHandler<S>) {
 	systems[id] = s
 }
 

@@ -10,6 +10,7 @@ module.exports = {
 		'homage': ['./homage/index.ts'],
 		'tiles': ['./tiles/index.ts'],
 		'colorwalls': ['./colorwalls/index.ts'],
+		'aquarell': ['./aquarell/index.ts'],
 		'experiments/area-light': ['./experiments/area-light/index.ts'],
 		'experiments/graph-sort': ['./experiments/graph-sort/index.ts'],
 		'experiments/convex-hull': ['./experiments/convex-hull/index.ts']
