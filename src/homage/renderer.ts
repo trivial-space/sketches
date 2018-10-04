@@ -1,12 +1,12 @@
-import * as videos from './state/videos'
+import { getDrawingLayer, getEffectLayer, getSketch, getStaticLayer } from 'shared-utils/painterState'
 import { zip } from 'tvs-libs/dist/lib/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
-import { painter, gl, state, getCanvasSize } from './context'
-import { getStaticLayer, getSketch, getDrawingLayer, getEffectLayer } from 'shared-utils/painterState'
-import { groundShade, screenShade, objectShade } from './shaders'
-import { planeForm, boxForm } from './geometries'
+import { getCanvasSize, gl, painter, state } from './context'
 import { effectLayer } from './effects'
+import { boxForm, planeForm } from './geometries'
 import refFrag from './glsl/video-light-source.glsl'
+import { groundShade, objectShade, screenShade } from './shaders'
+import * as videos from './state/videos'
 
 painter.updateDrawSettings({
 	clearColor: [0, 0, 0, 1]
@@ -28,6 +28,7 @@ const reflSize = [256, 256]
 const videoLight = videoTextures.map(
 	(t, i) => getEffectLayer(painter, 'vref' + i).update({
 		buffered: true,
+		doubleBuffered: true,
 		width: 256,
 		height: 256,
 		minFilter: 'LINEAR',

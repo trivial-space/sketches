@@ -53,18 +53,22 @@ vec3 diffuseAreaLight(sampler2D tex, vec3 normal, vec3 pos, vec3 V) {
 	return diff;
 }
 
+vec3 processLight(vec4 light, sampler2D tex) {
+		vec3 lightNormal = vec3(sin(light.a), 0, cos(light.a));
+		vec3 diffuse = diffuseAreaLight(tex, lightNormal, light.xyz, V);
+		return pow(diffuse, vec3(0.57));
+}
 
 void main() {
 	float scale = (50.0 - length(V)) / 50.0;
 	vec4 refl = texture2D(reflection, gl_FragCoord.xy / size);
 	vec3 ground = vec3(0.0);
 
-	for (int i = 0; i < 5; i++) {
-		vec4 light = lights[i];
-		vec3 lightNormal = vec3(sin(light.a), 0, cos(light.a));
-		vec3 diffuse = diffuseAreaLight(lightTex[i], lightNormal, light.xyz, V);
-		ground += pow(diffuse, vec3(0.57));
-	}
+	ground += processLight(lights[0], lightTex[0]);
+	ground += processLight(lights[1], lightTex[1]);
+	ground += processLight(lights[2], lightTex[2]);
+	ground += processLight(lights[3], lightTex[3]);
+	ground += processLight(lights[4], lightTex[4]);
 
 	gl_FragColor = mix(vec4(ground, 1.0), vec4(refl.rgb, 1.0), refl / 2.0 + 0.25);
 	// gl_FragColor = vec4(ground, 1.0);
