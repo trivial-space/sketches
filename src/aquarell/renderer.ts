@@ -1,6 +1,10 @@
-import { addSystem, getEffectLayer, set } from 'shared-utils/painterState'
-import { events, painter, State } from './context'
-
+import {
+	addSystem,
+	getEffectLayer,
+	getStaticLayer,
+	set
+} from 'shared-utils/painterState'
+import { events, paint, painter, State } from './context'
 
 // ===== Settings =====
 
@@ -10,15 +14,31 @@ painter.updateDrawSettings({
 
 // ===== layers =====
 
+const paintLayer = getStaticLayer(painter, 'paint')
+.update({
+	asset: paint
+})
+
 const layer1 = getEffectLayer(painter, 'layer1')
-	.update({
-		buffered: true
-	})
+.update({
+	buffered: true
+})
 
 const layer2 = getEffectLayer(painter, 'layer2')
-	.update({
-		buffered: true
-	})
+.update({
+	buffered: true,
+	uniforms: {
+		paint: paintLayer.texture(),
+		previous: layer1.texture()
+	}
+})
+
+layer1.update({
+	uniforms: {
+		paint: paintLayer.texture(),
+		previous: layer1.texture()
+	}
+})
 
 export const reveal = getEffectLayer(painter, 'reveal')
 
@@ -28,7 +48,7 @@ export class RenderState {
 	currentLayer = layer1
 
 	switch = true
-	swapLayers () {
+	swapLayers() {
 		this.switch = !this.switch
 		this.currentLayer = this.switch ? layer1 : layer2
 	}

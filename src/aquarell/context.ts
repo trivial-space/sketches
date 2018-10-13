@@ -16,5 +16,6 @@ export const state = getState<State>()
 
 export const events = {
 	...baseEvents,
-	PROCESS_PAINT: 'processPaint'
+	PROCESS_PAINT: 'process_paint',
+	CLEANUP_PAINT: 'cleanup_paint'
 }
