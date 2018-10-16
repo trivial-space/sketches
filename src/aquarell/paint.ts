@@ -11,14 +11,21 @@ for (let i = 0; i < data.data.length; i += 4) {
 	data.data[i + 3] = 255
 }
 
-ctx.fillStyle = 'hsl(30, 0.5, 0.5)'
-ctx.fillRect(20, 20, 100, 100)
-
 ctx.putImageData(data, 0, 0)
 
-addSystem<State>('paint', (e, _s) => {
+ctx.fillStyle = 'white'
+addSystem<State>('paint', (e, s) => {
 	if (e === events.CLEANUP_PAINT) {
-		ctx.clearRect(0, 0, paint.width, paint.height)
+		ctx.fillStyle = 'black'
+		ctx.fillRect(0, 0, paint.width, paint.height)
+	}
+
+	const d = s.device
+	if (e === events.PROCESS_PAINT && d.mouse.dragging && d.mouse.drag.event) {
+		const { clientX, clientY } = d.mouse.drag.event
+		const x = Math.floor((clientX / window.innerWidth) * paint.width)
+		const y = Math.floor((clientY / window.innerHeight) * paint.height)
+		ctx.fillStyle = 'white'
+		ctx.fillRect(x, y, 1, 1)
 	}
 })
-
