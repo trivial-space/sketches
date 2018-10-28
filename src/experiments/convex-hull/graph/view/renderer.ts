@@ -73,10 +73,7 @@ const updateOutBuffer = (l, out, size, frag) => l.update({
 	uniforms: {
 		previous: out.texture(),
 		current: null
-	},
-	magFilter: 'NEAREST',
-	minFilter: 'NEAREST',
-	wrap: 'CLAMP_TO_EDGE'
+	}
 } as LayerData)
 
 outBuffer1.react(
