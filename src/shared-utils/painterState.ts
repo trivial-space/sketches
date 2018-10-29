@@ -72,7 +72,7 @@ export const state: BaseState = {
 		sizeMultiplier: 1
 	}
 } as BaseState
-window['state'] = state
+; (window as any)['state'] = state
 
 export function get<S extends BaseState = BaseState, K extends keyof S = keyof S>(prop: K): S[K] {
 	return (state as S)[prop]

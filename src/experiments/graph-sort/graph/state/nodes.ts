@@ -1,10 +1,10 @@
-import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { times, flatten } from 'tvs-libs/dist/lib/utils/sequence'
 import { canvasSize } from 'experiments/graph-sort/graph/view/context'
+import { alter, M } from 'shared-utils/fp'
+import { stream, val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { randInt, randIntInRange } from 'tvs-libs/dist/lib/math/random'
+import { add, div, length, mul, normalize, sub } from 'tvs-libs/dist/lib/math/vectors'
+import { flatten, times } from 'tvs-libs/dist/lib/utils/sequence'
 import * as events from '../events'
-import { sub, length, normalize, mul, add, div } from 'tvs-libs/dist/lib/math/vectors'
-import { M, alter } from 'shared-utils/fp'
 
 
 export const nodeCount = val(40)
@@ -49,8 +49,8 @@ nodes.react(
 	[events.tick.HOT, springLength.COLD, connections.COLD],
 	(nodes, tpf, springLength, connections) => {
 
-		function updateForces(force, dir, from, to) {
-			const update = f => v =>
+		function updateForces (force: M<number>, dir: M<number[]>, from: any, to: any) {
+			const update = (f: M<number>) => (v: number[]) =>
 				f.combine(mul, dir)
 				.pull(add, v)
 				.value
@@ -76,7 +76,6 @@ nodes.react(
 
 			updateForces(force, dir, n1, n2)
 		}
-
 
 		for (let i = 0; i < nodes.length - 1; i++) {
 			const n1 = nodes[i]

@@ -1,12 +1,12 @@
-import { randInt, normalRand } from 'tvs-libs/dist/lib/math/random'
-import { sign } from 'tvs-libs/dist/lib/math/core'
 import { mat4, quat } from 'gl-matrix'
-import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
-import { pickRandom, doTimes, times, map } from 'tvs-libs/dist/lib/utils/sequence'
-import { sets, TileSpec, specs } from './data'
-import { pushTransition } from 'shared-utils/transitions'
 import { addSystem, dispatch, set } from 'shared-utils/painterState'
-import { State, events } from '../context'
+import { pushTransition } from 'shared-utils/transitions'
+import { sign } from 'tvs-libs/dist/lib/math/core'
+import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
+import { normalRand, randInt } from 'tvs-libs/dist/lib/math/random'
+import { doTimes, map, pickRandom, times } from 'tvs-libs/dist/lib/utils/sequence'
+import { events, State } from '../context'
+import { Set, sets, specs, TileSpec } from './data'
 
 
 type Color = number[]
@@ -136,19 +136,19 @@ const SIDES_INDEX = {
 }
 
 
-function rotateHalf (part) {
+function rotateHalf (part: number) {
 	return -Math.cos(part * Math.PI * 2) * 0.5 + 0.5
 }
 
-function smooth (part) {
+function smooth (part: number) {
 	return -Math.cos(part * Math.PI) * 0.5 + 0.5
 }
 
-function acc (part) {
+function acc (part: number) {
 	return part * part * part * part
 }
 
-function slow (part) {
+function slow (part: number) {
 	return Math.pow(part, 0.25)
 }
 
@@ -196,7 +196,7 @@ function makeGrid(
 	newWidth: number,
 	newHeight: number,
 	color: Color,
-	set,
+	set: Set,
 	grid: TileState[][]
 ) {
 

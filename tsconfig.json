@@ -4,12 +4,10 @@
 		"lib": [
 			"esnext",
 			"dom",
-			"es2018"
 		],
 		"module": "es6",
 		"moduleResolution": "node",
 		"strict": true,
-		"noImplicitAny": false,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"sourceMap": true,

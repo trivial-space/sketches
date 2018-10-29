@@ -1,8 +1,10 @@
 // onNextTick
 // schedule actions on next animation frame
 
-let updateOnce: {[id: string]: Function} | null = null
-const updateRepeat: {[id: string]: Function} = {}
+type Callback = (n: number) => void
+
+let updateOnce: {[id: string]: Callback} | null = null
+const updateRepeat: {[id: string]: Callback} = {}
 
 let willUpdate = false
 
@@ -37,7 +39,7 @@ function processUpdates (time: number) {
 }
 
 
-export function once(fn: Function, id?: string | number) {
+export function once(fn: Callback, id?: string | number) {
 	id = id || fn.name || uidCounter++
 	updateOnce = updateOnce || {}
 	updateOnce[id] = fn
@@ -49,7 +51,7 @@ export function once(fn: Function, id?: string | number) {
 }
 
 
-export function repeat(fn: Function, id?: string | number) {
+export function repeat(fn: Callback, id?: string | number) {
 	id = id || fn.name || uidCounter++
 	updateRepeat[id] = fn
 

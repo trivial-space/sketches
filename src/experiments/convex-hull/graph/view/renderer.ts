@@ -1,6 +1,6 @@
 import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
-import { LayerData } from 'tvs-painter/lib'
+import { Layer, LayerData } from 'tvs-painter'
 import { makeDrawingLayerEntity, makeFormEntity, makeShadeEntity, makeSketchEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { makeEffectLayerEntity } from 'tvs-utils/lib/vr/flow-painter-utils'
 import { tripleStream } from '../state/nodes'
@@ -66,7 +66,7 @@ export const sides = makeEffectLayerEntity(painter)
 export const outBuffer1 = makeEffectLayerEntity(painter)
 export const outBuffer2 = makeEffectLayerEntity(painter)
 
-const updateOutBuffer = (l, out, size, frag) => l.update({
+const updateOutBuffer = (l: Layer, out: Layer, size: any, frag: string) => l.update({
 	buffered: true,
 	...size,
 	frag,

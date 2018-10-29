@@ -1,3 +1,6 @@
+import { Unpacked } from 'tvs-libs/dist/lib/types'
+
+
 export interface TileSpec {
 	file: string,
 	connections: [number, number, number, number]
@@ -107,3 +110,5 @@ export const sets = [{
 	ltbA1: 1,
 	ltbB1: 1
 }]
+
+export type Set = Unpacked<typeof sets>

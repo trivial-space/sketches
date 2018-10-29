@@ -36,7 +36,9 @@ export class M<A> {
 }
 
 
+export function alter<A>(coll: A[], k: number, fn: (a: A) => A ): A[]
+export function alter<A> (coll: { [k: string]: A }, k: string, fn: (a: A) => A): {[k: string]: A}
 export function alter<A>(coll: A[] | { [k: string]: A }, k: string | number, fn: (a: A) => A ) {
-	coll[k] = fn(coll[k])
+	(coll as any)[k] = fn((coll as any) [k])
 	return coll
 }
