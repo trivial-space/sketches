@@ -1,10 +1,10 @@
-import vert from './glsl/base-vert.glsl'
-import frag from './glsl/base-frag.glsl'
-import { painter, gl, state, events, State } from './context'
-import { getShade, getForm, getStaticLayer, getSketch, getDrawingLayer, addSystem } from 'shared-utils/painterState'
-import { plane } from 'tvs-painter/dist/lib/utils/geometry/plane'
+import { addSystem, getDrawingLayer, getForm, getShade, getSketch, getStaticLayer } from 'shared-utils/painterState'
 import { each } from 'tvs-libs/dist/lib/utils/sequence'
 import { StaticLayer } from 'tvs-painter/dist/lib/layer'
+import { plane } from 'tvs-painter/dist/lib/utils/geometry/plane'
+import { events, gl, painter, state, State } from './context'
+import frag from './glsl/base-frag.glsl'
+import vert from './glsl/base-vert.glsl'
 
 // ===== Settings =====
 

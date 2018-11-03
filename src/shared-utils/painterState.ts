@@ -5,8 +5,8 @@ import { KeyState } from 'tvs-libs/dist/lib/events/keyboard'
 import { MouseState } from 'tvs-libs/dist/lib/events/mouse'
 import { mouse } from 'tvs-libs/dist/lib/events/mouse'
 import { deepOverride } from 'tvs-libs/dist/lib/utils/object'
-import { Layer } from 'tvs-painter'
 import { Form } from 'tvs-painter/dist/lib/form'
+import { DrawingLayer, StaticLayer } from 'tvs-painter/dist/lib/layer'
 import { Painter } from 'tvs-painter/dist/lib/painter'
 import { Shade } from 'tvs-painter/dist/lib/shade'
 import { Sketch } from 'tvs-painter/dist/lib/sketch'
@@ -38,19 +38,19 @@ export function getSketch(painter: Painter, id: string) {
 	return sketches[id] || (sketches[id] = painter.createSketch('Sketch_' + id))
 }
 
-const drawingLayers: {[id: string]: Layer} = {}
+const drawingLayers: {[id: string]: DrawingLayer} = {}
 export function getDrawingLayer(painter: Painter, id: string) {
-	return drawingLayers[id] = (drawingLayers[id] = painter.createDrawingLayer('DrawLayer_' + id))
+	return drawingLayers[id] || (drawingLayers[id] = painter.createDrawingLayer('DrawLayer_' + id))
 }
 
-const staticLayers: {[id: string]: Layer} = {}
+const staticLayers: {[id: string]: StaticLayer} = {}
 export function getStaticLayer(painter: Painter, id: string) {
-	return staticLayers[id] = (staticLayers[id] = painter.createStaticLayer('StaticLayer_' + id))
+	return staticLayers[id] || (staticLayers[id] = painter.createStaticLayer('StaticLayer_' + id))
 }
 
-const effectLayers: {[id: string]: Layer} = {}
+const effectLayers: {[id: string]: DrawingLayer} = {}
 export function getEffectLayer(painter: Painter, id: string) {
-	return effectLayers[id] = (effectLayers[id] = painter.createEffectLayer('EffectLayer_' + id))
+	return effectLayers[id] || (effectLayers[id] = painter.createEffectLayer('EffectLayer_' + id))
 }
 
 

@@ -42,7 +42,7 @@ void main() {
 
 	vec4 color = vec4(vec3(0.0), 1.0);
 	if (neighbours == 3 || (neighbours == 2 && prevTex.r > 0.0) || paintTex.r > 0.0) {
-		color = vec4(1.0);
+		color = vec4(1.0, 0.0, 1.0, 1.0);
 	}
 
 	gl_FragColor = color;

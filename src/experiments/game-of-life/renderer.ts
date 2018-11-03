@@ -1,5 +1,14 @@
 import { mat4 } from 'gl-matrix'
-import { addSystem, getEffectLayer, getStaticLayer, set } from 'shared-utils/painterState'
+import {
+	addSystem,
+	getDrawingLayer,
+	getEffectLayer,
+	getForm,
+	getShade,
+	getSketch,
+	getStaticLayer,
+	set
+} from 'shared-utils/painterState'
 import { LayerData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import { plane } from 'tvs-painter/dist/lib/utils/geometry/plane'
@@ -32,18 +41,16 @@ const layerProps: LayerData = {
 	}
 }
 
-const layer1 = getEffectLayer(painter, 'layer1')
-	.update(layerProps)
+const layer1 = getEffectLayer(painter, 'layer1').update(layerProps)
 
-const layer2 = getEffectLayer(painter, 'layer2')
-	.update({
-		...layerProps,
-		uniforms: {
-			size: bufferSize,
-			paint: () => paintLayer.texture(),
-			previous: () => layer1.texture()
-		}
-	})
+const layer2 = getEffectLayer(painter, 'layer2').update({
+	...layerProps,
+	uniforms: {
+		size: bufferSize,
+		paint: () => paintLayer.texture(),
+		previous: () => layer1.texture()
+	}
+})
 
 layer1.update({
 	uniforms: {
@@ -59,15 +66,14 @@ const planMat = mat4.fromTranslation(mat4.create(), [0, 0, -3])
 const rotation = 0.001
 const projection = mat4.perspective(mat4.create(), 45, 1, 0.01, 10)
 
+const form = getForm(painter, 'plane').update(plane(2, 2))
 
-const form = painter.createForm().update(plane(2, 2))
-
-const shade = painter.createShade().update({
+const shade = getShade(painter, 'plane').update({
 	vert: planeVert,
 	frag: planeFrag
 })
 
-const sketch = painter.createSketch().update({
+const sketch = getSketch(painter, 'plane').update({
 	form, shade,
 	uniforms: {
 		transform: () => mat4.rotateY(planMat, planMat, rotation),
@@ -75,7 +81,7 @@ const sketch = painter.createSketch().update({
 	}
 })
 
-export const planeLayer = painter.createDrawingLayer().update({
+export const planeLayer = getDrawingLayer(painter, 'plane').update({
 	sketches: [sketch],
 	uniforms: {
 		projection
@@ -98,7 +104,7 @@ export class RenderState {
 	}
 }
 
-set<State>('renderer', new RenderState())
+set<State>('renderer', new RenderState(), { reset: true })
 
 addSystem<State>('renderer', (e, s) => {
 	if (e === events.FRAME) {
