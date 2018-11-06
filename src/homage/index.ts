@@ -1,11 +1,12 @@
-import './viewport'
 import './state/ground'
 import './state/screens'
+import './viewport'
+
+import { dispatch, get } from 'shared-utils/painterState'
 import { repeat } from 'shared-utils/scheduler'
-import { painter, events } from './context'
+import { events, painter } from './context'
 import { layers, videoTextures } from './renderer'
 import { videos } from './state/videos'
-import { get, dispatch } from 'shared-utils/painterState'
 
 const d = get('device')
 d.sizeMultiplier = 0.5

@@ -1,4 +1,5 @@
 import { addSystem, getEffectLayer, getStaticLayer, set } from 'shared-utils/painterState'
+import { LayerData } from 'tvs-painter'
 import { events, gl, paint, painter, State, state } from './context'
 import base from './glsl/base.frag'
 
@@ -13,29 +14,29 @@ painter.updateDrawSettings({
 const paintLayer = getStaticLayer(painter, 'paint')
 
 const bufferSize = 256
-
-const layer1 = getEffectLayer(painter, 'layer1')
-	.update({
+const layerOptions: LayerData = {
 		buffered: true,
 		flipY: true,
 		width: bufferSize,
 		height: bufferSize,
 		frag: base,
+		// textureConfig: {
+		// 	count: 2,
+		// 	type: gl.FLOAT
+		// },
 		drawSettings: {
 			disable: [gl.DEPTH_TEST]
 		}
+}
+
+const layer1 = getEffectLayer(painter, 'layer1')
+	.update({
+		...layerOptions
 	})
 
 const layer2 = getEffectLayer(painter, 'layer2')
 	.update({
-		buffered: true,
-		flipY: true,
-		width: bufferSize,
-		height: bufferSize,
-		frag: base,
-		drawSettings: {
-			disable: [gl.DEPTH_TEST]
-		},
+		...layerOptions,
 		uniforms: {
 			size: bufferSize,
 			paint: () => paintLayer.texture(),

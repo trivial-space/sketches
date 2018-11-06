@@ -1,5 +1,5 @@
+import { addSystem, set } from 'shared-utils/painterState'
 import { PerspectiveCamera } from 'shared-utils/vr/camera'
-import { set, addSystem } from 'shared-utils/painterState'
 import { events, State } from './context'
 
 
@@ -24,8 +24,9 @@ addSystem<State>('viewPort', (e, s) => {
 			cam.position = [0, 0, v.distance / cam.aspect]
 			cam.needsUpdateView = true
 			cam.update()
+			return
 	}
 })
 
 
-set<State>('viewPort', new ViewPort(), {reset: {moveSpeed: true, lookSpeed: true}})
+set<State>('viewPort', new ViewPort())

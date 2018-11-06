@@ -15,7 +15,7 @@ type Position = [number, number]
 
 export class Tiles {
 	tileSize = 3
-	tileDensity = 15
+	tileDensity = 11
 	color = [normalRand(), normalRand(), normalRand()]
 	set = pickRandom(sets)
 	animationDuration = 1700
@@ -172,6 +172,7 @@ addSystem<State>('tiles', (e, s) => {
 				dispatch(events.START)
 				dispatch(events.RESIZE)
 			})
+			return
 
 		case events.RESIZE:
 			const canvas = s.device.canvas
@@ -180,9 +181,11 @@ addSystem<State>('tiles', (e, s) => {
 			t.rowCount = Math.ceil(t.colCount / aspect)
 			makeGrid(t.colCount, t.rowCount, t.color, t.set, t.grid)
 			createActiveTiles(t)
+			return
 
 		case events.FRAME:
 			updateTiles(t)
+			return
 	}
 })
 

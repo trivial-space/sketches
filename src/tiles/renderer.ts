@@ -6,6 +6,7 @@ import { events, gl, painter, state, State } from './context'
 import frag from './glsl/base-frag.glsl'
 import vert from './glsl/base-vert.glsl'
 
+
 // ===== Settings =====
 
 painter.updateDrawSettings({
@@ -55,12 +56,12 @@ addSystem<State>('render', (e, s) => {
 			each((img, key) => {
 				textures[key] = getStaticLayer(painter, key)
 					.update({
-						minFilter: 'LINEAR',
+						minFilter: 'LINEAR_MIPMAP_LINEAR',
 						magFilter: 'LINEAR',
 						asset: img
 					})
 			}, s.tiles.images)
-			break
+			return
 
 		case events.NEW_ACTIVE_TILES:
 			tilesSketch.update({

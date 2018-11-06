@@ -1,7 +1,7 @@
-import { getPainter, getState, baseEvents } from 'shared-utils/painterState'
+import { baseEvents, getPainter, getState } from 'shared-utils/painterState'
 import { BaseState } from 'shared-utils/painterState'
-import { ViewPort } from './viewport'
 import { Tiles } from './state/tiles'
+import { ViewPort } from './viewport'
 
 
 export interface State extends BaseState {

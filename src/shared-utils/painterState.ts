@@ -18,38 +18,38 @@ import { getContext } from 'tvs-painter/dist/lib/utils/context'
 let currentCanvas: HTMLCanvasElement
 let painter: Painter
 
-export function getPainter(canvas: HTMLCanvasElement) {
+export function getPainter (canvas: HTMLCanvasElement) {
 	init(canvas)
 	return painter
 }
 
-const forms: {[id: string]: Form} = {}
-export function getForm(painter: Painter, id: string) {
+const forms: { [id: string]: Form } = {}
+export function getForm (painter: Painter, id: string) {
 	return forms[id] || (forms[id] = painter.createForm('Form_' + id))
 }
 
-const shades: {[id: string]: Shade} = {}
-export function getShade(painter: Painter, id: string) {
+const shades: { [id: string]: Shade } = {}
+export function getShade (painter: Painter, id: string) {
 	return shades[id] || (shades[id] = painter.createShade('Shade_' + id))
 }
 
-const sketches: {[id: string]: Sketch} = {}
-export function getSketch(painter: Painter, id: string) {
+const sketches: { [id: string]: Sketch } = {}
+export function getSketch (painter: Painter, id: string) {
 	return sketches[id] || (sketches[id] = painter.createSketch('Sketch_' + id))
 }
 
-const drawingLayers: {[id: string]: DrawingLayer} = {}
-export function getDrawingLayer(painter: Painter, id: string) {
+const drawingLayers: { [id: string]: DrawingLayer } = {}
+export function getDrawingLayer (painter: Painter, id: string) {
 	return drawingLayers[id] || (drawingLayers[id] = painter.createDrawingLayer('DrawLayer_' + id))
 }
 
-const staticLayers: {[id: string]: StaticLayer} = {}
-export function getStaticLayer(painter: Painter, id: string) {
+const staticLayers: { [id: string]: StaticLayer } = {}
+export function getStaticLayer (painter: Painter, id: string) {
 	return staticLayers[id] || (staticLayers[id] = painter.createStaticLayer('StaticLayer_' + id))
 }
 
-const effectLayers: {[id: string]: DrawingLayer} = {}
-export function getEffectLayer(painter: Painter, id: string) {
+const effectLayers: { [id: string]: DrawingLayer } = {}
+export function getEffectLayer (painter: Painter, id: string) {
 	return effectLayers[id] || (effectLayers[id] = painter.createEffectLayer('EffectLayer_' + id))
 }
 
@@ -58,11 +58,12 @@ export function getEffectLayer(painter: Painter, id: string) {
 
 export interface BaseState {
 	device: {
-		sizeMultiplier: number
-		canvas: HTMLCanvasElement,
-		mouse: MouseState,
-		keys: KeyState,
 		tpf: number
+		canvas: HTMLCanvasElement
+		mouse: MouseState
+		keys: KeyState
+		sizeMultiplier: number
+		keepCanvasSize?: boolean
 	}
 }
 
@@ -72,13 +73,13 @@ export const state: BaseState = {
 		sizeMultiplier: 1
 	}
 } as BaseState
-; (window as any)['state'] = state
+	; (window as any)['state'] = state
 
-export function get<S extends BaseState = BaseState, K extends keyof S = keyof S>(prop: K): S[K] {
+export function get<S extends BaseState = BaseState, K extends keyof S = keyof S> (prop: K): S[K] {
 	return (state as S)[prop]
 }
 
-export function set<S extends BaseState = BaseState, K extends keyof S = keyof S>(key: K, val: S[K], opts?: {reset: any}) {
+export function set<S extends BaseState = BaseState, K extends keyof S = keyof S> (key: K, val: S[K], opts?: { reset: any }) {
 	const s = state as S
 	if (s[key]) {
 		const reset = opts && opts.reset
@@ -89,7 +90,7 @@ export function set<S extends BaseState = BaseState, K extends keyof S = keyof S
 	s[key] = val
 }
 
-export function getState<S extends BaseState>() {
+export function getState<S extends BaseState> () {
 	return state as S
 }
 
@@ -97,13 +98,13 @@ export function getState<S extends BaseState>() {
 // === Systems ===
 
 type ActionHandler<S extends BaseState = BaseState> = (event: string, state: S) => void
-const systems: {[id: string]: ActionHandler<any>} = {}
+const systems: { [id: string]: ActionHandler<any> } = {}
 
-export function addSystem<S extends BaseState = BaseState>(id: string, s: ActionHandler<S>) {
+export function addSystem<S extends BaseState = BaseState> (id: string, s: ActionHandler<S>) {
 	systems[id] = s
 }
 
-export function dispatch(event: string) {
+export function dispatch (event: string) {
 	for (const k in systems) {
 		systems[k](event, state)
 	}
@@ -133,7 +134,7 @@ export function init (canvas: HTMLCanvasElement) {
 		cancelKeys && cancelKeys()
 
 		cancelWindow = windowSize(() => once(() => {
-			painter.resize(state.device.sizeMultiplier)
+			painter.resize({ multiplier: state.device.sizeMultiplier, keepCurrentSize: state.device.keepCanvasSize })
 			dispatch(baseEvents.RESIZE)
 		}, 'resize'))
 
