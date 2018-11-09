@@ -12,7 +12,7 @@ const d = get('device')
 d.sizeMultiplier = 0.5
 
 videos.then(vs => {
-	function startVideos () {
+	function startVideos() {
 		vs.forEach(v => v.play())
 		d.canvas.removeEventListener('mousedown', startVideos)
 		d.canvas.removeEventListener('touchstart', startVideos)

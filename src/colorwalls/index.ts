@@ -1,17 +1,11 @@
+import { dispatch, get } from 'shared-utils/painterState'
 import { repeat } from 'shared-utils/scheduler'
-import { update } from 'tvs-utils/dist/lib/vr/camera'
-import { camera } from './camera'
-import { painter } from './context'
-import { scene } from './renderer'
-import './events'
+import './camera'
+import { events, painter } from './context'
+import { layers } from './renderer'
 
-
-repeat(() => {
-	update(camera)
-	painter.compose(scene)
-}, 'render')
-
-
-if (module.hot) {
-	module.hot.accept()
-}
+repeat(tpf => {
+	get('device').tpf = tpf
+	dispatch(events.FRAME)
+	painter.compose(...layers)
+}, 'loop')

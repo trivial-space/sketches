@@ -1,5 +1,5 @@
-import { WithKeyNavigation, PerspectiveCamera, WithMouseRotation } from 'shared-utils/vr/camera'
-import { set, addSystem } from 'shared-utils/painterState'
+import { addSystem, set } from 'shared-utils/painterState'
+import { PerspectiveCamera, WithKeyNavigation, WithMouseRotation } from 'shared-utils/vr/camera'
 import { events, State } from './context'
 
 

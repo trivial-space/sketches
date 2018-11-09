@@ -1,7 +1,7 @@
-import { convertStackGLGeometry } from 'tvs-painter/dist/lib/utils/stackgl'
-import { extrudeBottom, quadTriangles } from 'tvs-libs/dist/lib/geometry/quad'
-import { normal } from 'tvs-libs/dist/lib/geometry/primitives'
 import { getForm } from 'shared-utils/painterState'
+import { normal } from 'tvs-libs/dist/lib/geometry/primitives'
+import { extrudeBottom, quadTriangles } from 'tvs-libs/dist/lib/geometry/quad'
+import { convertStackGLGeometry } from 'tvs-painter/dist/lib/utils/stackgl'
 import { painter, state } from './context'
 
 

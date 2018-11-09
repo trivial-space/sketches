@@ -1,7 +1,7 @@
 import { mat4 } from 'gl-matrix'
-import { addSystem, set } from 'shared-utils/painterState'
+import { set } from 'shared-utils/painterState'
 import * as geo from 'tvs-libs/dist/lib/math/geometry'
-import { events, State } from '../context'
+import { State } from '../context'
 
 
 export class Ground {
@@ -13,11 +13,11 @@ export class Ground {
 	mirrorMatrix!: number[]
 	groundMirrorView = mat4.create()
 
-	constructor () {
+	constructor() {
 		this.update()
 	}
 
-	update() {
+	update () {
 		mat4.fromTranslation(this.transform, this.position)
 		mat4.rotateX(this.transform, this.transform, Math.PI / 2)
 		mat4.scale(this.transform, this.transform, [this.scale, this.scale, this.scale])
@@ -28,13 +28,4 @@ export class Ground {
 }
 
 
-addSystem<State>('groundState', (e, s) => {
-	if (e === events.FRAME) {
-		const v = s.viewPort
-		const g = s.ground
-		mat4.multiply(g.groundMirrorView, v.camera.viewMat, g.mirrorMatrix as any)
-	}
-})
-
-
-set<State>('ground', new Ground(), {reset: {transform: true, mirrorMatrix: true}})
+set<State>('ground', new Ground(), { reset: { transform: true, mirrorMatrix: true } })

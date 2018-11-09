@@ -1,9 +1,9 @@
-import './viewport'
-import './state'
+import { dispatch, get } from 'shared-utils/painterState'
 import { repeat } from 'shared-utils/scheduler'
+import { events, painter } from './context'
 import { scene } from './renderer'
-import { painter, events } from './context'
-import { get, dispatch } from 'shared-utils/painterState'
+import './state'
+import './viewport'
 
 
 repeat(tpf => {
