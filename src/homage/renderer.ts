@@ -1,12 +1,12 @@
-import { getDrawingLayer, getEffectLayer, getSketch, getStaticLayer } from 'shared-utils/painterState'
+import { getDrawingLayer, getSketch, getStaticLayer } from 'shared-utils/painterState'
+import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/lib/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import { getCanvasSize, gl, painter, state } from './context'
-import { effectLayer } from './effects'
 import { boxForm, planeForm } from './geometries'
-import refFrag from './glsl/video-light-source.glsl'
 import { groundShade, objectShade, screenShade } from './shaders'
 import * as videos from './state/videos'
+
 
 painter.updateDrawSettings({
 	clearColor: [0, 0, 0, 1]
@@ -23,53 +23,21 @@ export const videoTextures = videos.names.map(
 	})
 )
 
-
 const reflSize = [256, 256]
-const videoLight = videoTextures.map(
-	(t, i) => getEffectLayer(painter, 'vref' + i).update({
-		buffered: true,
-		doubleBuffered: true,
-		width: 256,
-		height: 256,
-		minFilter: 'LINEAR',
-		magFilter: 'LINEAR',
-		frag: refFrag,
-		drawSettings: {
-			disable: [gl.DEPTH_TEST]
-		},
-		uniforms: [{
-			source: () => t.texture(),
-			direction: 0,
-			strength: 4,
-			size: reflSize
-		}, {
-			source: null,
-			direction: 0,
-			strength: 2,
-			size: reflSize
-		}, {
-			source: null,
-			direction: 0,
-			strength: 1,
-			size: reflSize
-		}, {
-			source: null,
-			direction: 1,
-			strength: 4,
-			size: reflSize
-		}, {
-			source: null,
-			direction: 1,
-			strength: 2,
-			size: reflSize
-		}, {
-			source: null,
-			direction: 1,
-			strength: 1,
-			size: reflSize
-		}]
+const videoLights = videoTextures.map(
+	(t, i) => getBlurByAlphaEffect(painter, 'vref' + i, {
+		strength: 4,
+		size: reflSize,
+		startLayer: t,
+		layerOpts: {
+			buffered: true,
+			doubleBuffered: true,
+			minFilter: 'LINEAR',
+			magFilter: 'LINEAR'
+		}
 	})
 )
+
 
 // Sketches
 
@@ -82,7 +50,7 @@ const groundSketch = getSketch(painter, 'ground')
 			transform: () => state.ground.transform,
 			lights: () => state.screens.lights,
 			lightSize: () => state.screens.lightSize,
-			lightTex: () => videoLight.map(v => v.texture()),
+			lightTex: () => videoLights.map(v => v.texture()),
 			size: getCanvasSize
 		}
 	})
@@ -115,7 +83,6 @@ const drawSettings = {
 	clearBits: makeClear(gl, 'color', 'depth')
 }
 
-
 const sceneLayer = getDrawingLayer(painter, 'scene')
 	.update({
 		sketches: [screenSketch, pedestalSketch, groundSketch],
@@ -123,11 +90,9 @@ const sceneLayer = getDrawingLayer(painter, 'scene')
 		uniforms: {
 			view: () => state.viewPort.camera.viewMat,
 			projection: () => state.viewPort.camera.projectionMat,
-			withDistance: 0,
-			groundHeight: 0
+			withDistance: 0
 		}
 	})
-
 
 const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene')
 	.update({
@@ -143,9 +108,16 @@ const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene')
 	})
 
 
+const blurEffect = getBlurByAlphaEffect(painter, 'blur', {
+	strength: 10,
+	size: getCanvasSize,
+	strengthOffset: 0.3,
+	blurRatioVertical: 3
+})
+
 export const layers = [
-	...videoLight,
+	...videoLights,
 	mirrorSceneLayer,
-	effectLayer,
+	blurEffect,
 	sceneLayer
 ]
