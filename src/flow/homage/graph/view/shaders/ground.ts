@@ -3,8 +3,7 @@ import vert from './ground-vert.glsl'
 import frag from './ground-frag.glsl'
 import { ShadeData } from 'tvs-painter/dist/lib'
 
-
 export const spec = val({
-	vert, frag
+	vert,
+	frag
 } as ShadeData).reset()
-

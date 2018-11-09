@@ -1,4 +1,9 @@
-import { baseEvents, BaseState, getPainter, getState } from 'shared-utils/painterState'
+import {
+	baseEvents,
+	BaseState,
+	getPainter,
+	getState
+} from 'shared-utils/painterState'
 import { RenderState } from './renderer'
 
 export interface State extends BaseState {

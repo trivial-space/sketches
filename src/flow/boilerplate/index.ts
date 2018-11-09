@@ -1,9 +1,7 @@
 import { flow, tools, flowTitle } from 'flow/boilerplate/flow'
 import { updateFlow } from 'shared-utils/reload'
 
-
 const graphModules = require.context('./graph', true, /\.ts$/)
-
 
 flow.setDebug(true)
 
@@ -14,7 +12,6 @@ tools.setFlow(flow, flowTitle)
 setTimeout(function() {
 	flow.setDebug(false)
 }, 1000)
-
 
 flow.flush()
 

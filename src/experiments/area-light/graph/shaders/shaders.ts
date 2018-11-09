@@ -4,10 +4,9 @@ import frag from './geo-frag.glsl'
 import light from './light-frag.glsl'
 import { ShadeData } from 'tvs-painter/dist/lib'
 
-
 export const geoSpec = val({
-	vert, frag
+	vert,
+	frag
 } as ShadeData).reset()
-
 
 export const lightFrag = val(light).reset()

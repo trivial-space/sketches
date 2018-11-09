@@ -4,13 +4,11 @@ import { Ground } from './state/ground'
 import { Screens } from './state/screens'
 import { ViewPort } from './viewport'
 
-
 export interface State extends BaseState {
-	viewPort: ViewPort,
-	ground: Ground,
+	viewPort: ViewPort
+	ground: Ground
 	screens: Screens
 }
-
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 

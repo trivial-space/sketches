@@ -1,24 +1,38 @@
-import { stream, val, asyncStreamStart } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { makeFormEntity, makeShadeEntity, makeSketchEntity, makeDrawingLayerEntity, makeEffectLayerEntity, makeStaticLayerEntity } from 'tvs-utils/dist/lib/vr/flow-painter-utils'
+import {
+	stream,
+	val,
+	asyncStreamStart
+} from 'tvs-flow/dist/lib/utils/entity-reference'
+import {
+	makeFormEntity,
+	makeShadeEntity,
+	makeSketchEntity,
+	makeDrawingLayerEntity,
+	makeEffectLayerEntity,
+	makeStaticLayerEntity
+} from 'tvs-utils/dist/lib/vr/flow-painter-utils'
 import { painter, gl } from './painter'
 import * as events from './events'
 import * as camera from './camera'
 import * as plane from './geometries/plane'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
-import { groundTransform, lightTransforms, groundColor, lightColor, lightBackColor } from './state'
+import {
+	groundTransform,
+	lightTransforms,
+	groundColor,
+	lightColor,
+	lightBackColor
+} from './state'
 import { DrawSettings, TextureData } from 'tvs-painter/dist/lib'
 import { geoSpec, lightFrag } from './shaders/shaders'
-
 
 // Forms
 
 export const planeForm = makeFormEntity(painter, plane.geometry)
 
-
 // Shades
 
 export const geoShade = makeShadeEntity(painter, geoSpec)
-
 
 // Textures
 
@@ -28,67 +42,71 @@ export const image = asyncStreamStart<HTMLImageElement>([], send => {
 	img.src = 'tree.jpg'
 })
 
-
 export const textureData = val({
 	minFilter: 'LINEAR_MIPMAP_LINEAR',
 	magFilter: 'LINEAR'
-} as TextureData)
-.react([image.HOT], (tex, img) => ({
+} as TextureData).react([image.HOT], (tex, img) => ({
 	...tex,
 	asset: img
 }))
 
-
 export const texture = makeStaticLayerEntity(painter, textureData)
-
 
 // Sketches
 
-export const groundSketch = makeSketchEntity(painter)
-.react(
+export const groundSketch = makeSketchEntity(painter).react(
 	[groundTransform.HOT, groundColor.HOT, geoShade.HOT, planeForm.HOT],
-	(sketch, transform, color, shade, form) => sketch.update({
-		form, shade,
-		uniforms: {
-			transform,
-			color
-		}
-	})
+	(sketch, transform, color, shade, form) =>
+		sketch.update({
+			form,
+			shade,
+			uniforms: {
+				transform,
+				color
+			}
+		})
 )
 
-
-export const lightSketch = makeSketchEntity(painter)
-.react(
-	[lightTransforms.COLD, lightColor.HOT, lightBackColor.HOT, geoShade.HOT, planeForm.HOT, gl.HOT],
-	(sketch, [frontMat, backMat], color, backColor, shade, form, gl) => sketch.update({
-		form, shade,
-		uniforms: [{
-			transform: frontMat,
-			color
-		},
-		{
-			transform: backMat,
-			color: backColor
-		}],
-		drawSettings: {
-			enable: [gl.CULL_FACE]
-		}
-	})
+export const lightSketch = makeSketchEntity(painter).react(
+	[
+		lightTransforms.COLD,
+		lightColor.HOT,
+		lightBackColor.HOT,
+		geoShade.HOT,
+		planeForm.HOT,
+		gl.HOT
+	],
+	(sketch, [frontMat, backMat], color, backColor, shade, form, gl) =>
+		sketch.update({
+			form,
+			shade,
+			uniforms: [
+				{
+					transform: frontMat,
+					color
+				},
+				{
+					transform: backMat,
+					color: backColor
+				}
+			],
+			drawSettings: {
+				enable: [gl.CULL_FACE]
+			}
+		})
 )
-
 
 // Layers
 
 export const drawSettings = stream(
 	[gl.HOT],
-	gl => ({
-		clearBits: makeClear(gl, 'color', 'depth')
-	} as DrawSettings)
+	gl =>
+		({
+			clearBits: makeClear(gl, 'color', 'depth')
+		} as DrawSettings)
 )
 
-
-export const sceneLayer = makeDrawingLayerEntity(painter)
-.react(
+export const sceneLayer = makeDrawingLayerEntity(painter).react(
 	[
 		gl.HOT,
 		lightSketch.HOT,
@@ -97,26 +115,27 @@ export const sceneLayer = makeDrawingLayerEntity(painter)
 		camera.perspective.COLD,
 		drawSettings.HOT
 	],
-	(layer, gl, light, ground, view, projection, settings) => layer.update({
-		buffered: true,
-		textureConfig: {
-			count: 4,
-			type: gl.FLOAT
-		},
-		sketches: [light, ground],
-		drawSettings: settings,
-		uniforms: {
-			view, projection
-		},
-		wrap: 'CLAMP_TO_EDGE',
-		minFilter: 'NEAREST',
-		magFilter: 'NEAREST'
-	})
+	(layer, gl, light, ground, view, projection, settings) =>
+		layer.update({
+			buffered: true,
+			textureConfig: {
+				count: 4,
+				type: gl.FLOAT
+			},
+			sketches: [light, ground],
+			drawSettings: settings,
+			uniforms: {
+				view,
+				projection
+			},
+			wrap: 'CLAMP_TO_EDGE',
+			minFilter: 'NEAREST',
+			magFilter: 'NEAREST'
+		})
 )
 
-
-export const lightLayer = makeEffectLayerEntity(painter)
-	.react([
+export const lightLayer = makeEffectLayerEntity(painter).react(
+	[
 		sceneLayer.HOT,
 		camera.position.COLD,
 		lightTransforms.COLD,
@@ -124,28 +143,33 @@ export const lightLayer = makeEffectLayerEntity(painter)
 		gl.HOT,
 		texture.HOT,
 		lightFrag.HOT
-	], (layer, scene, eyePosition, lightMats, view, gl, tex, frag) => layer.update({
-		frag,
-		uniforms: {
-			eyePosition,
-			lightMat: lightMats[0],
-			view,
-			tex: tex.texture(),
-			positions: scene.texture(0),
-			normals: scene.texture(1),
-			uvs: scene.texture(2),
-			colors: scene.texture(3)
-		},
-		drawSettings: {
-			disable: [gl.DEPTH_TEST],
-			enable: [gl.BLEND],
-			clearBits: makeClear(gl, 'color')
-		}
-	})
+	],
+	(layer, scene, eyePosition, lightMats, view, gl, tex, frag) =>
+		layer.update({
+			frag,
+			uniforms: {
+				eyePosition,
+				lightMat: lightMats[0],
+				view,
+				tex: tex.texture(),
+				positions: scene.texture(0),
+				normals: scene.texture(1),
+				uvs: scene.texture(2),
+				colors: scene.texture(3)
+			},
+			drawSettings: {
+				disable: [gl.DEPTH_TEST],
+				enable: [gl.BLEND],
+				clearBits: makeClear(gl, 'color')
+			}
+		})
 )
-
 
 painter.react(
 	[sceneLayer.COLD, lightLayer.COLD, events.tick.HOT],
-	(p, scene, light) => p.compose(scene, light)
+	(p, scene, light) =>
+		p.compose(
+			scene,
+			light
+		)
 )

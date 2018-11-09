@@ -5,11 +5,13 @@ import './paint'
 import './renderer'
 import { planeLayer } from './renderer'
 
-
 repeat(tpf => {
 	get('device').tpf = tpf
 	dispatch(events.PROCESS_PAINT)
 	dispatch(events.FRAME)
-	painter.compose(state.renderer.currentLayer, planeLayer)
+	painter.compose(
+		state.renderer.currentLayer,
+		planeLayer
+	)
 	dispatch(events.CLEANUP_PAINT)
 }, 'loop')

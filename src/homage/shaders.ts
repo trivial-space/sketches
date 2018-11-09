@@ -7,12 +7,17 @@ import screenVert from './glsl/screen-vert.glsl'
 import { getShade } from 'shared-utils/painterState'
 import { painter } from './context'
 
+export const groundShade = getShade(painter, 'ground').update({
+	vert: groundVert,
+	frag: groundFrag
+})
 
-export const groundShade = getShade(painter, 'ground')
-	.update({ vert: groundVert, frag: groundFrag })
+export const objectShade = getShade(painter, 'object').update({
+	vert: objectVert,
+	frag: objectFrag
+})
 
-export const objectShade = getShade(painter, 'object')
-	.update({ vert: objectVert, frag: objectFrag })
-
-export const screenShade = getShade(painter, 'screen')
-	.update({ vert: screenVert, frag: screenFrag })
+export const screenShade = getShade(painter, 'screen').update({
+	vert: screenVert,
+	frag: screenFrag
+})

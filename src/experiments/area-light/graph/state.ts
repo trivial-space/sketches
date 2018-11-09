@@ -3,7 +3,6 @@ import { mat4 } from 'gl-matrix'
 import { tick } from './events'
 import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
 
-
 export const groundColor = val([0.7, 0.6, 0.9, 1])
 
 export const groundTransform = streamStart(null, () => {
@@ -13,22 +12,21 @@ export const groundTransform = streamStart(null, () => {
 	return t
 })
 
-
 export const animate = val(true)
 export const rotationSpeed = val(0.0002)
 
-export const lightRotation = val(-Math.PI * 0.8)
-.react(
+export const lightRotation = val(-Math.PI * 0.8).react(
 	[animate.COLD, rotationSpeed.COLD, tick.HOT],
-	(rot, animate, speed, tick) => animate ? rot + speed * tick : rot
+	(rot, animate, speed, tick) => (animate ? rot + speed * tick : rot)
 )
 
 export const time = val(0)
-.react([tick.HOT, animate.COLD], (t, tick, animate) => animate ? t + tick : t)
-.accept(unequal)
+	.react([tick.HOT, animate.COLD], (t, tick, animate) =>
+		animate ? t + tick : t
+	)
+	.accept(unequal)
 
-export const lightPosition = val([0, 3.5, 0])
-.react([time.HOT], (pos, t) => {
+export const lightPosition = val([0, 3.5, 0]).react([time.HOT], (pos, t) => {
 	pos[1] += Math.sin(t / 2000) * 0.05
 	return pos
 })
@@ -36,12 +34,12 @@ export const lightPosition = val([0, 3.5, 0])
 export const lightColor = val([1.0, 1.0, 1.0, 0.0])
 export const lightBackColor = val([0.0, 0.0, 0.2, 0.0])
 
-export const lightTransforms = val([mat4.create(), mat4.create()])
-.react(
+export const lightTransforms = val([mat4.create(), mat4.create()]).react(
 	[lightRotation.HOT, lightPosition.HOT],
 	(mats, rot, pos) => {
 		mat4.fromTranslation(mats[0], pos)
 		mat4.rotateX(mats[0], mats[0], rot)
 		mat4.rotateX(mats[1], mats[0], Math.PI)
 		return mats
-	})
+	}
+)

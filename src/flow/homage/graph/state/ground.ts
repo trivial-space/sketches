@@ -2,16 +2,13 @@ import { val, stream } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { mat4 } from 'gl-matrix'
 import * as geo from 'tvs-libs/dist/lib/math/geometry'
 
-
 export const position = val([0, -3.4, 0])
 
 export const normal = val([0, 1, 0])
 
 export const scale = val(10)
 
-
-export const transform = val(mat4.create())
-.react(
+export const transform = val(mat4.create()).react(
 	[position.HOT, scale.HOT],
 	(mat, pos, scale) => {
 		mat4.fromTranslation(mat, pos)
@@ -20,12 +17,10 @@ export const transform = val(mat4.create())
 	}
 )
 
-
 export const planeEquation = stream(
 	[normal.HOT, position.HOT],
 	geo.planeFromNormalAndCoplanarPoint
 )
-
 
 export const mirrorMatrix = stream(
 	[planeEquation.HOT],

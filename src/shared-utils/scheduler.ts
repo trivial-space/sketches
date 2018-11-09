@@ -3,8 +3,8 @@
 
 type Callback = (n: number) => void
 
-let updateOnce: {[id: string]: Callback} | null = null
-const updateRepeat: {[id: string]: Callback} = {}
+let updateOnce: { [id: string]: Callback } | null = null
+const updateRepeat: { [id: string]: Callback } = {}
 
 let willUpdate = false
 
@@ -12,8 +12,7 @@ let uidCounter = 0
 
 let oldTime = 0
 
-
-function processUpdates (time: number) {
+function processUpdates(time: number) {
 	const tpf = oldTime ? time - oldTime : oldTime
 	oldTime = time
 
@@ -38,7 +37,6 @@ function processUpdates (time: number) {
 	}
 }
 
-
 export function once(fn: Callback, id?: string | number) {
 	id = id || fn.name || uidCounter++
 	updateOnce = updateOnce || {}
@@ -49,7 +47,6 @@ export function once(fn: Callback, id?: string | number) {
 		willUpdate = true
 	}
 }
-
 
 export function repeat(fn: Callback, id?: string | number) {
 	id = id || fn.name || uidCounter++
@@ -62,7 +59,6 @@ export function repeat(fn: Callback, id?: string | number) {
 
 	return id
 }
-
 
 export function stop(id: Function | string | number) {
 	if (typeof id === 'function') {

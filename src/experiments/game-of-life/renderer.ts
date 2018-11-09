@@ -74,7 +74,8 @@ const shade = getShade(painter, 'plane').update({
 })
 
 const sketch = getSketch(painter, 'plane').update({
-	form, shade,
+	form,
+	shade,
 	uniforms: {
 		transform: () => mat4.rotateY(planMat, planMat, rotation),
 		tex: () => state.renderer.currentLayer.texture()
@@ -98,7 +99,7 @@ export class RenderState {
 	currentLayer = layer1
 
 	switch = true
-	swapLayers () {
+	swapLayers() {
 		this.switch = !this.switch
 		this.currentLayer = this.switch ? layer1 : layer2
 	}

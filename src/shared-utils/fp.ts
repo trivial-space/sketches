@@ -1,12 +1,11 @@
 export class M<A> {
-
-	static of<A> (a: A) {
+	static of<A>(a: A) {
 		return new M(a)
 	}
 
 	readonly value: A
 
-	constructor (a: A) {
+	constructor(a: A) {
 		this.value = a
 	}
 
@@ -35,10 +34,17 @@ export class M<A> {
 	}
 }
 
-
-export function alter<A>(coll: A[], k: number, fn: (a: A) => A ): A[]
-export function alter<A> (coll: { [k: string]: A }, k: string, fn: (a: A) => A): {[k: string]: A}
-export function alter<A>(coll: A[] | { [k: string]: A }, k: string | number, fn: (a: A) => A ) {
-	(coll as any)[k] = fn((coll as any) [k])
+export function alter<A>(coll: A[], k: number, fn: (a: A) => A): A[]
+export function alter<A>(
+	coll: { [k: string]: A },
+	k: string,
+	fn: (a: A) => A
+): { [k: string]: A }
+export function alter<A>(
+	coll: A[] | { [k: string]: A },
+	k: string | number,
+	fn: (a: A) => A
+) {
+	;(coll as any)[k] = fn((coll as any)[k])
 	return coll
 }

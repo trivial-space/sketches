@@ -4,25 +4,21 @@ import { normalRand } from 'tvs-libs/dist/lib/math/random'
 import { times } from 'tvs-libs/lib/utils/sequence'
 import { events, State } from './context'
 
-
 export class Quad {
 	transform = mat4.create()
 	color = times(normalRand, 3)
-	update (tpf: number) {
+	update(tpf: number) {
 		mat4.rotateY(this.transform, this.transform, tpf * 0.003)
 	}
 }
-
 
 export class Entities {
 	quad = new Quad()
 }
 
-
 addSystem<State>('entities', (e, s) => {
 	const en = s.entities
 	switch (e) {
-
 		case events.FRAME:
 			const tpf = s.device.tpf
 			en.quad.update(tpf)
@@ -30,5 +26,4 @@ addSystem<State>('entities', (e, s) => {
 	}
 })
 
-
-set<State>('entities', new Entities(), {reset: {quad: {color: true}}})
+set<State>('entities', new Entities(), { reset: { quad: { color: true } } })

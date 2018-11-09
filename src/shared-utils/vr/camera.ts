@@ -3,7 +3,6 @@ import { Keys, KeyState } from 'tvs-libs/dist/lib/events/keyboard'
 import { MouseState } from 'tvs-libs/dist/lib/events/mouse'
 import { Constructor } from 'tvs-libs/lib/oop/mixins'
 
-
 export class Camera {
 	position = [0, 0, 0]
 	rotationX = 0
@@ -18,37 +17,49 @@ export class Camera {
 		Object.assign(this, props)
 	}
 
-	updateRotationX (amount: number = 0) {
+	updateRotationX(amount: number = 0) {
 		this.rotationX += amount
 		mat4.fromXRotation(this.rotationXMat, this.rotationX)
 		this.needsUpdateView = true
 	}
 
-	updateRotationY (amount: number = 0) {
+	updateRotationY(amount: number = 0) {
 		this.rotationY += amount
 		mat4.fromYRotation(this.rotationYMat, this.rotationY)
 		this.needsUpdateView = true
 	}
 
-	moveForward (dist: number) {
-		const v = vec3.fromValues(this.rotationYMat[8], this.rotationYMat[9], this.rotationYMat[10])
+	moveForward(dist: number) {
+		const v = vec3.fromValues(
+			this.rotationYMat[8],
+			this.rotationYMat[9],
+			this.rotationYMat[10]
+		)
 		vec3.add(this.position as any, this.position, vec3.scale(v, v, -dist))
 		this.needsUpdateView = true
 	}
 
-	moveLeft (dist: number) {
-		const v = vec3.fromValues(this.rotationYMat[0], this.rotationYMat[1], this.rotationYMat[2])
+	moveLeft(dist: number) {
+		const v = vec3.fromValues(
+			this.rotationYMat[0],
+			this.rotationYMat[1],
+			this.rotationYMat[2]
+		)
 		vec3.add(this.position as any, this.position, vec3.scale(v, v, -dist))
 		this.needsUpdateView = true
 	}
 
-	moveUp (dist: number) {
-		const v = vec3.fromValues(this.rotationYMat[4], this.rotationYMat[5], this.rotationYMat[6])
+	moveUp(dist: number) {
+		const v = vec3.fromValues(
+			this.rotationYMat[4],
+			this.rotationYMat[5],
+			this.rotationYMat[6]
+		)
 		vec3.add(this.position as any, this.position, vec3.scale(v, v, dist))
 		this.needsUpdateView = true
 	}
 
-	update () {
+	update() {
 		if (this.needsUpdateView) {
 			mat4.fromTranslation(this.viewMat, this.position)
 			mat4.multiply(this.viewMat, this.viewMat, this.rotationYMat)
@@ -58,7 +69,6 @@ export class Camera {
 		}
 	}
 }
-
 
 export class PerspectiveCamera extends Camera {
 	fovy = Math.PI * 0.6
@@ -72,7 +82,7 @@ export class PerspectiveCamera extends Camera {
 		Object.assign(this, props)
 	}
 
-	update () {
+	update() {
 		super.update()
 
 		if (this.needsUpdateProjection) {
@@ -88,10 +98,9 @@ export class PerspectiveCamera extends Camera {
 	}
 }
 
-
-export function WithKeyNavigation<T extends Constructor<Camera>> (Cam: T) {
+export function WithKeyNavigation<T extends Constructor<Camera>>(Cam: T) {
 	return class extends Cam {
-		updatePosFromKeys (speed: number, keys: KeyState) {
+		updatePosFromKeys(speed: number, keys: KeyState) {
 			if (!keys) return
 			if (keys[Keys.UP] || keys[Keys.W]) {
 				this.moveForward(speed)
@@ -109,12 +118,11 @@ export function WithKeyNavigation<T extends Constructor<Camera>> (Cam: T) {
 	}
 }
 
-
-export function WithMouseRotation<T extends Constructor<Camera>> (Cam: T) {
+export function WithMouseRotation<T extends Constructor<Camera>>(Cam: T) {
 	return class extends Cam {
 		_oldMouse = { x: 0, y: 0 }
 
-		updateRotFromMouse (speed: number, m: MouseState) {
+		updateRotFromMouse(speed: number, m: MouseState) {
 			if (m.dragging) {
 				const deltaX = this._oldMouse.x - m.drag.x
 				const deltaY = this._oldMouse.y - m.drag.y

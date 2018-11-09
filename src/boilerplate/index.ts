@@ -5,7 +5,6 @@ import { scene } from './renderer'
 import './state'
 import './viewport'
 
-
 repeat(tpf => {
 	get('device').tpf = tpf
 	dispatch(events.FRAME)

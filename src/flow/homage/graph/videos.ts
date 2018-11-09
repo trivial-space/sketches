@@ -1,7 +1,10 @@
-import { val, EntityRef, asyncStream } from 'tvs-flow/dist/lib/utils/entity-reference'
+import {
+	val,
+	EntityRef,
+	asyncStream
+} from 'tvs-flow/dist/lib/utils/entity-reference'
 
-
-export function createVideo (src: string) {
+export function createVideo(src: string) {
 	const video = document.createElement('video')
 	video.crossOrigin = 'anonymous'
 	video.loop = true
@@ -19,7 +22,6 @@ export function createVideo (src: string) {
 	return video
 }
 
-
 export const names = val([
 	'tworooms',
 	'behindglass',
@@ -28,39 +30,35 @@ export const names = val([
 	'threescreens'
 ])
 
-
-export const videosUrl = process.env.NODE_ENV === 'production'
-	? val('//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/')
-	: val('videos/')
-
+export const videosUrl =
+	process.env.NODE_ENV === 'production'
+		? val('//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/')
+		: val('videos/')
 
 export const loadTimeout = val(60000)
 
-
-export const videos: EntityRef<HTMLVideoElement[]> = asyncStream([
-	names.HOT,
-	loadTimeout.HOT,
-	videosUrl.HOT
-],
+export const videos: EntityRef<HTMLVideoElement[]> = asyncStream(
+	[names.HOT, loadTimeout.HOT, videosUrl.HOT],
 	(send, names, timeout, url) => {
-
 		Promise.all<HTMLVideoElement>(
 			names
 				.map(name => createVideo(url + name))
-				.map((v: HTMLVideoElement) => new Promise((res, rej) => {
-					const t = setTimeout(() => {
-						console.log('timeout', v)
-						rej('Video timeout ' + v)
-					}, timeout)
+				.map(
+					(v: HTMLVideoElement) =>
+						new Promise((res, rej) => {
+							const t = setTimeout(() => {
+								console.log('timeout', v)
+								rej('Video timeout ' + v)
+							}, timeout)
 
-					v.addEventListener('canplay', () => {
-						res(v)
-						v.play()
-						clearTimeout(t)
-						console.log('loaded', v)
-					})
-				}))
-
+							v.addEventListener('canplay', () => {
+								res(v)
+								v.play()
+								clearTimeout(t)
+								console.log('loaded', v)
+							})
+						})
+				)
 		).then(send)
 	}
 )

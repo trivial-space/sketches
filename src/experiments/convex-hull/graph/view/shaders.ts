@@ -5,11 +5,10 @@ import cfrag from './shaders/compose.frag'
 import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { ShadeData } from 'tvs-painter/dist/lib'
 
-
 export const point = val({
-  vert: pvert, frag: pfrag
+	vert: pvert,
+	frag: pfrag
 } as ShadeData).reset()
-
 
 export const sides = val(sfrag).reset()
 

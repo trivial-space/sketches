@@ -4,14 +4,17 @@ import { pushTransition } from 'shared-utils/transitions'
 import { sign } from 'tvs-libs/dist/lib/math/core'
 import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
 import { normalRand, randInt } from 'tvs-libs/dist/lib/math/random'
-import { doTimes, map, pickRandom, times } from 'tvs-libs/dist/lib/utils/sequence'
+import {
+	doTimes,
+	map,
+	pickRandom,
+	times
+} from 'tvs-libs/dist/lib/utils/sequence'
 import { events, State } from '../context'
 import { Set, sets, specs, TileSpec } from './data'
 
-
 type Color = number[]
 type Position = [number, number]
-
 
 export class Tiles {
 	tileSize = 3
@@ -29,7 +32,6 @@ export class Tiles {
 	activeTiles: TileState[] = []
 	grid: TileState[][] = []
 }
-
 
 class TileState {
 	gridIndex: Position = [0, 0]
@@ -66,14 +68,14 @@ class TileState {
 		this.turn = randInt(3)
 		this.tileSpec = specs[this.tileSpecId]
 
-		this.roll = this.turn * Math.PI / 2
+		this.roll = (this.turn * Math.PI) / 2
 	}
 
-	isConnected () {
+	isConnected() {
 		return !!(this.height < 0.1 && this.height > -0.1)
 	}
 
-	connect () {
+	connect() {
 		for (let i = 0; i < 4; i++) {
 			const index = (i + 4 - this.turn) % 4
 			const side = this.tileSpec.connections[index]
@@ -90,28 +92,40 @@ class TileState {
 			if (current !== next) {
 				next === 0
 					? pushTransition({
-						duration: 300,
-						onUpdate: p => {
-							this.connections[index] = Math.max(0, this.connections[index] - p)
-							if (neighbour) {
-								neighbour.connections[nIndex] = Math.max(0, neighbour.connections[nIndex] - p)
+							duration: 300,
+							onUpdate: p => {
+								this.connections[index] = Math.max(
+									0,
+									this.connections[index] - p
+								)
+								if (neighbour) {
+									neighbour.connections[nIndex] = Math.max(
+										0,
+										neighbour.connections[nIndex] - p
+									)
+								}
 							}
-						}
-					})
+					  })
 					: pushTransition({
-						duration: 300,
-						onUpdate: p => {
-							this.connections[index] = Math.min(1, this.connections[index] + p)
-							if (neighbour) {
-								neighbour.connections[nIndex] = Math.min(1, neighbour.connections[nIndex] + p)
+							duration: 300,
+							onUpdate: p => {
+								this.connections[index] = Math.min(
+									1,
+									this.connections[index] + p
+								)
+								if (neighbour) {
+									neighbour.connections[nIndex] = Math.min(
+										1,
+										neighbour.connections[nIndex] + p
+									)
+								}
 							}
-						}
-					})
+					  })
 			}
 		}
 	}
 
-	disconnect () {
+	disconnect() {
 		for (let i = 0; i < 4; i++) {
 			const neighbour = this.neighbours[i]
 			const nIndex = neighbour ? (i + 6 - neighbour.turn) % 4 : 0
@@ -120,7 +134,10 @@ class TileState {
 				onUpdate: p => {
 					this.connections[i] = Math.max(0, this.connections[i] - p)
 					if (neighbour) {
-						neighbour.connections[nIndex] = Math.max(0, neighbour.connections[nIndex] - p)
+						neighbour.connections[nIndex] = Math.max(
+							0,
+							neighbour.connections[nIndex] - p
+						)
 					}
 				}
 			})
@@ -135,23 +152,21 @@ const SIDES_INDEX = {
 	LEFT: 3
 }
 
-
-function rotateHalf (part: number) {
+function rotateHalf(part: number) {
 	return -Math.cos(part * Math.PI * 2) * 0.5 + 0.5
 }
 
-function smooth (part: number) {
+function smooth(part: number) {
 	return -Math.cos(part * Math.PI) * 0.5 + 0.5
 }
 
-function acc (part: number) {
+function acc(part: number) {
 	return part * part * part * part
 }
 
-function slow (part: number) {
+function slow(part: number) {
 	return Math.pow(part, 0.25)
 }
-
 
 // ===== basic properties =====
 
@@ -162,12 +177,18 @@ addSystem<State>('tiles', (e, s) => {
 		case events.INIT:
 			t.images = {}
 			Promise.all(
-				Object.values(map((_n, key) => new Promise(res => {
-					const img = new Image()
-					img.onload = res
-					img.src = 'img/' + specs[key].file + '.jpg'
-					t.images[key] = img
-				}), t.set))
+				Object.values(
+					map(
+						(_n, key) =>
+							new Promise(res => {
+								const img = new Image()
+								img.onload = res
+								img.src = 'img/' + specs[key].file + '.jpg'
+								t.images[key] = img
+							}),
+						t.set
+					)
+				)
 			).then(() => {
 				dispatch(events.START)
 				dispatch(events.RESIZE)
@@ -177,7 +198,9 @@ addSystem<State>('tiles', (e, s) => {
 		case events.RESIZE:
 			const canvas = s.device.canvas
 			const aspect = canvas.width / canvas.height
-			t.colCount = Math.floor(Math.pow(canvas.width / 1000, 0.5) * t.tileDensity)
+			t.colCount = Math.floor(
+				Math.pow(canvas.width / 1000, 0.5) * t.tileDensity
+			)
 			t.rowCount = Math.ceil(t.colCount / aspect)
 			makeGrid(t.colCount, t.rowCount, t.color, t.set, t.grid)
 			createActiveTiles(t)
@@ -189,9 +212,7 @@ addSystem<State>('tiles', (e, s) => {
 	}
 })
 
-
 set<State>('tiles', new Tiles())
-
 
 // ===== primary state =====
 
@@ -202,9 +223,8 @@ function makeGrid(
 	set: Set,
 	grid: TileState[][]
 ) {
-
 	const width = grid.length
-	const height = grid[0] && grid[0].length || 0
+	const height = (grid[0] && grid[0].length) || 0
 
 	const heightDiff = newHeight - height
 	const widthDiff = newWidth - width
@@ -213,7 +233,6 @@ function makeGrid(
 
 	// create new grid columns left and right
 	if (widthDiff > 0) {
-
 		const left = Math.floor(widthDiff / 2)
 		const right = widthDiff - left
 		const currentHeight = Math.max(newHeight, height)
@@ -226,7 +245,6 @@ function makeGrid(
 
 	// create new gid rows at top and bottom
 	if (heightDiff > 0) {
-
 		const up = Math.floor(heightDiff / 2)
 		const down = heightDiff - up
 
@@ -236,9 +254,7 @@ function makeGrid(
 		})
 	}
 
-
 	if (widthDiff > 0 || heightDiff > 0) {
-
 		for (let x = 0; x < grid.length; x++) {
 			for (let y = 0; y < grid[x].length; y++) {
 				const tile = grid[x][y]
@@ -252,9 +268,8 @@ function makeGrid(
 	}
 }
 
-
-function createActiveTiles (t: Tiles) {
-	const tiles = t.activeTiles = [] as TileState[]
+function createActiveTiles(t: Tiles) {
+	const tiles = (t.activeTiles = [] as TileState[])
 	const width = t.grid.length
 	const height = t.grid[0].length
 	const firstLeftIndex = -Math.floor(width / 2)
@@ -285,8 +300,7 @@ function createActiveTiles (t: Tiles) {
 	dispatch(events.NEW_ACTIVE_TILES)
 }
 
-
-export function updateTiles (t: Tiles) {
+export function updateTiles(t: Tiles) {
 	const tiles = t.activeTiles
 	const duration = t.animationDuration
 	const chance = t.animationChance / t.activeTiles.length
@@ -303,15 +317,16 @@ export function updateTiles (t: Tiles) {
 				duration,
 				easeFn: smooth,
 				onUpdate: rot => {
-					tile.roll += rot * Math.PI / 2 * dir
+					tile.roll += ((rot * Math.PI) / 2) * dir
 					tile.updateTransform = true
 				},
 				onComplete: () => {
-					tile.turn = dir > 0 ?
-						(tile.turn + 1) % 4 :
-						dir < 0 ?
-							(tile.turn + 3) % 4 :
-							tile.turn
+					tile.turn =
+						dir > 0
+							? (tile.turn + 1) % 4
+							: dir < 0
+							? (tile.turn + 3) % 4
+							: tile.turn
 					tile.connect()
 				}
 			})
@@ -348,14 +363,18 @@ export function updateTiles (t: Tiles) {
 
 		if (tile.updateTransform) {
 			tile.updateTransform = false
-			quat.multiply(tile.rotation, getYawQuat(tile.yaw) as quat, getRollQuat(tile.roll) as quat)
+			quat.multiply(
+				tile.rotation,
+				getYawQuat(tile.yaw) as quat,
+				getRollQuat(tile.roll) as quat
+			)
 			const [x, y] = tile.pos
 			const [offX, offY] = tile.posOffset
-			mat4.fromRotationTranslation(
-				tile.transform,
-				tile.rotation,
-				[(x + offX) * offset, (y + offY) * offset, tile.height]
-			)
+			mat4.fromRotationTranslation(tile.transform, tile.rotation, [
+				(x + offX) * offset,
+				(y + offY) * offset,
+				tile.height
+			])
 		}
 	}
 }

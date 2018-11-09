@@ -7,19 +7,20 @@ import { set } from 'shared-utils/painterState'
 import { State } from '../context'
 import { planeSize } from '../geometries'
 
-
 export class Screens {
 	radius = 25
 	height = 2
 	scale = [1.6, 1, 1]
-	rotations = videos.names.map((_, i) => Math.PI * 2 * i / videos.names.length)
+	rotations = videos.names.map(
+		(_, i) => (Math.PI * 2 * i) / videos.names.length
+	)
 	positions!: number[][]
 	screenTransforms!: mat4[]
 	pedestalTransforms!: mat4[]
 	lights!: number[]
 	lightSize!: [number, number]
 
-	constructor () {
+	constructor() {
 		this.update()
 	}
 
@@ -30,28 +31,40 @@ export class Screens {
 			return [x, this.height, z]
 		})
 
-		this.screenTransforms = zip((rot, pos) => {
-			const t = mat4.fromTranslation(mat4.create(), pos)
-			mat4.rotateY(t, t, rot)
-			mat4.scale(t, t, this.scale)
-			return t
-		}, this.rotations, this.positions)
+		this.screenTransforms = zip(
+			(rot, pos) => {
+				const t = mat4.fromTranslation(mat4.create(), pos)
+				mat4.rotateY(t, t, rot)
+				mat4.scale(t, t, this.scale)
+				return t
+			},
+			this.rotations,
+			this.positions
+		)
 
-		this.pedestalTransforms = zip((rot, pos) => {
-			const p = mul(1.045, pos)
-			p[1] -= 2
+		this.pedestalTransforms = zip(
+			(rot, pos) => {
+				const p = mul(1.045, pos)
+				p[1] -= 2
 
-			const t = mat4.fromTranslation(mat4.create(), p)
-			mat4.rotateY(t, t, rot)
-			mat4.scale(t, t, this.scale.map(v => v * 1.03))
-			return t
-		}, this.rotations, this.positions)
+				const t = mat4.fromTranslation(mat4.create(), p)
+				mat4.rotateY(t, t, rot)
+				mat4.scale(t, t, this.scale.map(v => v * 1.03))
+				return t
+			},
+			this.rotations,
+			this.positions
+		)
 
-		this.lights = flatten(zip((p, r) => [...p, r], this.positions, this.rotations))
+		this.lights = flatten(
+			zip((p, r) => [...p, r], this.positions, this.rotations)
+		)
 
-		this.lightSize = [planeSize.width * this.scale[0], planeSize.height * this.scale[1]]
+		this.lightSize = [
+			planeSize.width * this.scale[0],
+			planeSize.height * this.scale[1]
+		]
 	}
 }
-
 
 set<State>('screens', new Screens())

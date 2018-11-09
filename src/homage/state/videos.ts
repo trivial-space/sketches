@@ -6,20 +6,18 @@ export const names = [
 	'threescreens'
 ]
 
-
-const videosUrl = process.env.NODE_ENV === 'production'
-	? '//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/'
-	: 'videos/'
-
+const videosUrl =
+	process.env.NODE_ENV === 'production'
+		? '//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/'
+		: 'videos/'
 
 const loadTimeout = 60000
 
-
-function createVideo (src: string) {
+function createVideo(src: string) {
 	const video = document.createElement('video')
 	video.crossOrigin = 'anonymous'
 	video.loop = true
-	; (video as any).playsinline = true
+	;(video as any).playsinline = true
 	video.autoplay
 
 	const source1 = document.createElement('source')
@@ -35,20 +33,22 @@ function createVideo (src: string) {
 	return video
 }
 
-
 export const videos = Promise.all(
 	names
 		.map(name => createVideo(videosUrl + name))
-		.map(v => new Promise<HTMLVideoElement>((res, rej) => {
-			const t = setTimeout(() => {
-				console.log('timeout', v)
-				rej('Video timeout ' + v)
-			}, loadTimeout)
+		.map(
+			v =>
+				new Promise<HTMLVideoElement>((res, rej) => {
+					const t = setTimeout(() => {
+						console.log('timeout', v)
+						rej('Video timeout ' + v)
+					}, loadTimeout)
 
-			v.addEventListener('canplay', () => {
-				res(v)
-				clearTimeout(t)
-				console.log('loaded', v)
-			})
-		}))
+					v.addEventListener('canplay', () => {
+						res(v)
+						clearTimeout(t)
+						console.log('loaded', v)
+					})
+				})
+		)
 )

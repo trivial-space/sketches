@@ -5,12 +5,12 @@ import pfrag from './shaders/point.frag'
 import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { ShadeData } from 'tvs-painter/dist/lib'
 
-
 export const line = val({
-  vert: lvert, frag: lfrag
+	vert: lvert,
+	frag: lfrag
 } as ShadeData).reset()
 
-
 export const point = val({
-  vert: pvert, frag: pfrag
+	vert: pvert,
+	frag: pfrag
 } as ShadeData).reset()

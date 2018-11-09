@@ -1,4 +1,9 @@
-import { addSystem, getEffectLayer, getStaticLayer, set } from 'shared-utils/painterState'
+import {
+	addSystem,
+	getEffectLayer,
+	getStaticLayer,
+	set
+} from 'shared-utils/painterState'
 import { LayerData } from 'tvs-painter'
 import { events, gl, paint, painter, State, state } from './context'
 import base from './glsl/base.frag'
@@ -15,34 +20,32 @@ const paintLayer = getStaticLayer(painter, 'paint')
 
 const bufferSize = 256
 const layerOptions: LayerData = {
-		buffered: true,
-		flipY: true,
-		width: bufferSize,
-		height: bufferSize,
-		frag: base,
-		// textureConfig: {
-		// 	count: 2,
-		// 	type: gl.FLOAT
-		// },
-		drawSettings: {
-			disable: [gl.DEPTH_TEST]
-		}
+	buffered: true,
+	flipY: true,
+	width: bufferSize,
+	height: bufferSize,
+	frag: base,
+	// textureConfig: {
+	// 	count: 2,
+	// 	type: gl.FLOAT
+	// },
+	drawSettings: {
+		disable: [gl.DEPTH_TEST]
+	}
 }
 
-const layer1 = getEffectLayer(painter, 'layer1')
-	.update({
-		...layerOptions
-	})
+const layer1 = getEffectLayer(painter, 'layer1').update({
+	...layerOptions
+})
 
-const layer2 = getEffectLayer(painter, 'layer2')
-	.update({
-		...layerOptions,
-		uniforms: {
-			size: bufferSize,
-			paint: () => paintLayer.texture(),
-			previous: () => layer1.texture()
-		}
-	})
+const layer2 = getEffectLayer(painter, 'layer2').update({
+	...layerOptions,
+	uniforms: {
+		size: bufferSize,
+		paint: () => paintLayer.texture(),
+		previous: () => layer1.texture()
+	}
+})
 
 layer1.update({
 	uniforms: {
@@ -52,8 +55,7 @@ layer1.update({
 	}
 })
 
-export const finalLayer = getEffectLayer(painter, 'final')
-.update({
+export const finalLayer = getEffectLayer(painter, 'final').update({
 	uniforms: {
 		source: () => state.renderer.currentLayer.texture()
 	}
@@ -65,13 +67,13 @@ export class RenderState {
 	currentLayer = layer1
 
 	switch = true
-	swapLayers () {
+	swapLayers() {
 		this.switch = !this.switch
 		this.currentLayer = this.switch ? layer1 : layer2
 	}
 }
 
-set<State>('renderer', new RenderState(), {reset: true})
+set<State>('renderer', new RenderState(), { reset: true })
 
 addSystem<State>('renderer', (e, s) => {
 	if (e === events.FRAME) {

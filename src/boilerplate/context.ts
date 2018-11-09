@@ -3,12 +3,10 @@ import { BaseState } from 'shared-utils/painterState'
 import { Entities } from './state'
 import { ViewPort } from './viewport'
 
-
 export interface State extends BaseState {
 	viewPort: ViewPort
 	entities: Entities
 }
-
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 

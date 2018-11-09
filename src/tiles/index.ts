@@ -9,7 +9,6 @@ import { scene } from './renderer'
 
 // state.device.sizeMultiplier = window.devicePixelRatio
 
-
 addSystem<State>('start', (e, s) => {
 	if (e === events.START) {
 		repeat(tpf => {
