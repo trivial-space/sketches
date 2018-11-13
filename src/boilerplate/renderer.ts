@@ -1,5 +1,5 @@
+import { getDrawingLayer, getSketch } from 'shared-utils/painterState'
 import { gl, painter, state } from './context'
-import { getSketch, getDrawingLayer } from 'shared-utils/painterState'
 import { planeForm } from './geometries'
 import { baseShade } from './shaders'
 

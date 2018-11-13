@@ -3181,6 +3181,16 @@ glsl-inject-defines@^1.0.1:
     glsl-token-string "^1.0.1"
     glsl-tokenizer "^2.0.2"
 
+glsl-noise-simplex@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/glsl-noise-simplex/-/glsl-noise-simplex-0.0.2.tgz#3b739419de8e7ba5481d4e234d6b2d6516d64e69"
+  integrity sha512-ZZ3MNpDB5iA13jdd6/CtHCidR/lJ4nlXd572jU6/CSSUZhHFmtgvItt75J9MWthXz1ZWa7e68LQosPFx7oksTg==
+
+glsl-random@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/glsl-random/-/glsl-random-0.0.5.tgz#bd00c8c1ab1f5587e5fe2d48e83c50c5b9798b5b"
+  integrity sha1-vQDIwasfVYfl/i1I6DxQxbl5i1s=
+
 glsl-resolve@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/glsl-resolve/-/glsl-resolve-0.0.1.tgz#894bef73910d792c81b5143180035d0a78af76d3"
