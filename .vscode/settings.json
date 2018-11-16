@@ -1,7 +1,4 @@
 {
 	"eslint.enable": false,
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"prettier.disableLanguages": [
-		//"ts", "tsx", "typescript"
-	]
 }
