@@ -10,8 +10,8 @@ import {
 	set
 } from 'shared-utils/painterState'
 import { LayerData } from 'tvs-painter'
-import { makeClear } from 'tvs-painter/dist/lib/utils/context'
-import { plane } from 'tvs-painter/dist/lib/utils/geometry/plane'
+import { makeClear } from 'tvs-painter/dist/utils/context'
+import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { events, gl, paint, painter, State, state } from './context'
 import base from './glsl/base.frag'
 import planeFrag from './glsl/plane-material.frag'

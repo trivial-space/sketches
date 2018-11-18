@@ -2,7 +2,7 @@ import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import vert from './geo-vert.glsl'
 import frag from './geo-frag.glsl'
 import light from './light-frag.glsl'
-import { ShadeData } from 'tvs-painter/dist/lib'
+import { ShadeData } from 'tvs-painter/dist'
 
 export const geoSpec = val({
 	vert,

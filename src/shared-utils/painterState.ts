@@ -3,12 +3,12 @@ import { windowSize } from 'tvs-libs/dist/events/dom'
 import { keyboard, KeyState } from 'tvs-libs/dist/events/keyboard'
 import { mouse, MouseState } from 'tvs-libs/dist/events/mouse'
 import { deepOverride } from 'tvs-libs/dist/utils/object'
-import { Form } from 'tvs-painter/dist/lib/form'
-import { DrawingLayer, StaticLayer } from 'tvs-painter/dist/lib/layer'
-import { Painter } from 'tvs-painter/dist/lib/painter'
-import { Shade } from 'tvs-painter/dist/lib/shade'
-import { Sketch } from 'tvs-painter/dist/lib/sketch'
-import { getContext } from 'tvs-painter/dist/lib/utils/context'
+import { Form } from 'tvs-painter/dist/form'
+import { DrawingLayer, StaticLayer } from 'tvs-painter/dist/layer'
+import { Painter } from 'tvs-painter/dist/painter'
+import { Shade } from 'tvs-painter/dist/shade'
+import { Sketch } from 'tvs-painter/dist/sketch'
+import { getContext } from 'tvs-painter/dist/utils/context'
 
 // === Painter ===
 

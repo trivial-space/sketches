@@ -4,11 +4,11 @@ import {
 	getForm,
 	getShade,
 	getSketch,
-	getStaticLayer
+	getStaticLayer,
 } from 'shared-utils/painterState'
 import { each } from 'tvs-libs/dist/utils/sequence'
-import { StaticLayer } from 'tvs-painter/dist/lib/layer'
-import { plane } from 'tvs-painter/dist/lib/utils/geometry/plane'
+import { StaticLayer } from 'tvs-painter/dist/layer'
+import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { events, gl, painter, state, State } from './context'
 import frag from './glsl/base-frag.glsl'
 import vert from './glsl/base-vert.glsl'
@@ -17,7 +17,7 @@ import vert from './glsl/base-vert.glsl'
 
 painter.updateDrawSettings({
 	clearColor: [1, 1, 1, 1],
-	enable: [gl.DEPTH_TEST, gl.CULL_FACE]
+	enable: [gl.DEPTH_TEST, gl.CULL_FACE],
 })
 
 // ===== shaders =====
@@ -43,8 +43,8 @@ export const scene = getDrawingLayer(painter, 'scene').update({
 	sketches: [tilesSketch],
 	uniforms: {
 		view: () => state.viewPort.camera.viewMat,
-		projection: () => state.viewPort.camera.projectionMat
-	}
+		projection: () => state.viewPort.camera.projectionMat,
+	},
 })
 
 addSystem<State>('render', (e, s) => {
@@ -54,7 +54,7 @@ addSystem<State>('render', (e, s) => {
 				textures[key] = getStaticLayer(painter, key).update({
 					minFilter: 'LINEAR_MIPMAP_LINEAR',
 					magFilter: 'LINEAR',
-					asset: img
+					asset: img,
 				})
 			}, s.tiles.images)
 			return
@@ -68,8 +68,8 @@ addSystem<State>('render', (e, s) => {
 					image:
 						textures[tile.tileSpecId] && textures[tile.tileSpecId].texture(),
 					color: tile.color,
-					connections: tile.connections
-				}))
+					connections: tile.connections,
+				})),
 			})
 	}
 })

@@ -1,5 +1,5 @@
 import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { LayerData, SketchData } from 'tvs-painter/dist/lib'
+import { LayerData, SketchData } from 'tvs-painter/dist'
 import {
 	makeDrawingLayerEntity,
 	makeFormEntity,

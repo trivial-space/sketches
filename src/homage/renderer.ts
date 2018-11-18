@@ -2,11 +2,11 @@ import { mat4 } from 'gl-matrix'
 import {
 	getDrawingLayer,
 	getSketch,
-	getStaticLayer
+	getStaticLayer,
 } from 'shared-utils/painterState'
 import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/utils/sequence'
-import { makeClear } from 'tvs-painter/dist/lib/utils/context'
+import { makeClear } from 'tvs-painter/dist/utils/context'
 import { getCanvasSize, gl, painter, state } from './context'
 import { boxForm, planeForm } from './geometries'
 import { groundShade, objectShade, screenShade } from './shaders'
@@ -15,7 +15,7 @@ import * as videos from './state/videos'
 // Settings
 
 painter.updateDrawSettings({
-	clearColor: [0, 0, 0, 1]
+	clearColor: [0, 0, 0, 1],
 })
 
 // Textures
@@ -24,8 +24,8 @@ export const videoTextures = videos.names.map(n =>
 	getStaticLayer(painter, n).update({
 		flipY: true,
 		minFilter: 'LINEAR',
-		wrap: 'CLAMP_TO_EDGE'
-	})
+		wrap: 'CLAMP_TO_EDGE',
+	}),
 )
 
 const reflSize = [256, 256]
@@ -38,9 +38,9 @@ const videoLights = videoTextures.map((t, i) =>
 			buffered: true,
 			doubleBuffered: true,
 			minFilter: 'LINEAR',
-			magFilter: 'LINEAR'
-		}
-	})
+			magFilter: 'LINEAR',
+		},
+	}),
 )
 
 // Sketches
@@ -54,8 +54,8 @@ const groundSketch = getSketch(painter, 'ground').update({
 		lights: () => state.screens.lights,
 		lightSize: () => state.screens.lightSize,
 		lightTex: () => videoLights.map(v => v.texture()),
-		size: getCanvasSize
-	}
+		size: getCanvasSize,
+	},
 })
 
 const screenSketch = getSketch(painter, 'screens').update({
@@ -64,25 +64,25 @@ const screenSketch = getSketch(painter, 'screens').update({
 	uniforms: zip(
 		(transform, tex) => ({
 			transform,
-			video: () => tex.texture()
+			video: () => tex.texture(),
 		}),
 		state.screens.screenTransforms,
-		videoTextures
-	)
+		videoTextures,
+	),
 })
 
 const pedestalSketch = getSketch(painter, 'pedestals').update({
 	form: boxForm,
 	shade: objectShade,
 	uniforms: state.screens.pedestalTransforms.map(transform => ({
-		transform
-	}))
+		transform,
+	})),
 })
 
 // Layers
 
 const drawSettings = {
-	clearBits: makeClear(gl, 'color', 'depth')
+	clearBits: makeClear(gl, 'color', 'depth'),
 }
 
 const sceneLayer = getDrawingLayer(painter, 'scene').update({
@@ -91,8 +91,8 @@ const sceneLayer = getDrawingLayer(painter, 'scene').update({
 	uniforms: {
 		view: () => state.viewPort.camera.viewMat,
 		projection: () => state.viewPort.camera.projectionMat,
-		withDistance: 0
-	}
+		withDistance: 0,
+	},
 })
 
 const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene').update({
@@ -104,18 +104,18 @@ const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene').update({
 			mat4.multiply(
 				state.ground.groundMirrorView,
 				state.viewPort.camera.viewMat,
-				state.ground.mirrorMatrix as any
+				state.ground.mirrorMatrix as any,
 			),
 		projection: () => state.viewPort.camera.projectionMat,
 		withDistance: 1,
-		groundHeight: () => state.ground.position[1]
-	}
+		groundHeight: () => state.ground.position[1],
+	},
 })
 
 const blurEffect = getBlurByAlphaEffect(painter, 'blur', {
 	strength: 10,
 	strengthOffset: 0.3,
-	blurRatioVertical: 3
+	blurRatioVertical: 3,
 })
 
 export const layers = [...videoLights, mirrorSceneLayer, blurEffect, sceneLayer]

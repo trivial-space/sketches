@@ -3,7 +3,7 @@ import lfrag from './shaders/line.frag'
 import pvert from './shaders/point.vert'
 import pfrag from './shaders/point.frag'
 import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { ShadeData } from 'tvs-painter/dist/lib'
+import { ShadeData } from 'tvs-painter/dist'
 
 export const line = val({
 	vert: lvert,

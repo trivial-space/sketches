@@ -3,7 +3,7 @@ import pfrag from './shaders/point.frag'
 import sfrag from './shaders/side.frag'
 import cfrag from './shaders/compose.frag'
 import { val } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { ShadeData } from 'tvs-painter/dist/lib'
+import { ShadeData } from 'tvs-painter/dist'
 
 export const point = val({
 	vert: pvert,

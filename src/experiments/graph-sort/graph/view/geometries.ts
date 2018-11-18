@@ -2,7 +2,7 @@ import { stream, val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { intToFloat } from 'tvs-libs/dist/graphics/colors'
 import { add, mul, normalize, sub } from 'tvs-libs/dist/math/vectors'
 import { flatten, mapcat } from 'tvs-libs/dist/utils/sequence'
-import { FormData } from 'tvs-painter/dist/lib'
+import { FormData } from 'tvs-painter/dist'
 import { connections, nameSpaceCount, nodes } from '../state/nodes'
 
 export const points = stream(

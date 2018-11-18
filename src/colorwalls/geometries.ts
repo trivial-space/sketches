@@ -8,11 +8,11 @@ import {
 	extrudeRight,
 	Quad,
 	right,
-	triangulate
+	triangulate,
 } from 'tvs-libs/dist/geometry/quad'
 import { normalRand } from 'tvs-libs/dist/math/random'
 import { flatten, times } from 'tvs-libs/dist/utils/sequence'
-import { convertStackGLGeometry } from 'tvs-painter/dist/lib/utils/stackgl'
+import { convertStackGLGeometry } from 'tvs-painter/dist/utils/stackgl'
 import { painter } from './context'
 
 const vertDiv = partial(divideVertical, 0.5, 0.5)
@@ -63,7 +63,7 @@ const box = (() => {
 		makeSideSegments(bk, count),
 		makeSideSegments(rt, count),
 		makeSideSegments(ft, count),
-		makeSideSegments(lf, count)
+		makeSideSegments(lf, count),
 	]
 })()
 
@@ -76,15 +76,17 @@ export const wallsForm = getForm(painter, 'wallsForm').update(
 		color: flatten(
 			box.map((side, i) =>
 				flatten(
-					side.map((slice, j) => slice.map(() => colors[i * boxSliceCount + j]))
-				)
-			)
+					side.map((slice, j) =>
+						slice.map(() => colors[i * boxSliceCount + j]),
+					),
+				),
+			),
 		),
 		normal: flatten(
-			box.map((side, i) => flatten(side).map(() => faceNormals[i]))
+			box.map((side, i) => flatten(side).map(() => faceNormals[i])),
 		),
-		cells: triangulate(4 * boxSliceCount * 4 * 2)
-	})
+		cells: triangulate(4 * boxSliceCount * 4 * 2),
+	}),
 )
 
 export const groundHeight = -5
@@ -92,16 +94,16 @@ const floorQuads = subdivide(
 	[
 		extrudeBottom(
 			[0, 0, -200],
-			[[-100, groundHeight, 100], [100, groundHeight, 100]]
-		)
+			[[-100, groundHeight, 100], [100, groundHeight, 100]],
+		),
 	],
-	3
+	3,
 )
 
 export const groundForm = getForm(painter, 'groundForm').update(
 	convertStackGLGeometry({
 		position: flatten(floorQuads),
 		normal: flatten(floorQuads).map(() => [0, 1, 0]),
-		cells: triangulate(floorQuads.length)
-	})
+		cells: triangulate(floorQuads.length),
+	}),
 )

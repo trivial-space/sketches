@@ -3,8 +3,8 @@ import {
 	stream,
 	val,
 } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { DrawSettings, TextureData } from 'tvs-painter/dist/lib'
-import { makeClear } from 'tvs-painter/dist/lib/utils/context'
+import { DrawSettings, TextureData } from 'tvs-painter/dist'
+import { makeClear } from 'tvs-painter/dist/utils/context'
 import {
 	makeDrawingLayerEntity,
 	makeEffectLayerEntity,

@@ -1,4 +1,6 @@
-const { resolve } = require('path')
+const {
+	resolve
+} = require('path')
 
 module.exports = {
 	entry: {
@@ -7,9 +9,9 @@ module.exports = {
 		'tiles': ['./tiles/index.ts'],
 		'colorwalls': ['./colorwalls/index.ts'],
 		'aquarell': ['./aquarell/index.ts'],
-		'experiments/area-light': ['./experiments/area-light/index.ts'],
-		'experiments/graph-sort': ['./experiments/graph-sort/index.ts'],
-		'experiments/convex-hull': ['./experiments/convex-hull/index.ts'],
+		// 'experiments/area-light': ['./experiments/area-light/index.ts'],
+		// 'experiments/graph-sort': ['./experiments/graph-sort/index.ts'],
+		// 'experiments/convex-hull': ['./experiments/convex-hull/index.ts'],
 		'experiments/game-of-life': ['./experiments/game-of-life/index.ts'],
 		'experiments/textures': ['./experiments/textures/index.ts']
 	},
@@ -25,8 +27,7 @@ module.exports = {
 	},
 
 	module: {
-		rules: [
-			{
+		rules: [{
 				test: /\.css$/,
 				use: [
 					'style-loader',
@@ -34,8 +35,16 @@ module.exports = {
 					'postcss-loader',
 				],
 			},
-			{ test: /\.ts$/, use: ['ts-loader', 'webpack-module-hot-accept'], exclude: /node_modules/ },
-			{ test: /\.(glsl|frag|vert)$/, use: ['raw-loader', 'glslify-loader'], exclude: /node_modules/ },
+			{
+				test: /\.ts$/,
+				use: ['ts-loader', 'webpack-module-hot-accept'],
+				exclude: /node_modules/
+			},
+			{
+				test: /\.(glsl|frag|vert)$/,
+				use: ['raw-loader', 'glslify-loader'],
+				exclude: /node_modules/
+			},
 		]
 	},
 
