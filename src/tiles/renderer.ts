@@ -6,7 +6,7 @@ import {
 	getSketch,
 	getStaticLayer
 } from 'shared-utils/painterState'
-import { each } from 'tvs-libs/dist/lib/utils/sequence'
+import { each } from 'tvs-libs/dist/utils/sequence'
 import { StaticLayer } from 'tvs-painter/dist/lib/layer'
 import { plane } from 'tvs-painter/dist/lib/utils/geometry/plane'
 import { events, gl, painter, state, State } from './context'

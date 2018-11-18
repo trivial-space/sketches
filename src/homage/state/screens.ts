@@ -1,11 +1,11 @@
 import { mat4 } from 'gl-matrix'
-import * as coords from 'tvs-libs/dist/lib/math/coords'
-import * as videos from './videos'
-import { zip, flatten } from 'tvs-libs/dist/lib/utils/sequence'
-import { mul } from 'tvs-libs/dist/lib/math/vectors'
 import { set } from 'shared-utils/painterState'
+import * as coords from 'tvs-libs/dist/math/coords'
+import { mul } from 'tvs-libs/dist/math/vectors'
+import { flatten, zip } from 'tvs-libs/dist/utils/sequence'
 import { State } from '../context'
 import { planeSize } from '../geometries'
+import * as videos from './videos'
 
 export class Screens {
 	radius = 25

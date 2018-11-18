@@ -1,6 +1,6 @@
 import { mat4, vec3 } from 'gl-matrix'
-import { Keys, KeyState } from 'tvs-libs/dist/lib/events/keyboard'
-import { MouseState } from 'tvs-libs/dist/lib/events/mouse'
+import { Keys, KeyState } from 'tvs-libs/dist/events/keyboard'
+import { MouseState } from 'tvs-libs/dist/events/mouse'
 import { Constructor } from 'tvs-libs/lib/oop/mixins'
 
 export class Camera {

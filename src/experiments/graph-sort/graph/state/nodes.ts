@@ -1,7 +1,7 @@
 import { canvasSize } from 'experiments/graph-sort/graph/view/context'
 import { alter, M } from 'shared-utils/fp'
 import { stream, val } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { randInt, randIntInRange } from 'tvs-libs/dist/lib/math/random'
+import { randInt, randIntInRange } from 'tvs-libs/dist/math/random'
 import {
 	add,
 	div,
@@ -9,8 +9,8 @@ import {
 	mul,
 	normalize,
 	sub
-} from 'tvs-libs/dist/lib/math/vectors'
-import { flatten, times } from 'tvs-libs/dist/lib/utils/sequence'
+} from 'tvs-libs/dist/math/vectors'
+import { flatten, times } from 'tvs-libs/dist/utils/sequence'
 import * as events from '../events'
 
 export const nodeCount = val(40)

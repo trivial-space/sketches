@@ -1,7 +1,7 @@
 import { streamStart, val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { mat4 } from 'gl-matrix'
 import { tick } from './events'
-import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
+import { unequal } from 'tvs-libs/dist/utils/predicates'
 
 export const groundColor = val([0.7, 0.6, 0.9, 1])
 

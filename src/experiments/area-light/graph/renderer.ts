@@ -10,7 +10,7 @@ import {
 	makeDrawingLayerEntity,
 	makeEffectLayerEntity,
 	makeStaticLayerEntity
-} from 'tvs-utils/dist/lib/vr/flow-painter-utils'
+} from 'tvs-utils/dist/vr/flow-painter-utils'
 import { painter, gl } from './painter'
 import * as events from './events'
 import * as camera from './camera'

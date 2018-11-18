@@ -3,11 +3,11 @@ import {
 	stream,
 	asyncStream
 } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { times } from 'tvs-libs/dist/lib/utils/sequence'
+import { times } from 'tvs-libs/dist/utils/sequence'
 import { canvasSize } from '../view/context'
-import { polarToCartesian2D } from 'tvs-libs/dist/lib/math/coords'
-import { add } from 'tvs-libs/dist/lib/math/vectors'
-import { normalRand } from 'tvs-libs/dist/lib/math/random'
+import { polarToCartesian2D } from 'tvs-libs/dist/math/coords'
+import { add } from 'tvs-libs/dist/math/vectors'
+import { normalRand } from 'tvs-libs/dist/math/random'
 
 export const pointCount = val(40)
 

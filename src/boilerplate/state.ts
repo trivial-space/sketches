@@ -1,6 +1,6 @@
 import { mat4 } from 'gl-matrix'
 import { addSystem, set } from 'shared-utils/painterState'
-import { normalRand } from 'tvs-libs/dist/lib/math/random'
+import { normalRand } from 'tvs-libs/dist/math/random'
 import { times } from 'tvs-libs/lib/utils/sequence'
 import { events, State } from './context'
 

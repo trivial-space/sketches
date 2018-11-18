@@ -1,6 +1,6 @@
 import { getForm } from 'shared-utils/painterState'
-import { partial } from 'tvs-libs/dist/lib/fp/core'
-import { normal } from 'tvs-libs/dist/lib/geometry/primitives'
+import { partial } from 'tvs-libs/dist/fp/core'
+import { normal } from 'tvs-libs/dist/geometry/primitives'
 import {
 	divideHorizontal,
 	divideVertical,
@@ -9,9 +9,9 @@ import {
 	Quad,
 	right,
 	triangulate
-} from 'tvs-libs/dist/lib/geometry/quad'
-import { normalRand } from 'tvs-libs/dist/lib/math/random'
-import { flatten, times } from 'tvs-libs/dist/lib/utils/sequence'
+} from 'tvs-libs/dist/geometry/quad'
+import { normalRand } from 'tvs-libs/dist/math/random'
+import { flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { convertStackGLGeometry } from 'tvs-painter/dist/lib/utils/stackgl'
 import { painter } from './context'
 

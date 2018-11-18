@@ -25,7 +25,9 @@
     "glsl-noise-simplex": "^0.0.2",
     "glsl-random": "^0.0.5",
     "glslify-loader": "^1.0.2",
-    "raw-loader": "^0.5.1"
+    "raw-loader": "^0.5.1",
+    "tslint-config-prettier": "^1.16.0",
+    "tslint-config-standard": "^8.0.1"
   },
   "devDependencies": {
     "@types/gl-matrix": "^2.4.4",

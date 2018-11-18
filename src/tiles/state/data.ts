@@ -1,4 +1,4 @@
-import { Unpacked } from 'tvs-libs/dist/lib/types'
+import { Unpacked } from 'tvs-libs/dist/types'
 
 export interface TileSpec {
 	file: string

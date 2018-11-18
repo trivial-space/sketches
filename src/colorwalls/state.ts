@@ -1,6 +1,6 @@
 import { mat4, quat } from 'gl-matrix'
 import { addSystem } from 'shared-utils/painterState'
-import * as geo from 'tvs-libs/dist/lib/math/geometry'
+import * as geo from 'tvs-libs/dist/math/geometry'
 import { events } from './context'
 import { groundHeight } from './geometries'
 

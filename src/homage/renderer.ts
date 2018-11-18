@@ -5,7 +5,7 @@ import {
 	getStaticLayer
 } from 'shared-utils/painterState'
 import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
-import { zip } from 'tvs-libs/dist/lib/utils/sequence'
+import { zip } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import { getCanvasSize, gl, painter, state } from './context'
 import { boxForm, planeForm } from './geometries'

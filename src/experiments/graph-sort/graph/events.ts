@@ -4,8 +4,8 @@ import {
 	val,
 	asyncStream
 } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { windowSize as getWindowSize } from 'tvs-libs/dist/lib/events/dom'
-import { animateWithTPF } from 'tvs-libs/dist/lib/events/animation'
+import { windowSize as getWindowSize } from 'tvs-libs/dist/events/dom'
+import { animateWithTPF } from 'tvs-libs/dist/events/animation'
 
 export const canvas = streamStart(
 	null,

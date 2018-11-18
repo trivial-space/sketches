@@ -1,10 +1,8 @@
 import { once } from 'shared-utils/scheduler'
-import { windowSize } from 'tvs-libs/dist/lib/events/dom'
-import { keyboard } from 'tvs-libs/dist/lib/events/keyboard'
-import { KeyState } from 'tvs-libs/dist/lib/events/keyboard'
-import { MouseState } from 'tvs-libs/dist/lib/events/mouse'
-import { mouse } from 'tvs-libs/dist/lib/events/mouse'
-import { deepOverride } from 'tvs-libs/dist/lib/utils/object'
+import { windowSize } from 'tvs-libs/dist/events/dom'
+import { keyboard, KeyState } from 'tvs-libs/dist/events/keyboard'
+import { mouse, MouseState } from 'tvs-libs/dist/events/mouse'
+import { deepOverride } from 'tvs-libs/dist/utils/object'
 import { Form } from 'tvs-painter/dist/lib/form'
 import { DrawingLayer, StaticLayer } from 'tvs-painter/dist/lib/layer'
 import { Painter } from 'tvs-painter/dist/lib/painter'
@@ -77,10 +75,10 @@ export interface BaseState {
 export const state: BaseState = {
 	device: {
 		tpf: 0,
-		sizeMultiplier: 1
-	}
+		sizeMultiplier: 1,
+	},
 } as BaseState
-;(window as any)['state'] = state
+;(window as any).state = state
 
 export function get<
 	S extends BaseState = BaseState,
@@ -111,13 +109,13 @@ export function getState<S extends BaseState>() {
 
 type ActionHandler<S extends BaseState = BaseState> = (
 	event: string,
-	state: S
+	state: S,
 ) => void
 const systems: { [id: string]: ActionHandler<any> } = {}
 
 export function addSystem<S extends BaseState = BaseState>(
 	id: string,
-	s: ActionHandler<S>
+	s: ActionHandler<S>,
 ) {
 	systems[id] = s
 }
@@ -130,7 +128,7 @@ export function dispatch(event: string) {
 
 export const baseEvents = {
 	FRAME: 'frame',
-	RESIZE: 'resize'
+	RESIZE: 'resize',
 }
 
 // === Init ===
@@ -155,15 +153,15 @@ export function init(canvas: HTMLCanvasElement) {
 			once(() => {
 				painter.resize({
 					multiplier: state.device.sizeMultiplier,
-					keepCurrentSize: state.device.keepCanvasSize
+					keepCurrentSize: state.device.keepCanvasSize,
 				})
 				dispatch(baseEvents.RESIZE)
-			}, 'resize')
+			}, 'resize'),
 		)
 
 		cancelMouse = mouse(
 			{ element: canvas, enableRightButton: true },
-			m => (state.device.mouse = m)
+			m => (state.device.mouse = m),
 		)
 
 		cancelKeys = keyboard(k => (state.device.keys = k))

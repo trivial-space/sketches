@@ -1,12 +1,12 @@
 import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { unequal } from 'tvs-libs/dist/lib/utils/predicates'
+import { unequal } from 'tvs-libs/dist/utils/predicates'
 import { Layer, LayerData } from 'tvs-painter'
 import {
 	makeDrawingLayerEntity,
 	makeFormEntity,
 	makeShadeEntity,
 	makeSketchEntity
-} from 'tvs-utils/dist/lib/vr/flow-painter-utils'
+} from 'tvs-utils/dist/vr/flow-painter-utils'
 import { makeEffectLayerEntity } from 'tvs-utils/lib/vr/flow-painter-utils'
 import { tripleStream } from '../state/nodes'
 import { canvasSize, gl, painter } from './context'

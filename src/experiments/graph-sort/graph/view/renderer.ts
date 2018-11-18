@@ -7,7 +7,7 @@ import {
 	makeFormEntity,
 	makeSketchEntity,
 	makeDrawingLayerEntity
-} from 'tvs-utils/dist/lib/vr/flow-painter-utils'
+} from 'tvs-utils/dist/vr/flow-painter-utils'
 import { LayerData, SketchData } from 'tvs-painter/dist/lib'
 
 // ===== shaders =====

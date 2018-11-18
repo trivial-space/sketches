@@ -4,10 +4,10 @@ import {
 	EntityRef,
 	streamStart
 } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { animateWithTPF } from 'tvs-libs/dist/lib/events/animation'
-import { windowSize as getWindowSize } from 'tvs-libs/dist/lib/events/dom'
-import { keyboard, KeyState } from 'tvs-libs/dist/lib/events/keyboard'
-import { mouse as getMouse, MouseState } from 'tvs-libs/dist/lib/events/mouse'
+import { animateWithTPF } from 'tvs-libs/dist/events/animation'
+import { windowSize as getWindowSize } from 'tvs-libs/dist/events/dom'
+import { keyboard, KeyState } from 'tvs-libs/dist/events/keyboard'
+import { mouse as getMouse, MouseState } from 'tvs-libs/dist/events/mouse'
 
 export const canvas = streamStart(
 	null,

@@ -1,5 +1,5 @@
 import { val, asyncStream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { windowSize as getWindowSize } from 'tvs-libs/dist/lib/events/dom'
+import { windowSize as getWindowSize } from 'tvs-libs/dist/events/dom'
 
 export const canvas = val(document.getElementById(
 	'canvas'

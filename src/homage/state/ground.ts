@@ -1,6 +1,6 @@
 import { mat4 } from 'gl-matrix'
 import { set } from 'shared-utils/painterState'
-import * as geo from 'tvs-libs/dist/lib/math/geometry'
+import * as geo from 'tvs-libs/dist/math/geometry'
 import { State } from '../context'
 
 export class Ground {

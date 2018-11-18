@@ -6,8 +6,8 @@ import {
 	stream,
 	val
 } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { Keys } from 'tvs-libs/dist/lib/events/keyboard'
-import * as flowCamera from 'tvs-utils/dist/lib/vr/flow-camera'
+import { Keys } from 'tvs-libs/dist/events/keyboard'
+import * as flowCamera from 'tvs-utils/dist/vr/flow-camera'
 import { keys, mouse, tick } from './events'
 import { canvasSize } from './painter'
 

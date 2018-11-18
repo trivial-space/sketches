@@ -1,15 +1,15 @@
 import { mat4, quat } from 'gl-matrix'
 import { addSystem, dispatch, set } from 'shared-utils/painterState'
 import { pushTransition } from 'shared-utils/transitions'
-import { sign } from 'tvs-libs/dist/lib/math/core'
-import { getRollQuat, getYawQuat } from 'tvs-libs/dist/lib/math/geometry'
-import { normalRand, randInt } from 'tvs-libs/dist/lib/math/random'
+import { sign } from 'tvs-libs/dist/math/core'
+import { getRollQuat, getYawQuat } from 'tvs-libs/dist/math/geometry'
+import { normalRand, randInt } from 'tvs-libs/dist/math/random'
 import {
 	doTimes,
 	map,
 	pickRandom,
 	times
-} from 'tvs-libs/dist/lib/utils/sequence'
+} from 'tvs-libs/dist/utils/sequence'
 import { events, State } from '../context'
 import { Set, sets, specs, TileSpec } from './data'
 
