@@ -1,13 +1,13 @@
 import {
-	val,
+	asyncStream,
 	stream,
-	asyncStream
+	val,
 } from 'tvs-flow/dist/lib/utils/entity-reference'
+import { polarToCartesian2D } from 'tvs-libs/dist/math/coords'
+import { normalRand } from 'tvs-libs/dist/math/random'
+import { add } from 'tvs-libs/dist/math/vectors'
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { canvasSize } from '../view/context'
-import { polarToCartesian2D } from 'tvs-libs/dist/math/coords'
-import { add } from 'tvs-libs/dist/math/vectors'
-import { normalRand } from 'tvs-libs/dist/math/random'
 
 export const pointCount = val(40)
 
@@ -18,11 +18,11 @@ export const nodes = stream([pointCount.HOT, canvasSize.COLD], (count, s) => {
 			add(
 				polarToCartesian2D([
 					Math.sqrt(Math.abs(normalRand() * 2 - 1)) * radius,
-					Math.random() * 2 * Math.PI
+					Math.random() * 2 * Math.PI,
 				]),
-				[s.width / 2, s.height / 2]
+				[s.width / 2, s.height / 2],
 			),
-		count
+		count,
 	)
 })
 
@@ -46,5 +46,5 @@ export const tripleStream = asyncStream(
 		}
 		requestAnimationFrame(tick)
 		return () => (i = triples.length)
-	}
+	},
 )

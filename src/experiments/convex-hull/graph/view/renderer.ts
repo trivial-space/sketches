@@ -5,7 +5,7 @@ import {
 	makeDrawingLayerEntity,
 	makeFormEntity,
 	makeShadeEntity,
-	makeSketchEntity
+	makeSketchEntity,
 } from 'tvs-utils/dist/vr/flow-painter-utils'
 import { makeEffectLayerEntity } from 'tvs-utils/lib/vr/flow-painter-utils'
 import { tripleStream } from '../state/nodes'
@@ -28,8 +28,8 @@ export const pointsSketch = makeSketchEntity(painter).react(
 	(s, form, shade) =>
 		s.update({
 			form,
-			shade
-		})
+			shade,
+		}),
 )
 
 // ===== layers =====
@@ -44,9 +44,9 @@ export const points = makeDrawingLayerEntity(painter).react(
 				clearColor: [0, 0, 0, 1],
 				clearBits: gl.COLOR_BUFFER_BIT,
 				enable: [gl.BLEND],
-				blendFunc: [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA]
-			}
-		})
+				blendFunc: [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA],
+			},
+		}),
 )
 
 export const sides = makeEffectLayerEntity(painter).react(
@@ -55,14 +55,14 @@ export const sides = makeEffectLayerEntity(painter).react(
 		l.update({
 			frag,
 			uniforms: {
-				//triples.map(triple => ({
+				// triples.map(triple => ({
 				size: [size.width, size.height],
 				p1: triple[0],
 				p2: triple[1],
 				p3: triple[2],
-				source: null
-			} //))
-		})
+				source: null,
+			}, // ))
+		}),
 )
 
 export const outBuffer1 = makeEffectLayerEntity(painter)
@@ -75,21 +75,21 @@ const updateOutBuffer = (l: Layer, out: Layer, size: any, frag: string) =>
 		frag,
 		uniforms: {
 			previous: out.texture(),
-			current: null
-		}
+			current: null,
+		},
 	} as LayerData)
 
 outBuffer1
 	.react(
 		[outBuffer2.HOT, canvasSize.HOT, shaders.compose.HOT, gl.HOT],
-		updateOutBuffer
+		updateOutBuffer,
 	)
 	.accept(unequal)
 
 outBuffer2
 	.react(
 		[outBuffer1.HOT, canvasSize.HOT, shaders.compose.HOT, gl.HOT],
-		updateOutBuffer
+		updateOutBuffer,
 	)
 	.accept(unequal)
 
@@ -97,7 +97,7 @@ outBuffer2
 
 export const renderLayers = stream(
 	[points.HOT, sides.HOT, outBuffer1.HOT, outBuffer2.HOT],
-	(...args) => args
+	(...args) => args,
 ).react([tripleStream.HOT], self => {
 	const [p, s, o1, o2] = self
 	return [p, s, o2, o1]
@@ -105,5 +105,5 @@ export const renderLayers = stream(
 
 export const renderSides = stream(
 	[painter.COLD, renderLayers.HOT],
-	(painter, layers) => painter.compose(...layers)
+	(painter, layers) => painter.compose(...layers),
 )

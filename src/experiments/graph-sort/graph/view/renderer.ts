@@ -1,14 +1,14 @@
 import { stream } from 'tvs-flow/dist/lib/utils/entity-reference'
-import { painter, gl, canvasSize } from './context'
+import { LayerData, SketchData } from 'tvs-painter/dist/lib'
+import {
+	makeDrawingLayerEntity,
+	makeFormEntity,
+	makeShadeEntity,
+	makeSketchEntity,
+} from 'tvs-utils/dist/vr/flow-painter-utils'
+import { canvasSize, gl, painter } from './context'
 import * as geometries from './geometries'
 import * as shaders from './shaders'
-import {
-	makeShadeEntity,
-	makeFormEntity,
-	makeSketchEntity,
-	makeDrawingLayerEntity
-} from 'tvs-utils/dist/vr/flow-painter-utils'
-import { LayerData, SketchData } from 'tvs-painter/dist/lib'
 
 // ===== shaders =====
 
@@ -29,8 +29,8 @@ export const pointsData = stream(
 	(form, shade) =>
 		({
 			form,
-			shade
-		} as SketchData)
+			shade,
+		} as SketchData),
 )
 
 export const linesData = stream(
@@ -38,8 +38,8 @@ export const linesData = stream(
 	(form, shade) =>
 		({
 			form,
-			shade
-		} as SketchData)
+			shade,
+		} as SketchData),
 )
 
 export const pointsSketch = makeSketchEntity(painter, pointsData)
@@ -58,9 +58,9 @@ export const sceneData = stream(
 				clearColor: [0, 0, 0, 1],
 				clearBits: gl.COLOR_BUFFER_BIT,
 				cullFace: gl.BACK,
-				enable: [gl.CULL_FACE]
-			}
-		} as LayerData)
+				enable: [gl.CULL_FACE],
+			},
+		} as LayerData),
 )
 
 export const scene = makeDrawingLayerEntity(painter, sceneData)
@@ -68,5 +68,5 @@ export const scene = makeDrawingLayerEntity(painter, sceneData)
 // ===== render =====
 
 export const render = stream([painter.COLD, scene.HOT], (painter, scene) =>
-	painter.compose(scene)
+	painter.compose(scene),
 )

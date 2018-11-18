@@ -1,30 +1,30 @@
 import {
+	asyncStreamStart,
 	stream,
 	val,
-	asyncStreamStart
 } from 'tvs-flow/dist/lib/utils/entity-reference'
+import { DrawSettings, TextureData } from 'tvs-painter/dist/lib'
+import { makeClear } from 'tvs-painter/dist/lib/utils/context'
 import {
+	makeDrawingLayerEntity,
+	makeEffectLayerEntity,
 	makeFormEntity,
 	makeShadeEntity,
 	makeSketchEntity,
-	makeDrawingLayerEntity,
-	makeEffectLayerEntity,
-	makeStaticLayerEntity
+	makeStaticLayerEntity,
 } from 'tvs-utils/dist/vr/flow-painter-utils'
-import { painter, gl } from './painter'
-import * as events from './events'
 import * as camera from './camera'
+import * as events from './events'
 import * as plane from './geometries/plane'
-import { makeClear } from 'tvs-painter/dist/lib/utils/context'
-import {
-	groundTransform,
-	lightTransforms,
-	groundColor,
-	lightColor,
-	lightBackColor
-} from './state'
-import { DrawSettings, TextureData } from 'tvs-painter/dist/lib'
+import { gl, painter } from './painter'
 import { geoSpec, lightFrag } from './shaders/shaders'
+import {
+	groundColor,
+	groundTransform,
+	lightBackColor,
+	lightColor,
+	lightTransforms,
+} from './state'
 
 // Forms
 
@@ -44,10 +44,10 @@ export const image = asyncStreamStart<HTMLImageElement>([], send => {
 
 export const textureData = val({
 	minFilter: 'LINEAR_MIPMAP_LINEAR',
-	magFilter: 'LINEAR'
+	magFilter: 'LINEAR',
 } as TextureData).react([image.HOT], (tex, img) => ({
 	...tex,
-	asset: img
+	asset: img,
 }))
 
 export const texture = makeStaticLayerEntity(painter, textureData)
@@ -62,9 +62,9 @@ export const groundSketch = makeSketchEntity(painter).react(
 			shade,
 			uniforms: {
 				transform,
-				color
-			}
-		})
+				color,
+			},
+		}),
 )
 
 export const lightSketch = makeSketchEntity(painter).react(
@@ -74,7 +74,7 @@ export const lightSketch = makeSketchEntity(painter).react(
 		lightBackColor.HOT,
 		geoShade.HOT,
 		planeForm.HOT,
-		gl.HOT
+		gl.HOT,
 	],
 	(sketch, [frontMat, backMat], color, backColor, shade, form, gl) =>
 		sketch.update({
@@ -83,17 +83,17 @@ export const lightSketch = makeSketchEntity(painter).react(
 			uniforms: [
 				{
 					transform: frontMat,
-					color
+					color,
 				},
 				{
 					transform: backMat,
-					color: backColor
-				}
+					color: backColor,
+				},
 			],
 			drawSettings: {
-				enable: [gl.CULL_FACE]
-			}
-		})
+				enable: [gl.CULL_FACE],
+			},
+		}),
 )
 
 // Layers
@@ -102,8 +102,8 @@ export const drawSettings = stream(
 	[gl.HOT],
 	gl =>
 		({
-			clearBits: makeClear(gl, 'color', 'depth')
-		} as DrawSettings)
+			clearBits: makeClear(gl, 'color', 'depth'),
+		} as DrawSettings),
 )
 
 export const sceneLayer = makeDrawingLayerEntity(painter).react(
@@ -113,25 +113,25 @@ export const sceneLayer = makeDrawingLayerEntity(painter).react(
 		groundSketch.HOT,
 		camera.view.COLD,
 		camera.perspective.COLD,
-		drawSettings.HOT
+		drawSettings.HOT,
 	],
 	(layer, gl, light, ground, view, projection, settings) =>
 		layer.update({
 			buffered: true,
 			textureConfig: {
 				count: 4,
-				type: gl.FLOAT
+				type: gl.FLOAT,
 			},
 			sketches: [light, ground],
 			drawSettings: settings,
 			uniforms: {
 				view,
-				projection
+				projection,
 			},
 			wrap: 'CLAMP_TO_EDGE',
 			minFilter: 'NEAREST',
-			magFilter: 'NEAREST'
-		})
+			magFilter: 'NEAREST',
+		}),
 )
 
 export const lightLayer = makeEffectLayerEntity(painter).react(
@@ -142,7 +142,7 @@ export const lightLayer = makeEffectLayerEntity(painter).react(
 		camera.view.COLD,
 		gl.HOT,
 		texture.HOT,
-		lightFrag.HOT
+		lightFrag.HOT,
 	],
 	(layer, scene, eyePosition, lightMats, view, gl, tex, frag) =>
 		layer.update({
@@ -155,14 +155,14 @@ export const lightLayer = makeEffectLayerEntity(painter).react(
 				positions: scene.texture(0),
 				normals: scene.texture(1),
 				uvs: scene.texture(2),
-				colors: scene.texture(3)
+				colors: scene.texture(3),
 			},
 			drawSettings: {
 				disable: [gl.DEPTH_TEST],
 				enable: [gl.BLEND],
-				clearBits: makeClear(gl, 'color')
-			}
-		})
+				clearBits: makeClear(gl, 'color'),
+			},
+		}),
 )
 
 painter.react(
@@ -170,6 +170,6 @@ painter.react(
 	(p, scene, light) =>
 		p.compose(
 			scene,
-			light
-		)
+			light,
+		),
 )

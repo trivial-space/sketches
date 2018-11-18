@@ -1,7 +1,7 @@
-import { streamStart, val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { mat4 } from 'gl-matrix'
-import { tick } from './events'
+import { streamStart, val } from 'tvs-flow/dist/lib/utils/entity-reference'
 import { unequal } from 'tvs-libs/dist/utils/predicates'
+import { tick } from './events'
 
 export const groundColor = val([0.7, 0.6, 0.9, 1])
 
@@ -17,12 +17,12 @@ export const rotationSpeed = val(0.0002)
 
 export const lightRotation = val(-Math.PI * 0.8).react(
 	[animate.COLD, rotationSpeed.COLD, tick.HOT],
-	(rot, animate, speed, tick) => (animate ? rot + speed * tick : rot)
+	(rot, animate, speed, tick) => (animate ? rot + speed * tick : rot),
 )
 
 export const time = val(0)
 	.react([tick.HOT, animate.COLD], (t, tick, animate) =>
-		animate ? t + tick : t
+		animate ? t + tick : t,
 	)
 	.accept(unequal)
 
@@ -41,5 +41,5 @@ export const lightTransforms = val([mat4.create(), mat4.create()]).react(
 		mat4.rotateX(mats[0], mats[0], rot)
 		mat4.rotateX(mats[1], mats[0], Math.PI)
 		return mats
-	}
+	},
 )
