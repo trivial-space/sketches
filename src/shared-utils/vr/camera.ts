@@ -15,6 +15,8 @@ export class Camera {
 
 	constructor(props?: Partial<Camera>) {
 		Object.assign(this, props)
+		this.updateRotationX()
+		this.updateRotationY()
 	}
 
 	updateRotationX(amount: number = 0) {
@@ -33,7 +35,7 @@ export class Camera {
 		const v = vec3.fromValues(
 			this.rotationYMat[8],
 			this.rotationYMat[9],
-			this.rotationYMat[10]
+			this.rotationYMat[10],
 		)
 		vec3.add(this.position as any, this.position, vec3.scale(v, v, -dist))
 		this.needsUpdateView = true
@@ -43,7 +45,7 @@ export class Camera {
 		const v = vec3.fromValues(
 			this.rotationYMat[0],
 			this.rotationYMat[1],
-			this.rotationYMat[2]
+			this.rotationYMat[2],
 		)
 		vec3.add(this.position as any, this.position, vec3.scale(v, v, -dist))
 		this.needsUpdateView = true
@@ -53,7 +55,7 @@ export class Camera {
 		const v = vec3.fromValues(
 			this.rotationYMat[4],
 			this.rotationYMat[5],
-			this.rotationYMat[6]
+			this.rotationYMat[6],
 		)
 		vec3.add(this.position as any, this.position, vec3.scale(v, v, dist))
 		this.needsUpdateView = true
@@ -78,8 +80,9 @@ export class PerspectiveCamera extends Camera {
 	needsUpdateProjection = true
 
 	constructor(props?: Partial<PerspectiveCamera>) {
-		super()
+		super(props)
 		Object.assign(this, props)
+		this.update()
 	}
 
 	update() {
@@ -91,7 +94,7 @@ export class PerspectiveCamera extends Camera {
 				this.fovy,
 				this.aspect,
 				this.near,
-				this.far
+				this.far,
 			)
 			this.needsUpdateProjection = false
 		}

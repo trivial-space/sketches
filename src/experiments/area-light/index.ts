@@ -1,22 +1,16 @@
-import { flow, tools } from 'experiments/area-light/flow'
-import { updateFlow } from 'shared-utils/reload'
+import './state'
+import './viewport'
 
-const graphModules = require.context('./graph', true, /\.ts$/)
+import { dispatch, get } from 'shared-utils/painterState'
+import { repeat } from 'shared-utils/scheduler'
+import { events, painter } from './context'
+import { lightLayer, sceneLayer } from './renderer'
 
-flow.setDebug(true)
-
-updateFlow(flow, graphModules)
-
-tools.setFlow(flow, 'area light')
-
-setTimeout(function() {
-	flow.setDebug(false)
-}, 1000)
-
-if (module.hot) {
-	module.hot.accept((graphModules as any).id, function() {
-		const newGraphModules = require.context('./graph', true, /\.ts$/)
-		updateFlow(flow, newGraphModules)
-		tools.setFlow(flow, 'area light')
-	})
-}
+repeat(tpf => {
+	get('device').tpf = tpf
+	dispatch(events.FRAME)
+	painter.compose(
+		sceneLayer,
+		lightLayer,
+	)
+}, 'loop')

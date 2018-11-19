@@ -13,7 +13,7 @@
 		"sourceMap": true,
 		"baseUrl": ".",
 		"paths": {
-			"*": [ "*", "src/*", "node_modules/*" ]
+			"*": ["src/*", "node_modules/*"]
 		}
 	},
 	"exclude": [
