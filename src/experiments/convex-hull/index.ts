@@ -1,26 +1,115 @@
-import { flow, tools } from 'experiments/convex-hull/flow'
-import { updateFlow } from 'shared-utils/reload'
+import {
+	getDrawingLayer,
+	getEffectLayer,
+	getForm,
+	getShade,
+	getSketch,
+} from 'shared-utils/painterState'
+import { repeat, stop } from 'shared-utils/scheduler'
+import { flatten } from 'tvs-libs/dist/utils/sequence'
+import { canvas, gl, painter } from './context'
+import { nodes, triples } from './nodes'
+import composeFrag from './shaders/compose.frag'
+import pointFrag from './shaders/point.frag'
+import pointVert from './shaders/point.vert'
+import sideFrag from './shaders/side.frag'
 
-const graphModules = require.context('./graph', true, /\.ts$/)
+// ===== shaders =====
 
-flow.setDebug(true)
+const pointsShade = getShade(painter, 'point').update({
+	vert: pointVert,
+	frag: pointFrag,
+})
 
-updateFlow(flow, graphModules)
+// ===== geometries =====
 
-tools.setFlow(flow, 'convex-hull')
+const pointsForm = getForm(painter, 'points').update({
+	drawType: 'POINTS',
+	attribs: {
+		position: {
+			buffer: new Float32Array(flatten(nodes)),
+			storeType: 'DYNAMIC',
+		},
+	},
+	itemCount: nodes.length,
+})
 
-setTimeout(function() {
-	flow.setDebug(false)
-}, 1000)
+// ===== objects =====
 
-flow.flush()
+const pointsSketch = getSketch(painter, 'points').update({
+	form: pointsForm,
+	shade: pointsShade,
+})
 
-if (module.hot) {
-	module.hot.accept((graphModules as any).id, function() {
-		const newGraphModules = require.context('./graph', true, /\.ts$/)
-		updateFlow(flow, newGraphModules)
-		tools.setFlow(flow, 'convex-hull')
+// ===== layers =====
 
-		flow.flush()
-	})
+const points = getDrawingLayer(painter, 'points').update({
+	sketches: [pointsSketch],
+	uniforms: { size: () => [canvas.width, canvas.height] },
+	drawSettings: {
+		clearColor: [0, 0, 0, 1],
+		clearBits: gl.COLOR_BUFFER_BIT,
+		enable: [gl.BLEND],
+		blendFunc: [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA],
+	},
+})
+
+const sides = getEffectLayer(painter, 'sides').update({
+	frag: sideFrag,
+})
+
+const bufferOpts = {
+	buffered: true,
+	width: canvas.width,
+	height: canvas.height,
+	frag: composeFrag,
 }
+const outBuffer1 = getEffectLayer(painter, 'outBuf1').update(bufferOpts)
+const outBuffer2 = getEffectLayer(painter, 'outBuf2').update(bufferOpts)
+
+outBuffer1.update({
+	uniforms: {
+		previous: outBuffer2.texture(),
+		current: null,
+	},
+})
+
+outBuffer2.update({
+	uniforms: {
+		previous: outBuffer1.texture(),
+		current: null,
+	},
+})
+
+// ===== render =====
+
+let layers = [points, sides, outBuffer1, outBuffer2]
+let i = 0
+repeat(() => {
+	const triple = triples[i]
+
+	sides.update({
+		uniforms: {
+			// triples.map(triple => ({
+			size: [canvas.width, canvas.height],
+			p1: triple[0],
+			p2: triple[1],
+			p3: triple[2],
+			source: null,
+		}, // ))
+	})
+
+	const [p, s, o1, o2] = layers
+	painter.compose(
+		p,
+		s,
+		o1,
+		o2,
+	)
+	layers = [p, s, o2, o1]
+	console.log(i++)
+
+	if (i === triples.length) stop('render')
+}, 'render')
+
+console.log(triples.length)

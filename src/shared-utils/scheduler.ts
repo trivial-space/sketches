@@ -60,7 +60,7 @@ export function repeat(fn: Callback, id?: string | number) {
 	return id
 }
 
-export function stop(id: Function | string | number) {
+export function stop(id: Callback | string | number) {
 	if (typeof id === 'function') {
 		id = id.name
 	}
