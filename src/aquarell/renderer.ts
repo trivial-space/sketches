@@ -2,7 +2,7 @@ import {
 	addSystem,
 	getEffectLayer,
 	getStaticLayer,
-	set
+	set,
 } from 'shared-utils/painterState'
 import { LayerData } from 'tvs-painter'
 import { events, gl, paint, painter, State, state } from './context'
@@ -11,7 +11,7 @@ import base from './glsl/base.frag'
 // ===== Settings =====
 
 painter.updateDrawSettings({
-	clearColor: [0, 0, 0, 1]
+	clearColor: [0, 0, 0, 1],
 })
 
 // ===== layers =====
@@ -30,35 +30,34 @@ const layerOptions: LayerData = {
 	// 	type: gl.FLOAT
 	// },
 	drawSettings: {
-		disable: [gl.DEPTH_TEST]
-	}
+		disable: [gl.DEPTH_TEST],
+	},
 }
 
-const layer1 = getEffectLayer(painter, 'layer1').update({
-	...layerOptions
-})
+const layer1 = getEffectLayer(painter, 'layer1')
 
 const layer2 = getEffectLayer(painter, 'layer2').update({
 	...layerOptions,
 	uniforms: {
 		size: bufferSize,
 		paint: () => paintLayer.texture(),
-		previous: () => layer1.texture()
-	}
+		previous: () => layer1.texture(),
+	},
 })
 
 layer1.update({
+	...layerOptions,
 	uniforms: {
 		size: bufferSize,
 		paint: () => paintLayer.texture(),
-		previous: () => layer2.texture()
-	}
+		previous: () => layer2.texture(),
+	},
 })
 
 export const finalLayer = getEffectLayer(painter, 'final').update({
 	uniforms: {
-		source: () => state.renderer.currentLayer.texture()
-	}
+		source: () => state.renderer.currentLayer.texture(),
+	},
 })
 
 // ===== state =====

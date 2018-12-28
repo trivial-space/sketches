@@ -7,7 +7,7 @@ import {
 	getShade,
 	getSketch,
 	getStaticLayer,
-	set
+	set,
 } from 'shared-utils/painterState'
 import { LayerData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
@@ -20,7 +20,7 @@ import planeVert from './glsl/plane-material.vert'
 // ===== Settings =====
 
 painter.updateDrawSettings({
-	clearColor: [0, 0, 0, 1]
+	clearColor: [0, 0, 0, 1],
 })
 
 // ===== gof layers =====
@@ -37,27 +37,28 @@ const layerProps: LayerData = {
 	frag: base,
 	wrap: 'REPEAT',
 	drawSettings: {
-		disable: [gl.DEPTH_TEST]
-	}
+		disable: [gl.DEPTH_TEST],
+	},
 }
 
-const layer1 = getEffectLayer(painter, 'layer1').update(layerProps)
+const layer1 = getEffectLayer(painter, 'layer1')
 
 const layer2 = getEffectLayer(painter, 'layer2').update({
 	...layerProps,
 	uniforms: {
 		size: bufferSize,
 		paint: () => paintLayer.texture(),
-		previous: () => layer1.texture()
-	}
+		previous: () => layer1.texture(),
+	},
 })
 
 layer1.update({
+	...layerProps,
 	uniforms: {
 		size: bufferSize,
 		paint: () => paintLayer.texture(),
-		previous: () => layer2.texture()
-	}
+		previous: () => layer2.texture(),
+	},
 })
 
 // ===== scene =====
@@ -70,7 +71,7 @@ const form = getForm(painter, 'plane').update(plane(2, 2))
 
 const shade = getShade(painter, 'plane').update({
 	vert: planeVert,
-	frag: planeFrag
+	frag: planeFrag,
 })
 
 const sketch = getSketch(painter, 'plane').update({
@@ -78,19 +79,19 @@ const sketch = getSketch(painter, 'plane').update({
 	shade,
 	uniforms: {
 		transform: () => mat4.rotateY(planMat, planMat, rotation),
-		tex: () => state.renderer.currentLayer.texture()
-	}
+		tex: () => state.renderer.currentLayer.texture(),
+	},
 })
 
 export const planeLayer = getDrawingLayer(painter, 'plane').update({
 	sketches: [sketch],
 	uniforms: {
-		projection
+		projection,
 	},
 	drawSettings: {
 		clearColor: [0.0, 1.0, 0.0, 1.0],
-		clearBits: makeClear(gl, 'color', 'depth')
-	}
+		clearBits: makeClear(gl, 'color', 'depth'),
+	},
 })
 
 // ===== state =====

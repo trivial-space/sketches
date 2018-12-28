@@ -13,7 +13,6 @@ for (let i = 0; i < data.data.length; i += 4) {
 
 ctx.putImageData(data, 0, 0)
 
-ctx.fillStyle = 'white'
 addSystem<State>('paint', (e, s) => {
 	if (e === events.CLEANUP_PAINT) {
 		ctx.fillStyle = 'black'
