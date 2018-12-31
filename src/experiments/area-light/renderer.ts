@@ -1,11 +1,11 @@
 import {
 	addSystem,
-	getDrawingLayer,
-	getEffectLayer,
+	getLayer,
+	getEffect,
 	getForm,
 	getShade,
 	getSketch,
-	getStaticLayer,
+	getFrame,
 } from 'shared-utils/painterState'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
@@ -28,7 +28,7 @@ const geoShade = getShade(painter, 'geo').update({
 
 // Textures
 
-const texture = getStaticLayer(painter, 'tex').update({})
+const texture = getFrame(painter, 'tex').update({})
 
 const img = new Image()
 img.onload = () => {
@@ -71,7 +71,7 @@ const lightSketch = getSketch(painter, 'light').update({
 
 // Layers
 
-export const sceneLayer = getDrawingLayer(painter, 'scene').update({
+export const sceneLayer = getLayer(painter, 'scene').update({
 	drawSettings: {
 		clearBits: makeClear(gl, 'color', 'depth'),
 	},
@@ -90,7 +90,7 @@ export const sceneLayer = getDrawingLayer(painter, 'scene').update({
 	magFilter: 'NEAREST',
 })
 
-export const lightLayer = getEffectLayer(painter, 'light').update({
+export const lightLayer = getEffect(painter, 'light').update({
 	frag: lightFrag,
 	uniforms: {
 		eyePosition: () => state.viewPort.camera.position,

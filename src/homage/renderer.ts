@@ -1,8 +1,8 @@
 import { mat4 } from 'gl-matrix'
 import {
-	getDrawingLayer,
+	getLayer,
 	getSketch,
-	getStaticLayer,
+	getFrame,
 } from 'shared-utils/painterState'
 import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/utils/sequence'
@@ -21,7 +21,7 @@ painter.updateDrawSettings({
 // Textures
 
 export const videoTextures = videos.names.map(n =>
-	getStaticLayer(painter, n).update({
+	getFrame(painter, n).update({
 		flipY: true,
 		minFilter: 'LINEAR',
 		wrap: 'CLAMP_TO_EDGE',
@@ -85,7 +85,7 @@ const drawSettings = {
 	clearBits: makeClear(gl, 'color', 'depth'),
 }
 
-const sceneLayer = getDrawingLayer(painter, 'scene').update({
+const sceneLayer = getLayer(painter, 'scene').update({
 	sketches: [screenSketch, pedestalSketch, groundSketch],
 	drawSettings,
 	uniforms: {
@@ -95,7 +95,7 @@ const sceneLayer = getDrawingLayer(painter, 'scene').update({
 	},
 })
 
-const mirrorSceneLayer = getDrawingLayer(painter, 'mirrorScene').update({
+const mirrorSceneLayer = getLayer(painter, 'mirrorScene').update({
 	flipY: true,
 	sketches: [screenSketch, pedestalSketch],
 	drawSettings,

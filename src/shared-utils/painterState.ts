@@ -4,7 +4,8 @@ import { keyboard, KeyState } from 'tvs-libs/dist/events/keyboard'
 import { mouse, MouseState } from 'tvs-libs/dist/events/mouse'
 import { deepOverride } from 'tvs-libs/dist/utils/object'
 import { Form } from 'tvs-painter/dist/form'
-import { DrawingLayer, StaticLayer } from 'tvs-painter/dist/layer'
+import { Frame } from 'tvs-painter/dist/frame'
+import { Layer } from 'tvs-painter/dist/layer'
 import { Painter } from 'tvs-painter/dist/painter'
 import { Shade } from 'tvs-painter/dist/shade'
 import { Sketch } from 'tvs-painter/dist/sketch'
@@ -35,28 +36,19 @@ export function getSketch(painter: Painter, id: string) {
 	return sketches[id] || (sketches[id] = painter.createSketch('Sketch_' + id))
 }
 
-const drawingLayers: { [id: string]: DrawingLayer } = {}
-export function getDrawingLayer(painter: Painter, id: string) {
-	return (
-		drawingLayers[id] ||
-		(drawingLayers[id] = painter.createDrawingLayer('DrawLayer_' + id))
-	)
+const layers: { [id: string]: Layer } = {}
+export function getLayer(painter: Painter, id: string) {
+	return layers[id] || (layers[id] = painter.createLayer('Layer_' + id))
 }
 
-const staticLayers: { [id: string]: StaticLayer } = {}
-export function getStaticLayer(painter: Painter, id: string) {
-	return (
-		staticLayers[id] ||
-		(staticLayers[id] = painter.createStaticLayer('StaticLayer_' + id))
-	)
+const frames: { [id: string]: Frame } = {}
+export function getFrame(painter: Painter, id: string) {
+	return frames[id] || (frames[id] = painter.createFrame('Frame_' + id))
 }
 
-const effectLayers: { [id: string]: DrawingLayer } = {}
-export function getEffectLayer(painter: Painter, id: string) {
-	return (
-		effectLayers[id] ||
-		(effectLayers[id] = painter.createEffectLayer('EffectLayer_' + id))
-	)
+const effects: { [id: string]: Layer } = {}
+export function getEffect(painter: Painter, id: string) {
+	return effects[id] || (effects[id] = painter.createEffect('Effect_' + id))
 }
 
 // === State ===
@@ -153,7 +145,6 @@ export function init(canvas: HTMLCanvasElement) {
 			once(() => {
 				painter.resize({
 					multiplier: state.device.sizeMultiplier,
-					keepCurrentSize: state.device.keepCanvasSize,
 				})
 				dispatch(baseEvents.RESIZE)
 			}, 'resize'),

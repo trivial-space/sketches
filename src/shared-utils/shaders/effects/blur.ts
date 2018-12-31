@@ -1,4 +1,4 @@
-import { getEffectLayer } from 'shared-utils/painterState'
+import { getEffect } from 'shared-utils/painterState'
 import { Layer, LayerData, Painter } from 'tvs-painter'
 import frag from './blur_with_alpha.glsl'
 
@@ -50,7 +50,7 @@ export function getBlurByAlphaEffect(
 			? { width: size[0], height: size[1] }
 			: {}
 
-	return getEffectLayer(painter, id).update({
+	return getEffect(painter, id).update({
 		...opts,
 		...layerOpts,
 		frag,

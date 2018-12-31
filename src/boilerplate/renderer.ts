@@ -1,4 +1,4 @@
-import { getDrawingLayer, getSketch } from 'shared-utils/painterState'
+import { getLayer, getSketch } from 'shared-utils/painterState'
 import { gl, painter, state } from './context'
 import { planeForm } from './geometries'
 import { baseShade } from './shaders'
@@ -20,7 +20,7 @@ const sketch = getSketch(painter, 'quad').update({
 
 // ===== layers =====
 
-export const scene = getDrawingLayer(painter, 'scene').update({
+export const scene = getLayer(painter, 'scene').update({
 	sketches: [sketch],
 	uniforms: {
 		view: () => state.viewPort.camera.viewMat,

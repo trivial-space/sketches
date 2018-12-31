@@ -1,4 +1,4 @@
-import { getDrawingLayer, getShade, getSketch } from 'shared-utils/painterState'
+import { getLayer, getShade, getSketch } from 'shared-utils/painterState'
 import { repeat, stop } from 'shared-utils/scheduler'
 import { canvas, gl, painter } from './context'
 import { lineForm, pointsForm, updateGeometries } from './geometries'
@@ -34,7 +34,7 @@ export const linesSketch = getSketch(painter, 'lines').update({
 
 // ===== layers =====
 
-export const scene = getDrawingLayer(painter, 'scene').update({
+export const scene = getLayer(painter, 'scene').update({
 	sketches: [linesSketch, pointsSketch],
 	uniforms: { size: [canvas.width, canvas.height] },
 	drawSettings: {

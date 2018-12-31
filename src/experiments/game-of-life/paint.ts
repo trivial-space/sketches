@@ -1,5 +1,5 @@
 import { addSystem } from 'shared-utils/painterState'
-import { events, paint, State } from './context'
+import { events, paint } from './context'
 
 const ctx = paint.getContext('2d')
 if (!ctx) throw Error('unable to initialize 2d context')
@@ -13,8 +13,7 @@ for (let i = 0; i < data.data.length; i += 4) {
 
 ctx.putImageData(data, 0, 0)
 
-ctx.fillStyle = 'white'
-addSystem<State>('paint', (e, s) => {
+addSystem('paint', (e, s) => {
 	if (e === events.CLEANUP_PAINT) {
 		ctx.fillStyle = 'black'
 		ctx.fillRect(0, 0, paint.width, paint.height)

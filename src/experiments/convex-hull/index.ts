@@ -1,6 +1,6 @@
 import {
-	getDrawingLayer,
-	getEffectLayer,
+	getLayer,
+	getEffect,
 	getForm,
 	getShade,
 	getSketch,
@@ -43,7 +43,7 @@ const pointsSketch = getSketch(painter, 'points').update({
 
 // ===== layers =====
 
-const points = getDrawingLayer(painter, 'points').update({
+const points = getLayer(painter, 'points').update({
 	sketches: [pointsSketch],
 	uniforms: { size: () => [canvas.width, canvas.height] },
 	drawSettings: {
@@ -54,7 +54,7 @@ const points = getDrawingLayer(painter, 'points').update({
 	},
 })
 
-const sides = getEffectLayer(painter, 'sides').update({
+const sides = getEffect(painter, 'sides').update({
 	frag: sideFrag,
 })
 
@@ -64,8 +64,8 @@ const bufferOpts = {
 	height: canvas.height,
 	frag: composeFrag,
 }
-const outBuffer1 = getEffectLayer(painter, 'outBuf1').update(bufferOpts)
-const outBuffer2 = getEffectLayer(painter, 'outBuf2').update(bufferOpts)
+const outBuffer1 = getEffect(painter, 'outBuf1').update(bufferOpts)
+const outBuffer2 = getEffect(painter, 'outBuf2').update(bufferOpts)
 
 outBuffer1.update({
 	uniforms: {

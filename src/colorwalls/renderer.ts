@@ -1,5 +1,5 @@
 import { mat4 } from 'gl-matrix'
-import { getDrawingLayer, getSketch } from 'shared-utils/painterState'
+import { getLayer, getSketch } from 'shared-utils/painterState'
 import { getShade } from 'shared-utils/painterState'
 import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
 import { canvas, gl, painter, state } from './context'
@@ -52,7 +52,7 @@ export const groundSketch = getSketch(painter, 'ground').update({
 
 // ===== layers =====
 
-export const mirrorScene = getDrawingLayer(painter, 'mirror scene').update({
+export const mirrorScene = getLayer(painter, 'mirror scene').update({
 	sketches: [wallsSketch],
 	uniforms: {
 		view: () =>
@@ -68,7 +68,7 @@ export const mirrorScene = getDrawingLayer(painter, 'mirror scene').update({
 	}
 })
 
-export const scene = getDrawingLayer(painter, 'scene').update({
+export const scene = getLayer(painter, 'scene').update({
 	sketches: [groundSketch, wallsSketch],
 	uniforms: {
 		view: () => state.viewPort.camera.viewMat,

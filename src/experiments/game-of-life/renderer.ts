@@ -1,64 +1,41 @@
 import { mat4 } from 'gl-matrix'
 import {
 	addSystem,
-	getDrawingLayer,
-	getEffectLayer,
+	getEffect,
 	getForm,
+	getFrame,
 	getShade,
 	getSketch,
-	getStaticLayer,
-	set,
 } from 'shared-utils/painterState'
-import { LayerData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
-import { events, gl, paint, painter, State, state } from './context'
+import { events, gl, paint, painter } from './context'
 import base from './glsl/base.frag'
 import planeFrag from './glsl/plane-material.frag'
 import planeVert from './glsl/plane-material.vert'
 
-// ===== Settings =====
-
-painter.updateDrawSettings({
-	clearColor: [0, 0, 0, 1],
-})
-
 // ===== gof layers =====
 
-const paintLayer = getStaticLayer(painter, 'paint')
+const paintFrame = getFrame(painter, 'paint')
 
 const bufferSize = 256
 
-const layerProps: LayerData = {
-	buffered: true,
-	flipY: true,
-	width: bufferSize,
-	height: bufferSize,
+const effect = getEffect(painter, 'layer').update({
 	frag: base,
-	wrap: 'REPEAT',
-	drawSettings: {
-		disable: [gl.DEPTH_TEST],
-	},
-}
-
-const layer1 = getEffectLayer(painter, 'layer1')
-
-const layer2 = getEffectLayer(painter, 'layer2').update({
-	...layerProps,
 	uniforms: {
 		size: bufferSize,
-		paint: () => paintLayer.texture(),
-		previous: () => layer1.texture(),
+		paint: () => paintFrame.image(),
+		previous: '0',
 	},
 })
 
-layer1.update({
-	...layerProps,
-	uniforms: {
-		size: bufferSize,
-		paint: () => paintLayer.texture(),
-		previous: () => layer2.texture(),
-	},
+export const automaton = getFrame(painter, 'automaton').update({
+	layers: effect,
+	flipY: true,
+	selfReferencing: true,
+	width: bufferSize,
+	height: bufferSize,
+	wrap: 'REPEAT',
 })
 
 // ===== scene =====
@@ -74,43 +51,24 @@ const shade = getShade(painter, 'plane').update({
 	frag: planeFrag,
 })
 
-const sketch = getSketch(painter, 'plane').update({
+export const sketch = getSketch(painter, 'plane').update({
 	form,
 	shade,
 	uniforms: {
-		transform: () => mat4.rotateY(planMat, planMat, rotation),
-		tex: () => state.renderer.currentLayer.texture(),
-	},
-})
-
-export const planeLayer = getDrawingLayer(painter, 'plane').update({
-	sketches: [sketch],
-	uniforms: {
 		projection,
+		transform: () => mat4.rotateY(planMat, planMat, rotation),
+		tex: () => automaton.image(),
 	},
 	drawSettings: {
 		clearColor: [0.0, 1.0, 0.0, 1.0],
-		clearBits: makeClear(gl, 'color', 'depth'),
+		clearBits: makeClear(gl, 'color'),
 	},
 })
 
 // ===== state =====
 
-export class RenderState {
-	currentLayer = layer1
-
-	switch = true
-	swapLayers() {
-		this.switch = !this.switch
-		this.currentLayer = this.switch ? layer1 : layer2
-	}
-}
-
-set<State>('renderer', new RenderState(), { reset: true })
-
-addSystem<State>('renderer', (e, s) => {
+addSystem('renderer', e => {
 	if (e === events.FRAME) {
-		s.renderer.swapLayers()
-		paintLayer.update({ asset: paint })
+		paintFrame.update({ asset: paint })
 	}
 })

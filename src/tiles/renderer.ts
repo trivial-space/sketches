@@ -1,13 +1,13 @@
 import {
 	addSystem,
-	getDrawingLayer,
+	getLayer,
 	getForm,
 	getShade,
 	getSketch,
-	getStaticLayer,
+	getFrame,
 } from 'shared-utils/painterState'
 import { each } from 'tvs-libs/dist/utils/sequence'
-import { StaticLayer } from 'tvs-painter/dist/layer'
+import { Frame } from 'tvs-painter/dist/frame'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { events, gl, painter, state, State } from './context'
 import frag from './glsl/base-frag.glsl'
@@ -31,7 +31,7 @@ const form = getForm(painter, 'form').update(plane(tileSize, tileSize, 3, 3))
 
 // ===== textures =====
 
-const textures: { [id: string]: StaticLayer } = {}
+const textures: { [id: string]: Frame } = {}
 
 // ===== objects =====
 
@@ -39,7 +39,7 @@ const tilesSketch = getSketch(painter, 'tiles')
 
 // ===== layers =====
 
-export const scene = getDrawingLayer(painter, 'scene').update({
+export const scene = getLayer(painter, 'scene').update({
 	sketches: [tilesSketch],
 	uniforms: {
 		view: () => state.viewPort.camera.viewMat,
@@ -51,7 +51,7 @@ addSystem<State>('render', (e, s) => {
 	switch (e) {
 		case events.START:
 			each((img, key) => {
-				textures[key] = getStaticLayer(painter, key).update({
+				textures[key] = getFrame(painter, key).update({
 					minFilter: 'LINEAR_MIPMAP_LINEAR',
 					magFilter: 'LINEAR',
 					asset: img,
@@ -65,8 +65,7 @@ addSystem<State>('render', (e, s) => {
 				shade,
 				uniforms: s.tiles.activeTiles.map(tile => ({
 					transform: tile.transform,
-					image:
-						textures[tile.tileSpecId] && textures[tile.tileSpecId].texture(),
+					image: textures[tile.tileSpecId] && textures[tile.tileSpecId].image(),
 					color: tile.color,
 					connections: tile.connections,
 				})),

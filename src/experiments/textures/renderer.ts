@@ -1,4 +1,4 @@
-import { getEffectLayer } from 'shared-utils/painterState'
+import { getEffect } from 'shared-utils/painterState'
 import { gl, painter } from './context'
 
 // ===== Settings =====
@@ -10,6 +10,6 @@ painter.updateDrawSettings({
 
 // ===== layers =====
 
-export const noise = getEffectLayer(painter, 'noise')
+export const noise = getEffect(painter, 'noise')
 
-export const toNormal = getEffectLayer(painter, 'toNormal')
+export const toNormal = getEffect(painter, 'toNormal')

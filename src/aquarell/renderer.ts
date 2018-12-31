@@ -1,7 +1,7 @@
 import {
 	addSystem,
-	getEffectLayer,
-	getStaticLayer,
+	getEffect,
+	getFrame,
 	set,
 } from 'shared-utils/painterState'
 import { LayerData } from 'tvs-painter'
@@ -16,7 +16,7 @@ painter.updateDrawSettings({
 
 // ===== layers =====
 
-const paintLayer = getStaticLayer(painter, 'paint')
+const paintLayer = getFrame(painter, 'paint')
 
 const bufferSize = 256
 const layerOptions: LayerData = {
@@ -34,9 +34,9 @@ const layerOptions: LayerData = {
 	},
 }
 
-const layer1 = getEffectLayer(painter, 'layer1')
+const layer1 = getEffect(painter, 'layer1')
 
-const layer2 = getEffectLayer(painter, 'layer2').update({
+const layer2 = getEffect(painter, 'layer2').update({
 	...layerOptions,
 	uniforms: {
 		size: bufferSize,
@@ -54,7 +54,7 @@ layer1.update({
 	},
 })
 
-export const finalLayer = getEffectLayer(painter, 'final').update({
+export const finalLayer = getEffect(painter, 'final').update({
 	uniforms: {
 		source: () => state.renderer.currentLayer.texture(),
 	},
