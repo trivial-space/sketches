@@ -1,10 +1,9 @@
 import {
 	addSystem,
-	getLayer,
 	getForm,
+	getFrame,
 	getShade,
 	getSketch,
-	getFrame,
 } from 'shared-utils/painterState'
 import { each } from 'tvs-libs/dist/utils/sequence'
 import { Frame } from 'tvs-painter/dist/frame'
@@ -35,21 +34,11 @@ const textures: { [id: string]: Frame } = {}
 
 // ===== objects =====
 
-const tilesSketch = getSketch(painter, 'tiles')
-
-// ===== layers =====
-
-export const scene = getLayer(painter, 'scene').update({
-	sketches: [tilesSketch],
-	uniforms: {
-		view: () => state.viewPort.camera.viewMat,
-		projection: () => state.viewPort.camera.projectionMat,
-	},
-})
+export const tiles = getSketch(painter, 'tiles')
 
 addSystem<State>('render', (e, s) => {
 	switch (e) {
-		case events.START:
+		case events.ON_IMAGES_LOADED:
 			each((img, key) => {
 				textures[key] = getFrame(painter, key).update({
 					minFilter: 'LINEAR_MIPMAP_LINEAR',
@@ -60,10 +49,12 @@ addSystem<State>('render', (e, s) => {
 			return
 
 		case events.NEW_ACTIVE_TILES:
-			tilesSketch.update({
+			tiles.update({
 				form,
 				shade,
 				uniforms: s.tiles.activeTiles.map(tile => ({
+					view: () => state.viewPort.camera.viewMat,
+					projection: () => state.viewPort.camera.projectionMat,
 					transform: tile.transform,
 					image: textures[tile.tileSpecId] && textures[tile.tileSpecId].image(),
 					color: tile.color,

@@ -1,32 +1,39 @@
-import { getLayer, getSketch } from 'shared-utils/painterState'
+import {
+	getFrame,
+	getLayer,
+	getShade,
+	getSketch,
+} from 'shared-utils/painterState'
 import { gl, painter, state } from './context'
 import { planeForm } from './geometries'
-import { baseShade } from './shaders'
+import frag from './glsl/base.frag'
+import vert from './glsl/base.vert'
 
-// ===== Settings =====
+// ===== shaders =====
 
-painter.updateDrawSettings({
-	clearColor: [0, 0, 0, 1],
-	enable: [gl.DEPTH_TEST]
-})
+export const baseShade = getShade(painter, 'base').update({ vert, frag })
 
 // ===== objects =====
 
 const sketch = getSketch(painter, 'quad').update({
 	form: planeForm,
 	shade: baseShade,
-	uniforms: { transform: () => state.entities.quad.transform }
+	uniforms: { transform: () => state.entities.quad.transform },
 })
 
 // ===== layers =====
 
-export const scene = getLayer(painter, 'scene').update({
+const scene = getLayer(painter, 'scene').update({
 	sketches: [sketch],
 	uniforms: {
 		view: () => state.viewPort.camera.viewMat,
-		projection: () => state.viewPort.camera.projectionMat
+		projection: () => state.viewPort.camera.projectionMat,
 	},
 	drawSettings: {
-		clearBits: gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT
-	}
+		clearBits: gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT,
+	},
+})
+
+export const main = getFrame(painter, 'main').update({
+	layers: scene,
 })

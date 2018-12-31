@@ -1,5 +1,9 @@
-import { baseEvents, getPainter, getState } from 'shared-utils/painterState'
-import { BaseState } from 'shared-utils/painterState'
+import {
+	baseEvents,
+	BaseState,
+	getPainter,
+	getState,
+} from 'shared-utils/painterState'
 import { Tiles } from './state/tiles'
 import { ViewPort } from './viewport'
 
@@ -19,6 +23,6 @@ export const state = getState<State>()
 export const events = {
 	...baseEvents,
 	INIT: 'init',
-	START: 'start',
-	NEW_ACTIVE_TILES: 'new_active_tiles'
+	ON_IMAGES_LOADED: 'on_image_loaded',
+	NEW_ACTIVE_TILES: 'new_active_tiles',
 }

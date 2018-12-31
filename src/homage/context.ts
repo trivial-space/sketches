@@ -1,5 +1,9 @@
-import { baseEvents, getPainter, getState } from 'shared-utils/painterState'
-import { BaseState } from 'shared-utils/painterState'
+import {
+	baseEvents,
+	BaseState,
+	getPainter,
+	getState,
+} from 'shared-utils/painterState'
 import { Ground } from './state/ground'
 import { Screens } from './state/screens'
 import { ViewPort } from './viewport'
@@ -23,5 +27,5 @@ export const getCanvasSize = () => [canvas.width, canvas.height]
 export const events = {
 	...baseEvents,
 	INIT: 'init',
-	START: 'start'
+	START: 'start',
 }

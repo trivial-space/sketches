@@ -1,5 +1,9 @@
-import { baseEvents, getPainter, getState } from 'shared-utils/painterState'
-import { BaseState } from 'shared-utils/painterState'
+import {
+	baseEvents,
+	BaseState,
+	getPainter,
+	getState,
+} from 'shared-utils/painterState'
 import { ViewPort } from './camera'
 
 export interface State extends BaseState {
@@ -15,5 +19,5 @@ export const gl = painter.gl
 export const state = getState<State>()
 
 export const events = {
-	...baseEvents
+	...baseEvents,
 }

@@ -5,11 +5,17 @@ import './viewport'
 import { dispatch, get } from 'shared-utils/painterState'
 import { repeat } from 'shared-utils/scheduler'
 import { events, painter } from './context'
-import { layers, videoTextures } from './renderer'
+import {
+	mirrorScene,
+	scene,
+	videoLights,
+	videoTextureData,
+	videoTextures,
+} from './renderer'
 import { videos } from './state/videos'
 
 const d = get('device')
-d.sizeMultiplier = 0.5
+d.sizeMultiplier = 1.5
 
 videos.then(vs => {
 	function startVideos() {
@@ -19,10 +25,19 @@ videos.then(vs => {
 	}
 	d.canvas.addEventListener('mousedown', startVideos)
 	d.canvas.addEventListener('touchstart', startVideos)
+
 	repeat(tpf => {
 		d.tpf = tpf
 		dispatch(events.FRAME)
-		videoTextures.forEach((t, i) => t.update({ asset: vs[i] }))
-		painter.compose.apply(painter, layers)
+		videoTextures.forEach((t, i) =>
+			t.update({ ...videoTextureData, asset: vs[i] }),
+		)
+		painter
+			.compose(
+				...videoLights,
+				mirrorScene,
+				scene,
+			)
+			.display(scene)
 	}, 'render')
 })

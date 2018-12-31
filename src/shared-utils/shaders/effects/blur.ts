@@ -1,5 +1,6 @@
 import { getEffect } from 'shared-utils/painterState'
-import { Layer, LayerData, Painter } from 'tvs-painter'
+import { LayerData, Painter } from 'tvs-painter'
+import { Frame } from 'tvs-painter/dist/frame'
 import frag from './blur_with_alpha.glsl'
 
 interface BlurOpts {
@@ -9,7 +10,7 @@ interface BlurOpts {
 	blurRatioVertical?: number
 	scaleFactor?: number
 	layerOpts?: LayerData
-	startLayer?: Layer
+	startFrame?: Frame
 }
 
 export function getBlurByAlphaEffect(
@@ -19,50 +20,43 @@ export function getBlurByAlphaEffect(
 		strength,
 		size,
 		layerOpts,
-		startLayer,
+		startFrame: startLayer,
 		strengthOffset = 0,
 		blurRatioVertical = 1,
-		scaleFactor = 0.6
-	}: BlurOpts
+		scaleFactor = 0.6,
+	}: BlurOpts,
 ) {
 	const passData: any[] = []
 
-	while (strength >= 1) {
+	while (strength >= 1 / blurRatioVertical) {
 		passData.push({
 			strength,
 			direction: 0,
-			source: null
+			source: '0',
 		})
 		passData.push({
 			strength: strength * blurRatioVertical,
 			direction: 1,
-			source: null
+			source: '0',
 		})
 		strength *= scaleFactor
 	}
 
 	if (startLayer) {
-		passData[0].source = startLayer.texture()
+		passData[0].source = () => startLayer.image()
 	}
 
-	const opts =
-		size && typeof size !== 'function'
-			? { width: size[0], height: size[1] }
-			: {}
-
 	return getEffect(painter, id).update({
-		...opts,
 		...layerOpts,
 		frag,
-		flipY: true,
 		drawSettings: {
-			disable: [painter.gl.DEPTH_TEST]
+			disable: [painter.gl.DEPTH_TEST],
 		},
 		uniforms: passData.map(data => ({
 			...data,
 			blurRatioVertical,
 			strengthOffset,
-			size: size || (() => [painter.gl.canvas.width, painter.gl.canvas.height])
-		}))
+			size: size || (() => [painter.gl.canvas.width, painter.gl.canvas.height]),
+		})),
 	})
 }

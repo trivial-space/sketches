@@ -4,12 +4,7 @@ import { pushTransition } from 'shared-utils/transitions'
 import { sign } from 'tvs-libs/dist/math/core'
 import { getRollQuat, getYawQuat } from 'tvs-libs/dist/math/geometry'
 import { normalRand, randInt } from 'tvs-libs/dist/math/random'
-import {
-	doTimes,
-	map,
-	pickRandom,
-	times
-} from 'tvs-libs/dist/utils/sequence'
+import { doTimes, map, pickRandom, times } from 'tvs-libs/dist/utils/sequence'
 import { events, State } from '../context'
 import { Set, sets, specs, TileSpec } from './data'
 
@@ -56,13 +51,13 @@ class TileState {
 	constructor(
 		set: { [id: string]: number },
 		baseColor: Color,
-		specs: { [id: string]: TileSpec }
+		specs: { [id: string]: TileSpec },
 	) {
 		const [r, g, b] = baseColor
 		this.color = [
 			r + (normalRand() - 0.6) * 0.25,
 			g + (normalRand() - 0.6) * 0.25,
-			b + (normalRand() - 0.6) * 0.25
+			b + (normalRand() - 0.6) * 0.25,
 		]
 		this.tileSpecId = pickRandom(Object.keys(set))
 		this.turn = randInt(3)
@@ -96,30 +91,30 @@ class TileState {
 							onUpdate: p => {
 								this.connections[index] = Math.max(
 									0,
-									this.connections[index] - p
+									this.connections[index] - p,
 								)
 								if (neighbour) {
 									neighbour.connections[nIndex] = Math.max(
 										0,
-										neighbour.connections[nIndex] - p
+										neighbour.connections[nIndex] - p,
 									)
 								}
-							}
+							},
 					  })
 					: pushTransition({
 							duration: 300,
 							onUpdate: p => {
 								this.connections[index] = Math.min(
 									1,
-									this.connections[index] + p
+									this.connections[index] + p,
 								)
 								if (neighbour) {
 									neighbour.connections[nIndex] = Math.min(
 										1,
-										neighbour.connections[nIndex] + p
+										neighbour.connections[nIndex] + p,
 									)
 								}
-							}
+							},
 					  })
 			}
 		}
@@ -136,10 +131,10 @@ class TileState {
 					if (neighbour) {
 						neighbour.connections[nIndex] = Math.max(
 							0,
-							neighbour.connections[nIndex] - p
+							neighbour.connections[nIndex] - p,
 						)
 					}
-				}
+				},
 			})
 		}
 	}
@@ -149,7 +144,7 @@ const SIDES_INDEX = {
 	UP: 0,
 	RIGHT: 1,
 	DOWN: 2,
-	LEFT: 3
+	LEFT: 3,
 }
 
 function rotateHalf(part: number) {
@@ -186,11 +181,11 @@ addSystem<State>('tiles', (e, s) => {
 								img.src = 'img/' + specs[key].file + '.jpg'
 								t.images[key] = img
 							}),
-						t.set
-					)
-				)
+						t.set,
+					),
+				),
 			).then(() => {
-				dispatch(events.START)
+				dispatch(events.ON_IMAGES_LOADED)
 				dispatch(events.RESIZE)
 			})
 			return
@@ -199,7 +194,7 @@ addSystem<State>('tiles', (e, s) => {
 			const canvas = s.device.canvas
 			const aspect = canvas.width / canvas.height
 			t.colCount = Math.floor(
-				Math.pow(canvas.width / 1000, 0.5) * t.tileDensity
+				Math.pow(canvas.width / 1000, 0.5) * t.tileDensity,
 			)
 			t.rowCount = Math.ceil(t.colCount / aspect)
 			makeGrid(t.colCount, t.rowCount, t.color, t.set, t.grid)
@@ -221,7 +216,7 @@ function makeGrid(
 	newHeight: number,
 	color: Color,
 	set: Set,
-	grid: TileState[][]
+	grid: TileState[][],
 ) {
 	const width = grid.length
 	const height = (grid[0] && grid[0].length) || 0
@@ -328,7 +323,7 @@ export function updateTiles(t: Tiles) {
 							? (tile.turn + 3) % 4
 							: tile.turn
 					tile.connect()
-				}
+				},
 			})
 
 			pushTransition({
@@ -337,7 +332,7 @@ export function updateTiles(t: Tiles) {
 				onUpdate: rise => {
 					tile.height += rise * t.liftHeight
 					tile.updateTransform = true
-				}
+				},
 			})
 		}
 
@@ -357,7 +352,7 @@ export function updateTiles(t: Tiles) {
 					if (!tile.flipped) {
 						tile.connect()
 					}
-				}
+				},
 			})
 		}
 
@@ -366,14 +361,14 @@ export function updateTiles(t: Tiles) {
 			quat.multiply(
 				tile.rotation,
 				getYawQuat(tile.yaw) as quat,
-				getRollQuat(tile.roll) as quat
+				getRollQuat(tile.roll) as quat,
 			)
 			const [x, y] = tile.pos
 			const [offX, offY] = tile.posOffset
 			mat4.fromRotationTranslation(tile.transform, tile.rotation, [
 				(x + offX) * offset,
 				(y + offY) * offset,
-				tile.height
+				tile.height,
 			])
 		}
 	}

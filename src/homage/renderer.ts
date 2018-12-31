@@ -1,11 +1,8 @@
 import { mat4 } from 'gl-matrix'
-import {
-	getLayer,
-	getSketch,
-	getFrame,
-} from 'shared-utils/painterState'
+import { getFrame, getLayer, getSketch } from 'shared-utils/painterState'
 import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/utils/sequence'
+import { FrameData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { getCanvasSize, gl, painter, state } from './context'
 import { boxForm, planeForm } from './geometries'
@@ -20,28 +17,29 @@ painter.updateDrawSettings({
 
 // Textures
 
-export const videoTextures = videos.names.map(n =>
-	getFrame(painter, n).update({
-		flipY: true,
-		minFilter: 'LINEAR',
-		wrap: 'CLAMP_TO_EDGE',
-	}),
-)
+export const videoTextureData: FrameData = {
+	flipY: true,
+	minFilter: 'LINEAR',
+	wrap: 'CLAMP_TO_EDGE',
+}
 
-const reflSize = [256, 256]
-const videoLights = videoTextures.map((t, i) =>
-	getBlurByAlphaEffect(painter, 'vref' + i, {
-		strength: 4,
-		size: reflSize,
-		startLayer: t,
-		layerOpts: {
-			buffered: true,
-			doubleBuffered: true,
-			minFilter: 'LINEAR',
-			magFilter: 'LINEAR',
-		},
-	}),
-)
+export const videoTextures = videos.names.map(n => getFrame(painter, n))
+
+const reflSize = 256
+export const videoLights = videoTextures.map((t, i) => {
+	const id = 'vref' + i
+	return getFrame(painter, id).update({
+		minFilter: 'LINEAR',
+		magFilter: 'LINEAR',
+		width: reflSize,
+		height: reflSize,
+		layers: getBlurByAlphaEffect(painter, id, {
+			strength: 4,
+			size: [reflSize, reflSize],
+			startFrame: t,
+		}),
+	})
+})
 
 // Sketches
 
@@ -49,11 +47,11 @@ const groundSketch = getSketch(painter, 'ground').update({
 	form: planeForm,
 	shade: groundShade,
 	uniforms: {
-		reflection: null,
+		reflection: () => mirrorScene.image(),
 		transform: () => state.ground.transform,
 		lights: () => state.screens.lights,
 		lightSize: () => state.screens.lightSize,
-		lightTex: () => videoLights.map(v => v.texture()),
+		lightTex: () => videoLights.map(v => v.image()),
 		size: getCanvasSize,
 	},
 })
@@ -64,7 +62,7 @@ const screenSketch = getSketch(painter, 'screens').update({
 	uniforms: zip(
 		(transform, tex) => ({
 			transform,
-			video: () => tex.texture(),
+			video: () => tex.image(),
 		}),
 		state.screens.screenTransforms,
 		videoTextures,
@@ -96,7 +94,6 @@ const sceneLayer = getLayer(painter, 'scene').update({
 })
 
 const mirrorSceneLayer = getLayer(painter, 'mirrorScene').update({
-	flipY: true,
 	sketches: [screenSketch, pedestalSketch],
 	drawSettings,
 	uniforms: {
@@ -113,9 +110,20 @@ const mirrorSceneLayer = getLayer(painter, 'mirrorScene').update({
 })
 
 const blurEffect = getBlurByAlphaEffect(painter, 'blur', {
-	strength: 10,
+	strength: 4,
 	strengthOffset: 0.3,
 	blurRatioVertical: 3,
+	size: [256, 256],
 })
 
-export const layers = [...videoLights, mirrorSceneLayer, blurEffect, sceneLayer]
+export const mirrorScene = getFrame(painter, 'mirror').update({
+	layers: [mirrorSceneLayer, blurEffect],
+	width: 256,
+	height: 256,
+	magFilter: 'LINEAR',
+	minFilter: 'LINEAR',
+})
+
+export const scene = getFrame(painter, 'scene').update({
+	layers: sceneLayer,
+})
