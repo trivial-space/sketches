@@ -1,4 +1,8 @@
+import { getEffect } from 'shared-utils/painterState'
 import { painter } from './context'
-import { noise } from './renderer'
 
-painter.compose(noise)
+// ===== layers =====
+
+export const noise = getEffect(painter, 'noise')
+
+export const toNormal = getEffect(painter, 'toNormal')

@@ -1,11 +1,11 @@
 import {
 	addSystem,
-	getLayer,
 	getEffect,
 	getForm,
+	getFrame,
+	getLayer,
 	getShade,
 	getSketch,
-	getFrame,
 } from 'shared-utils/painterState'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
@@ -28,7 +28,7 @@ const geoShade = getShade(painter, 'geo').update({
 
 // Textures
 
-const texture = getFrame(painter, 'tex').update({})
+const texture = getFrame(painter, 'tex')
 
 const img = new Image()
 img.onload = () => {
@@ -71,42 +71,46 @@ const lightSketch = getSketch(painter, 'light').update({
 
 // Layers
 
-export const sceneLayer = getLayer(painter, 'scene').update({
-	drawSettings: {
-		clearBits: makeClear(gl, 'color', 'depth'),
-	},
-	buffered: true,
-	textureConfig: {
-		count: 4,
-		type: gl.FLOAT,
-	},
+const sceneLayer = getLayer(painter, 'scene').update({
 	sketches: [lightSketch, groundSketch],
 	uniforms: {
 		view: () => state.viewPort.camera.viewMat,
 		projection: () => state.viewPort.camera.projectionMat,
 	},
+	drawSettings: {
+		enable: [gl.DEPTH_TEST],
+		clearBits: makeClear(gl, 'color', 'depth'),
+	},
+})
+
+export const scene = getFrame(painter, 'scene').update({
+	layers: sceneLayer,
+	bufferStructure: ['FLOAT', 'FLOAT', 'FLOAT', 'FLOAT'],
 	wrap: 'CLAMP_TO_EDGE',
 	minFilter: 'NEAREST',
 	magFilter: 'NEAREST',
 })
 
-export const lightLayer = getEffect(painter, 'light').update({
+const lightLayer = getEffect(painter, 'light').update({
 	frag: lightFrag,
 	uniforms: {
 		eyePosition: () => state.viewPort.camera.position,
 		lightMat: () => state.scene.lightTransforms[0],
 		view: () => state.viewPort.camera.viewMat,
-		tex: texture.texture(),
-		positions: sceneLayer.texture(0),
-		normals: sceneLayer.texture(1),
-		uvs: sceneLayer.texture(2),
-		colors: sceneLayer.texture(3),
+		tex: () => texture.image(),
+		positions: scene.image(0),
+		normals: scene.image(1),
+		uvs: scene.image(2),
+		colors: scene.image(3),
 	},
 	drawSettings: {
-		disable: [gl.DEPTH_TEST],
 		enable: [gl.BLEND],
 		clearBits: makeClear(gl, 'color'),
 	},
+})
+
+export const light = getFrame(painter, 'light').update({
+	layers: lightLayer,
 })
 
 addSystem<State>('renderer', e => {

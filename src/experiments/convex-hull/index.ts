@@ -1,7 +1,8 @@
 import {
-	getLayer,
 	getEffect,
 	getForm,
+	getFrame,
+	getLayer,
 	getShade,
 	getSketch,
 } from 'shared-utils/painterState'
@@ -9,7 +10,7 @@ import { repeat, stop } from 'shared-utils/scheduler'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { canvas, gl, painter } from './context'
 import { nodes, triples } from './nodes'
-import composeFrag from './shaders/compose.frag'
+import blendFrag from './shaders/compose.frag'
 import pointFrag from './shaders/point.frag'
 import pointVert from './shaders/point.vert'
 import sideFrag from './shaders/side.frag'
@@ -54,59 +55,51 @@ const points = getLayer(painter, 'points').update({
 	},
 })
 
-const sides = getEffect(painter, 'sides').update({
+const currentTriple = getEffect(painter, 'sides').update({
 	frag: sideFrag,
 })
 
-const bufferOpts = {
-	buffered: true,
-	width: canvas.width,
-	height: canvas.height,
-	frag: composeFrag,
-}
-const outBuffer1 = getEffect(painter, 'outBuf1').update(bufferOpts)
-const outBuffer2 = getEffect(painter, 'outBuf2').update(bufferOpts)
+const current = getFrame(painter, 'current').update({
+	layers: [points, currentTriple],
+})
 
-outBuffer1.update({
+const blend = getEffect(painter, 'blend').update({
+	frag: blendFrag,
 	uniforms: {
-		previous: outBuffer2.texture(),
-		current: null,
+		previous: '0',
+		current: () => current.image(),
 	},
 })
 
-outBuffer2.update({
-	uniforms: {
-		previous: outBuffer1.texture(),
-		current: null,
-	},
+const main = getFrame(painter, 'main').update({
+	layers: blend,
+	selfReferencing: true,
 })
 
 // ===== render =====
 
-let layers = [points, sides, outBuffer1, outBuffer2]
 let i = 0
 repeat(() => {
 	const triple = triples[i]
 
-	sides.update({
+	currentTriple.update({
 		uniforms: {
 			// triples.map(triple => ({
 			size: [canvas.width, canvas.height],
 			p1: triple[0],
 			p2: triple[1],
 			p3: triple[2],
-			source: null,
+			source: '0',
 		}, // ))
 	})
 
-	const [p, s, o1, o2] = layers
-	painter.compose(
-		p,
-		s,
-		o1,
-		o2,
-	)
-	layers = [p, s, o2, o1]
+	painter
+		.compose(
+			current,
+			main,
+		)
+		.display(main)
+
 	console.log(i++)
 
 	if (i === triples.length) stop('render')
