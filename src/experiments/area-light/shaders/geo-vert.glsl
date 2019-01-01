@@ -1,14 +1,15 @@
-attribute vec3 position;
-attribute vec3 normal;
-attribute vec2 uv;
+#version 300 es
+in vec3 position;
+in vec3 normal;
+in vec2 uv;
 
 uniform mat4 transform;
 uniform mat4 projection;
 uniform mat4 view;
 
-varying vec4 vPosition;
-varying vec4 vNormal;
-varying vec4 vUv;
+out vec4 vPosition;
+out vec4 vNormal;
+out vec4 vUv;
 
 void main() {
 	vPosition = transform * vec4(position, 1.0);

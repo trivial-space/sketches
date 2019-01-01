@@ -18,7 +18,7 @@ export class M<A> {
 	}
 
 	ap<B>(m: M<(a: A) => B>): M<B> {
-		return m.chain(this.map.bind(this))
+		return m.chain(this.map.bind(this)) as M<B> // TODO: check type error
 	}
 
 	chain<B>(fn: (a: A) => M<B>): M<B> {
@@ -38,12 +38,12 @@ export function alter<A>(coll: A[], k: number, fn: (a: A) => A): A[]
 export function alter<A>(
 	coll: { [k: string]: A },
 	k: string,
-	fn: (a: A) => A
+	fn: (a: A) => A,
 ): { [k: string]: A }
 export function alter<A>(
 	coll: A[] | { [k: string]: A },
 	k: string | number,
-	fn: (a: A) => A
+	fn: (a: A) => A,
 ) {
 	;(coll as any)[k] = fn((coll as any)[k])
 	return coll
