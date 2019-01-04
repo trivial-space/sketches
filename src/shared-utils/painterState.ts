@@ -3,21 +3,21 @@ import { windowSize } from 'tvs-libs/dist/events/dom'
 import { keyboard, KeyState } from 'tvs-libs/dist/events/keyboard'
 import { mouse, MouseState } from 'tvs-libs/dist/events/mouse'
 import { deepOverride } from 'tvs-libs/dist/utils/object'
+import { PainterOptions } from 'tvs-painter'
 import { Form } from 'tvs-painter/dist/form'
 import { Frame } from 'tvs-painter/dist/frame'
 import { Layer } from 'tvs-painter/dist/layer'
 import { Painter } from 'tvs-painter/dist/painter'
 import { Shade } from 'tvs-painter/dist/shade'
 import { Sketch } from 'tvs-painter/dist/sketch'
-import { getContext } from 'tvs-painter/dist/utils/context'
 
 // === Painter ===
 
 let currentCanvas: HTMLCanvasElement
 let painter: Painter
 
-export function getPainter(canvas: HTMLCanvasElement) {
-	init(canvas)
+export function getPainter(canvas: HTMLCanvasElement, opts?: PainterOptions) {
+	init(canvas, opts)
 	return painter
 }
 
@@ -129,11 +129,11 @@ let cancelWindow: () => void
 let cancelMouse: () => void
 let cancelKeys: () => void
 
-export function init(canvas: HTMLCanvasElement) {
+export function init(canvas: HTMLCanvasElement, opts?: PainterOptions) {
 	if (canvas !== currentCanvas) {
 		currentCanvas = canvas
 
-		painter = new Painter(getContext(canvas))
+		painter = new Painter(canvas, opts)
 
 		state.device.canvas = canvas
 
@@ -143,9 +143,8 @@ export function init(canvas: HTMLCanvasElement) {
 
 		cancelWindow = windowSize(() =>
 			once(() => {
-				painter.resize({
-					multiplier: state.device.sizeMultiplier,
-				})
+				painter.sizeMultiplier = state.device.sizeMultiplier
+				painter.resize()
 				dispatch(baseEvents.RESIZE)
 			}, 'resize'),
 		)

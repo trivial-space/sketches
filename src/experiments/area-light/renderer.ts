@@ -7,6 +7,7 @@ import {
 	getShade,
 	getSketch,
 } from 'shared-utils/painterState'
+import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { events, gl, painter, state, State } from './context'
@@ -28,14 +29,16 @@ const geoShade = getShade(painter, 'geo').update({
 
 // Textures
 
-const texture = getFrame(painter, 'tex')
+const texture = getFrame(painter, 'tex').update({ texture: {} })
 
 const img = new Image()
 img.onload = () => {
 	texture.update({
-		asset: img,
-		minFilter: 'LINEAR_MIPMAP_LINEAR',
-		magFilter: 'LINEAR',
+		texture: {
+			asset: img,
+			minFilter: 'LINEAR_MIPMAP_LINEAR',
+			magFilter: 'LINEAR',
+		},
 	})
 }
 img.src = 'tree.jpg'
@@ -83,12 +86,10 @@ const sceneLayer = getLayer(painter, 'scene').update({
 	},
 })
 
+const bufferSpec: TextureData = { type: 'FLOAT' }
 export const scene = getFrame(painter, 'scene').update({
 	layers: sceneLayer,
-	bufferStructure: ['FLOAT', 'FLOAT', 'FLOAT', 'FLOAT'],
-	wrap: 'CLAMP_TO_EDGE',
-	minFilter: 'NEAREST',
-	magFilter: 'NEAREST',
+	bufferStructure: [bufferSpec, bufferSpec, bufferSpec, bufferSpec],
 })
 
 const lightLayer = getEffect(painter, 'light').update({

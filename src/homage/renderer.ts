@@ -2,7 +2,7 @@ import { mat4 } from 'gl-matrix'
 import { getFrame, getLayer, getSketch } from 'shared-utils/painterState'
 import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/utils/sequence'
-import { FrameData } from 'tvs-painter'
+import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { getCanvasSize, gl, painter, state } from './context'
 import { boxForm, planeForm } from './geometries'
@@ -17,7 +17,7 @@ painter.updateDrawSettings({
 
 // Textures
 
-export const videoTextureData: FrameData = {
+export const videoTextureData: TextureData = {
 	flipY: true,
 	minFilter: 'LINEAR',
 	wrap: 'CLAMP_TO_EDGE',
@@ -29,8 +29,12 @@ const reflSize = 256
 export const videoLights = videoTextures.map((t, i) => {
 	const id = 'vref' + i
 	return getFrame(painter, id).update({
-		minFilter: 'LINEAR',
-		magFilter: 'LINEAR',
+		bufferStructure: [
+			{
+				minFilter: 'LINEAR',
+				magFilter: 'LINEAR',
+			},
+		],
 		width: reflSize,
 		height: reflSize,
 		layers: getBlurByAlphaEffect(painter, id, {
@@ -120,8 +124,12 @@ export const mirrorScene = getFrame(painter, 'mirror').update({
 	layers: [mirrorSceneLayer, blurEffect],
 	width: 256,
 	height: 256,
-	magFilter: 'LINEAR',
-	minFilter: 'LINEAR',
+	bufferStructure: [
+		{
+			magFilter: 'LINEAR',
+			minFilter: 'LINEAR',
+		},
+	],
 })
 
 export const scene = getFrame(painter, 'scene').update({

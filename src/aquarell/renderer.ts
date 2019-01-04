@@ -19,16 +19,20 @@ const layer = getEffect(painter, 'layer').update({
 
 export const automaton = getFrame(painter, 'automaton').update({
 	layers: layer,
-	flipY: true,
 	width: bufferSize,
 	height: bufferSize,
 	selfReferencing: true,
+	bufferStructure: [
+		{
+			flipY: true,
+		},
+	],
 })
 
 // ===== state =====
 
 addSystem('renderer', e => {
 	if (e === events.FRAME) {
-		paintLayer.update({ asset: paint })
+		paintLayer.update({ texture: { asset: paint } })
 	}
 })

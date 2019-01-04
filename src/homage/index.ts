@@ -30,7 +30,7 @@ videos.then(vs => {
 		d.tpf = tpf
 		dispatch(events.FRAME)
 		videoTextures.forEach((t, i) =>
-			t.update({ ...videoTextureData, asset: vs[i] }),
+			t.update({ texture: { ...videoTextureData, asset: vs[i] } }),
 		)
 		painter
 			.compose(

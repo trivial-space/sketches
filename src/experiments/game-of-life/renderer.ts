@@ -31,11 +31,15 @@ const effect = getEffect(painter, 'layer').update({
 
 export const automaton = getFrame(painter, 'automaton').update({
 	layers: effect,
-	flipY: true,
 	selfReferencing: true,
 	width: bufferSize,
 	height: bufferSize,
-	wrap: 'REPEAT',
+	bufferStructure: [
+		{
+			flipY: true,
+			wrap: 'REPEAT',
+		},
+	],
 })
 
 // ===== scene =====
@@ -69,6 +73,6 @@ export const sketch = getSketch(painter, 'plane').update({
 
 addSystem('renderer', e => {
 	if (e === events.FRAME) {
-		paintFrame.update({ asset: paint })
+		paintFrame.update({ texture: { asset: paint } })
 	}
 })

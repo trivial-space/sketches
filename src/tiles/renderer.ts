@@ -41,9 +41,11 @@ addSystem<State>('render', (e, s) => {
 		case events.ON_IMAGES_LOADED:
 			each((img, key) => {
 				textures[key] = getFrame(painter, key).update({
-					minFilter: 'LINEAR_MIPMAP_LINEAR',
-					magFilter: 'LINEAR',
-					asset: img,
+					texture: {
+						minFilter: 'LINEAR_MIPMAP_LINEAR',
+						magFilter: 'LINEAR',
+						asset: img,
+					},
 				})
 			}, s.tiles.images)
 			return
