@@ -26,6 +26,4 @@ export const getCanvasSize = () => [canvas.width, canvas.height]
 
 export const events = {
 	...baseEvents,
-	INIT: 'init',
-	START: 'start',
 }

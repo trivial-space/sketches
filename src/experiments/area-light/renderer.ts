@@ -116,6 +116,6 @@ export const light = getFrame(painter, 'light').update({
 
 addSystem<State>('renderer', e => {
 	if (e === events.RESIZE) {
-		sceneLayer.update({})
+		scene.update()
 	}
 })

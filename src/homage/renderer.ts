@@ -1,10 +1,15 @@
 import { mat4 } from 'gl-matrix'
-import { getFrame, getLayer, getSketch } from 'shared-utils/painterState'
+import {
+	addSystem,
+	getFrame,
+	getLayer,
+	getSketch,
+} from 'shared-utils/painterState'
 import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/utils/sequence'
 import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { getCanvasSize, gl, painter, state } from './context'
+import { events, getCanvasSize, gl, painter, state, State } from './context'
 import { boxForm, planeForm } from './geometries'
 import { groundShade, objectShade, screenShade } from './shaders'
 import * as videos from './state/videos'
@@ -134,4 +139,11 @@ export const mirrorScene = getFrame(painter, 'mirror').update({
 
 export const scene = getFrame(painter, 'scene').update({
 	layers: sceneLayer,
+})
+
+addSystem<State>('renderer', e => {
+	switch (e) {
+		case events.RESIZE:
+			scene.update()
+	}
 })
