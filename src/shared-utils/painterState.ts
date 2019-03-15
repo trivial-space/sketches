@@ -103,6 +103,7 @@ type ActionHandler<S extends BaseState = BaseState> = (
 	event: string,
 	state: S,
 ) => void
+
 const systems: { [id: string]: ActionHandler<any> } = {}
 
 export function addSystem<S extends BaseState = BaseState>(
