@@ -15,7 +15,7 @@
 	"scripts": {
 		"start": "webpack-dev-server --config webpack.dev.js",
 		"build": "webpack",
-		"deploy": "npm run-script build; cd public; now",
+		"deploy": "git push dokku master",
 		"git-init": "git submodule update --init --recursive"
 	},
 	"dependencies": {
