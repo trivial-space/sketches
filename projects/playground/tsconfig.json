@@ -4,8 +4,9 @@
     "lib": ["esnext", "dom"],
     "module": "es6",
     "moduleResolution": "node",
-    "strict": true
+    "strict": true,
+    "sourceMap": true,
+    "baseUrl": "src"
   },
-  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.js"],
-  "exclude": ["node_modules", "**/node_modules"]
+  "exclude": ["node_modules"]
 }

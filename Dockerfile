@@ -3,7 +3,7 @@ FROM node:10-alpine
 ENV NODE_ENV production
 ENV PORT 5000
 
-COPY --chown=node:node ./public /home/node/app
+COPY --chown=node:node ./projects/playground/public /home/node/app
 
 WORKDIR /home/node/app
 
