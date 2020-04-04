@@ -1,4 +1,4 @@
-import { addSystem, baseEvents } from 'shared-utils/painterState'
+import { addSystem, baseEvents } from './painterState'
 
 export const linear = (step: number) => step
 

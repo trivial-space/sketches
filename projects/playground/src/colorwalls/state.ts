@@ -1,5 +1,5 @@
 import { mat4, quat } from 'gl-matrix'
-import { addSystem } from 'shared-utils/painterState'
+import { addSystem } from '../shared-utils/painterState'
 import * as geo from 'tvs-libs/dist/math/geometry'
 import { events } from './context'
 import { groundHeight } from './geometries'
@@ -15,7 +15,7 @@ export const floorMirrorView = mat4.create()
 
 const planeEquation = geo.planeFromNormalAndCoplanarPoint(
 	[0, 1, 0],
-	[0, groundHeight, 0]
+	[0, groundHeight, 0],
 )
 export const floorMirrorMatrix = geo.mirrorMatrixFromPlane(planeEquation)
 
@@ -27,7 +27,7 @@ addSystem('state', (e, s) => {
 			rotation,
 			Math.sin(0.0007 * time) * 1.1,
 			time * 0.001,
-			Math.sin(0.0008 * time) * 1.1
+			Math.sin(0.0008 * time) * 1.1,
 		)
 
 		mat4.fromRotationTranslationScaleOrigin(
@@ -35,7 +35,7 @@ addSystem('state', (e, s) => {
 			rotation,
 			[0, 0, 0],
 			[1, 1, 1],
-			[0, 100, 0]
+			[0, 100, 0],
 		)
 	}
 })

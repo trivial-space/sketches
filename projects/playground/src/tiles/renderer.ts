@@ -4,7 +4,7 @@ import {
 	getFrame,
 	getShade,
 	getSketch,
-} from 'shared-utils/painterState'
+} from '../shared-utils/painterState'
 import { each } from 'tvs-libs/dist/utils/sequence'
 import { Frame } from 'tvs-painter/dist/frame'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'

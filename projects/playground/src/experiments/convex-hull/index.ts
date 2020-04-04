@@ -5,8 +5,8 @@ import {
 	getLayer,
 	getShade,
 	getSketch,
-} from 'shared-utils/painterState'
-import { repeat, stop } from 'shared-utils/scheduler'
+} from '../../shared-utils/painterState'
+import { repeat, stop } from '../../shared-utils/scheduler'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { canvas, gl, painter } from './context'
 import { nodes, triples } from './nodes'
@@ -93,12 +93,7 @@ repeat(() => {
 		}, // ))
 	})
 
-	painter
-		.compose(
-			current,
-			main,
-		)
-		.display(main)
+	painter.compose(current, main).display(main)
 
 	console.log(i++)
 

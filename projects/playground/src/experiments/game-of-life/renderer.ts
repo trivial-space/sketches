@@ -6,7 +6,7 @@ import {
 	getFrame,
 	getShade,
 	getSketch,
-} from 'shared-utils/painterState'
+} from '../../shared-utils/painterState'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { events, gl, paint, painter } from './context'

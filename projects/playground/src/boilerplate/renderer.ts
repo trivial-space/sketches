@@ -3,7 +3,7 @@ import {
 	getLayer,
 	getShade,
 	getSketch,
-} from 'shared-utils/painterState'
+} from '../shared-utils/painterState'
 import { gl, painter, state } from './context'
 import { planeForm } from './geometries'
 import frag from './glsl/base.frag'

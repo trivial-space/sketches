@@ -1,4 +1,4 @@
-import { getEffect } from 'shared-utils/painterState'
+import { getEffect } from '../../painterState'
 import { LayerData, Painter } from 'tvs-painter'
 import { Frame } from 'tvs-painter/dist/frame'
 import frag from './blur_with_alpha.glsl'

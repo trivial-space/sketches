@@ -1,4 +1,4 @@
-import { alter, M } from 'shared-utils/fp'
+import { alter, M } from '../../shared-utils/fp'
 import { randInt, randIntInRange } from 'tvs-libs/dist/math/random'
 import {
 	add,

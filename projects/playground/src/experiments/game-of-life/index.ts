@@ -1,5 +1,5 @@
-import { dispatch, get } from 'shared-utils/painterState'
-import { repeat } from 'shared-utils/scheduler'
+import { dispatch, get } from '../../shared-utils/painterState'
+import { repeat } from '../../shared-utils/scheduler'
 import { events, painter } from './context'
 import './paint'
 import { automaton, sketch } from './renderer'

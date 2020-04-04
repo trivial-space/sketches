@@ -4,8 +4,8 @@ import {
 	getLayer,
 	getShade,
 	getSketch,
-} from 'shared-utils/painterState'
-import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
+} from '../shared-utils/painterState'
+import { getBlurByAlphaEffect } from '../shared-utils/shaders/effects/blur'
 import { canvas, gl, painter, state } from './context'
 import { groundForm, wallsForm } from './geometries'
 import groundFrag from './glsl/ground.frag'

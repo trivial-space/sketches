@@ -1,4 +1,4 @@
-import { addSystem } from 'shared-utils/painterState'
+import { addSystem } from '../shared-utils/painterState'
 import { events, paint, State } from './context'
 
 const ctx = paint.getContext('2d')

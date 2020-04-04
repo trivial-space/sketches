@@ -1,10 +1,10 @@
-import { mat4 } from 'gl-matrix'
-import { set } from 'shared-utils/painterState'
+import { mat4, vec3 } from 'gl-matrix'
 import * as geo from 'tvs-libs/dist/math/geometry'
 import { State } from '../context'
+import { set } from '../../shared-utils/painterState'
 
 export class Ground {
-	position = [0, -3.6, 0]
+	position: vec3 = [0, -3.6, 0]
 	normal = [0, 1, 0]
 	scale = 1000
 	transform = mat4.create()
@@ -22,17 +22,17 @@ export class Ground {
 		mat4.scale(this.transform, this.transform, [
 			this.scale,
 			this.scale,
-			this.scale
+			this.scale,
 		])
 
 		this.planeEquation = geo.planeFromNormalAndCoplanarPoint(
 			this.normal,
-			this.position
+			this.position,
 		)
 		this.mirrorMatrix = geo.mirrorMatrixFromPlane(this.planeEquation)
 	}
 }
 
 set<State>('ground', new Ground(), {
-	reset: { transform: true, mirrorMatrix: true }
+	reset: { transform: true, mirrorMatrix: true },
 })

@@ -6,7 +6,7 @@ import {
 	getLayer,
 	getShade,
 	getSketch,
-} from 'shared-utils/painterState'
+} from '../../shared-utils/painterState'
 import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'

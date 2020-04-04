@@ -1,4 +1,4 @@
-import { getForm } from 'shared-utils/painterState'
+import { getForm } from '../../shared-utils/painterState'
 import { intToFloat } from 'tvs-libs/dist/graphics/colors'
 import { add, mul, normalize, sub } from 'tvs-libs/dist/math/vectors'
 import { flatten, mapcat } from 'tvs-libs/dist/utils/sequence'

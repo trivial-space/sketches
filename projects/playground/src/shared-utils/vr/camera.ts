@@ -4,7 +4,7 @@ import { MouseState } from 'tvs-libs/dist/events/mouse'
 import { Constructor } from 'tvs-libs/lib/oop/mixins'
 
 export class Camera {
-	position = [0, 0, 0]
+	position: vec3 = [0, 0, 0]
 	rotationX = 0
 	rotationY = 0
 	rotationXMat = mat4.create()

@@ -1,12 +1,12 @@
-import { addSystem, set } from 'shared-utils/painterState'
-import { PerspectiveCamera } from 'shared-utils/vr/camera'
+import { addSystem, set } from '../shared-utils/painterState'
+import { PerspectiveCamera } from '../shared-utils/vr/camera'
 import { events, State } from './context'
 
 export class ViewPort {
 	distance = 1
 	camera = new PerspectiveCamera({
 		fovy: Math.PI * 0.5,
-		position: [0, 0, 0]
+		position: [0, 0, 0],
 	})
 }
 

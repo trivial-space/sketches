@@ -1,5 +1,5 @@
-import { getShade, getSketch } from 'shared-utils/painterState'
-import { repeat, stop } from 'shared-utils/scheduler'
+import { getShade, getSketch } from '../../shared-utils/painterState'
+import { repeat, stop } from '../../shared-utils/scheduler'
 import { canvas, gl, painter } from './context'
 import { lineForm, pointsForm, updateGeometries } from './geometries'
 import { updateNodes } from './nodes'

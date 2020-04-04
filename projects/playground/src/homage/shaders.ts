@@ -1,4 +1,4 @@
-import { getShade } from 'shared-utils/painterState'
+import { getShade } from '../shared-utils/painterState'
 import { painter } from './context'
 import groundFrag from './glsl/ground-frag.glsl'
 import groundVert from './glsl/ground-vert.glsl'

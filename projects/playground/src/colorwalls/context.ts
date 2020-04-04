@@ -3,7 +3,7 @@ import {
 	BaseState,
 	getPainter,
 	getState,
-} from 'shared-utils/painterState'
+} from '../shared-utils/painterState'
 import { ViewPort } from './camera'
 
 export interface State extends BaseState {

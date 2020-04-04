@@ -1,9 +1,9 @@
-import { addSystem, set } from 'shared-utils/painterState'
+import { addSystem, set } from '../shared-utils/painterState'
 import {
 	PerspectiveCamera,
 	WithKeyNavigation,
-	WithMouseRotation
-} from 'shared-utils/vr/camera'
+	WithMouseRotation,
+} from '../shared-utils/vr/camera'
 import { events, State } from './context'
 
 export class ViewPort {
@@ -11,7 +11,7 @@ export class ViewPort {
 	lookSpeed = 0.003
 	camera = new (WithKeyNavigation(WithMouseRotation(PerspectiveCamera)))({
 		fovy: Math.PI * 0.3,
-		position: [0, 0, 5]
+		position: [0, 0, 5],
 	})
 }
 
@@ -32,5 +32,5 @@ addSystem<State>('viewPort', (e, s) => {
 })
 
 set<State>('viewPort', new ViewPort(), {
-	reset: { moveSpeed: true, lookSpeed: true }
+	reset: { moveSpeed: true, lookSpeed: true },
 })

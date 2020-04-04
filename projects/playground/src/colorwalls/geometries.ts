@@ -1,4 +1,4 @@
-import { getForm } from 'shared-utils/painterState'
+import { getForm } from '../shared-utils/painterState'
 import { partial } from 'tvs-libs/dist/fp/core'
 import { normal } from 'tvs-libs/dist/geometry/primitives'
 import {
@@ -47,7 +47,13 @@ function randomDivide(q: Quad, sliceCount: number) {
 
 const colors = times(randomColor, 4 * boxSliceCount)
 
-const quad = extrudeBottom([0, -9, 0], [[-10, 10, -10], [10, 10, -10]])
+const quad = extrudeBottom(
+	[0, -9, 0],
+	[
+		[-10, 10, -10],
+		[10, 10, -10],
+	],
+)
 
 function makeSideSegments(q: Quad, count: number) {
 	return randomDivide(q, count).map(q => flatten(subdivide(horzDiv(q))))
@@ -94,7 +100,10 @@ const floorQuads = subdivide(
 	[
 		extrudeBottom(
 			[0, 0, -200],
-			[[-100, groundHeight, 100], [100, groundHeight, 100]],
+			[
+				[-100, groundHeight, 100],
+				[100, groundHeight, 100],
+			],
 		),
 	],
 	3,

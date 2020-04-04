@@ -3,7 +3,7 @@ import {
 	BaseState,
 	getPainter,
 	getState,
-} from 'shared-utils/painterState'
+} from '../shared-utils/painterState'
 import { Ground } from './state/ground'
 import { Screens } from './state/screens'
 import { ViewPort } from './viewport'

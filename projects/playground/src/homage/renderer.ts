@@ -4,8 +4,8 @@ import {
 	getFrame,
 	getLayer,
 	getSketch,
-} from 'shared-utils/painterState'
-import { getBlurByAlphaEffect } from 'shared-utils/shaders/effects/blur'
+} from '../shared-utils/painterState'
+import { getBlurByAlphaEffect } from '../shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/utils/sequence'
 import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'

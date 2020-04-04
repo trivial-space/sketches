@@ -1,4 +1,4 @@
-import { once } from 'shared-utils/scheduler'
+import { once } from './scheduler'
 import { windowSize } from 'tvs-libs/dist/events/dom'
 import { keyboard, KeyState } from 'tvs-libs/dist/events/keyboard'
 import { mouse, MouseState } from 'tvs-libs/dist/events/mouse'

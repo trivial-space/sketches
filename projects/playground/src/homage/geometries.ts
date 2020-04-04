@@ -1,5 +1,5 @@
 import box from 'geo-3d-box'
-import { getForm } from 'shared-utils/painterState'
+import { getForm } from '../shared-utils/painterState'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { convertStackGLGeometry } from 'tvs-painter/dist/utils/stackgl'
 import { painter } from './context'

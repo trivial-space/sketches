@@ -1,4 +1,4 @@
-import { baseEvents, getPainter } from 'shared-utils/painterState'
+import { baseEvents, getPainter } from '../../shared-utils/painterState'
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 export const paint = document.getElementById('paint') as HTMLCanvasElement

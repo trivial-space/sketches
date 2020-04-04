@@ -1,8 +1,8 @@
 import './state/tiles'
 import './viewport'
 
-import { addSystem, dispatch } from 'shared-utils/painterState'
-import { repeat } from 'shared-utils/scheduler'
+import { addSystem, dispatch } from '../shared-utils/painterState'
+import { repeat } from '../shared-utils/scheduler'
 import { events, painter, State } from './context'
 import { tiles } from './renderer'
 

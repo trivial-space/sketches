@@ -1,9 +1,9 @@
-import { addSystem, set } from 'shared-utils/painterState'
+import { addSystem, set } from '../shared-utils/painterState'
 import {
 	PerspectiveCamera,
 	WithKeyNavigation,
 	WithMouseRotation,
-} from 'shared-utils/vr/camera'
+} from '../shared-utils/vr/camera'
 import { events, State } from './context'
 
 export class ViewPort {

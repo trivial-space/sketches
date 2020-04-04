@@ -1,5 +1,5 @@
-import { mat4 } from 'gl-matrix'
-import { addSystem, set } from 'shared-utils/painterState'
+import { mat4, vec3 } from 'gl-matrix'
+import { addSystem, set } from '../../shared-utils/painterState'
 import { events, State } from './context'
 
 export class SceneState {
@@ -10,7 +10,7 @@ export class SceneState {
 
 	rotationSpeed = 0.0002
 	lightRotation = -Math.PI * 0.8
-	lightPosition = [0, 3.5, 0]
+	lightPosition: vec3 = [0, 3.5, 0]
 	lightColor = [1.0, 1.0, 1.0, 0.0]
 	lightBackColor = [0.0, 0.0, 0.2, 0.0]
 	lightTransforms = [mat4.create(), mat4.create()]

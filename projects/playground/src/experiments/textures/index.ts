@@ -1,4 +1,4 @@
-import { getEffect } from 'shared-utils/painterState'
+import { getEffect } from '../../shared-utils/painterState'
 import { painter } from './context'
 
 // ===== layers =====

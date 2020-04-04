@@ -13,6 +13,7 @@
     "url": "https://github.com/trivial-space/playground/issues"
   },
   "scripts": {
+    "dev": "cd projects/playground && yarn dev",
     "start": "cd projects/playground && yarn start",
     "build": "cd projects/playground && yarn build",
     "deploy": "git push dokku master",

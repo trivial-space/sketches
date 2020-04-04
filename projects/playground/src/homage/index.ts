@@ -2,8 +2,8 @@ import './state/ground'
 import './state/screens'
 import './viewport'
 
-import { dispatch, get } from 'shared-utils/painterState'
-import { repeat } from 'shared-utils/scheduler'
+import { dispatch, get } from '../shared-utils/painterState'
+import { repeat } from '../shared-utils/scheduler'
 import { events, painter } from './context'
 import {
 	mirrorScene,
@@ -32,12 +32,6 @@ videos.then(vs => {
 		videoTextures.forEach((t, i) =>
 			t.update({ texture: { ...videoTextureData, asset: vs[i] } }),
 		)
-		painter
-			.compose(
-				...videoLights,
-				mirrorScene,
-				scene,
-			)
-			.display(scene)
+		painter.compose(...videoLights, mirrorScene, scene).display(scene)
 	}, 'render')
 })

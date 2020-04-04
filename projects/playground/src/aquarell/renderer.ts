@@ -1,4 +1,4 @@
-import { addSystem, getEffect, getFrame } from 'shared-utils/painterState'
+import { addSystem, getEffect, getFrame } from '../shared-utils/painterState'
 import { events, paint, painter } from './context'
 import base from './glsl/base.frag'
 
