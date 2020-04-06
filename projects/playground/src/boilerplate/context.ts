@@ -5,10 +5,9 @@ import {
 	getState,
 } from '../shared-utils/painterState'
 import { Entities } from './state'
-import { ViewPort } from './viewport'
+import { PerspectiveViewportState } from '../shared-utils/vr/perspectiveViewport'
 
-export interface State extends BaseState {
-	viewPort: ViewPort
+export interface State extends PerspectiveViewportState {
 	entities: Entities
 }
 

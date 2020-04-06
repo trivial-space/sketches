@@ -8,6 +8,9 @@ import { gl, painter, state } from './context'
 import { planeForm } from './geometries'
 import frag from './glsl/base.frag'
 import vert from './glsl/base.vert'
+import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
+
+initPerspectiveViewport()
 
 // ===== shaders =====
 

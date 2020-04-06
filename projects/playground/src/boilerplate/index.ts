@@ -1,5 +1,4 @@
 import './state'
-import './viewport'
 
 import { dispatch, get } from '../shared-utils/painterState'
 import { repeat } from '../shared-utils/scheduler'
