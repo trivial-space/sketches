@@ -64,15 +64,15 @@ export function initPerspectiveViewport({
 	}
 	if (position) {
 		v.camera.position = position
-		v.camera.needsUpdateView
+		v.camera.needsUpdateView = true
 	}
 	if (rotationX) {
 		v.camera.rotationX = rotationX
-		v.camera.needsUpdateView
+		v.camera.needsUpdateView = true
 	}
 	if (rotationY) {
 		v.camera.rotationY = rotationY
-		v.camera.needsUpdateView
+		v.camera.needsUpdateView = true
 	}
 	set<PerspectiveViewportState>('viewPort', v, {
 		reset: { moveSpeed: true, lookSpeed: true },

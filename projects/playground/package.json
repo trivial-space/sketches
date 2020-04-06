@@ -18,6 +18,9 @@
     "start": "cd public && serve"
   },
   "dependencies": {
+    "@thi.ng/shader-ast": "^0.3.14",
+    "@thi.ng/shader-ast-glsl": "^0.1.20",
+    "@thi.ng/shader-ast-stdlib": "^0.3.13",
     "geo-3d-box": "^2.0.2",
     "gl-matrix": "3.3.0",
     "glsl-fast-gaussian-blur": "^1.0.2",

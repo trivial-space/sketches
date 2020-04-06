@@ -4,9 +4,10 @@ import {
 	getLayer,
 	getShade,
 	getSketch,
+	addSystem,
 } from '../shared-utils/painterState'
 import { getBlurByAlphaEffect } from '../shared-utils/shaders/effects/blur'
-import { canvas, gl, painter, state } from './context'
+import { canvas, gl, painter, state, events } from './context'
 import { groundForm, wallsForm } from './geometries'
 import groundFrag from './glsl/ground.frag'
 import groundVert from './glsl/ground.vert'
@@ -18,6 +19,12 @@ import {
 	floorTransform,
 	wallsTransform,
 } from './state'
+import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
+
+initPerspectiveViewport({
+	position: [0, 0, 30],
+	fovy: Math.PI * 0.4,
+})
 
 // ===== Settings =====
 
@@ -94,4 +101,10 @@ const blurEffect = getBlurByAlphaEffect(painter, 'blur', {
 
 export const main = getFrame(painter, 'main').update({
 	layers: [mirrorScene, blurEffect, scene],
+})
+
+addSystem('renderer', (e, s) => {
+	if (e === events.RESIZE) {
+		main.update()
+	}
 })
