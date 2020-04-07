@@ -50,8 +50,10 @@ let getImage = defn(
 		]
 	},
 )
+
 let resolution: Vec2Sym
 let time: FloatSym
+
 export const noiseShader = fs(
 	program([
 		(resolution = uniform('vec2', 'resolution')),
@@ -62,4 +64,4 @@ export const noiseShader = fs(
 	]),
 )
 
-console.log(fs, noiseShader)
+console.log(noiseShader)
