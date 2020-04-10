@@ -108,12 +108,15 @@ export function WithKeyNavigation<T extends Constructor<Camera>>(Cam: T) {
 			if (
 				keys?.[Keys.UP] ||
 				keys?.[Keys.W] ||
-				pointer?.holding ||
-				pointer?.pressed[Buttons.RIGHT]
+				(pointer?.holding && !pointer.pressed[Buttons.RIGHT])
 			) {
 				this.moveForward(speed)
 			}
-			if (keys?.[Keys.DOWN] || keys?.[Keys.S]) {
+			if (
+				keys?.[Keys.DOWN] ||
+				keys?.[Keys.S] ||
+				pointer?.pressed[Buttons.RIGHT]
+			) {
 				this.moveForward(-speed)
 			}
 			if (keys?.[Keys.LEFT] || keys?.[Keys.A]) {

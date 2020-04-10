@@ -151,7 +151,12 @@ export function init(canvas: HTMLCanvasElement, opts?: PainterOptions) {
 		)
 
 		cancelPointer = pointer(
-			{ element: canvas, enableRightButton: true },
+			{
+				element: canvas,
+				enableRightButton: true,
+				holdRadius: 15,
+				holdDelay: 300,
+			},
 			m => (state.device.pointer = m),
 		)
 
