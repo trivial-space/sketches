@@ -1,6 +1,5 @@
 import './state/ground'
 import './state/screens'
-import './viewport'
 
 import { dispatch, get } from '../shared-utils/painterState'
 import { repeat } from '../shared-utils/scheduler'

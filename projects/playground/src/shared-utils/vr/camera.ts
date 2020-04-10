@@ -1,7 +1,7 @@
 import { mat4, vec3 } from 'gl-matrix'
 import { Keys, KeyState } from 'tvs-libs/dist/events/keyboard'
-import { MouseState } from 'tvs-libs/dist/events/mouse'
 import { Constructor } from 'tvs-libs/lib/oop/mixins'
+import { PointerState, Buttons } from 'tvs-libs/dist/events/pointer'
 
 export class Camera {
 	position: vec3 = [0, 0, 0]
@@ -103,18 +103,23 @@ export class PerspectiveCamera extends Camera {
 
 export function WithKeyNavigation<T extends Constructor<Camera>>(Cam: T) {
 	return class extends Cam {
-		updatePosFromKeys(speed: number, keys: KeyState) {
-			if (!keys) return
-			if (keys[Keys.UP] || keys[Keys.W]) {
+		updatePosFromInput(speed: number, keys?: KeyState, pointer?: PointerState) {
+			if (!(keys || pointer)) return
+			if (
+				keys?.[Keys.UP] ||
+				keys?.[Keys.W] ||
+				pointer?.holding ||
+				pointer?.pressed[Buttons.RIGHT]
+			) {
 				this.moveForward(speed)
 			}
-			if (keys[Keys.DOWN] || keys[Keys.S]) {
+			if (keys?.[Keys.DOWN] || keys?.[Keys.S]) {
 				this.moveForward(-speed)
 			}
-			if (keys[Keys.LEFT] || keys[Keys.A]) {
+			if (keys?.[Keys.LEFT] || keys?.[Keys.A]) {
 				this.moveLeft(speed)
 			}
-			if (keys[Keys.RIGHT] || keys[Keys.D]) {
+			if (keys?.[Keys.RIGHT] || keys?.[Keys.D]) {
 				this.moveLeft(-speed)
 			}
 		}
@@ -125,7 +130,7 @@ export function WithMouseRotation<T extends Constructor<Camera>>(Cam: T) {
 	return class extends Cam {
 		_oldMouse = { x: 0, y: 0 }
 
-		updateRotFromMouse(speed: number, m: MouseState) {
+		updateRotFromPointer(speed: number, m: PointerState) {
 			if (m.dragging) {
 				const deltaX = this._oldMouse.x - m.drag.x
 				const deltaY = this._oldMouse.y - m.drag.y

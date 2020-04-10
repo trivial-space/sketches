@@ -23,8 +23,12 @@ addSystem<PerspectiveViewportState>('viewPort', (e, s) => {
 	switch (e) {
 		case baseEvents.FRAME:
 			const tpf = s.device.tpf / 1000
-			v.camera.updatePosFromKeys(v.moveSpeed * tpf, s.device.keys)
-			v.camera.updateRotFromMouse(v.lookSpeed * tpf, s.device.mouse)
+			v.camera.updatePosFromInput(
+				v.moveSpeed * tpf,
+				s.device.keys,
+				s.device.pointer,
+			)
+			v.camera.updateRotFromPointer(v.lookSpeed * tpf, s.device.pointer)
 			v.camera.update()
 			return
 
@@ -68,11 +72,11 @@ export function initPerspectiveViewport({
 	}
 	if (rotationX) {
 		v.camera.rotationX = rotationX
-		v.camera.needsUpdateView = true
+		v.camera.updateRotationX()
 	}
 	if (rotationY) {
 		v.camera.rotationY = rotationY
-		v.camera.needsUpdateView = true
+		v.camera.updateRotationY()
 	}
 	set<PerspectiveViewportState>('viewPort', v, {
 		reset: { moveSpeed: true, lookSpeed: true },

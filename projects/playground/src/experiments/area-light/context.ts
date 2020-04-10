@@ -1,14 +1,12 @@
 import {
 	baseEvents,
-	BaseState,
 	getPainter,
 	getState,
 } from '../../shared-utils/painterState'
 import { SceneState } from './state'
-import { ViewPort } from './viewport'
+import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
 
-export interface State extends BaseState {
-	viewPort: ViewPort
+export interface State extends PerspectiveViewportState {
 	scene: SceneState
 }
 

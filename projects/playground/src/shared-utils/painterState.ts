@@ -1,7 +1,6 @@
 import { once } from './scheduler'
 import { windowSize } from 'tvs-libs/dist/events/dom'
 import { keyboard, KeyState } from 'tvs-libs/dist/events/keyboard'
-import { mouse, MouseState } from 'tvs-libs/dist/events/mouse'
 import { deepOverride } from 'tvs-libs/dist/utils/object'
 import { PainterOptions } from 'tvs-painter'
 import { Form } from 'tvs-painter/dist/form'
@@ -10,6 +9,7 @@ import { Layer } from 'tvs-painter/dist/layer'
 import { Painter } from 'tvs-painter/dist/painter'
 import { Shade } from 'tvs-painter/dist/shade'
 import { Sketch } from 'tvs-painter/dist/sketch'
+import { PointerState, pointer } from 'tvs-libs/dist/events/pointer'
 
 // === Painter ===
 
@@ -57,7 +57,7 @@ export interface BaseState {
 	device: {
 		tpf: number
 		canvas: HTMLCanvasElement
-		mouse: MouseState
+		pointer: PointerState
 		keys: KeyState
 		sizeMultiplier: number
 		keepCanvasSize?: boolean
@@ -127,7 +127,7 @@ export const baseEvents = {
 // === Init ===
 
 let cancelWindow: () => void
-let cancelMouse: () => void
+let cancelPointer: () => void
 let cancelKeys: () => void
 
 export function init(canvas: HTMLCanvasElement, opts?: PainterOptions) {
@@ -139,7 +139,7 @@ export function init(canvas: HTMLCanvasElement, opts?: PainterOptions) {
 		state.device.canvas = canvas
 
 		cancelWindow && cancelWindow()
-		cancelMouse && cancelMouse()
+		cancelPointer && cancelPointer()
 		cancelKeys && cancelKeys()
 
 		cancelWindow = windowSize(() =>
@@ -150,9 +150,9 @@ export function init(canvas: HTMLCanvasElement, opts?: PainterOptions) {
 			}, 'resize'),
 		)
 
-		cancelMouse = mouse(
+		cancelPointer = pointer(
 			{ element: canvas, enableRightButton: true },
-			m => (state.device.mouse = m),
+			m => (state.device.pointer = m),
 		)
 
 		cancelKeys = keyboard(k => (state.device.keys = k))

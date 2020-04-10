@@ -13,6 +13,11 @@ import { events, getCanvasSize, gl, painter, state, State } from './context'
 import { boxForm, planeForm } from './geometries'
 import { groundShade, objectShade, screenShade } from './shaders'
 import * as videos from './state/videos'
+import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
+
+initPerspectiveViewport({
+	fovy: Math.PI * 0.4,
+})
 
 // Settings
 

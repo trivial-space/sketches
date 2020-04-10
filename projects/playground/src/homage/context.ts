@@ -6,10 +6,9 @@ import {
 } from '../shared-utils/painterState'
 import { Ground } from './state/ground'
 import { Screens } from './state/screens'
-import { ViewPort } from './viewport'
+import { PerspectiveViewportState } from '../shared-utils/vr/perspectiveViewport'
 
-export interface State extends BaseState {
-	viewPort: ViewPort
+export interface State extends PerspectiveViewportState {
 	ground: Ground
 	screens: Screens
 }

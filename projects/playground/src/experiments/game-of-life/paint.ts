@@ -20,8 +20,12 @@ addSystem('paint', (e, s) => {
 	}
 
 	const d = s.device
-	if (e === events.PROCESS_PAINT && d.mouse.dragging && d.mouse.drag.event) {
-		const { clientX, clientY } = d.mouse.drag.event
+	if (
+		e === events.PROCESS_PAINT &&
+		d.pointer.dragging &&
+		d.pointer.drag.event
+	) {
+		const { clientX, clientY } = d.pointer.drag.event
 		const x = Math.floor((clientX / window.innerWidth) * paint.width)
 		const y = Math.floor((clientY / window.innerHeight) * paint.height)
 		ctx.fillStyle = 'white'
