@@ -12,6 +12,7 @@ module.exports = {
 		'experiments/convex-hull': ['./experiments/convex-hull/index.ts'],
 		'experiments/game-of-life': ['./experiments/game-of-life/index.ts'],
 		'experiments/textures': ['./experiments/textures/index.ts'],
+		'experiments/pointer-events': ['./experiments/pointer-events/index.ts'],
 	},
 
 	mode: 'production',
