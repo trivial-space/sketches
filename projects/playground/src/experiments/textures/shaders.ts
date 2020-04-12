@@ -4,38 +4,26 @@ import {
 	FloatSym,
 	sym,
 	add,
-	vec2,
-	float,
 	ret,
 	vec4,
 	vec3,
 	program,
 	defMain,
 	uniform,
-	TaggedFn3,
-	Vec4Sym,
 	assign,
 	$xy,
+	mul,
 } from '@thi.ng/shader-ast'
-import {
-	additive,
-	aspectCorrectedUV,
-	fit1101,
-	snoise2,
-} from '@thi.ng/shader-ast-stdlib'
-import { targetGLSL, GLSLVersion } from '@thi.ng/shader-ast-glsl'
+import { aspectCorrectedUV, fit1101, snoise2 } from '@thi.ng/shader-ast-stdlib'
+import { getFragmentGenerator } from '../../shared-utils/shaders/ast'
 
-const fs = targetGLSL({
-	version: GLSLVersion.GLES_100,
-	type: 'fs',
-	prelude: 'precision mediump float;',
-})
+const fs = getFragmentGenerator()
 
 let getImage = defn(
 	'vec4',
 	'mainImage',
 	['vec2', 'vec2', 'float'],
-	(fragCoord: Vec2Sym, res: Vec2Sym, time: FloatSym) => {
+	(fragCoord, res, time) => {
 		let uv: Vec2Sym
 		let col: FloatSym
 		return [
@@ -43,9 +31,10 @@ let getImage = defn(
 			// dynamically create a multi-octave version of `snoise2`
 			// computed over 4 octaves w/ given phase shift and decay
 			// factor (both per octave)
-			(col = sym(
-				additive('vec2', snoise2, 4)(add(uv, time), vec2(2), float(0.5)),
-			)),
+			// (col = sym(
+			// 	additive('vec2', snoise2, 4)(add(uv, time), vec2(2.1111), float(0.533)),
+			// )),
+			(col = sym(snoise2(add(mul(uv, 2), time)))),
 			ret(vec4(vec3(fit1101(col)), 1)),
 		]
 	},
@@ -63,5 +52,3 @@ export const noiseShader = fs(
 		]),
 	]),
 )
-
-console.log(noiseShader)
