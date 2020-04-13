@@ -94,25 +94,3 @@ export const wallsForm = getForm(painter, 'wallsForm').update(
 		cells: triangulate(4 * boxSliceCount * 4 * 2),
 	}),
 )
-
-export const groundHeight = -5
-const floorQuads = subdivide(
-	[
-		extrudeBottom(
-			[0, 0, -200],
-			[
-				[-100, groundHeight, 100],
-				[100, groundHeight, 100],
-			],
-		),
-	],
-	3,
-)
-
-export const groundForm = getForm(painter, 'groundForm').update(
-	convertStackGLGeometry({
-		position: flatten(floorQuads),
-		normal: flatten(floorQuads).map(() => [0, 1, 0]),
-		cells: triangulate(floorQuads.length),
-	}),
-)

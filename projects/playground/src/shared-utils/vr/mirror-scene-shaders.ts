@@ -37,6 +37,9 @@ import {
 	$y,
 	floor,
 	max,
+	sqrt,
+	pow,
+	float,
 } from '@thi.ng/shader-ast'
 
 const fs = getFragmentGenerator()
@@ -92,26 +95,29 @@ export const defaultGroundTextureFn = defn(
 	(reflectionColor, distance, coords) => [
 		(distanceColor = sym(
 			vec3(
-				sub(1, div(distance, 80)),
-				sub(1, div(distance, 90)),
-				sub(1, div(distance, 100)),
+				pow(max(float(0), sub(1, div(distance, 90))), float(0.8)),
+				pow(max(float(0), sub(1, div(distance, 95))), float(0.8)),
+				pow(max(float(0), sub(1, div(distance, 100))), float(0.8)),
 			),
 		)),
-		(grid = sym(mul(fract(mul(coords, 60)), 0.02))),
-		(lines = sym(mul(floor(add(fract(mul(coords, 60)), 0.03)), 0.05))),
+		(grid = sym(mul(fract(mul(coords, 40)), 0.02))),
+		(lines = sym(mul(floor(add(fract(mul(coords, 40)), 0.03)), 0.04))),
 		(line = sym(max($x(lines), $y(lines)))),
 		ret(
 			vec4(
 				mul(
 					div(
 						add(
-							mul($xyz(reflectionColor), sub(1, $w(reflectionColor))),
+							mul(
+								$xyz(reflectionColor),
+								sub(sub(1, mul(line, 2)), mul($w(reflectionColor), 0.7)),
+							),
 							sub(
-								vec3(add(0.6, add($x(grid), $y(grid)))),
+								vec3(add(0.5, add($x(grid), $y(grid)))),
 								vec3(line, line, div(line, 2)),
 							),
 						),
-						2.5,
+						1.6,
 					),
 					distanceColor,
 				),
@@ -122,6 +128,7 @@ export const defaultGroundTextureFn = defn(
 )
 
 let uReflection: Sampler2DSym
+let uReflectionStrength: FloatSym
 let uSize: Vec2Sym
 let color: Vec4Sym
 let distance: FloatSym
@@ -136,12 +143,15 @@ export const makeGroundFrag = (
 	fs(
 		program([
 			(uReflection = uniform('sampler2D', 'reflection')),
+			(uReflectionStrength = uniform('float', 'reflectionStrength')),
 			(uSize = uniform('vec2', 'size')),
 			(vNormal = input('vec3', 'vNormal')),
 			(vPos = input('vec3', 'vPos')),
 			(vUv = input('vec2', 'vUv')),
 			defMain(() => [
 				(color = sym(texture(uReflection, div($xy(fs.gl_FragCoord), uSize)))),
+				// assign(color, vec4($xyz(color), mul($w(color), uReflectionStrength))),
+				assign(color, mul(color, uReflectionStrength)),
 				(distance = sym(length($(vPos, 'xz')))),
 				assign(fs.gl_FragColor, groundColorFn(color, distance, vUv)),
 				// assign(fs.gl_FragColor, vec4(vec3(distance), 1)),

@@ -13,8 +13,8 @@ import { mat4 } from 'gl-matrix'
 import { makeXYPlane } from '../../shared-utils/geometry-helpers'
 import { planeFrag, planeVert } from './plane-shaders'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
-import { createMirrorScene } from './mirror-scene'
 import { makeClear } from 'tvs-painter/dist/utils/context'
+import { createMirrorScene } from '../../shared-utils/vr/mirror-scene'
 
 initPerspectiveViewport({
 	position: [0, 3, -11],
@@ -57,6 +57,7 @@ export const noiseSketch = getSketch(painter, 'noise').update({
 
 export const scene = createMirrorScene(painter, state, [noiseSketch], {
 	scale: 0.5,
+	reflectionStrength: 0.5,
 })
 
 set<State>('time', 0)

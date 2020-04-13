@@ -20,11 +20,15 @@ import { TaggedFn2, TaggedFn3 } from '@thi.ng/shader-ast'
 const sceneId = 'mirror-scene-ground'
 
 interface MirrorSceneOptions {
+	reflectionStrength?: number
 	renderWithDistanceAlphaUniformName?: string
 	scale?: number
 	width?: number
 	height?: number
 	groundShaderColorFn?: TaggedFn3<'vec4', 'float', 'vec2', 'vec4'>
+	blurStrengh?: number
+	blurRatioVertical?: number
+	blurStrenghOffset?: number
 }
 
 export function createMirrorScene(
@@ -39,6 +43,10 @@ export function createMirrorScene(
 		scale = 1,
 		renderWithDistanceAlphaUniformName = 'withDistance',
 		groundShaderColorFn,
+		blurStrengh = 20,
+		blurRatioVertical = 2,
+		blurStrenghOffset = 0.3,
+		reflectionStrength = 1,
 	} = options
 	const groundForm = getForm(painter, sceneId).update(makeXZPlane(100, 3))
 
@@ -80,6 +88,7 @@ export function createMirrorScene(
 				width || painter.canvas.width,
 				height || painter.canvas.height,
 			],
+			reflectionStrength,
 		},
 	})
 
@@ -115,9 +124,9 @@ export function createMirrorScene(
 	})
 
 	const blurEffect = getBlurByAlphaEffect(painter, 'blur', {
-		strength: 20,
-		strengthOffset: 0.3,
-		blurRatioVertical: 2,
+		strength: blurStrengh,
+		strengthOffset: blurStrenghOffset,
+		blurRatioVertical,
 	})
 
 	const main = getFrame(painter, 'main').update({
