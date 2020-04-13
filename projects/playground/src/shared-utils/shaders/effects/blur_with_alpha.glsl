@@ -15,8 +15,8 @@ void main() {
 	float dist = refl.a * strength + strengthOffset;
 
 	if (direction == 0.0) {
-		gl_FragColor = vec4(blur(source, uv, size, vec2(dist, 0)).rgb, refl.a);
+		gl_FragColor = blur(source, uv, size, vec2(dist, 0));
 	} else {
-		gl_FragColor = vec4(blur(source, uv, size, vec2(0, dist)).rgb, refl.a);
+		gl_FragColor = blur(source, uv, size, vec2(0, dist));
 	}
 }

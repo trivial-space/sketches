@@ -12,14 +12,21 @@ import { noiseShader } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeXYPlane } from '../../shared-utils/geometry-helpers'
 import { planeFrag, planeVert } from './plane-shaders'
+import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { createMirrorScene } from './mirror-scene'
+import { makeClear } from 'tvs-painter/dist/utils/context'
+
+initPerspectiveViewport({
+	position: [0, 3, -11],
+	rotationY: Math.PI,
+})
 
 // === plane ===
 
 const planeForm = getForm(painter, 'plane').update(makeXYPlane(5, 2))
 
 const planeMatrix = mat4.create()
-mat4.translate(planeMatrix, planeMatrix, [0, 6, 5])
+mat4.translate(planeMatrix, planeMatrix, [0, 5.5, 5])
 
 const planeShade = getShade(painter, 'plane').update({
 	frag: planeFrag,
@@ -30,6 +37,9 @@ const planeShade = getShade(painter, 'plane').update({
 
 const noise = getEffect(painter, 'noise').update({
 	frag: noiseShader,
+	drawSettings: {
+		clearBits: makeClear(painter.gl, 'color', 'depth'),
+	},
 })
 
 export const noiseFrame = getFrame(painter, 'noise').update({
@@ -39,11 +49,15 @@ export const noiseFrame = getFrame(painter, 'noise').update({
 export const noiseSketch = getSketch(painter, 'noise').update({
 	form: planeForm,
 	shade: planeShade,
-	uniforms: { texture: () => noiseFrame.image(), transform: planeMatrix },
+	uniforms: {
+		texture: () => noiseFrame.image(),
+		transform: planeMatrix,
+	},
 })
 
-// export const scene = createMirrorScene(painter, state, [noiseSketch])
-export const scene = {}
+export const scene = createMirrorScene(painter, state, [noiseSketch], {
+	scale: 0.5,
+})
 
 set<State>('time', 0)
 

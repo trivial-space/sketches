@@ -155,7 +155,7 @@ export function init(canvas: HTMLCanvasElement, opts?: PainterOptions) {
 				element: canvas,
 				enableRightButton: true,
 				holdRadius: 7,
-				holdDelay: 200,
+				holdDelay: 250,
 			},
 			m => (state.device.pointer = m),
 		)

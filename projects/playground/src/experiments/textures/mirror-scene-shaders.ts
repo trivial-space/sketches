@@ -20,6 +20,23 @@ import {
 	texture,
 	div,
 	$xy,
+	sym,
+	length,
+	$,
+	add,
+	sub,
+	FloatSym,
+	vec3,
+	$w,
+	defn,
+	ret,
+	TaggedFn2,
+	TaggedFn3,
+	fract,
+	$x,
+	$y,
+	floor,
+	max,
 } from '@thi.ng/shader-ast'
 
 const fs = getFragmentGenerator()
@@ -39,7 +56,6 @@ let aUv: Vec2Sym
 let uTransform: Mat4Sym
 let uProjection: Mat4Sym
 let uView: Mat4Sym
-let pos: Vec4Sym
 export const groundVert = vs(
 	program([
 		(aPosition = input('vec3', 'position')),
@@ -54,29 +70,81 @@ export const groundVert = vs(
 		defMain(() => [
 			assign(vNormal, aNormal),
 			assign(vUv, aUv),
-			assign(pos, mul(uTransform, vec4(aPosition, 1.0))),
-			assign(vPos, $xyz(pos)),
-			assign(vs.gl_Position, mul(mul(uProjection, uView), pos)),
+			assign(vPos, aPosition),
+			assign(
+				vs.gl_Position,
+				mul(mul(mul(uProjection, uView), uTransform), vec4(aPosition, 1)),
+			),
 		]),
 	]),
 )
 
 // Fragment
+let distanceColor: Vec3Sym
+let grid: Vec2Sym
+let lines: Vec2Sym
+let line
+
+export const defaultGroundTextureFn = defn(
+	'vec4',
+	'groundColor',
+	['vec4', 'float', 'vec2'],
+	(reflectionColor, distance, coords) => [
+		(distanceColor = sym(
+			vec3(
+				sub(1, div(distance, 80)),
+				sub(1, div(distance, 90)),
+				sub(1, div(distance, 100)),
+			),
+		)),
+		(grid = sym(mul(fract(mul(coords, 60)), 0.02))),
+		(lines = sym(mul(floor(add(fract(mul(coords, 60)), 0.03)), 0.05))),
+		(line = sym(max($x(lines), $y(lines)))),
+		ret(
+			vec4(
+				mul(
+					div(
+						add(
+							mul($xyz(reflectionColor), sub(1, $w(reflectionColor))),
+							sub(
+								vec3(add(0.6, add($x(grid), $y(grid)))),
+								vec3(line, line, div(line, 2)),
+							),
+						),
+						2.5,
+					),
+					distanceColor,
+				),
+				1,
+			),
+		),
+	],
+)
 
 let uReflection: Sampler2DSym
 let uSize: Vec2Sym
 let color: Vec4Sym
-let distance
-export const groundFrag = fs(
-	program([
-		(uReflection = uniform('sampler2D', 'reflection')),
-		(uSize = uniform('vec2', 'size')),
-		(vNormal = input('vec3', 'vNormal')),
-		(vPos = input('vec3', 'vPos')),
-		(vUv = input('vec2', 'vUv')),
-		defMain(() => [
-			assign(color, texture(uReflection, div($xy(fs.gl_FragCoord), uSize))),
-			assign(fs.gl_FragColor, vec4($xyz(div(color, 2)), 1)),
+let distance: FloatSym
+export const makeGroundFrag = (
+	groundColorFn: TaggedFn3<
+		'vec4',
+		'float',
+		'vec2',
+		'vec4'
+	> = defaultGroundTextureFn,
+) =>
+	fs(
+		program([
+			(uReflection = uniform('sampler2D', 'reflection')),
+			(uSize = uniform('vec2', 'size')),
+			(vNormal = input('vec3', 'vNormal')),
+			(vPos = input('vec3', 'vPos')),
+			(vUv = input('vec2', 'vUv')),
+			defMain(() => [
+				(color = sym(texture(uReflection, div($xy(fs.gl_FragCoord), uSize)))),
+				(distance = sym(length($(vPos, 'xz')))),
+				assign(fs.gl_FragColor, groundColorFn(color, distance, vUv)),
+				// assign(fs.gl_FragColor, vec4(vec3(distance), 1)),
+			]),
 		]),
-	]),
-)
+	)

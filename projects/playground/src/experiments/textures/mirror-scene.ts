@@ -14,14 +14,17 @@ import { mat4 } from 'gl-matrix'
 import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
 import { getBlurByAlphaEffect } from '../../shared-utils/shaders/effects/blur'
 import { makeXZPlane } from '../../shared-utils/geometry-helpers'
-import { groundVert, groundFrag } from './mirror-scene-shaders'
+import { groundVert, makeGroundFrag } from './mirror-scene-shaders'
+import { TaggedFn2, TaggedFn3 } from '@thi.ng/shader-ast'
 
 const sceneId = 'mirror-scene-ground'
 
 interface MirrorSceneOptions {
+	renderWithDistanceAlphaUniformName?: string
 	scale?: number
 	width?: number
 	height?: number
+	groundShaderColorFn?: TaggedFn3<'vec4', 'float', 'vec2', 'vec4'>
 }
 
 export function createMirrorScene(
@@ -30,8 +33,14 @@ export function createMirrorScene(
 	objectSketches: Sketch[],
 	options: MirrorSceneOptions = {},
 ) {
-	const { width, height, scale = 1 } = options
-	const groundForm = getForm(painter, sceneId).update(makeXZPlane(100, 10))
+	const {
+		width,
+		height,
+		scale = 1,
+		renderWithDistanceAlphaUniformName = 'withDistance',
+		groundShaderColorFn,
+	} = options
+	const groundForm = getForm(painter, sceneId).update(makeXZPlane(100, 3))
 
 	const floorTransform = mat4.create()
 	mat4.scale(floorTransform, floorTransform, [scale, scale, scale])
@@ -58,7 +67,7 @@ export function createMirrorScene(
 
 	const groundShade = getShade(painter, sceneId).update({
 		vert: groundVert,
-		frag: groundFrag,
+		frag: makeGroundFrag(groundShaderColorFn),
 	})
 
 	const groundSketch = getSketch(painter, sceneId).update({
@@ -86,6 +95,7 @@ export function createMirrorScene(
 					mirrorMatrix,
 				),
 			projection: () => state.viewPort.camera.projectionMat,
+			[renderWithDistanceAlphaUniformName]: 1,
 		},
 		drawSettings: {
 			clearBits: painter.gl.DEPTH_BUFFER_BIT | painter.gl.COLOR_BUFFER_BIT,
@@ -97,6 +107,7 @@ export function createMirrorScene(
 		uniforms: {
 			view: () => state.viewPort.camera.viewMat,
 			projection: () => state.viewPort.camera.projectionMat,
+			[renderWithDistanceAlphaUniformName]: 0,
 		},
 		drawSettings: {
 			clearBits: painter.gl.DEPTH_BUFFER_BIT | painter.gl.COLOR_BUFFER_BIT,
@@ -104,9 +115,9 @@ export function createMirrorScene(
 	})
 
 	const blurEffect = getBlurByAlphaEffect(painter, 'blur', {
-		strength: 10,
+		strength: 20,
 		strengthOffset: 0.3,
-		blurRatioVertical: 3,
+		blurRatioVertical: 2,
 	})
 
 	const main = getFrame(painter, 'main').update({

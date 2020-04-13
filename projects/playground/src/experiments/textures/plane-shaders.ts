@@ -20,6 +20,13 @@ import {
 	texture,
 	div,
 	$xy,
+	FloatSym,
+	sym,
+	$y,
+	ternary,
+	gt,
+	sub,
+	float,
 } from '@thi.ng/shader-ast'
 
 const fs = getFragmentGenerator()
@@ -28,6 +35,7 @@ const vs = getVertexGenerator()
 // varying
 
 let vUv: Vec2Sym
+let vHeight: FloatSym
 
 // Vertex
 
@@ -36,6 +44,7 @@ let aUv: Vec2Sym
 let uTransform: Mat4Sym
 let uProjection: Mat4Sym
 let uView: Mat4Sym
+let pos: Vec4Sym
 export const planeVert = vs(
 	program([
 		(aPosition = input('vec3', 'position')),
@@ -44,12 +53,12 @@ export const planeVert = vs(
 		(uProjection = uniform('mat4', 'projection')),
 		(uView = uniform('mat4', 'view')),
 		(vUv = output('vec2', 'vUv')),
+		(vHeight = output('float', 'vHeight')),
 		defMain(() => [
 			assign(vUv, aUv),
-			assign(
-				vs.gl_Position,
-				mul(mul(mul(uProjection, uView), uTransform), vec4(aPosition, 1)),
-			),
+			(pos = sym(mul(uTransform, vec4(aPosition, 1)))),
+			assign(vHeight, $y(pos)),
+			assign(vs.gl_Position, mul(mul(uProjection, uView), pos)),
 		]),
 	]),
 )
@@ -57,11 +66,20 @@ export const planeVert = vs(
 // Fragment
 
 let uTex: Sampler2DSym
+let uWithDistance: FloatSym
+let alpha: FloatSym
 export const planeFrag = fs(
 	program([
 		(uTex = uniform('sampler2D', 'texture')),
+		(uWithDistance = uniform('float', 'withDistance')),
 		(vUv = input('vec2', 'vUv')),
-		defMain(() => [assign(fs.gl_FragColor, texture(uTex, vUv))]),
+		(vHeight = input('float', 'vHeight')),
+		defMain(() => [
+			(alpha = sym(
+				ternary(gt(uWithDistance, float(0)), div(vHeight, 12), float(1)),
+			)),
+			assign(fs.gl_FragColor, vec4($xyz(texture(uTex, vUv)), alpha)),
+		]),
 	]),
 )
 
