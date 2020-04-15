@@ -19,7 +19,7 @@ module.exports = {
 	// devtool: 'eval',
 
 	devServer: {
-		hot: true,
+		hotOnly: true,
 		// enable HMR on the server
 
 		contentBase: resolve(__dirname, 'public'),
