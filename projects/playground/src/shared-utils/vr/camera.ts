@@ -133,7 +133,10 @@ export function WithMouseRotation<T extends Constructor<Camera>>(Cam: T) {
 	return class extends Cam {
 		_oldMouse = { x: 0, y: 0 }
 
-		updateRotFromPointer(speed: number, m: PointerState) {
+		updateRotFromPointer(
+			speed: number,
+			m: { dragging: boolean; drag: { x: number; y: number } },
+		) {
 			if (m.dragging) {
 				const deltaX = this._oldMouse.x - m.drag.x
 				const deltaY = this._oldMouse.y - m.drag.y

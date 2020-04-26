@@ -10,7 +10,7 @@ import { createMirrorScene } from '../shared-utils/vr/mirror-scene'
 initPerspectiveViewport({
 	position: [0, 3.4, 25],
 	fovy: Math.PI * 0.4,
-	lookSpeed: 0.15,
+	lookSpeed: 5,
 })
 
 // ===== Settings =====

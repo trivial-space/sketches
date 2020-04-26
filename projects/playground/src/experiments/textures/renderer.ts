@@ -18,8 +18,9 @@ import { createMirrorScene } from '../../shared-utils/vr/mirror-scene'
 import { getNoiseTextureData } from '../../shared-utils/texture-helpers'
 
 initPerspectiveViewport({
-	position: [0, 3, -11],
+	position: [0, 3, -15],
 	rotationY: Math.PI,
+	lookSpeed: 3,
 })
 
 // === plane ===

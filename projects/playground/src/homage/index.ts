@@ -14,6 +14,7 @@ import {
 import { videos } from './state/videos'
 
 const d = get('device')
+// d.sizeMultiplier = 1.5
 
 videos.then(vs => {
 	function startVideos() {

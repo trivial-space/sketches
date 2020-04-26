@@ -18,7 +18,7 @@ export function getNoiseTextureData({
 	height: number
 	data?: TextureData
 }) {
-	const buffer = new Uint8ClampedArray(width * height * 4)
+	const buffer = new Uint8Array(width * height * 4)
 	const noise1 = tileNoise(width, height, startX, startY)
 	const noise2 = tileNoise(width, height, startX * 2.1, startY * 2.1)
 	const noise3 = tileNoise(width, height, startX * 4.2, startY * 4.2)

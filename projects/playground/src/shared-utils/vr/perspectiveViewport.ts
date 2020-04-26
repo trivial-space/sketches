@@ -11,7 +11,7 @@ export interface PerspectiveViewportState extends BaseState {
 
 export class ViewPort {
 	moveSpeed = 2
-	lookSpeed = 0.1
+	lookSpeed = 5
 	camera = new (WithKeyNavigation(WithMouseRotation(PerspectiveCamera)))({
 		fovy: Math.PI * 0.3,
 		position: [0, 0, 5],
@@ -22,13 +22,24 @@ addSystem<PerspectiveViewportState>('viewPort', (e, s) => {
 	const v = s.viewPort
 	switch (e) {
 		case baseEvents.FRAME:
-			const tpf = s.device.tpf / 1000
+			const d = s.device
+			const tpf = d.tpf / 1000
+
 			v.camera.updatePosFromInput(
 				v.moveSpeed * tpf,
 				s.device.keys,
 				s.device.pointer,
 			)
-			v.camera.updateRotFromPointer(v.lookSpeed * tpf, s.device.pointer)
+
+			const p = d.pointer
+			const dragInfo = {
+				dragging: p.dragging,
+				drag: {
+					x: (d.sizeMultiplier * p.drag.x) / d.canvas.width,
+					y: (d.sizeMultiplier * p.drag.y) / d.canvas.height,
+				},
+			}
+			v.camera.updateRotFromPointer(v.lookSpeed, dragInfo)
 			v.camera.update()
 			return
 
