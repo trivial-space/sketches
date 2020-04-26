@@ -23,6 +23,11 @@ import {
 	$y,
 	$z,
 	$w,
+	Vec3Sym,
+	abs,
+	sub,
+	sqrt,
+	pow,
 } from '@thi.ng/shader-ast'
 import {
 	aspectCorrectedUV,
@@ -53,7 +58,7 @@ export const noiseShader = fs(
 				// factor (both per octave)
 				(col = sym(
 					// additive('vec2', snoise2, 4)(add(uv, uTime), vec2(2), float(0.5)),
-					voronoise2(mul(add(uv, uTime), 10), float(1), float(1)),
+					voronoise2(mul(add(uv, uTime), 20), float(1), float(1)),
 				)),
 				// (col = sym(snoise2(add(mul(uv, 2), time)))),
 				assign(fs.gl_FragColor, vec4(vec3(fit1101(col)), 1)),
@@ -93,6 +98,45 @@ export const noise2Shader = fs(
 						),
 						1,
 					),
+				),
+			]
+		}),
+	]),
+)
+
+export const lineShader = fs(
+	program([
+		(uResolution = uniform('vec2', 'resolution')),
+		(uTime = uniform('float', 'time')),
+		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
+		defMain(() => {
+			let uv: Vec2Sym
+			let col: Vec4Sym
+			let rand: FloatSym
+			let dist: FloatSym
+			return [
+				(uv = sym(div($xy(fs.gl_FragCoord), uResolution))),
+				(col = sym(
+					texture(
+						uNoiseTex,
+						vec2(mul($x(uv), 2), add(mul(mul(0.7, $y(uv)), $y(uv)), uTime)),
+					),
+				)),
+				(rand = sym(
+					fit1101(
+						add(
+							add(
+								add(fit0111($x(col)), div(fit0111($y(col)), 2)),
+								div(fit0111($z(col)), 4),
+							),
+							div(fit0111($w(col)), 8),
+						),
+					),
+				)),
+				(dist = sym(pow(abs(fit0111($x(uv))), float(1.2)))),
+				assign(
+					fs.gl_FragColor,
+					vec4(vec3(sub(add(0.5, mul(rand, 0.5)), dist)), 1),
 				),
 			]
 		}),

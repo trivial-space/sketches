@@ -8,7 +8,7 @@ import {
 	getSketch,
 } from '../../shared-utils/painterState'
 import { painter, events, State, state } from './context'
-import { noiseShader, noise2Shader } from './shaders'
+import { noiseShader, noise2Shader, lineShader } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeXYPlane } from '../../shared-utils/geometry-helpers'
 import { planeFrag, planeVert } from './plane-shaders'
@@ -91,7 +91,7 @@ export const noiseTexSketch = getSketch(painter, 'noiseTex').update({
 	},
 })
 
-// === noise shader ===
+// === shader with static noice tex ===
 
 const noiseTex2PlaneMatrix = mat4.create()
 mat4.translate(noiseTex2PlaneMatrix, noiseTex2PlaneMatrix, [-11, 5.5, 5])
@@ -123,12 +123,44 @@ export const noiseTex2Sketch = getSketch(painter, 'noiseTex2').update({
 	},
 })
 
+// === line shader ===
+
+const lineTexPlaneMatrix = mat4.create()
+mat4.translate(lineTexPlaneMatrix, lineTexPlaneMatrix, [-22, 5.5, 5])
+
+const lineTex = getEffect(painter, 'lineTex').update({
+	frag: lineShader,
+	drawSettings: {
+		clearBits: makeClear(painter.gl, 'color', 'depth'),
+	},
+	uniforms: {
+		time: () => state.time,
+		resolution: () => [256, 256],
+		noiseTex: () => noiseTexFrame.image(),
+	},
+})
+
+export const lineTexFrame = getFrame(painter, 'lineTex').update({
+	layers: lineTex,
+	width: 256,
+	height: 256,
+})
+
+export const lineTexSketch = getSketch(painter, 'lineTex').update({
+	form: planeForm,
+	shade: planeShade,
+	uniforms: {
+		texture: () => lineTexFrame.image(),
+		transform: lineTexPlaneMatrix,
+	},
+})
+
 // === scene ===
 
 export const scene = createMirrorScene(
 	painter,
 	state,
-	[noiseSketch, noiseTexSketch, noiseTex2Sketch],
+	[noiseSketch, noiseTexSketch, noiseTex2Sketch, lineTexSketch],
 	{
 		scale: 0.5,
 		reflectionStrength: 0.5,
