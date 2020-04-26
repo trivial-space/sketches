@@ -30,6 +30,7 @@ import {
 	snoise2,
 	additive,
 	fit0111,
+	voronoise2,
 } from '@thi.ng/shader-ast-stdlib'
 import { getFragmentGenerator } from '../../shared-utils/shaders/ast'
 
@@ -51,7 +52,8 @@ export const noiseShader = fs(
 				// computed over 4 octaves w/ given phase shift and decay
 				// factor (both per octave)
 				(col = sym(
-					additive('vec2', snoise2, 4)(add(uv, uTime), vec2(2), float(0.5)),
+					// additive('vec2', snoise2, 4)(add(uv, uTime), vec2(2), float(0.5)),
+					voronoise2(mul(add(uv, uTime), 10), float(1), float(1)),
 				)),
 				// (col = sym(snoise2(add(mul(uv, 2), time)))),
 				assign(fs.gl_FragColor, vec4(vec3(fit1101(col)), 1)),
