@@ -17,7 +17,7 @@ import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
 
 initPerspectiveViewport({
 	fovy: Math.PI * 0.4,
-	lookSpeed: 5,
+	lookSpeed: 2,
 })
 
 // Settings

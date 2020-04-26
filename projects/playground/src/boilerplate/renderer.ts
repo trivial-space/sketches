@@ -10,7 +10,7 @@ import frag from './glsl/base.frag'
 import vert from './glsl/base.vert'
 import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
 
-initPerspectiveViewport({ lookSpeed: 3 })
+initPerspectiveViewport()
 
 // ===== shaders =====
 

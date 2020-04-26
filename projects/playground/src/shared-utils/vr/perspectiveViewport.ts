@@ -11,7 +11,7 @@ export interface PerspectiveViewportState extends BaseState {
 
 export class ViewPort {
 	moveSpeed = 2
-	lookSpeed = 5
+	lookSpeed = 2
 	camera = new (WithKeyNavigation(WithMouseRotation(PerspectiveCamera)))({
 		fovy: Math.PI * 0.3,
 		position: [0, 0, 5],
