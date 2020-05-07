@@ -52,12 +52,18 @@ const sketch2 = getSketch(painter, 'line2').update({
 
 // === scene ===
 
+const normalMat = mat4.create()
 export const scene = getFrame(painter, 'scene').update({
 	layers: getLayer(painter, 'scene').update({
 		sketches: [sketch1, sketch2],
 		uniforms: {
 			view: () => state.viewPort.camera.viewMat,
 			projection: () => state.viewPort.camera.projectionMat,
+			normalMatrix: () =>
+				mat4.transpose(
+					normalMat,
+					mat4.invert(normalMat, state.viewPort.camera.viewMat),
+				),
 		},
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
@@ -71,7 +77,11 @@ addSystem<State>('renderer', (e, s) => {
 		form1.update({
 			attribs: {
 				position: {
-					buffer: new Float32Array(flatMap(seg => seg.vertex, s.lines.line1)),
+					buffer: new Float32Array(flatMap((seg) => seg.vertex, s.lines.line1)),
+					storeType: 'DYNAMIC',
+				},
+				normal: {
+					buffer: new Float32Array(flatMap((s) => s.normal, s.lines.line1)),
 					storeType: 'DYNAMIC',
 				},
 			},
@@ -83,6 +93,12 @@ addSystem<State>('renderer', (e, s) => {
 				position: {
 					buffer: new Float32Array(
 						flatten(flatMap(partial(lineSegmentToPoints, 0.4), s.lines.line1)),
+					),
+					storeType: 'DYNAMIC',
+				},
+				normal: {
+					buffer: new Float32Array(
+						flatten(flatMap((s) => [s.normal, s.normal], s.lines.line1)),
 					),
 					storeType: 'DYNAMIC',
 				},
