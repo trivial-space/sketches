@@ -1,4 +1,4 @@
-import { Vec } from 'tvs-libs/dist/math/vectors'
+import { Vec, dot, mul, add, cross } from 'tvs-libs/dist/math/vectors'
 import { quat, mat3, vec3 } from 'gl-matrix'
 import { sphereToCartesian3D, sphereCoord } from 'tvs-libs/dist/math/coords'
 
@@ -62,4 +62,12 @@ export function walkLine(step: LineStep, segment = lineSegment()) {
 	})
 }
 
-export function lineSegmentToForm(segment: LineSegment) {}
+export function lineSegmentToPoints(
+	thickness: number = 1,
+	segment: LineSegment,
+) {
+	const tangent = cross(segment.normal, segment.direction)
+	const p1 = add(mul(thickness, tangent), segment.vertex)
+	const p2 = add(mul(-thickness, tangent), segment.vertex)
+	return [p1, p2]
+}

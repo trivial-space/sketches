@@ -13,6 +13,7 @@ module.exports = {
 		'experiments/game-of-life': ['./experiments/game-of-life/index.ts'],
 		'experiments/textures': ['./experiments/textures/index.ts'],
 		'experiments/pointer-events': ['./experiments/pointer-events/index.ts'],
+		'experiments/lines': ['./experiments/lines/index.ts'],
 	},
 
 	mode: 'production',

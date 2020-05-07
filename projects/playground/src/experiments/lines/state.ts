@@ -8,8 +8,8 @@ export const line1 = times(x => x, 30).reduce((segments, _i) => {
 		walkLine(
 			{
 				length: 1,
-				polarAngleY: 0.1,
-				azimuthAngleZ: 0.1,
+				polarAngleY: Math.PI / 2,
+				azimuthAngleZ: 1,
 			},
 			last(segments),
 		),
