@@ -62,7 +62,9 @@ export const lineVert = vs(
 
 		defMain(() => [
 			assign(vNormal, normalize($xyz(mul(uNormalMatrix, vec4(aNormal, 1))))),
-			assign(vs.gl_Position, mul(mul(mul(uProjection, uView), uTransform), vec4(aPosition, 1))),
+			assign(vs.gl_Position,
+				mul(mul(mul(uProjection, uView), uTransform), vec4(aPosition, 1))
+			),
 		]),
 	]),
 )
@@ -74,7 +76,13 @@ export const lineFrag = fs(
 	program([
 		(vNormal = input('vec3', 'vNormal')),
 		defMain(() => [
-			assign(fs.gl_FragColor, vec4(mul(halfLambert(normalize(vNormal), vec3(0, -1, 0)), vec3(1.0, 0.0, 0.0)), 1.0), ),
+			assign(fs.gl_FragColor, vec4(
+				mul(
+					halfLambert(normalize(vNormal), vec3(0, -1, 0)),
+					vec3(1.0, 0.0, 0.0)
+				),
+				1.0)
+			),
 		]),
 	]),
 )
