@@ -11,13 +11,13 @@ set<State>('lines', {
 
 addSystem<State>('lines', (e, s) => {
 	if (e === events.FRAME) {
-		s.lines.line1 = times(x => x, 60).reduce((segments, _i) => {
+		s.lines.line1 = times((x) => x, 60).reduce((segments, _i) => {
 			return segments.concat(
 				walkLine(
 					{
 						length: 1,
 						// polarAngleY: Math.PI / 2,
-						polarAngleY: 0.1,
+						polarAngleY: 0.3,
 						// azimuthAngleZ: Math.PI,
 						azimuthAngleZ: s.time / 10,
 					},

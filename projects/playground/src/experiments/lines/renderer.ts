@@ -16,7 +16,7 @@ import { partial } from 'tvs-libs/dist/fp/core'
 import { lineSegmentToPoints } from './lines'
 
 initPerspectiveViewport({
-	position: [0, 10, 0],
+	position: [0, 10, 30],
 })
 
 const shade = getShade(painter, 'line').update({
@@ -68,6 +68,7 @@ export const scene = getFrame(painter, 'scene').update({
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
 			clearBits: makeClear(painter.gl, 'depth', 'color'),
+			enable: [painter.gl.DEPTH_TEST],
 		},
 	}),
 })
