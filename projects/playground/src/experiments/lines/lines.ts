@@ -19,13 +19,16 @@ export interface LineStep {
 
 export function lineSegment({
 	vertex = [0, 0, 0],
-	normal = [0, 0, 1],
+	normal = [-1, 0, 0],
 	direction = [0, 1, 0],
 	length = 1,
 }: Partial<LineSegment> = {}): LineSegment {
 	return { vertex, normal, direction, length }
 }
 
+const rotQuatDelta = quat.create()
+const rotQuatNormal = quat.create()
+const rotQuatDirection = quat.create()
 const rotQuat = quat.create()
 const standardDirection = sphereToCartesian3D(sphereCoord(1, 0, 0))
 
@@ -33,12 +36,14 @@ export function walkLine(step: LineStep, segment = lineSegment()) {
 	const requestedDirection = sphereToCartesian3D(
 		sphereCoord(1, step.polarAngleY, step.azimuthAngleZ),
 	)
-	quat.rotationTo(rotQuat, standardDirection, requestedDirection)
+	quat.rotationTo(rotQuatDelta, standardDirection, requestedDirection)
+	// quat.rotationTo(rotQuatNormal, segment.normal, segment.direction)
+	// quat.multiply(rotQuatDirection, rotQuatDelta, rotQuatNormal)
 
 	const newNormal = vec3.transformQuat(
 		vec3.create(),
 		segment.normal as vec3,
-		rotQuat,
+		rotQuatDelta,
 	)
 
 	vec3.normalize(newNormal, newNormal)
@@ -46,7 +51,7 @@ export function walkLine(step: LineStep, segment = lineSegment()) {
 	const newDirection = vec3.transformQuat(
 		vec3.create(),
 		segment.direction as vec3,
-		rotQuat,
+		rotQuatDelta,
 	)
 	vec3.normalize(newDirection, newDirection)
 

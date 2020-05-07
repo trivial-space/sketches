@@ -4,8 +4,10 @@ import {
 	getState,
 } from '../../shared-utils/painterState'
 import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
+import { Line } from './lines'
 
 export interface State extends PerspectiveViewportState {
+	lines: { [lineName: string]: Line }
 	time: number
 }
 

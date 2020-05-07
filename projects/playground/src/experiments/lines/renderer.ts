@@ -4,9 +4,9 @@ import {
 	getSketch,
 	getFrame,
 	getLayer,
+	addSystem,
 } from '../../shared-utils/painterState'
-import { painter, state } from './context'
-import { line1 } from './state'
+import { painter, state, State, events } from './context'
 import { flatMap, flatten } from 'tvs-libs/dist/utils/sequence'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { lineFrag, lineVert } from './shaders'
@@ -15,7 +15,9 @@ import { makeClear } from 'tvs-painter/dist/utils/context'
 import { partial } from 'tvs-libs/dist/fp/core'
 import { lineSegmentToPoints } from './lines'
 
-initPerspectiveViewport({})
+initPerspectiveViewport({
+	position: [0, 10, 0],
+})
 
 const shade = getShade(painter, 'line').update({
 	vert: lineVert,
@@ -24,16 +26,7 @@ const shade = getShade(painter, 'line').update({
 
 // === line1 ===
 
-const form1 = getForm(painter, 'line1').update({
-	attribs: {
-		position: {
-			buffer: new Float32Array(flatMap(seg => seg.vertex, line1)),
-		},
-	},
-	drawType: 'LINE_STRIP',
-	itemCount: line1.length,
-})
-
+const form1 = getForm(painter, 'line1')
 const transform1 = mat4.create()
 
 const sketch1 = getSketch(painter, 'line1').update({
@@ -46,18 +39,7 @@ const sketch1 = getSketch(painter, 'line1').update({
 
 // === line2 ===
 
-const form2 = getForm(painter, 'line2').update({
-	attribs: {
-		position: {
-			buffer: new Float32Array(
-				flatten(flatMap(partial(lineSegmentToPoints, 0.4), line1)),
-			),
-		},
-	},
-	drawType: 'TRIANGLE_STRIP',
-	itemCount: line1.length * 2,
-})
-
+const form2 = getForm(painter, 'line2')
 const transform2 = mat4.fromTranslation(mat4.create(), [10, 0, 0])
 
 const sketch2 = getSketch(painter, 'line2').update({
@@ -82,4 +64,31 @@ export const scene = getFrame(painter, 'scene').update({
 			clearBits: makeClear(painter.gl, 'depth', 'color'),
 		},
 	}),
+})
+
+addSystem<State>('renderer', (e, s) => {
+	if (e === events.FRAME) {
+		form1.update({
+			attribs: {
+				position: {
+					buffer: new Float32Array(flatMap(seg => seg.vertex, s.lines.line1)),
+					storeType: 'DYNAMIC',
+				},
+			},
+			drawType: 'LINE_STRIP',
+			itemCount: s.lines.line1.length,
+		})
+		form2.update({
+			attribs: {
+				position: {
+					buffer: new Float32Array(
+						flatten(flatMap(partial(lineSegmentToPoints, 0.4), s.lines.line1)),
+					),
+					storeType: 'DYNAMIC',
+				},
+			},
+			drawType: 'TRIANGLE_STRIP',
+			itemCount: s.lines.line1.length * 2,
+		})
+	}
 })
