@@ -18,7 +18,7 @@ addSystem<State>('lines', (e, s) => {
 					walkLine(
 						{
 							length: 1,
-							normalAngle: noise2d(i / 10, s.time / 40) / 2,
+							normalAngle: noise2d(i / 6, s.time / 40) / 2,
 							// normalAngle: -0.1,
 							// directionAngle: Math.PI / 2,
 							// directionAngle: s.time / 2,
