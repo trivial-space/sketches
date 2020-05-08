@@ -5,23 +5,22 @@ import {
 	getFrame,
 	getLayer,
 	addSystem,
-} from '../../shared-utils/painterState'
+} from '../shared-utils/painterState'
 import { painter, state, State, events } from './context'
 import {
 	flatMap,
 	flatten,
-	times,
 	reverse,
 	repeat,
 	concat,
 } from 'tvs-libs/dist/utils/sequence'
-import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
+import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
 import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { partial, pipe } from 'tvs-libs/dist/fp/core'
-import { mul, Vec } from 'tvs-libs/dist/math/vectors'
-import { lineSegmentToPoints } from '../../shared-utils/geometry/lines'
+import { mul } from 'tvs-libs/dist/math/vectors'
+import { lineSegmentToPoints } from '../shared-utils/geometry/lines'
 
 initPerspectiveViewport({
 	position: [0, 10, 30],

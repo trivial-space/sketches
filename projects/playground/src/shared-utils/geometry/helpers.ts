@@ -5,7 +5,6 @@ import {
 	Quad,
 	extrudeBottom,
 	triangulate,
-	extrudeRight,
 } from 'tvs-libs/dist/geometry/quad'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { convertStackGLGeometry } from 'tvs-painter/dist/utils/stackgl'
@@ -16,7 +15,7 @@ const horzDiv = partial(divideHorizontal, 0.5, 0.5)
 
 export function subdivide(times = 1, quads: Quad[]): Quad[] {
 	for (let i = 0; i < times; i++) {
-		quads = flatten(quads.map(q => flatten(vertDiv(q).map(horzDiv))))
+		quads = flatten(quads.map((q) => flatten(vertDiv(q).map(horzDiv))))
 	}
 	return quads
 }

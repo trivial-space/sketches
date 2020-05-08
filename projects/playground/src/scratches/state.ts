@@ -1,8 +1,8 @@
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { State, events } from './context'
-import { set, addSystem } from '../../shared-utils/painterState'
+import { set, addSystem } from '../shared-utils/painterState'
 import { noise2d } from 'tvs-libs/dist/math/noise'
-import { walkLine, Line, lineSegment } from '../../shared-utils/geometry/lines'
+import { walkLine, lineSegment, Line } from '../shared-utils/geometry/lines'
 
 const last = <T>(arr: T[]) => arr[arr.length - 1]
 
