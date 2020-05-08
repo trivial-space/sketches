@@ -1,6 +1,5 @@
-import { Vec, dot, mul, add, cross } from 'tvs-libs/dist/math/vectors'
-import { quat, mat3, vec3 } from 'gl-matrix'
-import { sphereToCartesian3D, sphereCoord } from 'tvs-libs/dist/math/coords'
+import { Vec, mul, add, cross } from 'tvs-libs/dist/math/vectors'
+import { quat, vec3 } from 'gl-matrix'
 
 export interface LineSegment {
 	vertex: Vec
@@ -13,37 +12,47 @@ export type Line = LineSegment[]
 
 export interface LineStep {
 	length: number
-	polarAngleY: number
-	azimuthAngleZ: number
+	normalAngle?: number
+	directionAngle?: number
+	tangentAngle?: number
 }
 
 export function lineSegment({
 	vertex = [0, 0, 0],
-	normal = [-1, 0, 0],
+	normal = [0, 0, 1],
 	direction = [0, 1, 0],
 	length = 1,
 }: Partial<LineSegment> = {}): LineSegment {
 	return { vertex, normal, direction, length }
 }
 
-const rotQuatDelta = quat.create()
 const rotQuatNormal = quat.create()
 const rotQuatDirection = quat.create()
+const rotQuatTangent = quat.create()
 const rotQuat = quat.create()
-const standardDirection = sphereToCartesian3D(sphereCoord(1, 0, 0))
 
-export function walkLine(step: LineStep, segment = lineSegment()) {
-	const requestedDirection = sphereToCartesian3D(
-		sphereCoord(1, step.polarAngleY, step.azimuthAngleZ),
+const vec3Temp = vec3.create()
+export function walkLine(
+	{ length, directionAngle = 0, normalAngle = 0, tangentAngle = 0 }: LineStep,
+	segment = lineSegment(),
+) {
+	quat.setAxisAngle(rotQuatNormal, segment.normal as vec3, normalAngle)
+	quat.setAxisAngle(rotQuatDirection, segment.direction as vec3, directionAngle)
+	quat.setAxisAngle(
+		rotQuatTangent,
+		vec3.cross(vec3Temp, segment.direction as vec3, segment.normal as vec3),
+		tangentAngle,
 	)
-	quat.rotationTo(rotQuatDelta, standardDirection, requestedDirection)
-	// quat.rotationTo(rotQuatNormal, segment.normal, segment.direction)
-	// quat.multiply(rotQuatDirection, rotQuatDelta, rotQuatNormal)
+	quat.multiply(
+		rotQuat,
+		quat.multiply(rotQuat, rotQuatDirection, rotQuatNormal),
+		rotQuatTangent,
+	)
 
 	const newNormal = vec3.transformQuat(
 		vec3.create(),
 		segment.normal as vec3,
-		rotQuatDelta,
+		rotQuat,
 	)
 
 	vec3.normalize(newNormal, newNormal)
@@ -51,7 +60,7 @@ export function walkLine(step: LineStep, segment = lineSegment()) {
 	const newDirection = vec3.transformQuat(
 		vec3.create(),
 		segment.direction as vec3,
-		rotQuatDelta,
+		rotQuat,
 	)
 	vec3.normalize(newDirection, newDirection)
 
@@ -63,7 +72,7 @@ export function walkLine(step: LineStep, segment = lineSegment()) {
 		vertex: newVertex,
 		direction: newDirection,
 		normal: newNormal,
-		length: step.length,
+		length: length,
 	})
 }
 
