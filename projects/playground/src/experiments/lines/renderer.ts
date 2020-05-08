@@ -19,8 +19,8 @@ import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { partial, pipe } from 'tvs-libs/dist/fp/core'
-import { lineSegmentToPoints } from './lines'
-import { mul } from 'tvs-libs/dist/math/vectors'
+import { lineSegmentToPoints, LineSegment, Line } from './lines'
+import { mul, Vec } from 'tvs-libs/dist/math/vectors'
 
 initPerspectiveViewport({
 	position: [0, 10, 30],
@@ -105,10 +105,12 @@ addSystem<State>('renderer', (e, s) => {
 							flatMap(partial(lineSegmentToPoints, 0.4), s.lines.line1),
 						).concat(
 							flatten(
-								flatMap(
-									pipe(partial(lineSegmentToPoints, 0.4), reverse),
-									s.lines.line1,
-								).reverse(),
+								reverse(
+									flatMap(
+										pipe(partial(lineSegmentToPoints, 0.4), reverse),
+										s.lines.line1,
+									),
+								),
 							),
 						),
 					),
