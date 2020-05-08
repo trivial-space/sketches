@@ -2,6 +2,7 @@ import { Line, walkLine, lineSegment } from './lines'
 import { doTimes, times } from 'tvs-libs/dist/utils/sequence'
 import { State, events } from './context'
 import { set, addSystem } from '../../shared-utils/painterState'
+import { noise2d } from 'tvs-libs/dist/math/noise'
 
 const last = <T>(arr: T[]) => arr[arr.length - 1]
 
@@ -11,17 +12,18 @@ set<State>('lines', {
 
 addSystem<State>('lines', (e, s) => {
 	if (e === events.FRAME) {
-		s.lines.line1 = times((x) => x, 60).reduce(
-			(segments, _i) => {
+		s.lines.line1 = times((x) => x, 100).reduce(
+			(segments, i) => {
 				return segments.concat(
 					walkLine(
 						{
 							length: 1,
-							normalAngle: s.time / 10,
+							normalAngle: noise2d(i, s.time / 20) / 2,
 							// normalAngle: -0.1,
 							// directionAngle: Math.PI / 2,
 							// directionAngle: s.time / 2,
-							tangentAngle: 0.3,
+							tangentAngle: 0.1,
+							// directionAngle: 0.1,
 						},
 						last(segments),
 					),
