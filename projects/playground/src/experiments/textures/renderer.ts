@@ -10,7 +10,7 @@ import {
 import { painter, events, State, state } from './context'
 import { noiseShader, noise2Shader, lineShader } from './shaders'
 import { mat4 } from 'gl-matrix'
-import { makeXYPlane } from '../../shared-utils/geometry-helpers'
+import { makeXYPlane } from '../../shared-utils/geometry/helpers'
 import { planeFrag, planeVert } from './plane-shaders'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { makeClear } from 'tvs-painter/dist/utils/context'

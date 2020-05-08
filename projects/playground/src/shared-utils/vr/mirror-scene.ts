@@ -13,7 +13,7 @@ import {
 import { mat4 } from 'gl-matrix'
 import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
 import { getBlurByAlphaEffect } from '../../shared-utils/shaders/effects/blur'
-import { makeXZPlane } from '../../shared-utils/geometry-helpers'
+import { makeXZPlane } from '../../shared-utils/geometry/helpers'
 import { groundVert, makeGroundFrag } from './mirror-scene-shaders'
 import { TaggedFn2, TaggedFn3 } from '@thi.ng/shader-ast'
 

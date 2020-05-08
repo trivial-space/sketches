@@ -21,7 +21,10 @@ import { mat4 } from 'gl-matrix'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { partial, pipe } from 'tvs-libs/dist/fp/core'
 import { mul, Vec } from 'tvs-libs/dist/math/vectors'
-import { lineSegmentToPoints } from '../../shared-utils/geometry/lines'
+import {
+	lineSegmentToPoints,
+	lineToTriangleStripGeometry,
+} from '../../shared-utils/geometry/lines'
 
 initPerspectiveViewport({
 	position: [0, 10, 30],
@@ -99,39 +102,11 @@ addSystem<State>('renderer', (e, s) => {
 			itemCount: s.lines.line1.length,
 		})
 
-		form2.update({
-			attribs: {
-				position: {
-					buffer: new Float32Array(
-						flatten(
-							concat(
-								flatMap(partial(lineSegmentToPoints, 0.4), s.lines.line1),
-								flatMap(
-									pipe(partial(lineSegmentToPoints, 0.4), reverse),
-									s.lines.line1,
-								).reverse(),
-							),
-						),
-					),
-					storeType: 'DYNAMIC',
-				},
-				normal: {
-					buffer: new Float32Array(
-						flatten(
-							concat(
-								flatMap((s) => [s.normal, s.normal], s.lines.line1),
-								flatMap(
-									(s) => repeat(2, mul(-1, s.normal)),
-									s.lines.line1,
-								).reverse(),
-							),
-						),
-					),
-					storeType: 'DYNAMIC',
-				},
-			},
-			drawType: 'TRIANGLE_STRIP',
-			itemCount: s.lines.line1.length * 4,
-		})
+		form2.update(
+			lineToTriangleStripGeometry(s.lines.line1, {
+				withBackFace: true,
+				withNormals: true,
+			}),
+		)
 	}
 })

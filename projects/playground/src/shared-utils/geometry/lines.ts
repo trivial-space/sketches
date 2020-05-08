@@ -1,5 +1,14 @@
 import { Vec, mul, add, cross } from 'tvs-libs/dist/math/vectors'
 import { quat, vec3 } from 'gl-matrix'
+import {
+	flatMap,
+	flatten,
+	reverse,
+	repeat,
+	concat,
+} from 'tvs-libs/dist/utils/sequence'
+import { partial, pipe } from 'tvs-libs/dist/fp/core'
+import { FormData } from 'tvs-painter'
 
 export interface LineSegment {
 	vertex: Vec
@@ -84,4 +93,57 @@ export function lineSegmentToPoints(
 	const p1 = add(mul(-thickness, tangent), segment.vertex)
 	const p2 = add(mul(thickness, tangent), segment.vertex)
 	return [p1, p2]
+}
+
+// === FormData helpers ===
+
+interface opts {
+	withBackFace?: boolean
+	withNormals?: boolean
+	withUVs?: boolean
+}
+export function lineToTriangleStripGeometry(
+	line: Line,
+	{ withBackFace = false, withNormals = false, withUVs = false }: opts = {},
+): FormData {
+	const data: FormData = {
+		attribs: {
+			position: {
+				buffer: new Float32Array(
+					flatten(
+						concat(
+							flatMap(partial(lineSegmentToPoints, 0.4), line),
+							withBackFace
+								? flatMap(
+										pipe(partial(lineSegmentToPoints, 0.4), reverse),
+										line,
+								  ).reverse()
+								: [],
+						),
+					),
+				),
+				storeType: 'DYNAMIC',
+			},
+		},
+		drawType: 'TRIANGLE_STRIP',
+		itemCount: line.length * (withBackFace ? 4 : 2),
+	}
+
+	if (withNormals) {
+		data.attribs.normal = {
+			buffer: new Float32Array(
+				flatten(
+					concat(
+						flatMap((s) => [s.normal, s.normal], line),
+						withBackFace
+							? flatMap((s) => repeat(2, mul(-1, s.normal)), line).reverse()
+							: [],
+					),
+				),
+			),
+			storeType: 'DYNAMIC',
+		}
+	}
+
+	return data
 }
