@@ -10,5 +10,7 @@ repeat((tpf) => {
 	state.device.tpf = tpf
 	state.time += tpf / 1000
 	dispatch(events.FRAME)
-	painter.compose(scene).display(scene)
+	// painter.compose(scene).display(scene)
 }, 'loop')
+
+painter.compose(scene).display(scene)

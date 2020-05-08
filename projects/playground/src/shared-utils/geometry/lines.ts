@@ -104,6 +104,7 @@ interface opts {
 }
 export function lineToTriangleStripGeometry(
 	line: Line,
+	lineWidth: number,
 	{ withBackFace = false, withNormals = false, withUVs = false }: opts = {},
 ): FormData {
 	const data: FormData = {
@@ -112,10 +113,10 @@ export function lineToTriangleStripGeometry(
 				buffer: new Float32Array(
 					flatten(
 						concat(
-							flatMap(partial(lineSegmentToPoints, 0.4), line),
+							flatMap(partial(lineSegmentToPoints, lineWidth), line),
 							withBackFace
 								? flatMap(
-										pipe(partial(lineSegmentToPoints, 0.4), reverse),
+										pipe(partial(lineSegmentToPoints, lineWidth), reverse),
 										line,
 								  ).reverse()
 								: [],

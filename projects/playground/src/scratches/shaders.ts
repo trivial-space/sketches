@@ -16,6 +16,7 @@ import {
 	$xyz,
 	normalize,
 	vec3,
+	Vec2Sym,
 } from '@thi.ng/shader-ast'
 import { halfLambert } from '@thi.ng/shader-ast-stdlib'
 
@@ -28,30 +29,14 @@ let vNormal: Vec3Sym
 
 // Vertex
 
-let aPosition: Vec3Sym
-let aNormal: Vec3Sym
-let uTransform: Mat4Sym
-let uProjection: Mat4Sym
-let uNormalMatrix: Mat4Sym
-let uView: Mat4Sym
+let aPosition: Vec2Sym
 export const lineVert = vs(
 	// prettier-ignore
 	program([
-		(aPosition = input('vec3', 'position')),
-		(aNormal = input('vec3', 'normal')),
-
-		(uTransform = uniform('mat4', 'transform')),
-		(uProjection = uniform('mat4', 'projection')),
-		(uView = uniform('mat4', 'view')),
-		(uNormalMatrix = uniform('mat4', 'normalMatrix')),
-
-		(vNormal = output('vec3', 'vNormal')),
+		(aPosition = input('vec2', 'position')),
 
 		defMain(() => [
-			assign(vNormal, normalize($xyz(mul(uNormalMatrix, vec4(aNormal, 1))))),
-			assign(vs.gl_Position,
-				mul(mul(mul(uProjection, uView), uTransform), vec4(aPosition, 1))
-			),
+			assign(vs.gl_Position, vec4(aPosition, 0, 1)),
 		]),
 	]),
 )
@@ -63,13 +48,7 @@ export const lineFrag = fs(
 	program([
 		(vNormal = input('vec3', 'vNormal')),
 		defMain(() => [
-			assign(fs.gl_FragColor, vec4(
-				mul(
-					halfLambert(normalize(vNormal), vec3(0, -1, 0)),
-					vec3(1.0, 0.0, 0.0)
-				),
-				1.0)
-			),
+			assign(fs.gl_FragColor, vec4(vec3(1.0, 0.0, 0.0), 1.0)),
 		]),
 	]),
 )

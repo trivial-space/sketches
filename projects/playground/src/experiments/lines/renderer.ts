@@ -7,24 +7,12 @@ import {
 	addSystem,
 } from '../../shared-utils/painterState'
 import { painter, state, State, events } from './context'
-import {
-	flatMap,
-	flatten,
-	times,
-	reverse,
-	repeat,
-	concat,
-} from 'tvs-libs/dist/utils/sequence'
+import { flatMap } from 'tvs-libs/dist/utils/sequence'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { partial, pipe } from 'tvs-libs/dist/fp/core'
-import { mul, Vec } from 'tvs-libs/dist/math/vectors'
-import {
-	lineSegmentToPoints,
-	lineToTriangleStripGeometry,
-} from '../../shared-utils/geometry/lines'
+import { lineToTriangleStripGeometry } from '../../shared-utils/geometry/lines'
 
 initPerspectiveViewport({
 	position: [0, 10, 30],
@@ -103,7 +91,7 @@ addSystem<State>('renderer', (e, s) => {
 		})
 
 		form2.update(
-			lineToTriangleStripGeometry(s.lines.line1, {
+			lineToTriangleStripGeometry(s.lines.line1, 0.4, {
 				withBackFace: true,
 				withNormals: true,
 			}),
