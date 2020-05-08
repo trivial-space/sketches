@@ -13,6 +13,7 @@ import {
 	times,
 	reverse,
 	repeat,
+	concat,
 } from 'tvs-libs/dist/utils/sequence'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { lineFrag, lineVert } from './shaders'
@@ -102,15 +103,12 @@ addSystem<State>('renderer', (e, s) => {
 				position: {
 					buffer: new Float32Array(
 						flatten(
-							flatMap(partial(lineSegmentToPoints, 0.4), s.lines.line1),
-						).concat(
-							flatten(
-								reverse(
-									flatMap(
-										pipe(partial(lineSegmentToPoints, 0.4), reverse),
-										s.lines.line1,
-									),
-								),
+							concat(
+								flatMap(partial(lineSegmentToPoints, 0.4), s.lines.line1),
+								flatMap(
+									pipe(partial(lineSegmentToPoints, 0.4), reverse),
+									s.lines.line1,
+								).reverse(),
 							),
 						),
 					),
@@ -118,10 +116,14 @@ addSystem<State>('renderer', (e, s) => {
 				},
 				normal: {
 					buffer: new Float32Array(
-						flatten(flatMap((s) => [s.normal, s.normal], s.lines.line1)).concat(
-							flatten(
-								flatMap((s) => repeat(2, mul(-1, s.normal)), s.lines.line1),
-							).reverse(),
+						flatten(
+							concat(
+								flatMap((s) => [s.normal, s.normal], s.lines.line1),
+								flatMap(
+									(s) => repeat(2, mul(-1, s.normal)),
+									s.lines.line1,
+								).reverse(),
+							),
 						),
 					),
 					storeType: 'DYNAMIC',
