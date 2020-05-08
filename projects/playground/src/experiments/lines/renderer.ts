@@ -7,13 +7,14 @@ import {
 	addSystem,
 } from '../../shared-utils/painterState'
 import { painter, state, State, events } from './context'
-import { flatMap, flatten } from 'tvs-libs/dist/utils/sequence'
+import { flatMap, flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { partial } from 'tvs-libs/dist/fp/core'
 import { lineSegmentToPoints } from './lines'
+import { mul } from 'tvs-libs/dist/math/vectors'
 
 initPerspectiveViewport({
 	position: [0, 10, 30],
@@ -68,7 +69,8 @@ export const scene = getFrame(painter, 'scene').update({
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
 			clearBits: makeClear(painter.gl, 'depth', 'color'),
-			enable: [painter.gl.DEPTH_TEST],
+			cullFace: painter.gl.BACK,
+			enable: [painter.gl.DEPTH_TEST, painter.gl.CULL_FACE],
 		},
 	}),
 })
@@ -93,19 +95,35 @@ addSystem<State>('renderer', (e, s) => {
 			attribs: {
 				position: {
 					buffer: new Float32Array(
-						flatten(flatMap(partial(lineSegmentToPoints, 0.4), s.lines.line1)),
+						flatten(
+							flatMap(partial(lineSegmentToPoints, 0.4), s.lines.line1),
+						).concat(
+							flatten(
+								flatMap(
+									(seg) => lineSegmentToPoints(0.4, seg).reverse(),
+									s.lines.line1,
+								).reverse(),
+							),
+						),
 					),
 					storeType: 'DYNAMIC',
 				},
 				normal: {
 					buffer: new Float32Array(
-						flatten(flatMap((s) => [s.normal, s.normal], s.lines.line1)),
+						flatten(flatMap((s) => [s.normal, s.normal], s.lines.line1)).concat(
+							flatten(
+								flatMap(
+									(s) => times(() => mul(-1, s.normal), 2),
+									s.lines.line1,
+								),
+							).reverse(),
+						),
 					),
 					storeType: 'DYNAMIC',
 				},
 			},
 			drawType: 'TRIANGLE_STRIP',
-			itemCount: s.lines.line1.length * 2,
+			itemCount: s.lines.line1.length * 4,
 		})
 	}
 })

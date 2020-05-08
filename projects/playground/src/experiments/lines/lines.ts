@@ -81,7 +81,7 @@ export function lineSegmentToPoints(
 	segment: LineSegment,
 ) {
 	const tangent = cross(segment.normal, segment.direction)
-	const p1 = add(mul(thickness, tangent), segment.vertex)
-	const p2 = add(mul(-thickness, tangent), segment.vertex)
+	const p1 = add(mul(-thickness, tangent), segment.vertex)
+	const p2 = add(mul(thickness, tangent), segment.vertex)
 	return [p1, p2]
 }
