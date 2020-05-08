@@ -1,5 +1,5 @@
 import { Line, walkLine, lineSegment } from './lines'
-import { doTimes, times } from 'tvs-libs/dist/utils/sequence'
+import { times } from 'tvs-libs/dist/utils/sequence'
 import { State, events } from './context'
 import { set, addSystem } from '../../shared-utils/painterState'
 import { noise2d } from 'tvs-libs/dist/math/noise'

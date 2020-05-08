@@ -7,12 +7,18 @@ import {
 	addSystem,
 } from '../../shared-utils/painterState'
 import { painter, state, State, events } from './context'
-import { flatMap, flatten, times } from 'tvs-libs/dist/utils/sequence'
+import {
+	flatMap,
+	flatten,
+	times,
+	reverse,
+	repeat,
+} from 'tvs-libs/dist/utils/sequence'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { partial } from 'tvs-libs/dist/fp/core'
+import { partial, pipe } from 'tvs-libs/dist/fp/core'
 import { lineSegmentToPoints } from './lines'
 import { mul } from 'tvs-libs/dist/math/vectors'
 
@@ -100,7 +106,7 @@ addSystem<State>('renderer', (e, s) => {
 						).concat(
 							flatten(
 								flatMap(
-									(seg) => lineSegmentToPoints(0.4, seg).reverse(),
+									pipe(partial(lineSegmentToPoints, 0.4), reverse),
 									s.lines.line1,
 								).reverse(),
 							),
@@ -112,10 +118,7 @@ addSystem<State>('renderer', (e, s) => {
 					buffer: new Float32Array(
 						flatten(flatMap((s) => [s.normal, s.normal], s.lines.line1)).concat(
 							flatten(
-								flatMap(
-									(s) => times(() => mul(-1, s.normal), 2),
-									s.lines.line1,
-								),
+								flatMap((s) => repeat(2, mul(-1, s.normal)), s.lines.line1),
 							).reverse(),
 						),
 					),

@@ -4,9 +4,10 @@ import { pushTransition } from '../../shared-utils/transitions'
 import { sign } from 'tvs-libs/dist/math/core'
 import { getRollQuat, getYawQuat } from 'tvs-libs/dist/math/geometry'
 import { normalRand, randInt } from 'tvs-libs/dist/math/random'
-import { doTimes, map, pickRandom, times } from 'tvs-libs/dist/utils/sequence'
+import { doTimes, pickRandom, times } from 'tvs-libs/dist/utils/sequence'
 import { events, State } from '../context'
 import { Set, sets, specs, TileSpec } from './data'
+import { mapObj } from 'tvs-libs/dist/utils/object'
 
 type Color = number[]
 type Position = [number, number]
@@ -88,7 +89,7 @@ class TileState {
 				next === 0
 					? pushTransition({
 							duration: 300,
-							onUpdate: p => {
+							onUpdate: (p) => {
 								this.connections[index] = Math.max(
 									0,
 									this.connections[index] - p,
@@ -103,7 +104,7 @@ class TileState {
 					  })
 					: pushTransition({
 							duration: 300,
-							onUpdate: p => {
+							onUpdate: (p) => {
 								this.connections[index] = Math.min(
 									1,
 									this.connections[index] + p,
@@ -126,7 +127,7 @@ class TileState {
 			const nIndex = neighbour ? (i + 6 - neighbour.turn) % 4 : 0
 			pushTransition({
 				duration: 300,
-				onUpdate: p => {
+				onUpdate: (p) => {
 					this.connections[i] = Math.max(0, this.connections[i] - p)
 					if (neighbour) {
 						neighbour.connections[nIndex] = Math.max(
@@ -173,9 +174,9 @@ addSystem<State>('tiles', (e, s) => {
 			t.images = {}
 			Promise.all(
 				Object.values(
-					map(
+					mapObj(
 						(_n, key) =>
-							new Promise(res => {
+							new Promise((res) => {
 								const img = new Image()
 								img.onload = res
 								img.src = 'img/' + specs[key].file + '.jpg'
@@ -243,7 +244,7 @@ function makeGrid(
 		const up = Math.floor(heightDiff / 2)
 		const down = heightDiff - up
 
-		grid.forEach(row => {
+		grid.forEach((row) => {
 			row.unshift(...times(createTile, up))
 			row.push(...times(createTile, down))
 		})
@@ -276,8 +277,8 @@ function createActiveTiles(t: Tiles) {
 	const offX = ((t.colCount + 1) % 2) * 0.5
 	const offY = (t.rowCount % 2) * 0.5 + 0.5
 
-	doTimes(x => {
-		doTimes(y => {
+	doTimes((x) => {
+		doTimes((y) => {
 			const tile = t.grid[x + activeCols][y + activeRows]
 			if (tile) {
 				const [iX, iY] = tile.gridIndex
@@ -290,7 +291,7 @@ function createActiveTiles(t: Tiles) {
 		}, t.rowCount)
 	}, t.colCount)
 
-	tiles.forEach(t => t.connect())
+	tiles.forEach((t) => t.connect())
 
 	dispatch(events.NEW_ACTIVE_TILES)
 }
@@ -311,7 +312,7 @@ export function updateTiles(t: Tiles) {
 			pushTransition({
 				duration,
 				easeFn: smooth,
-				onUpdate: rot => {
+				onUpdate: (rot) => {
 					tile.roll += ((rot * Math.PI) / 2) * dir
 					tile.updateTransform = true
 				},
@@ -329,7 +330,7 @@ export function updateTiles(t: Tiles) {
 			pushTransition({
 				duration,
 				easeFn: rotateHalf,
-				onUpdate: rise => {
+				onUpdate: (rise) => {
 					tile.height += rise * t.liftHeight
 					tile.updateTransform = true
 				},
@@ -343,7 +344,7 @@ export function updateTiles(t: Tiles) {
 				easeFn: t.flipped ? acc : slow,
 				delay: tile.yawDelay,
 				onStart: () => tile.disconnect(),
-				onUpdate: rot => {
+				onUpdate: (rot) => {
 					tile.yaw += rot * Math.PI
 					tile.height += rot * t.sinkHeight * (tile.flipped ? 1 : -1)
 					tile.updateTransform = true
