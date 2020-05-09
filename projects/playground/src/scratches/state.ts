@@ -11,6 +11,10 @@ function easeOutQuad(x: number) {
 
 const last = <T>(arr: T[]) => arr[arr.length - 1]
 
+function window<A>(n: number, arr: A[]) {
+	return arr.slice(n - 1).map((a, i) => times((j) => arr[i + j], n))
+}
+
 export function line(
 	start: [number, number],
 	end: [number, number],
@@ -36,8 +40,15 @@ export function line(
 		})
 		.concat([end])
 
-	console.log(distortStrengths)
-	return points
+	return window(2, points)
+		.map(([p1, p2]) => {
+			let v = sub(p2, p1)
+			let l = length(v)
+			return lineSegment({ vertex: p1, length: l, direction: mul(1 / l, v) })
+		})
+		.concat([
+			lineSegment({ vertex: end, direction: dir, length: 1 / (fragments * 3) }),
+		])
 }
 
 function scratchPatch(width: number, height: number, lines: number) {}

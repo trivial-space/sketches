@@ -11,6 +11,7 @@ import { mat4 } from 'gl-matrix'
 import { lineToTriangleStripGeometry } from '../shared-utils/geometry/lines'
 import { line } from './state'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
+import { clamp } from 'tvs-libs/dist/math/core'
 
 const shade = getShade(painter, 'line').update({
 	vert: lineVert,
@@ -19,15 +20,22 @@ const shade = getShade(painter, 'line').update({
 
 const linePoints = line([-0.5, 0], [0.5, 0], 30)
 
-const form2 = getForm(painter, 'line2').update({
-	attribs: {
-		position: {
-			buffer: new Float32Array(flatten(linePoints)),
-		},
-	},
-	drawType: 'LINE_STRIP',
-	itemCount: linePoints.length,
-})
+// const form2 = getForm(painter, 'line2').update({
+// 	attribs: {
+// 		position: {
+// 			buffer: new Float32Array(flatten(linePoints)),
+// 		},
+// 	},
+// 	drawType: 'LINE_STRIP',
+// 	itemCount: linePoints.length,
+// })
+const data = lineToTriangleStripGeometry(
+	linePoints,
+	(seg) => clamp(0.0001, 0.01, 1 / (30 * 30 * 30) / seg.length),
+	// (seg) => 0.01,
+)
+console.log(data, linePoints)
+const form2 = getForm(painter, 'line2').update(data)
 
 const sketch2 = getSketch(painter, 'line2').update({
 	form: form2,

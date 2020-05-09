@@ -86,10 +86,14 @@ export function walkLine(
 }
 
 export function lineSegmentToPoints(
-	thickness: number = 1,
+	thickness: number | ((seg: LineSegment) => number) = 1,
 	segment: LineSegment,
 ) {
-	const tangent = cross(segment.normal, segment.direction)
+	thickness = typeof thickness === 'number' ? thickness : thickness(segment)
+	const tangent =
+		segment.direction.length === 2
+			? [segment.direction[1], -segment.direction[0]]
+			: cross(segment.normal, segment.direction)
 	const p1 = add(mul(-thickness, tangent), segment.vertex)
 	const p2 = add(mul(thickness, tangent), segment.vertex)
 	return [p1, p2]
@@ -104,7 +108,7 @@ interface opts {
 }
 export function lineToTriangleStripGeometry(
 	line: Line,
-	lineWidth: number,
+	lineWidth: number | ((seg: LineSegment) => number),
 	{ withBackFace = false, withNormals = false, withUVs = false }: opts = {},
 ): FormData {
 	const data: FormData = {
