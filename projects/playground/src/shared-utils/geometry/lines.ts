@@ -6,9 +6,10 @@ import {
 	reverse,
 	repeat,
 	concat,
+	times,
 } from 'tvs-libs/dist/utils/sequence'
 import { partial, pipe } from 'tvs-libs/dist/fp/core'
-import { FormData } from 'tvs-painter'
+import { FormData, FormBufferStore, FormStoreType } from 'tvs-painter'
 
 export interface LineSegment {
 	vertex: Vec
@@ -105,11 +106,17 @@ interface opts {
 	withBackFace?: boolean
 	withNormals?: boolean
 	withUVs?: boolean
+	storeType?: FormStoreType
 }
 export function lineToTriangleStripGeometry(
 	line: Line,
 	lineWidth: number | ((seg: LineSegment) => number),
-	{ withBackFace = false, withNormals = false, withUVs = false }: opts = {},
+	{
+		withBackFace = false,
+		withNormals = false,
+		withUVs = false,
+		storeType,
+	}: opts = {},
 ): FormData {
 	const data: FormData = {
 		attribs: {
@@ -127,7 +134,7 @@ export function lineToTriangleStripGeometry(
 						),
 					),
 				),
-				storeType: 'DYNAMIC',
+				storeType,
 			},
 		},
 		drawType: 'TRIANGLE_STRIP',
@@ -146,7 +153,39 @@ export function lineToTriangleStripGeometry(
 					),
 				),
 			),
-			storeType: 'DYNAMIC',
+			storeType,
+		}
+	}
+
+	if (withUVs) {
+		data.attribs.uv = {
+			buffer: new Float32Array(
+				flatten(
+					concat(
+						flatten(
+							times(
+								(i) => [
+									[0, i / line.length],
+									[1, i / line.length],
+								],
+								line.length,
+							),
+						),
+						withBackFace
+							? flatten(
+									times(
+										(i) => [
+											[1, i / line.length],
+											[0, i / line.length],
+										],
+										line.length,
+									),
+							  ).reverse()
+							: [],
+					),
+				),
+			),
+			storeType,
 		}
 	}
 

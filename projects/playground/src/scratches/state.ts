@@ -68,7 +68,7 @@ export function scratchPatch(width: number, height: number, steps: number) {
 	const seedY = Math.random() * 20
 
 	const deltaX = (i: number) => (width / 8) * noise2d(i, seedX)
-	const deltaY = (i: number) => (step / 2) * noise2d(i, seedX)
+	const deltaY = (i: number) => (step / 2) * noise2d(i, seedY)
 
 	const lines = flatten(
 		times(

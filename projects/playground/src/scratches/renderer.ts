@@ -12,6 +12,7 @@ import { lineToTriangleStripGeometry } from '../shared-utils/geometry/lines'
 import { line, scratchPatch } from './state'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { clamp } from 'tvs-libs/dist/math/core'
+import { getNoiseTextureData } from '../shared-utils/texture-helpers'
 
 const shade = getShade(painter, 'line').update({
 	vert: lineVert,
@@ -35,14 +36,30 @@ const data = lineToTriangleStripGeometry(
 	(seg) =>
 		20 * clamp(0.001, 0.0028, 1 / (30 * 30) / Math.pow(seg.length, 0.29)),
 	// (seg) => 0.025,
+	{ withUVs: true },
 )
-console.log(data, linePoints)
 const form2 = getForm(painter, 'line2').update(data)
+
+export const noiseTexFrame = getFrame(painter, 'noiseTex').update({
+	texture: getNoiseTextureData({
+		width: 256,
+		height: 256,
+		startX: 3,
+		startY: 3,
+		data: {
+			magFilter: 'LINEAR',
+			minFilter: 'LINEAR',
+			wrap: 'REPEAT',
+		},
+	}),
+})
 
 const sketch2 = getSketch(painter, 'line2').update({
 	form: form2,
 	shade,
-	uniforms: {},
+	uniforms: {
+		noiseTex: noiseTexFrame.image(),
+	},
 })
 
 // === scene ===
@@ -52,6 +69,7 @@ export const scene = getFrame(painter, 'scene').update({
 		sketches: [sketch2],
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
+			enable: [painter.gl.BLEND],
 		},
 	}),
 })

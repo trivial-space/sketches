@@ -5,6 +5,7 @@ import { events, painter, state } from './context'
 import { scene } from './renderer'
 
 state.time = 0
+state.device.sizeMultiplier = 2
 
 repeat((tpf) => {
 	state.device.tpf = tpf

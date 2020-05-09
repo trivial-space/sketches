@@ -7,7 +7,7 @@ import {
 	addSystem,
 } from '../../shared-utils/painterState'
 import { painter, state, State, events } from './context'
-import { flatMap } from 'tvs-libs/dist/utils/sequence'
+import { flatMap, times, flatten } from 'tvs-libs/dist/utils/sequence'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
@@ -85,6 +85,17 @@ addSystem<State>('renderer', (e, s) => {
 					buffer: new Float32Array(flatMap((s) => s.normal, s.lines.line1)),
 					storeType: 'DYNAMIC',
 				},
+				uv: {
+					buffer: new Float32Array(
+						flatten(
+							times(
+								(i) => [i / s.lines.line1.length, i / s.lines.line1.length],
+								s.lines.line1.length,
+							),
+						),
+					),
+					storeType: 'DYNAMIC',
+				},
 			},
 			drawType: 'LINE_STRIP',
 			itemCount: s.lines.line1.length,
@@ -94,6 +105,8 @@ addSystem<State>('renderer', (e, s) => {
 			lineToTriangleStripGeometry(s.lines.line1, 0.4, {
 				withBackFace: true,
 				withNormals: true,
+				withUVs: true,
+				storeType: 'DYNAMIC',
 			}),
 		)
 	}
