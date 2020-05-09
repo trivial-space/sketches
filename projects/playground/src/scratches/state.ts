@@ -1,4 +1,4 @@
-import { times, repeat, zip } from 'tvs-libs/dist/utils/sequence'
+import { times, repeat, zip, flatten } from 'tvs-libs/dist/utils/sequence'
 import { State, events } from './context'
 import { set, addSystem } from '../shared-utils/painterState'
 import { noise2d, noise1d } from 'tvs-libs/dist/math/noise'
@@ -7,6 +7,12 @@ import { normalize, add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
 
 function easeOutQuad(x: number) {
 	return 1 - (1 - x) * (1 - x)
+}
+function easeInOutQuint(x: number): number {
+	return x < 0.5 ? 16 * x * x * x * x * x : 1 - Math.pow(-2 * x + 2, 5) / 2
+}
+function easeInOutQuart(x: number): number {
+	return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2
 }
 
 const last = <T>(arr: T[]) => arr[arr.length - 1]
@@ -26,11 +32,11 @@ export function line(
 	const normal = [dir[1], -dir[0]]
 
 	const parts = repeat(fragments, 1 / fragments).map((x, i) => x * i)
-	const steps = parts.map(easeOutQuad).map((x) => x * len)
+	const steps = parts.map(easeInOutQuart).map((x) => x * len)
 
 	const seed = Math.random() * 10
 	const distortStrengths = parts.map(
-		(x) => (Math.sin(x * Math.PI) * noise2d(x * 3, seed) * len) / fragments,
+		(x) => (Math.sin(x * Math.PI) * noise2d(x * 3, seed) * len) / 3 / fragments,
 	)
 
 	const points = zip((a, b) => [a, b], steps, distortStrengths)
@@ -51,7 +57,45 @@ export function line(
 		])
 }
 
-function scratchPatch(width: number, height: number, lines: number) {}
+export function scratchPatch(width: number, height: number, steps: number) {
+	const step = height / steps
+	const start = [-width / 2, -height / 2]
+	const end = [width / 2, -height / 2 + step / 2]
+	const [sX, sY] = start
+	const [eX, eY] = end
+
+	const seedX = Math.random() * 20
+	const seedY = Math.random() * 20
+
+	const deltaX = (i: number) => (width / 8) * noise2d(i, seedX)
+	const deltaY = (i: number) => (step / 2) * noise2d(i, seedX)
+
+	const lines = flatten(
+		times(
+			(i) =>
+				[
+					[
+						[sX + deltaX(i), sY + step * i + deltaY(i)],
+						[eX + deltaX(i + steps), eY + step * i + deltaY(i + steps)],
+					],
+					[
+						[eX + deltaX(i + steps), eY + step * i + deltaY(i + steps)],
+						[sX + deltaX(i + 1), sY + step * (i + 1) + deltaY(i + 1)],
+					],
+				] as const,
+			steps,
+		),
+	)
+		.concat([
+			[
+				[sX + deltaX(steps), sY + height + deltaY(steps)],
+				[eX + deltaX(steps + steps), eY + height + deltaY(steps + steps)],
+			],
+		] as const)
+		.flatMap(([p1, p2]) => line(p1 as any, p2 as any, 20))
+
+	return lines
+}
 
 set<State>('lines', {
 	line1: [],

@@ -1,6 +1,6 @@
 import './state'
 import { repeat } from '../shared-utils/scheduler'
-import { get, dispatch } from '../shared-utils/painterState'
+import { get, dispatch, addSystem } from '../shared-utils/painterState'
 import { events, painter, state } from './context'
 import { scene } from './renderer'
 
@@ -13,4 +13,8 @@ repeat((tpf) => {
 	// painter.compose(scene).display(scene)
 }, 'loop')
 
-painter.compose(scene).display(scene)
+addSystem('index', (e) => {
+	if (e === events.RESIZE) {
+		painter.compose(scene).display(scene)
+	}
+})
