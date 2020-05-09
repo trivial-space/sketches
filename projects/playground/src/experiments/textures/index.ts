@@ -3,7 +3,7 @@ import { painter, events, state } from './context'
 import { repeat } from '../../shared-utils/scheduler'
 import { scene, noiseFrame, noiseTex2Frame, lineTexFrame } from './renderer'
 
-repeat(tpf => {
+repeat((tpf) => {
 	const d = state.device
 	d.tpf = tpf
 	dispatch(events.FRAME)
