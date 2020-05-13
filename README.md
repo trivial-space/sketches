@@ -9,9 +9,9 @@ improve the technical workflow for creating and developing such virtual
 exhibition spaces. During a long research and learning period, some
 interconnected programming libraries and tools evolved, that improve the
 creation of web based virtual reality by code. Together they enable a live
-coding environment for WebGL scenes, that allows hot JavaScript and shader code
-reloading as well as application and WebGL state preservation in live coding
-sessions.
+coding environment for WebGL scenes, with hot JavaScript and shader code
+reloading as well as controlled application and WebGL state preservation in live
+coding sessions.
 
 This workflow builds on following libraries:
 
@@ -21,8 +21,8 @@ This workflow builds on following libraries:
   functions and helpers.
 
 This playground is the primary testing environment for these libraries. Here
-first experiments are tested, while working both on the programming tools as
-well as on artistic expressions.
+first experiments are run, while working both on the programming tools as well
+as on artistic expressions.
 
 Basically everything here is work in progress. There are some satisfying
 intermediate results that are published frequently to
@@ -39,8 +39,7 @@ main places where progress and updates can be observed.
 To install the playground locally and play with the sketches and technologies,
 clone this repository, and run
 
-    git submodule init
-    git submodule update
+    yarn git-init
     yarn install
     yarn start
 
@@ -55,7 +54,7 @@ others pioneering immersive WebGL experiences.
 
 A special thanks goes to the people and teams behind
 [TypeScript](https://github.com/Microsoft/TypeScript) and
-[Webpack](https://github.com/webpack/webpack). These tools provid a major
+[Webpack](https://github.com/webpack/webpack). These tools provide a major
 upgrade in terms of productivity and development comfort.
 
 ## License
