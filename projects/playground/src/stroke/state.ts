@@ -57,7 +57,7 @@ export function line(
 		])
 }
 
-export function scratchPatch(width: number, height: number, steps: number) {
+export function strokePatch(width: number, height: number, steps: number) {
 	const step = height / steps
 	const start = [-width / 2, -height / 2]
 	const end = [width / 2, -height / 2 + step / 2]

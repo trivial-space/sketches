@@ -9,7 +9,7 @@ import { painter, state } from './context'
 import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { lineToTriangleStripGeometry } from '../shared-utils/geometry/lines'
-import { line, scratchPatch } from './state'
+import { line, strokePatch } from './state'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { clamp } from 'tvs-libs/dist/math/core'
 import { getNoiseTextureData } from '../shared-utils/texture-helpers'
@@ -20,7 +20,7 @@ const shade = getShade(painter, 'line').update({
 })
 
 // const linePoints = line([-0.5, 0], [0.5, 0], 30)
-const linePoints = scratchPatch(1, 1, 5)
+const linePoints = strokePatch(1, 1, 5)
 
 // const form2 = getForm(painter, 'line2').update({
 // 	attribs: {
