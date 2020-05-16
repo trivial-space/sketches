@@ -22,15 +22,6 @@ const shade = getShade(painter, 'line').update({
 // const linePoints = line([-0.5, 0], [0.5, 0], 30)
 const linePoints = strokePatch(1, 1, 5)
 
-// const form2 = getForm(painter, 'line2').update({
-// 	attribs: {
-// 		position: {
-// 			buffer: new Float32Array(flatten(linePoints)),
-// 		},
-// 	},
-// 	drawType: 'LINE_STRIP',
-// 	itemCount: linePoints.length,
-// })
 const data = lineToTriangleStripGeometry(
 	linePoints,
 	(seg) =>
@@ -38,7 +29,7 @@ const data = lineToTriangleStripGeometry(
 	// (seg) => 0.025,
 	{ withUVs: true },
 )
-const form2 = getForm(painter, 'line2').update(data)
+const form = getForm(painter, 'line').update(data)
 
 export const noiseTexFrame = getFrame(painter, 'noiseTex').update({
 	texture: getNoiseTextureData({
@@ -54,8 +45,8 @@ export const noiseTexFrame = getFrame(painter, 'noiseTex').update({
 	}),
 })
 
-const sketch2 = getSketch(painter, 'line2').update({
-	form: form2,
+const sketch = getSketch(painter, 'line').update({
+	form: form,
 	shade,
 	uniforms: {
 		noiseTex: noiseTexFrame.image(),
@@ -66,7 +57,7 @@ const sketch2 = getSketch(painter, 'line2').update({
 
 export const scene = getFrame(painter, 'scene').update({
 	layers: getLayer(painter, 'scene').update({
-		sketches: [sketch2],
+		sketches: [sketch],
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
 			enable: [painter.gl.BLEND],
