@@ -40,19 +40,36 @@ const rotQuatNormal = quat.create()
 const rotQuatDirection = quat.create()
 const rotQuatTangent = quat.create()
 const rotQuat = quat.create()
+const identityQuat = quat.identity(quat.create())
 
 const vec3Temp = vec3.create()
 export function walkLine(
 	{ length, directionAngle = 0, normalAngle = 0, tangentAngle = 0 }: LineStep,
 	segment = lineSegment(),
 ) {
-	quat.setAxisAngle(rotQuatNormal, segment.normal as vec3, normalAngle)
-	quat.setAxisAngle(rotQuatDirection, segment.direction as vec3, directionAngle)
-	quat.setAxisAngle(
-		rotQuatTangent,
-		vec3.cross(vec3Temp, segment.direction as vec3, segment.normal as vec3),
-		tangentAngle,
-	)
+	if (normalAngle) {
+		quat.setAxisAngle(rotQuatNormal, segment.normal as vec3, normalAngle)
+	} else {
+		quat.identity(rotQuatNormal)
+	}
+	if (directionAngle) {
+		quat.setAxisAngle(
+			rotQuatDirection,
+			segment.direction as vec3,
+			directionAngle,
+		)
+	} else {
+		quat.identity(rotQuatDirection)
+	}
+	if (tangentAngle) {
+		quat.setAxisAngle(
+			rotQuatTangent,
+			vec3.cross(vec3Temp, segment.direction as vec3, segment.normal as vec3),
+			tangentAngle,
+		)
+	} else {
+		quat.identity(rotQuatTangent)
+	}
 	quat.multiply(
 		rotQuat,
 		quat.multiply(rotQuat, rotQuatDirection, rotQuatNormal),
