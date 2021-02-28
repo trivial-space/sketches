@@ -101,7 +101,7 @@ export class PerspectiveCamera extends Camera {
 	}
 }
 
-export function WithKeyNavigation<T extends Constructor<Camera>>(Cam: T) {
+export function WithInputNavigation<T extends Constructor<Camera>>(Cam: T) {
 	return class extends Cam {
 		updatePosFromInput(speed: number, keys?: KeyState, pointer?: PointerState) {
 			if (!(keys || pointer)) return
@@ -129,7 +129,7 @@ export function WithKeyNavigation<T extends Constructor<Camera>>(Cam: T) {
 	}
 }
 
-export function WithMouseRotation<T extends Constructor<Camera>>(Cam: T) {
+export function WithInputRotation<T extends Constructor<Camera>>(Cam: T) {
 	return class extends Cam {
 		_oldMouse = { x: 0, y: 0 }
 

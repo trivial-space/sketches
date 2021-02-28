@@ -1,8 +1,8 @@
-import { addSystem, set, BaseState, baseEvents } from '../painterState'
+import { BaseState, baseEvents, PainterContext } from '../painterState'
 import {
 	PerspectiveCamera,
-	WithKeyNavigation,
-	WithMouseRotation,
+	WithInputNavigation,
+	WithInputRotation,
 } from './camera'
 
 export interface PerspectiveViewportState extends BaseState {
@@ -12,42 +12,11 @@ export interface PerspectiveViewportState extends BaseState {
 export class ViewPort {
 	moveSpeed = 2
 	lookSpeed = 2
-	camera = new (WithKeyNavigation(WithMouseRotation(PerspectiveCamera)))({
+	camera = new (WithInputNavigation(WithInputRotation(PerspectiveCamera)))({
 		fovy: Math.PI * 0.3,
 		position: [0, 0, 5],
 	})
 }
-
-addSystem<PerspectiveViewportState>('viewPort', (e, s) => {
-	const v = s.viewPort
-	switch (e) {
-		case baseEvents.FRAME:
-			const d = s.device
-			const tpf = d.tpf / 1000
-
-			v.camera.updatePosFromInput(
-				v.moveSpeed * tpf,
-				s.device.keys,
-				s.device.pointer,
-			)
-
-			const p = d.pointer
-			const dragInfo = {
-				dragging: p.dragging,
-				drag: {
-					x: (d.sizeMultiplier * p.drag.x) / d.canvas.width,
-					y: (d.sizeMultiplier * p.drag.y) / d.canvas.height,
-				},
-			}
-			v.camera.updateRotFromPointer(v.lookSpeed, dragInfo)
-			v.camera.update()
-			return
-
-		case baseEvents.RESIZE:
-			v.camera.aspect = s.device.canvas.width / s.device.canvas.height
-			v.camera.needsUpdateProjection = true
-	}
-})
 
 interface InitOpts {
 	moveSpeed?: number
@@ -58,14 +27,10 @@ interface InitOpts {
 	rotationX?: number
 }
 
-export function initPerspectiveViewport({
-	lookSpeed,
-	moveSpeed,
-	position,
-	rotationY,
-	rotationX,
-	fovy,
-}: InitOpts = {}) {
+export function initPerspectiveViewport(
+	ctx: PainterContext<PerspectiveViewportState>,
+	{ lookSpeed, moveSpeed, position, rotationY, rotationX, fovy }: InitOpts = {},
+) {
 	const v = new ViewPort()
 	if (lookSpeed) {
 		v.lookSpeed = lookSpeed
@@ -89,7 +54,31 @@ export function initPerspectiveViewport({
 		v.camera.rotationY = rotationY
 		v.camera.updateRotationY()
 	}
-	set<PerspectiveViewportState>('viewPort', v, {
+
+	ctx.set('viewPort', v, {
 		reset: { moveSpeed: true, lookSpeed: true },
+	})
+
+	ctx.listen('viewPort', baseEvents.FRAME, ({ device: d, viewPort: v }) => {
+		const tpf = d.tpf / 1000
+
+		v.camera.updatePosFromInput(v.moveSpeed * tpf, d.keys, d.pointer)
+
+		const p = d.pointer
+		const dragInfo = {
+			dragging: p.dragging,
+			drag: {
+				x: (d.sizeMultiplier * p.drag.x) / d.canvas.width,
+				y: (d.sizeMultiplier * p.drag.y) / d.canvas.height,
+			},
+		}
+		v.camera.updateRotFromPointer(v.lookSpeed, dragInfo)
+		v.camera.update()
+		return
+	})
+
+	ctx.listen('viewPort', baseEvents.RESIZE, ({ device: d, viewPort: v }) => {
+		v.camera.aspect = d.canvas.width / d.canvas.height
+		v.camera.needsUpdateProjection = true
 	})
 }

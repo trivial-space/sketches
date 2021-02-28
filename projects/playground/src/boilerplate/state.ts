@@ -1,8 +1,7 @@
 import { mat4 } from 'gl-matrix'
-import { addSystem, set } from '../shared-utils/painterState'
 import { normalRand } from 'tvs-libs/dist/math/random'
 import { times } from 'tvs-libs/lib/utils/sequence'
-import { events, State } from './context'
+import { events, $ } from './context'
 
 export class Quad {
 	transform = mat4.create()
@@ -16,14 +15,10 @@ export class Entities {
 	quad = new Quad()
 }
 
-addSystem<State>('entities', (e, s) => {
+$.listen('entities', events.FRAME, (s) => {
 	const en = s.entities
-	switch (e) {
-		case events.FRAME:
-			const tpf = s.device.tpf
-			en.quad.update(tpf)
-			return
-	}
+	const tpf = s.device.tpf
+	en.quad.update(tpf)
 })
 
-set<State>('entities', new Entities(), { reset: { quad: { color: true } } })
+$.set('entities', new Entities(), { reset: { quad: { color: true } } })
