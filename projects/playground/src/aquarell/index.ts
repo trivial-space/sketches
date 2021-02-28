@@ -1,13 +1,12 @@
-import { dispatch, get } from '../shared-utils/painterState'
 import { repeat } from '../shared-utils/scheduler'
-import { events, painter } from './context'
+import { events, Q } from './context'
 import './paint'
 import { automaton } from './renderer'
 
-repeat(tpf => {
-	get('device').tpf = tpf
-	dispatch(events.PROCESS_PAINT)
-	dispatch(events.FRAME)
-	painter.compose(automaton).display(automaton)
-	dispatch(events.CLEANUP_PAINT)
+repeat((tpf) => {
+	Q.get('device').tpf = tpf
+	Q.emit(events.PROCESS_PAINT)
+	Q.emit(events.FRAME)
+	Q.painter.compose(automaton).display(automaton)
+	Q.emit(events.CLEANUP_PAINT)
 }, 'loop')

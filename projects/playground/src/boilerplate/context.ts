@@ -8,7 +8,7 @@ export interface State extends PerspectiveViewportState {
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 
-export const $ = getPainterContext<State>(canvas)
+export const Q = getPainterContext<State>(canvas)
 
 export const events = {
 	...baseEvents,

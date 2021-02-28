@@ -1,9 +1,8 @@
 import './state/ground'
 import './state/screens'
 
-import { dispatch, get } from '../shared-utils/painterState'
 import { repeat } from '../shared-utils/scheduler'
-import { events, painter } from './context'
+import { events, Q } from './context'
 import {
 	mirrorScene,
 	scene,
@@ -13,24 +12,24 @@ import {
 } from './renderer'
 import { videos } from './state/videos'
 
-const d = get('device')
+const d = Q.get('device')
 // d.sizeMultiplier = 1.5
 
-videos.then(vs => {
+videos.then((vs) => {
 	function startVideos() {
-		vs.forEach(v => v.play())
+		vs.forEach((v) => v.play())
 		d.canvas.removeEventListener('mousedown', startVideos)
 		d.canvas.removeEventListener('touchstart', startVideos)
 	}
 	d.canvas.addEventListener('mousedown', startVideos)
 	d.canvas.addEventListener('touchstart', startVideos)
 
-	repeat(tpf => {
+	repeat((tpf) => {
 		d.tpf = tpf
-		dispatch(events.FRAME)
+		Q.emit(events.FRAME)
 		videoTextures.forEach((t, i) =>
 			t.update({ texture: { ...videoTextureData, asset: vs[i] } }),
 		)
-		painter.compose(...videoLights, mirrorScene, scene).display(scene)
+		Q.painter.compose(...videoLights, mirrorScene, scene).display(scene)
 	}, 'render')
 })

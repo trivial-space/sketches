@@ -1,4 +1,3 @@
-import { getForm } from '../shared-utils/painterState'
 import { partial } from 'tvs-libs/dist/fp/core'
 import { normal } from 'tvs-libs/dist/geometry/primitives'
 import {
@@ -13,14 +12,14 @@ import {
 import { normalRand } from 'tvs-libs/dist/math/random'
 import { flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { convertStackGLGeometry } from 'tvs-painter/dist/utils/stackgl'
-import { painter } from './context'
+import { Q } from './context'
 
 const vertDiv = partial(divideVertical, 0.5, 0.5)
 const horzDiv = partial(divideHorizontal, 0.5, 0.5)
 
 function subdivide(quads: Quad[], times = 1): Quad[] {
 	for (let i = 0; i < times; i++) {
-		quads = flatten(quads.map(q => flatten(vertDiv(q).map(horzDiv))))
+		quads = flatten(quads.map((q) => flatten(vertDiv(q).map(horzDiv))))
 	}
 	return quads
 }
@@ -56,7 +55,7 @@ const quad = extrudeBottom(
 )
 
 function makeSideSegments(q: Quad, count: number) {
-	return randomDivide(q, count).map(q => flatten(subdivide(horzDiv(q))))
+	return randomDivide(q, count).map((q) => flatten(subdivide(horzDiv(q))))
 }
 
 const box = (() => {
@@ -73,9 +72,9 @@ const box = (() => {
 	]
 })()
 
-export const faceNormals = box.map(q => normal(q[1]))
+export const faceNormals = box.map((q) => normal(q[1]))
 
-export const wallsForm = getForm(painter, 'wallsForm').update(
+export const wallsForm = Q.getForm('wallsForm').update(
 	convertStackGLGeometry({
 		position: flatten(flatten(box)),
 		// color: flatten(b.map((side) => flatten(side.map((slice) => flatten(slice.map((q) => (q as any[]).map(() => pickRandom(c)))))))),

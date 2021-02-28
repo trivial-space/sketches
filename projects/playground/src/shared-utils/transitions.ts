@@ -1,4 +1,4 @@
-import { addSystem, baseEvents } from './painterState'
+import { baseEvents, PainterContext } from './painterState'
 
 export const linear = (step: number) => step
 
@@ -72,13 +72,14 @@ export class Transition {
 let transitions: Transition[] = []
 let initialized = false
 
-export function pushTransition(transitionProps: Partial<Transition>) {
+export function pushTransition(
+	Q: PainterContext,
+	transitionProps: Partial<Transition>,
+) {
 	if (!initialized) {
-		addSystem('_transitionRunner', (e, s) => {
-			if (e === baseEvents.FRAME) {
-				transitions = transitions.filter(t => !t.done)
-				transitions.forEach(t => t.update(s.device.tpf))
-			}
+		Q.listen('_transitionRunner', baseEvents.FRAME, (s) => {
+			transitions = transitions.filter((t) => !t.done)
+			transitions.forEach((t) => t.update(s.device.tpf))
 		})
 		initialized = true
 	}

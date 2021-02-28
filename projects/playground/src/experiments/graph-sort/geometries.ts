@@ -1,12 +1,11 @@
-import { getForm } from '../../shared-utils/painterState'
 import { intToFloat } from 'tvs-libs/dist/graphics/colors'
 import { add, mul, normalize, sub } from 'tvs-libs/dist/math/vectors'
 import { flatten, mapcat } from 'tvs-libs/dist/utils/sequence'
-import { painter } from './context'
+import { Q } from './context'
 import { connections, nameSpaceCount, nodes } from './nodes'
 
-export const pointsForm = getForm(painter, 'points')
-export const lineForm = getForm(painter, 'lines')
+export const pointsForm = Q.getForm('points')
+export const lineForm = Q.getForm('lines')
 
 const lineWidth = 3
 
@@ -15,13 +14,13 @@ export function updateGeometries() {
 		drawType: 'POINTS',
 		attribs: {
 			position: {
-				buffer: new Float32Array(mapcat(n => n.pos, nodes)),
+				buffer: new Float32Array(mapcat((n) => n.pos, nodes)),
 				storeType: 'DYNAMIC',
 			},
 			color: {
 				buffer: new Float32Array(
 					mapcat(
-						n =>
+						(n) =>
 							intToFloat([
 								(n.ns / nameSpaceCount) * 255,
 								((n.ns / nameSpaceCount + 1 / 3) * 255) % 255,
@@ -41,7 +40,7 @@ export function updateGeometries() {
 		attribs: {
 			position: {
 				buffer: new Float32Array(
-					mapcat(c => {
+					mapcat((c) => {
 						const n1 = nodes[c[0]]
 						const n2 = nodes[c[1]]
 						const vDiff = normalize(sub(n2.pos, n1.pos))

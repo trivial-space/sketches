@@ -1,14 +1,13 @@
-import { addSystem, getEffect, getFrame } from '../shared-utils/painterState'
-import { events, paint, painter } from './context'
+import { events, paint, Q } from './context'
 import base from './glsl/base.frag'
 
 // ===== layers =====
 
-const paintLayer = getFrame(painter, 'paint')
+const paintLayer = Q.getFrame('paint')
 
 const bufferSize = 256
 
-const layer = getEffect(painter, 'layer').update({
+const layer = Q.getEffect('layer').update({
 	frag: base,
 	uniforms: {
 		size: bufferSize,
@@ -17,7 +16,7 @@ const layer = getEffect(painter, 'layer').update({
 	},
 })
 
-export const automaton = getFrame(painter, 'automaton').update({
+export const automaton = Q.getFrame('automaton').update({
 	layers: layer,
 	width: bufferSize,
 	height: bufferSize,
@@ -31,8 +30,6 @@ export const automaton = getFrame(painter, 'automaton').update({
 
 // ===== state =====
 
-addSystem('renderer', e => {
-	if (e === events.FRAME) {
-		paintLayer.update({ texture: { asset: paint } })
-	}
+Q.listen('renderer', events.FRAME, () => {
+	paintLayer.update({ texture: { asset: paint } })
 })

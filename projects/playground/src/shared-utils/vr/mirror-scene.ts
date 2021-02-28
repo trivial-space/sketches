@@ -1,15 +1,5 @@
 import { Sketch } from 'tvs-painter/dist/sketch'
-import { Painter } from 'tvs-painter'
-import { isPrimitive } from 'util'
-import {
-	getShade,
-	getSketch,
-	addSystem,
-	getFrame,
-	baseEvents,
-	getLayer,
-	getForm,
-} from '../../shared-utils/painterState'
+import { baseEvents, PainterContext } from '../../shared-utils/painterState'
 import { mat4 } from 'gl-matrix'
 import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
 import { getBlurByAlphaEffect } from '../../shared-utils/shaders/effects/blur'
@@ -32,8 +22,7 @@ interface MirrorSceneOptions {
 }
 
 export function createMirrorScene(
-	painter: Painter,
-	state: PerspectiveViewportState,
+	Q: PainterContext<PerspectiveViewportState>,
 	objectSketches: Sketch[],
 	options: MirrorSceneOptions = {},
 ) {
@@ -48,7 +37,7 @@ export function createMirrorScene(
 		blurStrenghOffset = 0.3,
 		reflectionStrength = 1,
 	} = options
-	const groundForm = getForm(painter, sceneId).update(makeXZPlane(100, 3))
+	const groundForm = Q.getForm(sceneId).update(makeXZPlane(100, 3))
 
 	const floorTransform = mat4.create()
 	mat4.scale(floorTransform, floorTransform, [scale, scale, scale])
@@ -73,20 +62,20 @@ export function createMirrorScene(
 		1,
 	)
 
-	const groundShade = getShade(painter, sceneId).update({
+	const groundShade = Q.getShade(sceneId).update({
 		vert: groundVert,
 		frag: makeGroundFrag(groundShaderColorFn),
 	})
 
-	const groundSketch = getSketch(painter, sceneId).update({
+	const groundSketch = Q.getSketch(sceneId).update({
 		form: groundForm,
 		shade: groundShade,
 		uniforms: {
 			transform: floorTransform,
 			reflection: '0',
 			size: () => [
-				width || painter.canvas.width,
-				height || painter.canvas.height,
+				width || Q.painter.canvas.width,
+				height || Q.painter.canvas.height,
 			],
 			reflectionStrength,
 		},
@@ -94,52 +83,50 @@ export function createMirrorScene(
 
 	// ===== layers =====
 
-	const mirrorScene = getLayer(painter, sceneId).update({
+	const mirrorScene = Q.getLayer(sceneId).update({
 		sketches: objectSketches,
 		uniforms: {
 			view: () =>
 				mat4.multiply(
 					floorMirrorView,
-					state.viewPort.camera.viewMat,
+					Q.state.viewPort.camera.viewMat,
 					mirrorMatrix,
 				),
-			projection: () => state.viewPort.camera.projectionMat,
+			projection: () => Q.state.viewPort.camera.projectionMat,
 			[renderWithDistanceAlphaUniformName]: 1,
 		},
 		drawSettings: {
-			clearBits: painter.gl.DEPTH_BUFFER_BIT | painter.gl.COLOR_BUFFER_BIT,
+			clearBits: Q.gl.DEPTH_BUFFER_BIT | Q.gl.COLOR_BUFFER_BIT,
 		},
 	})
 
-	const scene = getLayer(painter, 'scene').update({
+	const scene = Q.getLayer('scene').update({
 		sketches: [groundSketch].concat(objectSketches),
 		uniforms: {
-			view: () => state.viewPort.camera.viewMat,
-			projection: () => state.viewPort.camera.projectionMat,
+			view: () => Q.state.viewPort.camera.viewMat,
+			projection: () => Q.state.viewPort.camera.projectionMat,
 			[renderWithDistanceAlphaUniformName]: 0,
 		},
 		drawSettings: {
-			clearBits: painter.gl.DEPTH_BUFFER_BIT | painter.gl.COLOR_BUFFER_BIT,
+			clearBits: Q.gl.DEPTH_BUFFER_BIT | Q.gl.COLOR_BUFFER_BIT,
 		},
 	})
 
-	const blurEffect = getBlurByAlphaEffect(painter, 'blur', {
+	const blurEffect = getBlurByAlphaEffect(Q, 'blur', {
 		strength: blurStrengh,
 		strengthOffset: blurStrenghOffset,
 		blurRatioVertical,
 	})
 
-	const main = getFrame(painter, 'main').update({
+	const main = Q.getFrame('main').update({
 		layers: [mirrorScene, blurEffect, scene],
 		width,
 		height,
 	})
 
 	if (!(width || height)) {
-		addSystem(sceneId, (e, s) => {
-			if (e === baseEvents.RESIZE) {
-				main.update()
-			}
+		Q.listen(sceneId, baseEvents.RESIZE, () => {
+			main.update()
 		})
 	}
 

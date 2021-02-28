@@ -1,30 +1,24 @@
-import {
-	getEffect,
-	getForm,
-	getFrame,
-	getLayer,
-	getShade,
-	getSketch,
-} from '../../shared-utils/painterState'
 import { repeat, stop } from '../../shared-utils/scheduler'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
-import { canvas, gl, painter } from './context'
+import { canvas, Q } from './context'
 import { nodes, triples } from './nodes'
 import blendFrag from './shaders/compose.frag'
 import pointFrag from './shaders/point.frag'
 import pointVert from './shaders/point.vert'
 import sideFrag from './shaders/side.frag'
 
+const { gl } = Q
+
 // ===== shaders =====
 
-const pointsShade = getShade(painter, 'point').update({
+const pointsShade = Q.getShade('point').update({
 	vert: pointVert,
 	frag: pointFrag,
 })
 
 // ===== geometries =====
 
-const pointsForm = getForm(painter, 'points').update({
+const pointsForm = Q.getForm('points').update({
 	drawType: 'POINTS',
 	attribs: {
 		position: {
@@ -37,14 +31,14 @@ const pointsForm = getForm(painter, 'points').update({
 
 // ===== objects =====
 
-const pointsSketch = getSketch(painter, 'points').update({
+const pointsSketch = Q.getSketch('points').update({
 	form: pointsForm,
 	shade: pointsShade,
 })
 
 // ===== layers =====
 
-const points = getLayer(painter, 'points').update({
+const points = Q.getLayer('points').update({
 	sketches: [pointsSketch],
 	uniforms: { size: () => [canvas.width, canvas.height] },
 	drawSettings: {
@@ -55,15 +49,15 @@ const points = getLayer(painter, 'points').update({
 	},
 })
 
-const currentTriple = getEffect(painter, 'sides').update({
+const currentTriple = Q.getEffect('sides').update({
 	frag: sideFrag,
 })
 
-const current = getFrame(painter, 'current').update({
+const current = Q.getFrame('current').update({
 	layers: [points, currentTriple],
 })
 
-const blend = getEffect(painter, 'blend').update({
+const blend = Q.getEffect('blend').update({
 	frag: blendFrag,
 	uniforms: {
 		previous: '0',
@@ -71,7 +65,7 @@ const blend = getEffect(painter, 'blend').update({
 	},
 })
 
-const main = getFrame(painter, 'main').update({
+const main = Q.getFrame('main').update({
 	layers: blend,
 	selfReferencing: true,
 })
@@ -93,7 +87,7 @@ repeat(() => {
 		}, // ))
 	})
 
-	painter.compose(current, main).display(main)
+	Q.painter.compose(current, main).display(main)
 
 	console.log(i++)
 

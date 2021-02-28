@@ -1,11 +1,11 @@
 import './state'
 
 import { repeat } from '../shared-utils/scheduler'
-import { events, $ } from './context'
+import { events, Q } from './context'
 import { main } from './renderer'
 
 repeat((tpf) => {
-	$.state.device.tpf = tpf
-	$.emit(events.FRAME)
-	$.painter.compose(main).display(main)
+	Q.state.device.tpf = tpf
+	Q.emit(events.FRAME)
+	Q.painter.compose(main).display(main)
 }, 'loop')

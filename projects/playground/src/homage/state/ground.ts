@@ -1,7 +1,6 @@
 import { mat4, vec3 } from 'gl-matrix'
 import * as geo from 'tvs-libs/dist/math/geometry'
-import { State } from '../context'
-import { set } from '../../shared-utils/painterState'
+import { Q, State } from '../context'
 
 export class Ground {
 	position: vec3 = [0, -3.6, 0]
@@ -33,6 +32,6 @@ export class Ground {
 	}
 }
 
-set<State>('ground', new Ground(), {
+Q.set('ground', new Ground(), {
 	reset: { transform: true, mirrorMatrix: true },
 })
