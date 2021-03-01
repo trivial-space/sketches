@@ -1,27 +1,19 @@
-import {
-	getForm,
-	getShade,
-	getSketch,
-	getFrame,
-	getLayer,
-	addSystem,
-} from '../shared-utils/painterState'
-import { painter, State, events, state } from './context'
+import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
 import { lineToTriangleStripGeometry } from '../shared-utils/geometry/lines'
 import { getNoiseTextureData } from '../shared-utils/texture-helpers'
 import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
 
-initPerspectiveViewport({ position: [0, 0, 15] })
+initPerspectiveViewport(Q, { position: [0, 0, 15] })
 
-const shade = getShade(painter, 'line').update({
+const shade = Q.getShade('line').update({
 	vert: lineVert,
 	frag: lineFrag,
 })
 
-const form = getForm(painter, 'line')
+const form = Q.getForm('line')
 
-export const noiseTexFrame = getFrame(painter, 'noiseTex').update({
+export const noiseTexFrame = Q.getFrame('noiseTex').update({
 	texture: getNoiseTextureData({
 		width: 256,
 		height: 256,
@@ -35,7 +27,7 @@ export const noiseTexFrame = getFrame(painter, 'noiseTex').update({
 	}),
 })
 
-const sketch = getSketch(painter, 'line').update({
+const sketch = Q.getSketch('line').update({
 	form: form,
 	shade,
 	uniforms: {
@@ -45,28 +37,26 @@ const sketch = getSketch(painter, 'line').update({
 
 // === scene ===
 
-export const scene = getFrame(painter, 'scene').update({
-	layers: getLayer(painter, 'scene').update({
+export const scene = Q.getFrame('scene').update({
+	layers: Q.getLayer('scene').update({
 		sketches: [sketch],
 		uniforms: {
-			view: () => state.viewPort.camera.viewMat,
-			projection: () => state.viewPort.camera.projectionMat,
+			view: () => Q.state.viewPort.camera.viewMat,
+			projection: () => Q.state.viewPort.camera.projectionMat,
 		},
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
 			// clearBits: painter.gl.COLOR_BUFFER_BIT,
-			enable: [painter.gl.BLEND],
+			enable: [Q.gl.BLEND],
 		},
 	}),
 })
 
-addSystem<State>('renderer', (e, s) => {
-	if (e === events.FRAME) {
-		form.update(
-			lineToTriangleStripGeometry(s.squeegee.line, 1, {
-				storeType: 'DYNAMIC',
-				withUVs: true,
-			}),
-		)
-	}
+Q.listen('renderer', events.FRAME, ({ squeegee }) => {
+	form.update(
+		lineToTriangleStripGeometry(squeegee.line, 1, {
+			storeType: 'DYNAMIC',
+			withUVs: true,
+		}),
+	)
 })

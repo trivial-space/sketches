@@ -1,6 +1,5 @@
 import { mat4, vec3 } from 'gl-matrix'
-import { addSystem, set } from '../../shared-utils/painterState'
-import { events, State } from './context'
+import { events, Q } from './context'
 
 export class SceneState {
 	time = 0
@@ -37,12 +36,8 @@ export class SceneState {
 	}
 }
 
-addSystem<State>('entities', (e, s) => {
-	switch (e) {
-		case events.FRAME:
-			s.scene.update(s.device.tpf)
-			return
-	}
+Q.listen('entities', events.FRAME, (s) => {
+	s.scene.update(s.device.tpf)
 })
 
-set<State>('scene', new SceneState())
+Q.set('scene', new SceneState())

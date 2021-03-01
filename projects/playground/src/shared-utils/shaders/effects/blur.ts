@@ -1,6 +1,6 @@
-import { getEffect } from '../../painterState'
-import { LayerData, Painter } from 'tvs-painter'
+import { LayerData } from 'tvs-painter'
 import { Frame } from 'tvs-painter/dist/frame'
+import { PainterContext } from '../../painterState'
 import frag from './blur_with_alpha.glsl'
 
 interface BlurOpts {
@@ -14,7 +14,7 @@ interface BlurOpts {
 }
 
 export function getBlurByAlphaEffect(
-	painter: Painter,
+	Q: PainterContext,
 	id: string,
 	{
 		strength,
@@ -46,17 +46,17 @@ export function getBlurByAlphaEffect(
 		passData[0].source = () => startLayer.image()
 	}
 
-	return getEffect(painter, id).update({
+	return Q.getEffect(id).update({
 		...layerOpts,
 		frag,
 		drawSettings: {
-			disable: [painter.gl.DEPTH_TEST],
+			disable: [Q.gl.DEPTH_TEST],
 		},
-		uniforms: passData.map(data => ({
+		uniforms: passData.map((data) => ({
 			...data,
 			blurRatioVertical,
 			strengthOffset,
-			size: size || (() => [painter.gl.canvas.width, painter.gl.canvas.height]),
+			size: size || (() => [Q.gl.canvas.width, Q.gl.canvas.height]),
 		})),
 	})
 }

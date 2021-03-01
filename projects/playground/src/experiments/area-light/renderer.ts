@@ -1,22 +1,15 @@
-import {
-	addSystem,
-	getEffect,
-	getForm,
-	getFrame,
-	getLayer,
-	getShade,
-	getSketch,
-} from '../../shared-utils/painterState'
 import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
-import { events, gl, painter, state, State } from './context'
+import { events, Q } from './context'
 import frag from './shaders/geo-frag.glsl'
 import vert from './shaders/geo-vert.glsl'
 import lightFrag from './shaders/light-frag.glsl'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 
-initPerspectiveViewport({
+const { state: s, gl } = Q
+
+initPerspectiveViewport(Q, {
 	fovy: Math.PI * 0.3,
 	position: [11, 2, -9],
 	rotationY: 2,
@@ -25,18 +18,18 @@ initPerspectiveViewport({
 // Forms
 
 const geometry = plane(10, 10, 0, 0)
-const planeForm = getForm(painter, 'plane').update(geometry)
+const planeForm = Q.getForm('plane').update(geometry)
 
 // Shades
 
-const geoShade = getShade(painter, 'geo').update({
+const geoShade = Q.getShade('geo').update({
 	frag,
 	vert,
 })
 
 // Textures
 
-const texture = getFrame(painter, 'tex').update({ texture: {} })
+const texture = Q.getFrame('tex').update({ texture: {} })
 
 const img = new Image()
 img.onload = () => {
@@ -52,26 +45,26 @@ img.src = 'tree.jpg'
 
 // Sketches
 
-const groundSketch = getSketch(painter, 'ground').update({
+const groundSketch = Q.getSketch('ground').update({
 	form: planeForm,
 	shade: geoShade,
 	uniforms: {
-		transform: () => state.scene.groundTransform,
-		color: () => state.scene.groundColor,
+		transform: () => s.scene.groundTransform,
+		color: () => s.scene.groundColor,
 	},
 })
 
-const lightSketch = getSketch(painter, 'light').update({
+const lightSketch = Q.getSketch('light').update({
 	form: planeForm,
 	shade: geoShade,
 	uniforms: [
 		{
-			transform: () => state.scene.lightTransforms[0],
-			color: () => state.scene.lightColor,
+			transform: () => s.scene.lightTransforms[0],
+			color: () => s.scene.lightColor,
 		},
 		{
-			transform: () => state.scene.lightTransforms[1],
-			color: () => state.scene.lightBackColor,
+			transform: () => s.scene.lightTransforms[1],
+			color: () => s.scene.lightBackColor,
 		},
 	],
 	drawSettings: {
@@ -81,11 +74,11 @@ const lightSketch = getSketch(painter, 'light').update({
 
 // Layers
 
-const sceneLayer = getLayer(painter, 'scene').update({
+const sceneLayer = Q.getLayer('scene').update({
 	sketches: [lightSketch, groundSketch],
 	uniforms: {
-		view: () => state.viewPort.camera.viewMat,
-		projection: () => state.viewPort.camera.projectionMat,
+		view: () => s.viewPort.camera.viewMat,
+		projection: () => s.viewPort.camera.projectionMat,
 	},
 	drawSettings: {
 		enable: [gl.DEPTH_TEST],
@@ -94,17 +87,17 @@ const sceneLayer = getLayer(painter, 'scene').update({
 })
 
 const bufferSpec: TextureData = { type: 'FLOAT' }
-export const scene = getFrame(painter, 'scene').update({
+export const scene = Q.getFrame('scene').update({
 	layers: sceneLayer,
 	bufferStructure: [bufferSpec, bufferSpec, bufferSpec, bufferSpec],
 })
 
-const lightLayer = getEffect(painter, 'light').update({
+const lightLayer = Q.getEffect('light').update({
 	frag: lightFrag,
 	uniforms: {
-		eyePosition: () => state.viewPort.camera.position,
-		lightMat: () => state.scene.lightTransforms[0],
-		view: () => state.viewPort.camera.viewMat,
+		eyePosition: () => s.viewPort.camera.position,
+		lightMat: () => s.scene.lightTransforms[0],
+		view: () => s.viewPort.camera.viewMat,
 		tex: () => texture.image(),
 		positions: scene.image(0),
 		normals: scene.image(1),
@@ -117,12 +110,10 @@ const lightLayer = getEffect(painter, 'light').update({
 	},
 })
 
-export const light = getFrame(painter, 'light').update({
+export const light = Q.getFrame('light').update({
 	layers: lightLayer,
 })
 
-addSystem<State>('renderer', e => {
-	if (e === events.RESIZE) {
-		scene.update()
-	}
+Q.listen('renderer', events.RESIZE, () => {
+	scene.update()
 })

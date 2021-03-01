@@ -1,14 +1,13 @@
 import './state'
 import { repeat } from '../../shared-utils/scheduler'
-import { get, dispatch } from '../../shared-utils/painterState'
-import { events, painter, state } from './context'
+import { events, Q } from './context'
 import { scene } from './renderer'
 
-state.time = 0
+Q.state.time = 0
 
-repeat(tpf => {
-	state.device.tpf = tpf
-	state.time += tpf / 1000
-	dispatch(events.FRAME)
-	painter.compose(scene).display(scene)
+repeat((tpf) => {
+	Q.state.device.tpf = tpf
+	Q.state.time += tpf / 1000
+	Q.emit(events.FRAME)
+	Q.painter.compose(scene).display(scene)
 }, 'loop')

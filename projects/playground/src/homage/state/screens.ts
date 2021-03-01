@@ -1,9 +1,8 @@
 import { mat4, vec3 } from 'gl-matrix'
-import { set } from '../../shared-utils/painterState'
 import * as coords from 'tvs-libs/dist/math/coords'
 import { mul } from 'tvs-libs/dist/math/vectors'
 import { flatten, zip } from 'tvs-libs/dist/utils/sequence'
-import { State } from '../context'
+import { Q } from '../context'
 import { planeSize } from '../geometries'
 import * as videos from './videos'
 
@@ -25,7 +24,7 @@ export class Screens {
 	}
 
 	update() {
-		this.positions = this.rotations.map(rot => {
+		this.positions = this.rotations.map((rot) => {
 			const phi = -rot - Math.PI / 2
 			const [x, z] = coords.polarToCartesian2D([this.radius, phi])
 			return [x, this.height, z]
@@ -49,7 +48,7 @@ export class Screens {
 
 				const t = mat4.fromTranslation(mat4.create(), p)
 				mat4.rotateY(t, t, rot)
-				mat4.scale(t, t, this.scale.map(v => v * 1.03) as vec3)
+				mat4.scale(t, t, this.scale.map((v) => v * 1.03) as vec3)
 				return t
 			},
 			this.rotations,
@@ -67,4 +66,4 @@ export class Screens {
 	}
 }
 
-set<State>('screens', new Screens())
+Q.set('screens', new Screens())

@@ -1,6 +1,5 @@
 import { times, repeat, zip, flatten } from 'tvs-libs/dist/utils/sequence'
-import { State, events } from './context'
-import { set, addSystem } from '../shared-utils/painterState'
+import { Q } from './context'
 import { noise2d, noise1d } from 'tvs-libs/dist/math/noise'
 import { walkLine, lineSegment, Line } from '../shared-utils/geometry/lines'
 import { normalize, add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
@@ -97,6 +96,4 @@ export function strokePatch(width: number, height: number, steps: number) {
 	return lines
 }
 
-set<State>('lines', {
-	line1: [],
-})
+Q.set('lines', { line1: [] })

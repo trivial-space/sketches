@@ -1,6 +1,5 @@
-import { addSystem, set } from '../shared-utils/painterState'
 import { PerspectiveCamera } from '../shared-utils/vr/camera'
-import { events, State } from './context'
+import { events, Q } from './context'
 
 export class ViewPort {
 	distance = 1
@@ -10,19 +9,15 @@ export class ViewPort {
 	})
 }
 
-addSystem<State>('viewPort', (e, s) => {
+Q.listen('viewPort', events.RESIZE, (s) => {
 	const v = s.viewPort
-	switch (e) {
-		case events.RESIZE:
-			const cam = v.camera
-			v.distance = s.tiles.colCount * s.tiles.tileSize * 0.47
-			cam.aspect = s.device.canvas.width / s.device.canvas.height
-			cam.needsUpdateProjection = true
-			cam.position = [0, 0, v.distance / cam.aspect]
-			cam.needsUpdateView = true
-			cam.update()
-			return
-	}
+	const cam = v.camera
+	v.distance = s.tiles.colCount * s.tiles.tileSize * 0.47
+	cam.aspect = s.device.canvas.width / s.device.canvas.height
+	cam.needsUpdateProjection = true
+	cam.position = [0, 0, v.distance / cam.aspect]
+	cam.needsUpdateView = true
+	cam.update()
 })
 
-set<State>('viewPort', new ViewPort())
+Q.set('viewPort', new ViewPort())

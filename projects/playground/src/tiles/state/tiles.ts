@@ -1,11 +1,10 @@
 import { mat4, quat } from 'gl-matrix'
-import { addSystem, dispatch, set } from '../../shared-utils/painterState'
 import { pushTransition } from '../../shared-utils/transitions'
 import { sign } from 'tvs-libs/dist/math/core'
 import { getRollQuat, getYawQuat } from 'tvs-libs/dist/math/geometry'
 import { normalRand, randInt } from 'tvs-libs/dist/math/random'
 import { doTimes, pickRandom, times } from 'tvs-libs/dist/utils/sequence'
-import { events, State } from '../context'
+import { events, Q } from '../context'
 import { Set, sets, specs, TileSpec } from './data'
 import { mapObj } from 'tvs-libs/dist/utils/object'
 
@@ -87,7 +86,7 @@ class TileState {
 			}
 			if (current !== next) {
 				next === 0
-					? pushTransition({
+					? pushTransition(Q, {
 							duration: 300,
 							onUpdate: (p) => {
 								this.connections[index] = Math.max(
@@ -102,7 +101,7 @@ class TileState {
 								}
 							},
 					  })
-					: pushTransition({
+					: pushTransition(Q, {
 							duration: 300,
 							onUpdate: (p) => {
 								this.connections[index] = Math.min(
@@ -125,7 +124,7 @@ class TileState {
 		for (let i = 0; i < 4; i++) {
 			const neighbour = this.neighbours[i]
 			const nIndex = neighbour ? (i + 6 - neighbour.turn) % 4 : 0
-			pushTransition({
+			pushTransition(Q, {
 				duration: 300,
 				onUpdate: (p) => {
 					this.connections[i] = Math.max(0, this.connections[i] - p)
@@ -166,49 +165,42 @@ function slow(part: number) {
 
 // ===== basic properties =====
 
-addSystem<State>('tiles', (e, s) => {
-	const t = s.tiles
-
-	switch (e) {
-		case events.INIT:
-			t.images = {}
-			Promise.all(
-				Object.values(
-					mapObj(
-						(_n, key) =>
-							new Promise((res) => {
-								const img = new Image()
-								img.onload = res
-								img.src = 'img/' + specs[key].file + '.jpg'
-								t.images[key] = img
-							}),
-						t.set,
-					),
-				),
-			).then(() => {
-				dispatch(events.ON_IMAGES_LOADED)
-				dispatch(events.RESIZE)
-			})
-			return
-
-		case events.RESIZE:
-			const canvas = s.device.canvas
-			const aspect = canvas.width / canvas.height
-			t.colCount = Math.floor(
-				Math.pow(canvas.width / 1000, 0.5) * t.tileDensity,
-			)
-			t.rowCount = Math.ceil(t.colCount / aspect)
-			makeGrid(t.colCount, t.rowCount, t.color, t.set, t.grid)
-			createActiveTiles(t)
-			return
-
-		case events.FRAME:
-			updateTiles(t)
-			return
-	}
+Q.listen('tiles', events.INIT, ({ tiles: t }) => {
+	t.images = {}
+	Promise.all(
+		Object.values(
+			mapObj(
+				(_n, key) =>
+					new Promise((res) => {
+						const img = new Image()
+						img.onload = res
+						img.src = 'img/' + specs[key].file + '.jpg'
+						t.images[key] = img
+					}),
+				t.set,
+			),
+		),
+	).then(() => {
+		Q.emit(events.ON_IMAGES_LOADED)
+		Q.emit(events.RESIZE)
+	})
+	return
 })
 
-set<State>('tiles', new Tiles())
+Q.listen('tiles', events.RESIZE, ({ tiles: t, ...s }) => {
+	const canvas = s.device.canvas
+	const aspect = canvas.width / canvas.height
+	t.colCount = Math.floor(Math.pow(canvas.width / 1000, 0.5) * t.tileDensity)
+	t.rowCount = Math.ceil(t.colCount / aspect)
+	makeGrid(t.colCount, t.rowCount, t.color, t.set, t.grid)
+	createActiveTiles(t)
+})
+
+Q.listen('tiles', events.FRAME, ({ tiles: t }) => {
+	updateTiles(t)
+})
+
+Q.set('tiles', new Tiles())
 
 // ===== primary state =====
 
@@ -293,7 +285,7 @@ function createActiveTiles(t: Tiles) {
 
 	tiles.forEach((t) => t.connect())
 
-	dispatch(events.NEW_ACTIVE_TILES)
+	Q.emit(events.NEW_ACTIVE_TILES)
 }
 
 export function updateTiles(t: Tiles) {
@@ -309,7 +301,7 @@ export function updateTiles(t: Tiles) {
 			tile.disconnect()
 			const dir = sign(Math.random() - 0.5)
 
-			pushTransition({
+			pushTransition(Q, {
 				duration,
 				easeFn: smooth,
 				onUpdate: (rot) => {
@@ -327,7 +319,7 @@ export function updateTiles(t: Tiles) {
 				},
 			})
 
-			pushTransition({
+			pushTransition(Q, {
 				duration,
 				easeFn: rotateHalf,
 				onUpdate: (rise) => {
@@ -339,7 +331,7 @@ export function updateTiles(t: Tiles) {
 
 		if (t.flipped !== tile.flipped) {
 			tile.flipped = t.flipped
-			pushTransition({
+			pushTransition(Q, {
 				duration,
 				easeFn: t.flipped ? acc : slow,
 				delay: tile.yawDelay,

@@ -1,5 +1,4 @@
-import { State, events } from './context'
-import { set, addSystem } from '../shared-utils/painterState'
+import { State, events, Q } from './context'
 import { walkLine, lineSegment, Line } from '../shared-utils/geometry/lines'
 
 interface Step {
@@ -48,10 +47,8 @@ export class Squeegee {
 	}
 }
 
-set<State>('squeegee', new Squeegee())
+Q.set('squeegee', new Squeegee())
 
-addSystem<State>('Squeegee', (e, s) => {
-	if (e === events.FRAME) {
-		s.squeegee.update(s.device.tpf)
-	}
+Q.listen('Squeegee', events.FRAME, (s) => {
+	s.squeegee.update(s.device.tpf)
 })

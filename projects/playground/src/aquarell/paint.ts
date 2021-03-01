@@ -1,5 +1,4 @@
-import { addSystem } from '../shared-utils/painterState'
-import { events, paint, State } from './context'
+import { events, paint, State, Q } from './context'
 
 const ctx = paint.getContext('2d')
 if (!ctx) throw Error('unable to initialize 2d context')
@@ -13,18 +12,13 @@ for (let i = 0; i < data.data.length; i += 4) {
 
 ctx.putImageData(data, 0, 0)
 
-addSystem<State>('paint', (e, s) => {
-	if (e === events.CLEANUP_PAINT) {
-		ctx.fillStyle = 'black'
-		ctx.fillRect(0, 0, paint.width, paint.height)
-	}
+Q.listen('paint', events.CLEANUP_PAINT, (s) => {
+	ctx.fillStyle = 'black'
+	ctx.fillRect(0, 0, paint.width, paint.height)
+})
 
-	const d = s.device
-	if (
-		e === events.PROCESS_PAINT &&
-		d.pointer.dragging &&
-		d.pointer.drag.event
-	) {
+Q.listen('paint', events.PROCESS_PAINT, ({ device: d }) => {
+	if (d.pointer.dragging && d.pointer.drag.event) {
 		const { clientX, clientY } = d.pointer.drag.event
 		const x = Math.floor((clientX / window.innerWidth) * paint.width)
 		const y = Math.floor((clientY / window.innerHeight) * paint.height)

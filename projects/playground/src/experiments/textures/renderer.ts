@@ -1,13 +1,4 @@
-import {
-	getEffect,
-	getFrame,
-	addSystem,
-	set,
-	getForm,
-	getShade,
-	getSketch,
-} from '../../shared-utils/painterState'
-import { painter, events, State, state } from './context'
+import { events, Q } from './context'
 import { noiseShader, noise2Shader, lineShader } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeXYPlane } from '../../shared-utils/geometry/helpers'
@@ -17,7 +8,7 @@ import { makeClear } from 'tvs-painter/dist/utils/context'
 import { createMirrorScene } from '../../shared-utils/vr/mirror-scene'
 import { getNoiseTextureData } from '../../shared-utils/texture-helpers'
 
-initPerspectiveViewport({
+initPerspectiveViewport(Q, {
 	position: [0, 3, -15],
 	rotationY: Math.PI,
 	lookSpeed: 3,
@@ -25,9 +16,9 @@ initPerspectiveViewport({
 
 // === plane ===
 
-const planeForm = getForm(painter, 'plane').update(makeXYPlane(5, 2))
+const planeForm = Q.getForm('plane').update(makeXYPlane(5, 2))
 
-const planeShade = getShade(painter, 'plane').update({
+const planeShade = Q.getShade('plane').update({
 	frag: planeFrag,
 	vert: planeVert,
 })
@@ -37,24 +28,24 @@ const planeShade = getShade(painter, 'plane').update({
 const noisePlaneMatrix = mat4.create()
 mat4.translate(noisePlaneMatrix, noisePlaneMatrix, [0, 5.5, 5])
 
-const noise = getEffect(painter, 'noise').update({
+const noise = Q.getEffect('noise').update({
 	frag: noiseShader,
 	drawSettings: {
-		clearBits: makeClear(painter.gl, 'color', 'depth'),
+		clearBits: makeClear(Q.gl, 'color', 'depth'),
 	},
 	uniforms: {
-		time: () => state.time,
+		time: () => Q.state.time,
 		resolution: () => [256, 256],
 	},
 })
 
-export const noiseFrame = getFrame(painter, 'noise').update({
+export const noiseFrame = Q.getFrame('noise').update({
 	layers: noise,
 	width: 256,
 	height: 256,
 })
 
-export const noiseSketch = getSketch(painter, 'noise').update({
+export const noiseSketch = Q.getSketch('noise').update({
 	form: planeForm,
 	shade: planeShade,
 	uniforms: {
@@ -68,7 +59,7 @@ export const noiseSketch = getSketch(painter, 'noise').update({
 const noiseTexPlaneMatrix = mat4.create()
 mat4.translate(noiseTexPlaneMatrix, noiseTexPlaneMatrix, [11, 5.5, 5])
 
-export const noiseTexFrame = getFrame(painter, 'noiseTex').update({
+export const noiseTexFrame = Q.getFrame('noiseTex').update({
 	texture: getNoiseTextureData({
 		width: 256,
 		height: 256,
@@ -82,7 +73,7 @@ export const noiseTexFrame = getFrame(painter, 'noiseTex').update({
 	}),
 })
 
-export const noiseTexSketch = getSketch(painter, 'noiseTex').update({
+export const noiseTexSketch = Q.getSketch('noiseTex').update({
 	form: planeForm,
 	shade: planeShade,
 	uniforms: {
@@ -96,25 +87,25 @@ export const noiseTexSketch = getSketch(painter, 'noiseTex').update({
 const noiseTex2PlaneMatrix = mat4.create()
 mat4.translate(noiseTex2PlaneMatrix, noiseTex2PlaneMatrix, [-11, 5.5, 5])
 
-const noiseTex2 = getEffect(painter, 'noiseTex2').update({
+const noiseTex2 = Q.getEffect('noiseTex2').update({
 	frag: noise2Shader,
 	drawSettings: {
-		clearBits: makeClear(painter.gl, 'color', 'depth'),
+		clearBits: makeClear(Q.gl, 'color', 'depth'),
 	},
 	uniforms: {
-		time: () => state.time,
+		time: () => Q.state.time,
 		resolution: () => [256, 256],
 		noiseTex: () => noiseTexFrame.image(),
 	},
 })
 
-export const noiseTex2Frame = getFrame(painter, 'noiseTex2').update({
+export const noiseTex2Frame = Q.getFrame('noiseTex2').update({
 	layers: noiseTex2,
 	width: 256,
 	height: 256,
 })
 
-export const noiseTex2Sketch = getSketch(painter, 'noiseTex2').update({
+export const noiseTex2Sketch = Q.getSketch('noiseTex2').update({
 	form: planeForm,
 	shade: planeShade,
 	uniforms: {
@@ -128,25 +119,25 @@ export const noiseTex2Sketch = getSketch(painter, 'noiseTex2').update({
 const lineTexPlaneMatrix = mat4.create()
 mat4.translate(lineTexPlaneMatrix, lineTexPlaneMatrix, [-22, 5.5, 5])
 
-const lineTex = getEffect(painter, 'lineTex').update({
+const lineTex = Q.getEffect('lineTex').update({
 	frag: lineShader,
 	drawSettings: {
-		clearBits: makeClear(painter.gl, 'color', 'depth'),
+		clearBits: makeClear(Q.gl, 'color', 'depth'),
 	},
 	uniforms: {
-		time: () => state.time,
+		time: () => Q.state.time,
 		resolution: () => [256, 256],
 		noiseTex: () => noiseTexFrame.image(),
 	},
 })
 
-export const lineTexFrame = getFrame(painter, 'lineTex').update({
+export const lineTexFrame = Q.getFrame('lineTex').update({
 	layers: lineTex,
 	width: 256,
 	height: 256,
 })
 
-export const lineTexSketch = getSketch(painter, 'lineTex').update({
+export const lineTexSketch = Q.getSketch('lineTex').update({
 	form: planeForm,
 	shade: planeShade,
 	uniforms: {
@@ -158,8 +149,7 @@ export const lineTexSketch = getSketch(painter, 'lineTex').update({
 // === scene ===
 
 export const scene = createMirrorScene(
-	painter,
-	state,
+	Q,
 	[noiseSketch, noiseTexSketch, noiseTex2Sketch, lineTexSketch],
 	{
 		scale: 0.5,
@@ -167,14 +157,13 @@ export const scene = createMirrorScene(
 	},
 )
 
-set<State>('time', 0)
+Q.set('time', 0)
 
-addSystem<State>('renderer', (e, s) => {
+Q.listen('renderer', events.FRAME, (s) => {
 	const d = s.device
-	if (e === events.FRAME) {
-		s.time += d.tpf / 10000
-	}
-	if (e === events.RESIZE) {
-		noiseFrame.update()
-	}
+	s.time += d.tpf / 10000
+})
+
+Q.listen('renderer', events.RESIZE, () => {
+	noiseFrame.update()
 })

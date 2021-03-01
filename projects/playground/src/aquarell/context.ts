@@ -1,8 +1,7 @@
 import {
 	baseEvents,
 	BaseState,
-	getPainter,
-	getState,
+	getPainterContext,
 } from '../shared-utils/painterState'
 
 export type State = BaseState
@@ -10,11 +9,7 @@ export type State = BaseState
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 export const paint = document.getElementById('paint') as HTMLCanvasElement
 
-export const painter = getPainter(canvas)
-
-export const gl = painter.gl
-
-export const state = getState<State>()
+export const Q = getPainterContext<State>(canvas)
 
 export const events = {
 	...baseEvents,
