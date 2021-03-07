@@ -11,3 +11,5 @@ repeat((tpf) => {
 	Q.painter.draw(sketch)
 	Q.emit(events.CLEANUP_PAINT)
 }, 'loop')
+
+import.meta.webpackHot?.accept()

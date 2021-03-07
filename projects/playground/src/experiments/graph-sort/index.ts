@@ -54,3 +54,5 @@ repeat((tpf) => {
 
 	if (time >= timeToSort * 1000) stop('render')
 }, 'render')
+
+import.meta.webpackHot?.accept()

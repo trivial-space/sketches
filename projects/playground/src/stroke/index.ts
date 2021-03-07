@@ -18,3 +18,5 @@ Q.listen('index', events.RESIZE, () => {
 	Q.painter.compose(scene).display(scene)
 	console.log(scene._targets[0].width, Q.gl.drawingBufferWidth)
 })
+
+import.meta.webpackHot?.accept()

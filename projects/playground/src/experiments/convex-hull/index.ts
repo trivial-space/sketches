@@ -95,3 +95,5 @@ repeat(() => {
 }, 'render')
 
 console.log(triples.length)
+
+import.meta.webpackHot?.accept()

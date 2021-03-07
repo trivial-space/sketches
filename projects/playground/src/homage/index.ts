@@ -33,3 +33,5 @@ videos.then((vs) => {
 		Q.painter.compose(...videoLights, mirrorScene, scene).display(scene)
 	}, 'render')
 })
+
+import.meta.webpackHot?.accept()

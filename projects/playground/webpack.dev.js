@@ -3,19 +3,15 @@ const webpack = require('webpack')
 const config = require('./webpack.config')
 
 module.exports = {
-	mode: 'development',
-
+	entry: config.entry,
+	output: config.output,
 	context: config.context,
 	module: config.module,
 	resolve: config.resolve,
-	entry: config.entry,
 
-	output: Object.assign(config.output, {
-		hotUpdateChunkFilename: '[id].[hash].hot-update.js',
-		hotUpdateMainFilename: '[hash].hot-update.json',
-	}),
+	mode: 'development',
 
-	devtool: 'cheap-eval-source-map',
+	devtool: 'eval-cheap-module-source-map',
 	// devtool: 'eval',
 
 	devServer: {
@@ -28,9 +24,4 @@ module.exports = {
 		publicPath: '/',
 		// match the output `publicPath`
 	},
-
-	plugins: [
-		new webpack.HotModuleReplacementPlugin(),
-		// enable HMR globally
-	],
 }

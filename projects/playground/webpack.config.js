@@ -36,12 +36,13 @@ module.exports = {
 			},
 			{
 				test: /\.ts$/,
-				use: ['ts-loader', 'webpack-module-hot-accept'],
+				use: ['ts-loader'],
 				exclude: /node_modules/,
 			},
 			{
 				test: /\.(glsl|frag|vert)$/,
-				use: ['raw-loader', 'glslify-loader'],
+				type: 'asset/source',
+				use: 'glslify-loader',
 				exclude: /node_modules/,
 			},
 		],

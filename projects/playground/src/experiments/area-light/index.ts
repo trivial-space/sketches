@@ -9,3 +9,5 @@ repeat((tpf) => {
 	Q.emit(events.FRAME)
 	Q.painter.compose(scene, light).display(light)
 }, 'loop')
+
+import.meta.webpackHot?.accept()

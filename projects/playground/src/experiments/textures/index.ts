@@ -9,3 +9,5 @@ repeat((tpf) => {
 		.compose(noiseFrame, noiseTex2Frame, lineTexFrame, scene)
 		.display(scene)
 }, 'loop')
+
+import.meta.webpackHot?.accept()

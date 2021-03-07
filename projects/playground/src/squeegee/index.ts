@@ -14,3 +14,5 @@ repeat((tpf) => {
 Q.listen('index', events.RESIZE, () => {
 	scene.update()
 })
+
+import.meta.webpackHot?.accept()

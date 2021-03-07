@@ -16,3 +16,5 @@ Q.listen('start', events.ON_IMAGES_LOADED, (s) => {
 })
 
 Q.emit(events.INIT)
+
+import.meta.webpackHot?.accept()

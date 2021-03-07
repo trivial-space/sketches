@@ -10,3 +10,5 @@ repeat((tpf) => {
 	Q.painter.compose(automaton).display(automaton)
 	Q.emit(events.CLEANUP_PAINT)
 }, 'loop')
+
+import.meta.webpackHot?.accept()
