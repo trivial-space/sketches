@@ -10,7 +10,6 @@ import { Painter } from 'tvs-painter/dist/painter'
 import { Shade } from 'tvs-painter/dist/shade'
 import { Sketch } from 'tvs-painter/dist/sketch'
 import { PointerState, pointer } from 'tvs-libs/dist/events/pointer'
-import { getPackedSettings } from 'http2'
 
 // === Painter ===
 

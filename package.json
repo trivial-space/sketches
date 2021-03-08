@@ -33,5 +33,9 @@
   "workspaces": [
     "projects/*"
   ],
-  "private": true
+  "private": true,
+  "engines": {
+    "node": "14.*",
+    "yarn": "1.*"
+  }
 }
