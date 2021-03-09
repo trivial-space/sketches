@@ -1,5 +1,5 @@
 import { State, events, Q } from './context'
-import { walkLine, lineSegment, Line } from '../shared-utils/geometry/lines'
+import { walkLine3D, lineSegment, Line } from '../shared-utils/geometry/lines'
 
 interface Step {
 	duration: number
@@ -32,7 +32,7 @@ export class Squeegee {
 	update(tpf: number) {
 		const part = tpf / this.step.duration
 		this.step.currentTime += tpf
-		const newSegment = walkLine(
+		const newSegment = walkLine3D(
 			{
 				length: (speed * tpf) / 1000,
 				normalAngle: part * this.step.turn,

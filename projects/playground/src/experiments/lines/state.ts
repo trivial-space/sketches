@@ -1,7 +1,11 @@
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { events, Q } from './context'
 import { noise2d } from 'tvs-libs/dist/math/noise'
-import { walkLine, Line, lineSegment } from '../../shared-utils/geometry/lines'
+import {
+	walkLine3D,
+	Line,
+	lineSegment,
+} from '../../shared-utils/geometry/lines'
 
 const last = <T>(arr: T[]) => arr[arr.length - 1]
 
@@ -11,7 +15,7 @@ Q.listen('lines', events.FRAME, (s) => {
 	s.lines.line1 = times((x) => x, 100).reduce(
 		(segments, i) => {
 			return segments.concat(
-				walkLine(
+				walkLine3D(
 					{
 						length: 1,
 						normalAngle: noise2d(i / 6, s.time / 40) / 2,

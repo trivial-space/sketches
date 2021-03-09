@@ -9,7 +9,7 @@ import {
 	times,
 } from 'tvs-libs/dist/utils/sequence'
 import { partial, pipe } from 'tvs-libs/dist/fp/core'
-import { FormData, FormBufferStore, FormStoreType } from 'tvs-painter'
+import { FormData, FormStoreType } from 'tvs-painter'
 
 export interface LineSegment {
 	vertex: Vec
@@ -40,10 +40,10 @@ const rotQuatNormal = quat.create()
 const rotQuatDirection = quat.create()
 const rotQuatTangent = quat.create()
 const rotQuat = quat.create()
-const identityQuat = quat.identity(quat.create())
 
 const vec3Temp = vec3.create()
-export function walkLine(
+
+export function walkLine3D(
 	{ length, directionAngle = 0, normalAngle = 0, tangentAngle = 0 }: LineStep,
 	segment = lineSegment(),
 ) {
@@ -103,7 +103,7 @@ export function walkLine(
 	})
 }
 
-export function lineSegmentToPoints(
+export function lineSegmentStartPoints(
 	thickness: number | ((seg: LineSegment) => number) = 1,
 	segment: LineSegment,
 ) {
@@ -115,6 +115,28 @@ export function lineSegmentToPoints(
 	const p1 = add(mul(-thickness, tangent), segment.vertex)
 	const p2 = add(mul(thickness, tangent), segment.vertex)
 	return [p1, p2]
+}
+
+export function lineSegmentEndPoints(
+	thickness: number | ((seg: LineSegment) => number) = 1,
+	segment: LineSegment,
+) {
+	lineSegmentStartPoints(thickness, {
+		...segment,
+		vertex: add(segment.vertex, mul(segment.length, segment.direction)),
+	})
+}
+
+export function lineSegmentsJoinPoints(
+	thickness: number | ((seg: LineSegment) => number) = 1,
+	segmentBefore: LineSegment,
+	segmentNext: LineSegment,
+) {
+	// TODO: implement 2 miter points, or 3 bevel points for sharp angles
+	// for math see
+	// https://mattdesl.svbtle.com/drawing-lines-is-hard
+	// https://cesium.com/blog/2013/04/22/robust-polyline-rendering-with-webgl/ "Vertex Shader Details"
+	// https://www.npmjs.com/package/polyline-normals
 }
 
 // === FormData helpers ===
@@ -141,10 +163,10 @@ export function lineToTriangleStripGeometry(
 				buffer: new Float32Array(
 					flatten(
 						concat(
-							flatMap(partial(lineSegmentToPoints, lineWidth), line),
+							flatMap(partial(lineSegmentStartPoints, lineWidth), line),
 							withBackFace
 								? flatMap(
-										pipe(partial(lineSegmentToPoints, lineWidth), reverse),
+										pipe(partial(lineSegmentStartPoints, lineWidth), reverse),
 										line,
 								  ).reverse()
 								: [],

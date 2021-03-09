@@ -1,7 +1,7 @@
 import { times, repeat, zip, flatten } from 'tvs-libs/dist/utils/sequence'
 import { Q } from './context'
 import { noise2d, noise1d } from 'tvs-libs/dist/math/noise'
-import { walkLine, lineSegment, Line } from '../shared-utils/geometry/lines'
+import { walkLine3D, lineSegment, Line } from '../shared-utils/geometry/lines'
 import { normalize, add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
 
 function easeOutQuad(x: number) {
