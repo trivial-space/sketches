@@ -1,4 +1,12 @@
-import { Vec, mul, add, cross } from 'tvs-libs/dist/math/vectors'
+import {
+	Vec,
+	mul,
+	add,
+	cross,
+	sub,
+	dot,
+	normalize,
+} from 'tvs-libs/dist/math/vectors'
 import { quat, vec3 } from 'gl-matrix'
 import {
 	flatMap,
@@ -10,6 +18,7 @@ import {
 } from 'tvs-libs/dist/utils/sequence'
 import { partial, pipe } from 'tvs-libs/dist/fp/core'
 import { FormData, FormStoreType } from 'tvs-painter'
+import { normal, side } from 'tvs-libs/dist/geometry/primitives'
 
 export interface LineSegment {
 	vertex: Vec
@@ -103,15 +112,18 @@ export function walkLine3D(
 	})
 }
 
+function getSegmentTangent(seg: LineSegment) {
+	return seg.direction.length === 2
+		? [seg.direction[1], -seg.direction[0]]
+		: cross(seg.normal, seg.direction)
+}
+
 export function lineSegmentStartPoints(
 	thickness: number | ((seg: LineSegment) => number) = 1,
 	segment: LineSegment,
 ) {
 	thickness = typeof thickness === 'number' ? thickness : thickness(segment)
-	const tangent =
-		segment.direction.length === 2
-			? [segment.direction[1], -segment.direction[0]]
-			: cross(segment.normal, segment.direction)
+	const tangent = getSegmentTangent(segment)
 	const p1 = add(mul(-thickness, tangent), segment.vertex)
 	const p2 = add(mul(thickness, tangent), segment.vertex)
 	return [p1, p2]
@@ -121,7 +133,7 @@ export function lineSegmentEndPoints(
 	thickness: number | ((seg: LineSegment) => number) = 1,
 	segment: LineSegment,
 ) {
-	lineSegmentStartPoints(thickness, {
+	return lineSegmentStartPoints(thickness, {
 		...segment,
 		vertex: add(segment.vertex, mul(segment.length, segment.direction)),
 	})
@@ -137,6 +149,38 @@ export function lineSegmentsJoinPoints(
 	// https://mattdesl.svbtle.com/drawing-lines-is-hard
 	// https://cesium.com/blog/2013/04/22/robust-polyline-rendering-with-webgl/ "Vertex Shader Details"
 	// https://www.npmjs.com/package/polyline-normals
+
+	thickness =
+		typeof thickness === 'number'
+			? thickness
+			: (thickness(segmentBefore) + thickness(segmentNext)) / 2
+	const cosAngle = dot(segmentBefore.direction, segmentNext.direction)
+
+	const nextTangent = getSegmentTangent(segmentBefore)
+	const beforeTangent = getSegmentTangent(segmentBefore)
+	const tangent = normalize(add(nextTangent, beforeTangent))
+
+	let mitterLenght = thickness / dot(tangent, beforeTangent)
+	mitterLenght = Math.min(
+		mitterLenght,
+		thickness * 3,
+		segmentBefore.length * 1.5,
+		segmentNext.length * 1.5,
+	)
+
+	const bevel = cosAngle < -0.5
+
+	if (bevel) {
+		const nextTangent = getSegmentTangent(segmentNext)
+		const p1 = add(mul(-thickness, beforeTangent), segmentBefore.vertex)
+		const p2 = add(mul(mitterLenght, tangent), segmentNext.vertex)
+		const p3 = add(mul(-thickness, nextTangent), segmentNext.vertex)
+		return [p1, p2, p3]
+	} else {
+		const p1 = add(mul(-mitterLenght, tangent), segmentNext.vertex)
+		const p2 = add(mul(mitterLenght, tangent), segmentNext.vertex)
+		return [p1, p2]
+	}
 }
 
 // === FormData helpers ===
@@ -157,73 +201,131 @@ export function lineToTriangleStripGeometry(
 		storeType,
 	}: opts = {},
 ): FormData {
+	let points: number[][] = []
+	let normals: number[][] = []
+	let uvs: number[][] = []
+	for (let i = 0; i < line.length; i++) {
+		const cur = line[i]
+		const next = line[i + 1]
+
+		if (i === 0) {
+			points = lineSegmentStartPoints(lineWidth, cur)
+			normals = [cur.normal, cur.normal] as number[][]
+			uvs = [
+				[0, 0],
+				[1, 0],
+			]
+		}
+
+		if (next) {
+			const newPoints = lineSegmentsJoinPoints(lineWidth, cur, next)
+			points = concat(points, newPoints)
+			const newNormal = normalize(add(cur.normal, next.normal)) as number[]
+			normals = concat(normals, repeat(newPoints.length, newNormal))
+
+			if (newPoints.length === 2) {
+				uvs.push([0, (i + 1) / line.length], [1, (i + 1) / line.length])
+			} else {
+				const n = normal(newPoints)
+				if (dot(n, newNormal) >= 0) {
+					uvs.push(
+						[0, (i + 1) / line.length],
+						[1, (i + 1) / line.length],
+						[0, (i + 1) / line.length],
+					)
+				} else {
+					uvs.push(
+						[1, (i + 1) / line.length],
+						[0, (i + 1) / line.length],
+						[1, (i + 1) / line.length],
+					)
+				}
+			}
+		} else {
+			const newPoints = lineSegmentEndPoints(lineWidth, cur)
+			points = concat(points, newPoints)
+			normals = concat(normals, [cur.normal, cur.normal] as number[][])
+			uvs.push([0, 1], [1, 1])
+		}
+	}
+
+	if (withBackFace) {
+		const backLine = reverse(line)
+		for (let i = 0; i < line.length; i++) {
+			const cur = backLine[i]
+			const next = backLine[i + 1]
+
+			if (i === 0) {
+				points = lineSegmentEndPoints(lineWidth, cur).reverse()
+				normals = repeat(points.length, mul(-1, cur.normal) as number[])
+				uvs = [
+					[1, 1],
+					[0, 1],
+				]
+			}
+
+			if (next) {
+				const newPoints = lineSegmentsJoinPoints(lineWidth, next, cur).reverse()
+				points = concat(points, newPoints)
+				const newNormal = mul(
+					-1,
+					normalize(add(cur.normal, next.normal)) as number[],
+				)
+				normals = concat(normals, repeat(newPoints.length, newNormal))
+				if (newPoints.length === 2) {
+					uvs.push(
+						[1, (line.length - (i + 1)) / line.length],
+						[0, (line.length - (i + 1)) / line.length],
+					)
+				} else {
+					const n = normal(newPoints)
+					if (dot(n, newNormal) >= 0) {
+						uvs.push(
+							[1, (i + 1) / line.length],
+							[0, (i + 1) / line.length],
+							[1, (i + 1) / line.length],
+						)
+					} else {
+						uvs.push(
+							[0, (i + 1) / line.length],
+							[1, (i + 1) / line.length],
+							[0, (i + 1) / line.length],
+						)
+					}
+				}
+			} else {
+				const newPoints = lineSegmentStartPoints(lineWidth, cur)
+				points = concat(points, newPoints)
+				normals = concat(
+					normals,
+					repeat(newPoints.length, mul(-1, cur.normal as number[])),
+				)
+				uvs.push([1, 0], [0, 0])
+			}
+		}
+	}
+
 	const data: FormData = {
 		attribs: {
 			position: {
-				buffer: new Float32Array(
-					flatten(
-						concat(
-							flatMap(partial(lineSegmentStartPoints, lineWidth), line),
-							withBackFace
-								? flatMap(
-										pipe(partial(lineSegmentStartPoints, lineWidth), reverse),
-										line,
-								  ).reverse()
-								: [],
-						),
-					),
-				),
+				buffer: new Float32Array(flatten(points)),
 				storeType,
 			},
 		},
 		drawType: 'TRIANGLE_STRIP',
-		itemCount: line.length * (withBackFace ? 4 : 2),
+		itemCount: points.length,
 	}
 
 	if (withNormals) {
 		data.attribs.normal = {
-			buffer: new Float32Array(
-				flatten(
-					concat(
-						flatMap((s) => [s.normal, s.normal], line),
-						withBackFace
-							? flatMap((s) => repeat(2, mul(-1, s.normal)), line).reverse()
-							: [],
-					),
-				),
-			),
+			buffer: new Float32Array(flatten(normals)),
 			storeType,
 		}
 	}
 
 	if (withUVs) {
 		data.attribs.uv = {
-			buffer: new Float32Array(
-				flatten(
-					concat(
-						flatten(
-							times(
-								(i) => [
-									[0, i / line.length],
-									[1, i / line.length],
-								],
-								line.length,
-							),
-						),
-						withBackFace
-							? flatten(
-									times(
-										(i) => [
-											[1, i / line.length],
-											[0, i / line.length],
-										],
-										line.length,
-									),
-							  ).reverse()
-							: [],
-					),
-				),
-			),
+			buffer: new Float32Array(flatten(uvs)),
 			storeType,
 		}
 	}
