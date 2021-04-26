@@ -1,4 +1,4 @@
-import { repeat } from '../shared-utils/scheduler'
+import { repeat } from '../../shared-utils/scheduler'
 import { events, Q } from './context'
 import { scene } from './renderer'
 
@@ -8,4 +8,4 @@ repeat((tpf) => {
 	Q.painter.compose(scene).display(scene)
 }, 'loop')
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

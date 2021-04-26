@@ -1,5 +1,5 @@
-import { baseEvents, getPainterContext } from '../shared-utils/painterState'
-import { PerspectiveViewportState } from '../shared-utils/vr/perspectiveViewport'
+import { baseEvents, getPainterContext } from '../../shared-utils/painterState'
+import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 

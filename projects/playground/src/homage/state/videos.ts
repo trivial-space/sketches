@@ -3,11 +3,11 @@ export const names = [
 	'behindglass',
 	'nanofuzz',
 	'balloon',
-	'threescreens'
+	'threescreens',
 ]
 
 const videosUrl =
-	process.env.NODE_ENV === 'production'
+	import.meta.env.MODE === 'production'
 		? '//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/'
 		: 'videos/'
 
@@ -35,9 +35,9 @@ function createVideo(src: string) {
 
 export const videos = Promise.all(
 	names
-		.map(name => createVideo(videosUrl + name))
+		.map((name) => createVideo(videosUrl + name))
 		.map(
-			v =>
+			(v) =>
 				new Promise<HTMLVideoElement>((res, rej) => {
 					const t = setTimeout(() => {
 						console.log('timeout', v)
@@ -49,6 +49,6 @@ export const videos = Promise.all(
 						clearTimeout(t)
 						console.log('loaded', v)
 					})
-				})
-		)
+				}),
+		),
 )

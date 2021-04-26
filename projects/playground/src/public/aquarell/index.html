@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<title>trivial space</title>
+		<title>trivial space - aquarell</title>
 
 		<style>
 			body,
@@ -18,16 +18,21 @@
 			}
 
 			canvas {
-				position: absolute;
+				/* position: absolute; */
 				top: 0;
 				left: 0;
 				touch-action: none;
 			}
+
+			/* #paint {
+				opacity: 0
+			} */
 		</style>
 	</head>
 
 	<body>
 		<canvas id="canvas"></canvas>
-		<script src="main.js" charset="utf-8"></script>
+		<canvas id="paint" width="256" height="256"></canvas>
+		<script src="./index.js" type="module"></script>
 	</body>
 </html>

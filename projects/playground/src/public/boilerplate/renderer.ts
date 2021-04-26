@@ -1,8 +1,11 @@
 import { planeForm } from './geometries'
-import frag from './glsl/base.frag'
-import vert from './glsl/base.vert'
-import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
+import frag from './glsl/base.frag.glsl'
+import vert from './glsl/base.vert.glsl'
+import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { Q } from './context'
+
+console.log('frag', frag)
+console.log('vert', vert)
 
 initPerspectiveViewport(Q)
 

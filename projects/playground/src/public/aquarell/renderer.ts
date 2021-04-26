@@ -1,5 +1,5 @@
 import { events, paint, Q } from './context'
-import base from './glsl/base.frag'
+import base from './glsl/base.frag.glsl'
 
 // ===== layers =====
 
