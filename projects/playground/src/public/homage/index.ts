@@ -1,7 +1,4 @@
-import './state/ground'
-import './state/screens'
-
-import { repeat } from '../shared-utils/scheduler'
+import { repeat } from '../../shared-utils/scheduler'
 import { events, Q } from './context'
 import {
 	mirrorScene,
@@ -34,4 +31,4 @@ videos.then((vs) => {
 	}, 'render')
 })
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

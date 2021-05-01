@@ -1,4 +1,4 @@
-precision mediump float;
+precision lowp float;
 
 uniform sampler2D reflection;
 uniform sampler2D lightTex[5];

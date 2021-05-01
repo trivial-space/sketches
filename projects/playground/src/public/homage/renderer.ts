@@ -1,5 +1,5 @@
 import { mat4 } from 'gl-matrix'
-import { getBlurByAlphaEffect } from '../shared-utils/shaders/effects/blur'
+import { getBlurByAlphaEffect } from '../../shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/utils/sequence'
 import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
@@ -7,7 +7,9 @@ import { events, getCanvasSize, Q } from './context'
 import { boxForm, planeForm } from './geometries'
 import { groundShade, objectShade, screenShade } from './shaders'
 import * as videos from './state/videos'
-import { initPerspectiveViewport } from '../shared-utils/vr/perspectiveViewport'
+import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
+import * as screens from './state/screens'
+import * as ground from './state/ground'
 
 const { gl, state: s } = Q
 
@@ -15,6 +17,10 @@ initPerspectiveViewport(Q, {
 	fovy: Math.PI * 0.4,
 	lookSpeed: 2,
 })
+
+const drawSettings = {
+	clearBits: makeClear(gl, 'color', 'depth'),
+}
 
 // Settings
 
@@ -52,22 +58,9 @@ export const videoLights = videoTextures.map((t, i) => {
 	})
 })
 
-// Sketches
+// Object sketches
 
-const groundSketch = Q.getSketch('ground').update({
-	form: planeForm,
-	shade: groundShade,
-	uniforms: {
-		reflection: () => mirrorScene.image(),
-		transform: () => s.ground.transform,
-		lights: () => s.screens.lights,
-		lightSize: () => s.screens.lightSize,
-		lightTex: () => videoLights.map((v) => v.image()),
-		size: getCanvasSize,
-	},
-})
-
-const screenSketch = Q.getSketch('screens').update({
+export const screenSketch = Q.getSketch('screens').update({
 	form: planeForm,
 	shade: screenShade,
 	uniforms: zip(
@@ -75,34 +68,21 @@ const screenSketch = Q.getSketch('screens').update({
 			transform,
 			video: () => tex.image(),
 		}),
-		s.screens.screenTransforms,
+		screens.screenTransforms,
 		videoTextures,
 	),
+	drawSettings,
 })
 
 const pedestalSketch = Q.getSketch('pedestals').update({
 	form: boxForm,
 	shade: objectShade,
-	uniforms: s.screens.pedestalTransforms.map((transform) => ({
+	uniforms: screens.pedestalTransforms.map((transform) => ({
 		transform,
 	})),
 })
 
-// Layers
-
-const drawSettings = {
-	clearBits: makeClear(gl, 'color', 'depth'),
-}
-
-const sceneLayer = Q.getLayer('scene').update({
-	sketches: [screenSketch, pedestalSketch, groundSketch],
-	drawSettings,
-	uniforms: {
-		view: () => s.viewPort.camera.viewMat,
-		projection: () => s.viewPort.camera.projectionMat,
-		withDistance: 0,
-	},
-})
+// MirrorLayer
 
 const mirrorSceneLayer = Q.getLayer('mirrorScene').update({
 	sketches: [screenSketch, pedestalSketch],
@@ -110,13 +90,13 @@ const mirrorSceneLayer = Q.getLayer('mirrorScene').update({
 	uniforms: {
 		view: () =>
 			mat4.multiply(
-				s.ground.groundMirrorView,
+				ground.groundMirrorView,
 				s.viewPort.camera.viewMat,
-				s.ground.mirrorMatrix as any,
+				ground.mirrorMatrix as any,
 			),
 		projection: () => s.viewPort.camera.projectionMat,
 		withDistance: 1,
-		groundHeight: () => s.ground.position[1],
+		groundHeight: () => ground.position[1],
 	},
 })
 
@@ -137,6 +117,33 @@ export const mirrorScene = Q.getFrame('mirror').update({
 			minFilter: 'LINEAR',
 		},
 	],
+})
+
+// Groundsketch
+
+const groundSketch = Q.getSketch('ground').update({
+	form: planeForm,
+	shade: groundShade,
+	uniforms: {
+		reflection: () => mirrorScene.image(),
+		transform: ground.transform,
+		lights: screens.lights,
+		lightSize: screens.lightSize,
+		lightTex: () => videoLights.map((v) => v.image()),
+		size: getCanvasSize,
+	},
+})
+
+// Scene
+
+const sceneLayer = Q.getLayer('scene').update({
+	sketches: [screenSketch, pedestalSketch, groundSketch],
+	drawSettings,
+	uniforms: {
+		view: () => s.viewPort.camera.viewMat,
+		projection: () => s.viewPort.camera.projectionMat,
+		withDistance: 0,
+	},
 })
 
 export const scene = Q.getFrame('scene').update({

@@ -15,7 +15,8 @@
   "scripts": {
     "dev": "node dev-server.js",
     "build": "snowpack build",
-    "start": "cd public && serve"
+    "start": "cd public && serve",
+    "test:types": "tsc --noEmit"
   },
   "dependencies": {
     "@thi.ng/shader-ast": "^0.8.4",
