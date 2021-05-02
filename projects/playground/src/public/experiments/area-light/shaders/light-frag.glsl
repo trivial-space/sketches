@@ -1,6 +1,6 @@
 precision mediump float;
-#pragma glslify: diffuseAreaLight = require(../../../shared-utils/shaders/area-light/diffuseTex.glsl)
-#pragma glslify: specularAreaLight = require(../../../shared-utils/shaders/area-light/specular.glsl)
+#pragma glslify: diffuseAreaLight = require(../../../../shared-utils/shaders/area-light/diffuseTex.glsl)
+#pragma glslify: specularAreaLight = require(../../../../shared-utils/shaders/area-light/specular.glsl)
 
 uniform sampler2D colors;
 uniform sampler2D positions;

@@ -4,7 +4,7 @@ const { startServer, loadConfiguration } = require('snowpack')
 const path = require('path')
 
 loadConfiguration(
-	{ mode: 'development', devOptions: { hmr: true } },
+	{ mode: 'development', devOptions: { hmr: true, port: 8001 } },
 	path.resolve(__dirname, 'snowpack.config.js'),
 )
 	.then((config) => startServer({ config }))
@@ -19,7 +19,7 @@ loadConfiguration(
 			}
 		})
 
-		server.listen(3000, () => {
-			console.log('Running at http://localhost:3000')
+		server.listen(8000, () => {
+			console.log('Trivialspace Dev Server Running at http://localhost:8000')
 		})
 	})

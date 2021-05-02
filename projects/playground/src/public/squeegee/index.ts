@@ -1,5 +1,5 @@
 import './state'
-import { repeat } from '../shared-utils/scheduler'
+import { repeat } from '../../shared-utils/scheduler'
 import { events, Q } from './context'
 import { scene } from './renderer'
 
@@ -15,4 +15,4 @@ Q.listen('index', events.RESIZE, () => {
 	scene.update()
 })
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

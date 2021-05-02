@@ -1,5 +1,9 @@
 import { State, events, Q } from './context'
-import { walkLine3D, lineSegment, Line } from '../shared-utils/geometry/lines'
+import {
+	walkLine3D,
+	lineSegment,
+	Line,
+} from '../../shared-utils/geometry/lines'
 
 interface Step {
 	duration: number

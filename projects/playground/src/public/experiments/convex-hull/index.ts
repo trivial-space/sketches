@@ -1,4 +1,4 @@
-import { repeat, stop } from '../../shared-utils/scheduler'
+import { repeat, stop } from '../../../shared-utils/scheduler'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { canvas, Q } from './context'
 import { nodes, triples } from './nodes'
@@ -96,4 +96,4 @@ repeat(() => {
 
 console.log(triples.length)
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

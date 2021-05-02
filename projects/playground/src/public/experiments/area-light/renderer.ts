@@ -5,7 +5,7 @@ import { events, Q } from './context'
 import frag from './shaders/geo-frag.glsl'
 import vert from './shaders/geo-vert.glsl'
 import lightFrag from './shaders/light-frag.glsl'
-import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
+import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
 
 const { state: s, gl } = Q
 

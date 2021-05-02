@@ -1,7 +1,7 @@
 import './state/tiles'
 import './viewport'
 
-import { repeat } from '../shared-utils/scheduler'
+import { repeat } from '../../shared-utils/scheduler'
 import { events, Q } from './context'
 import { tiles } from './renderer'
 
@@ -17,4 +17,4 @@ Q.listen('start', events.ON_IMAGES_LOADED, (s) => {
 
 Q.emit(events.INIT)
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

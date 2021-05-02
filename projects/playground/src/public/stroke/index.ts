@@ -1,5 +1,5 @@
 import './state'
-import { repeat } from '../shared-utils/scheduler'
+import { repeat } from '../../shared-utils/scheduler'
 import { events, Q } from './context'
 import { scene } from './renderer'
 
@@ -19,4 +19,4 @@ Q.listen('index', events.RESIZE, () => {
 	console.log(scene._targets[0].width, Q.gl.drawingBufferWidth)
 })
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()
