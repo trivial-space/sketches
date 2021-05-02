@@ -1,10 +1,8 @@
 import {
-	defn,
 	Vec2Sym,
 	FloatSym,
 	sym,
 	add,
-	ret,
 	vec4,
 	vec3,
 	program,
@@ -23,21 +21,17 @@ import {
 	$y,
 	$z,
 	$w,
-	Vec3Sym,
 	abs,
 	sub,
-	sqrt,
 	pow,
 } from '@thi.ng/shader-ast'
 import {
 	aspectCorrectedUV,
 	fit1101,
-	snoise2,
-	additive,
 	fit0111,
 	voronoise2,
 } from '@thi.ng/shader-ast-stdlib'
-import { getFragmentGenerator } from '../../shared-utils/shaders/ast'
+import { getFragmentGenerator } from '../../../shared-utils/shaders/ast'
 
 const fs = getFragmentGenerator()
 

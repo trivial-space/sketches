@@ -7,4 +7,4 @@ if (code) {
 	})
 }
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

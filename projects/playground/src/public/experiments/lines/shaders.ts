@@ -1,7 +1,7 @@
 import {
 	getFragmentGenerator,
 	getVertexGenerator,
-} from '../../shared-utils/shaders/ast'
+} from '../../../shared-utils/shaders/ast'
 import {
 	program,
 	defMain,

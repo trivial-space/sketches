@@ -1,5 +1,5 @@
 import { events, Q } from './context'
-import { repeat } from '../../shared-utils/scheduler'
+import { repeat } from '../../../shared-utils/scheduler'
 import { scene, noiseFrame, noiseTex2Frame, lineTexFrame } from './renderer'
 
 repeat((tpf) => {
@@ -10,4 +10,4 @@ repeat((tpf) => {
 		.display(scene)
 }, 'loop')
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

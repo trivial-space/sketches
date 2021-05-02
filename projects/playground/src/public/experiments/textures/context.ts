@@ -1,5 +1,8 @@
-import { baseEvents, getPainterContext } from '../../shared-utils/painterState'
-import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
+import {
+	baseEvents,
+	getPainterContext,
+} from '../../../shared-utils/painterState'
+import { PerspectiveViewportState } from '../../../shared-utils/vr/perspectiveViewport'
 
 export interface State extends PerspectiveViewportState {
 	time: number

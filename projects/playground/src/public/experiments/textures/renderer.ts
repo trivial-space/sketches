@@ -1,12 +1,12 @@
 import { events, Q } from './context'
 import { noiseShader, noise2Shader, lineShader } from './shaders'
 import { mat4 } from 'gl-matrix'
-import { makeXYPlane } from '../../shared-utils/geometry/helpers'
+import { makeXYPlane } from '../../../shared-utils/geometry/helpers'
 import { planeFrag, planeVert } from './plane-shaders'
-import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
+import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { createMirrorScene } from '../../shared-utils/vr/mirror-scene'
-import { getNoiseTextureData } from '../../shared-utils/texture-helpers'
+import { createMirrorScene } from '../../../shared-utils/vr/mirror-scene'
+import { getNoiseTextureData } from '../../../shared-utils/texture-helpers'
 
 initPerspectiveViewport(Q, {
 	position: [0, 3, -15],
