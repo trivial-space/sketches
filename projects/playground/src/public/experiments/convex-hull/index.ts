@@ -2,10 +2,10 @@ import { repeat, stop } from '../../../shared-utils/scheduler'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { canvas, Q } from './context'
 import { nodes, triples } from './nodes'
-import blendFrag from './shaders/compose.frag'
-import pointFrag from './shaders/point.frag'
-import pointVert from './shaders/point.vert'
-import sideFrag from './shaders/side.frag'
+import blendFrag from './shaders/compose.frag.glsl'
+import pointFrag from './shaders/point.frag.glsl'
+import pointVert from './shaders/point.vert.glsl'
+import sideFrag from './shaders/side.frag.glsl'
 
 const { gl } = Q
 

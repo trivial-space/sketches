@@ -1,4 +1,4 @@
-import { repeat } from '../../shared-utils/scheduler'
+import { repeat } from '../../../shared-utils/scheduler'
 import { events, Q } from './context'
 import './paint'
 import { automaton, sketch } from './renderer'
@@ -12,4 +12,4 @@ repeat((tpf) => {
 	Q.emit(events.CLEANUP_PAINT)
 }, 'loop')
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

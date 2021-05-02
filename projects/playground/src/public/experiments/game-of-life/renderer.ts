@@ -2,9 +2,9 @@ import { mat4 } from 'gl-matrix'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { events, Q, paint } from './context'
-import base from './glsl/base.frag'
-import planeFrag from './glsl/plane-material.frag'
-import planeVert from './glsl/plane-material.vert'
+import base from './glsl/base.frag.glsl'
+import planeFrag from './glsl/plane-material.frag.glsl'
+import planeVert from './glsl/plane-material.vert.glsl'
 
 // ===== gof layers =====
 

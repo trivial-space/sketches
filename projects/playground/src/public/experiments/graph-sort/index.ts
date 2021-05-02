@@ -1,11 +1,11 @@
-import { repeat, stop } from '../../shared-utils/scheduler'
+import { repeat, stop } from '../../../shared-utils/scheduler'
 import { canvas, Q } from './context'
 import { lineForm, pointsForm, updateGeometries } from './geometries'
 import { updateNodes } from './nodes'
-import lineFrag from './shaders/line.frag'
-import lineVert from './shaders/line.vert'
-import pointFrag from './shaders/point.frag'
-import pointVert from './shaders/point.vert'
+import lineFrag from './shaders/line.frag.glsl'
+import lineVert from './shaders/line.vert.glsl'
+import pointFrag from './shaders/point.frag.glsl'
+import pointVert from './shaders/point.vert.glsl'
 
 // ===== shaders =====
 
@@ -55,4 +55,4 @@ repeat((tpf) => {
 	if (time >= timeToSort * 1000) stop('render')
 }, 'render')
 
-import.meta.webpackHot?.accept()
+import.meta.hot?.accept()

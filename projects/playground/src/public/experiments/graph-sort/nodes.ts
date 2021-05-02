@@ -1,4 +1,4 @@
-import { alter, M } from '../../shared-utils/fp'
+import { alter, M } from '../../../shared-utils/fp'
 import { randInt, randIntInRange } from 'tvs-libs/dist/math/random'
 import {
 	add,
@@ -16,7 +16,7 @@ export const nameSpaceCount = 6
 const springLength = 200
 
 export const nodes = times(
-	i => ({
+	(i) => ({
 		id: i,
 		pos: [Math.random() * canvas.width, Math.random() * canvas.height],
 		ns: randInt(nameSpaceCount),
@@ -26,7 +26,7 @@ export const nodes = times(
 )
 
 export const connections = flatten(
-	times(i => {
+	times((i) => {
 		if (i < nodeCount - 3) {
 			const i1 = randIntInRange(i + 1, nodeCount - 1)
 			const cs = [[i, i1] as [number, number]]
@@ -46,7 +46,7 @@ function updateForces(force: M<number>, dir: M<number[]>, from: any, to: any) {
 		f.combine(mul, dir).pull(add, v).value
 
 	alter(from, 'force', update(force))
-	alter(to, 'force', update(force.map(f => -f)))
+	alter(to, 'force', update(force.map((f) => -f)))
 }
 
 export function updateNodes(tpf: number) {
@@ -60,8 +60,8 @@ export function updateNodes(tpf: number) {
 
 		const force = vec
 			.map(length)
-			.map(l => l - springLength)
-			.map(v => v * 2)
+			.map((l) => l - springLength)
+			.map((v) => v * 2)
 
 		updateForces(force, dir, n1, n2)
 	}
@@ -75,15 +75,15 @@ export function updateNodes(tpf: number) {
 
 			const dir = vec.map(normalize)
 			const dist = vec.map(length)
-			const force = dist.map(l => -Math.max(100 - l, 0))
+			const force = dist.map((l) => -Math.max(100 - l, 0))
 
 			updateForces(force, dir, n1, n2)
 
 			if (n2.ns === n1.ns) {
-				const force = dist.map(d => d - 100)
+				const force = dist.map((d) => d - 100)
 				updateForces(force, dir, n1, n2)
 			} else {
-				const force = dist.map(d => -Math.max(200 - d, 0))
+				const force = dist.map((d) => -Math.max(200 - d, 0))
 				updateForces(force, dir, n1, n2)
 			}
 		}
