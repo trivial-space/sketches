@@ -1,4 +1,8 @@
-import { repeat } from '../../shared-utils/scheduler'
+import {
+	addToLoop,
+	initKeyboardLoopToggle,
+	startLoop,
+} from '../../shared-utils/frameLoop'
 import { events, Q } from './context'
 import {
 	mirrorScene,
@@ -21,7 +25,7 @@ videos.then((vs) => {
 	d.canvas.addEventListener('mousedown', startVideos)
 	d.canvas.addEventListener('touchstart', startVideos)
 
-	repeat((tpf) => {
+	addToLoop((tpf) => {
 		d.tpf = tpf
 		Q.emit(events.FRAME)
 		videoTextures.forEach((t, i) =>
@@ -29,6 +33,8 @@ videos.then((vs) => {
 		)
 		Q.painter.compose(...videoLights, mirrorScene, scene).display(scene)
 	}, 'render')
+
+	startLoop()
 })
 
 import.meta.hot?.accept()

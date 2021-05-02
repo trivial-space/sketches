@@ -1,7 +1,7 @@
 // onNextTick
 // schedule actions on next animation frame
 
-type Callback = (n: number) => void
+type Callback = (tpf: number) => void
 
 let updateOnce: { [id: string]: Callback } | null = null
 const updateRepeat: { [id: string]: Callback } = {}
