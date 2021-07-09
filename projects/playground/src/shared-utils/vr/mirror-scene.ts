@@ -43,23 +43,13 @@ export function createMirrorScene(
 	mat4.scale(floorTransform, floorTransform, [scale, scale, scale])
 
 	const floorMirrorView = mat4.create()
+
+	// prettier-ignore
 	const mirrorMatrix = mat4.fromValues(
-		1,
-		0,
-		0,
-		0,
-		0,
-		-1,
-		0,
-		0,
-		0,
-		0,
-		1,
-		0,
-		0,
-		0,
-		0,
-		1,
+		1, 0, 0, 0,
+		0, -1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
 	)
 
 	const groundShade = Q.getShade(sceneId).update({

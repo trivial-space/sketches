@@ -7,6 +7,7 @@ import {
 	mul,
 	normalize,
 	sub,
+	Vec,
 } from 'tvs-libs/dist/math/vectors'
 import { flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { canvas } from './context'
@@ -15,7 +16,14 @@ export const nodeCount = 40
 export const nameSpaceCount = 6
 const springLength = 200
 
-export const nodes = times(
+interface Node {
+	id: number
+	pos: Vec
+	ns: number
+	force: Vec
+}
+
+export const nodes: Node[] = times(
 	(i) => ({
 		id: i,
 		pos: [Math.random() * canvas.width, Math.random() * canvas.height],
@@ -41,12 +49,17 @@ export const connections = flatten(
 	}, nodeCount),
 )
 
-function updateForces(force: M<number>, dir: M<number[]>, from: any, to: any) {
+function updateForces(
+	force: M<number>,
+	dir: M<number[]>,
+	from: Node,
+	to: Node,
+) {
 	const update = (f: M<number>) => (v: number[]) =>
 		f.combine(mul, dir).pull(add, v).value
 
-	alter(from, 'force', update(force))
-	alter(to, 'force', update(force.map((f) => -f)))
+	alter(from as any, 'force', update(force))
+	alter(to as any, 'force', update(force.map((f) => -f)))
 }
 
 export function updateNodes(tpf: number) {

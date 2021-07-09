@@ -137,16 +137,17 @@ export function WithInputRotation<T extends Constructor<Camera>>(Cam: T) {
 			speed: number,
 			m: { dragging: boolean; drag: { x: number; y: number } },
 		) {
+			const old = this._oldMouse
 			if (m.dragging) {
-				const deltaX = this._oldMouse.x - m.drag.x
-				const deltaY = this._oldMouse.y - m.drag.y
-				this._oldMouse.x = m.drag.x
-				this._oldMouse.y = m.drag.y
+				const deltaX = old.x - m.drag.x
+				const deltaY = old.y - m.drag.y
+				old.x = m.drag.x
+				old.y = m.drag.y
 				deltaY && this.updateRotationX(deltaY * speed)
 				deltaX && this.updateRotationY(deltaX * speed)
 			} else {
-				this._oldMouse.x && (this._oldMouse.x = 0)
-				this._oldMouse.y && (this._oldMouse.y = 0)
+				old.x && (old.x = 0)
+				old.y && (old.y = 0)
 			}
 		}
 	}

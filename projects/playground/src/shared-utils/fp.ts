@@ -18,31 +18,35 @@ export class M<A> {
 	}
 
 	ap<B>(m: M<(a: A) => B>): M<B> {
-		return m.chain(this.map.bind(this)) as M<B> // TODO: check type error
+		return m.flatMap(this.map.bind(this)) as M<B> // TODO: check type error
 	}
 
-	chain<B>(fn: (a: A) => M<B>): M<B> {
+	flatMap<B>(fn: (a: A) => M<B>): M<B> {
 		return fn(this.value)
 	}
 
 	combine<B>(fn: (a: A, b: B) => B, b: M<B>) {
-		return this.chain(v1 => b.chain(v2 => M.of(fn(v1, v2))))
+		return this.flatMap((v1) => b.flatMap((v2) => M.of(fn(v1, v2))))
 	}
 
-	pull<B>(fn: (a: A, b: B) => B, b: B) {
-		return this.chain(v1 => M.of(fn(v1, b)))
+	pull<B>(fn: (a: A, b: B) => B, b: B): M<B> {
+		return this.flatMap((v1) => M.of(fn(v1, b)))
 	}
 }
 
-export function alter<A>(coll: A[], k: number, fn: (a: A) => A): A[]
-export function alter<A>(
-	coll: { [k: string]: A },
+export function alter<A, K extends number>(
+	coll: A[],
+	k: K,
+	fn: (a: A) => A,
+): A[]
+export function alter<A, K extends string>(
+	coll: Record<K, A>,
 	k: string,
 	fn: (a: A) => A,
 ): { [k: string]: A }
-export function alter<A>(
-	coll: A[] | { [k: string]: A },
-	k: string | number,
+export function alter<A, K extends string>(
+	coll: A[] | Record<K, A>,
+	k: K | number,
 	fn: (a: A) => A,
 ) {
 	;(coll as any)[k] = fn((coll as any)[k])
