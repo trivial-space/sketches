@@ -49,13 +49,8 @@ export const connections = flatten(
 	}, nodeCount),
 )
 
-function updateForces(
-	force: M<number>,
-	dir: M<number[]>,
-	from: Node,
-	to: Node,
-) {
-	const update = (f: M<number>) => (v: number[]) =>
+function updateForces(force: M<number>, dir: M<Vec>, from: Node, to: Node) {
+	const update = (f: M<number>) => (v: Vec) =>
 		f.combine(mul, dir).pull(add, v).value
 
 	alter(from as any, 'force', update(force))
