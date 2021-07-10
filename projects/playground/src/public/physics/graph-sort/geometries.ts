@@ -1,4 +1,4 @@
-import { intToFloat } from 'tvs-libs/dist/graphics/colors'
+import { hsl, hslToRGB, intToFloat } from 'tvs-libs/dist/graphics/colors'
 import { add, mul, normalize, sub } from 'tvs-libs/dist/math/vectors'
 import { flatten, mapcat } from 'tvs-libs/dist/utils/sequence'
 import { Q } from './context'
@@ -19,15 +19,7 @@ export function updateGeometries() {
 			},
 			color: {
 				buffer: new Float32Array(
-					mapcat(
-						(n) =>
-							intToFloat([
-								(n.ns / nameSpaceCount) * 255,
-								((n.ns / nameSpaceCount + 1 / 3) * 255) % 255,
-								((n.ns / nameSpaceCount + 2 / 3) * 255) % 255,
-							]),
-						nodes,
-					),
+					mapcat((n) => hslToRGB(hsl(n.ns / nameSpaceCount, 1, 0.5)), nodes),
 				),
 				storeType: 'DYNAMIC',
 			},
