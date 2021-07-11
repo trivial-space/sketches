@@ -1,6 +1,6 @@
-/** @type {import("snowpack").SnowpackUserConfig } */
 const path = require('path')
 
+/** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
 	root: './src/public',
 	workspaceRoot: '../..',

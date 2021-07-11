@@ -12,7 +12,9 @@ loadConfiguration(
 		const server = http.createServer(async (request, response) => {
 			try {
 				const buildResult = await snowpack.loadUrl(request.url)
-				response.setHeader('Content-Type', buildResult.contentType)
+				if (buildResult.contentType) {
+					response.setHeader('Content-Type', buildResult.contentType)
+				}
 				response.end(buildResult.contents)
 			} catch (err) {
 				return handler(request, response, { public: 'src/public' })

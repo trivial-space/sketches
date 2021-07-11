@@ -1,4 +1,4 @@
-import { repeat, stop } from '../../../shared-utils/scheduler'
+import { repeat, stop } from '../../../../shared-utils/scheduler'
 import { canvas, Q } from './context'
 import { lineForm, pointsForm, updateGeometries } from './geometries'
 import { updateNodes } from './nodes'

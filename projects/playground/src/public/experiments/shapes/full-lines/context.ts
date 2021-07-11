@@ -1,9 +1,9 @@
 import {
 	baseEvents,
 	getPainterContext,
-} from '../../../shared-utils/painterState'
-import { PerspectiveViewportState } from '../../../shared-utils/vr/perspectiveViewport'
-import { Line } from '../../../shared-utils/geometry/lines'
+} from '../../../../shared-utils/painterState'
+import { PerspectiveViewportState } from '../../../../shared-utils/vr/perspectiveViewport'
+import { Line } from '../../../../shared-utils/geometry/lines'
 
 export interface State extends PerspectiveViewportState {
 	lines: { [lineName: string]: Line }

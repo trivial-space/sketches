@@ -5,7 +5,7 @@ import {
 	walkLine3D,
 	Line,
 	lineSegment,
-} from '../../../shared-utils/geometry/lines'
+} from '../../../../shared-utils/geometry/lines'
 
 const last = <T>(arr: T[]) => arr[arr.length - 1]
 
