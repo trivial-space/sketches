@@ -17,7 +17,8 @@
     "start": "cd projects/playground && yarn start",
     "build": "cd projects/playground && yarn build",
     "deploy": "git push dokku master",
-    "git-init": "git submodule update --init --recursive"
+    "git-init": "git submodule update --init --recursive",
+    "cleanup:deps": "npx yarn-deduplicate && yarn"
   },
   "devDependencies": {
     "@types/node": "14.14.32",
