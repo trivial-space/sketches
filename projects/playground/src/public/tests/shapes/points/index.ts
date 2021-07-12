@@ -42,8 +42,8 @@ repeat(() => {
 		),
 	})
 
-	Q.painter.draw(pointsStatic.sketch)
 	Q.painter.draw(pointsDynamic.sketch)
+	Q.painter.draw(pointsStatic.sketch)
 }, 'loop')
 
 import.meta.hot?.accept()

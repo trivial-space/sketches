@@ -71,5 +71,3 @@ export const pointFrag = fs(
 		}),
 	]),
 )
-
-console.log(point2DVert, pointFrag)
