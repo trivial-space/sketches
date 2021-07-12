@@ -12,13 +12,13 @@ initPerspectiveViewport(Q, {
 	fovy: Math.PI * 0.6,
 })
 
-const pointCount = 200
+const pointCount = 2000
 
 const pointsMat = mat4.fromTranslation(mat4.create(), [0, 0, -100])
 const viewMat = mat4.create()
 
 const points = createPoints3DSketch(Q, 'points', {
-	pointSize: 5,
+	pointSize: 2.5,
 	scalePerspective: true,
 	projectionMat: Q.state.viewPort.camera.projectionMat,
 	viewMat: viewMat,
@@ -54,6 +54,8 @@ addToLoop((tpf) => {
 
 	Q.painter.draw(points.sketch)
 }, 'loop')
+
+Q.listen('', baseEvents.RESIZE, (s) => points.update())
 
 startLoop()
 
