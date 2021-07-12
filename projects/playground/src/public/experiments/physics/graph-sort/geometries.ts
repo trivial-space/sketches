@@ -1,30 +1,26 @@
-import { hsl, hslToRGB, intToFloat } from 'tvs-libs/dist/graphics/colors'
+import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
 import { add, mul, normalize, sub } from 'tvs-libs/dist/math/vectors'
 import { flatten, mapcat } from 'tvs-libs/dist/utils/sequence'
+import { createPoints2DSketch } from '../../../../shared-utils/sketches/points'
 import { Q } from './context'
 import { connections, nameSpaceCount, nodes } from './nodes'
 
-export const pointsForm = Q.getForm('points')
 export const lineForm = Q.getForm('lines')
+
+export const points = createPoints2DSketch(Q, 'points', {
+	pointSize: 20,
+	dynamicForm: true,
+})
 
 const lineWidth = 3
 
 export function updateGeometries() {
-	pointsForm.update({
-		drawType: 'POINTS',
-		attribs: {
-			position: {
-				buffer: new Float32Array(mapcat((n) => n.pos, nodes)),
-				storeType: 'DYNAMIC',
-			},
-			color: {
-				buffer: new Float32Array(
-					mapcat((n) => hslToRGB(hsl(n.ns / nameSpaceCount, 1, 0.5)), nodes),
-				),
-				storeType: 'DYNAMIC',
-			},
-		},
-		itemCount: nodes.length,
+	points.update({
+		positions: nodes.map((n) => n.pos),
+		colors: nodes.map((n) => [
+			...hslToRGB(hsl(n.ns / nameSpaceCount, 1, 0.5)),
+			1,
+		]),
 	})
 
 	lineForm.update({

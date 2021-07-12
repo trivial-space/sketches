@@ -1,18 +1,11 @@
 import { repeat, stop } from '../../../../shared-utils/scheduler'
 import { canvas, Q } from './context'
-import { lineForm, pointsForm, updateGeometries } from './geometries'
+import { lineForm, points, updateGeometries } from './geometries'
 import { updateNodes } from './nodes'
 import lineFrag from './shaders/line.frag.glsl'
 import lineVert from './shaders/line.vert.glsl'
-import pointFrag from './shaders/point.frag.glsl'
-import pointVert from './shaders/point.vert.glsl'
 
 // ===== shaders =====
-
-const pointsShade = Q.getShade('point').update({
-	vert: pointVert,
-	frag: pointFrag,
-})
 
 const linesShade = Q.getShade('line').update({
 	vert: lineVert,
@@ -20,12 +13,6 @@ const linesShade = Q.getShade('line').update({
 })
 
 // ===== objects =====
-
-const points = Q.getSketch('point').update({
-	form: pointsForm,
-	shade: pointsShade,
-	uniforms: { size: [canvas.width, canvas.height] },
-})
 
 const lines = Q.getSketch('lines').update({
 	form: lineForm,
@@ -50,7 +37,7 @@ repeat((tpf) => {
 	updateGeometries()
 
 	Q.painter.draw(lines)
-	Q.painter.draw(points)
+	Q.painter.draw(points.sketch)
 
 	if (time >= timeToSort * 1000) stop('render')
 }, 'render')

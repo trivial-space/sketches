@@ -32,7 +32,7 @@ const pointsStatic = createPoints2DSketch(Q, 'points2', {
 })
 
 repeat(() => {
-	pointsDynamic.updatePoints({
+	pointsDynamic.update({
 		positions: times(
 			() => [
 				Math.random() * Q.gl.drawingBufferWidth,

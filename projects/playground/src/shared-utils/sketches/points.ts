@@ -20,7 +20,7 @@ export function createPoints2DSketch(
 	id: string,
 	pointsData: PointsData,
 ) {
-	const updatePoints = (newData: Partial<PointsData> = {}) => {
+	const update = (newData: Partial<PointsData> = {}) => {
 		const data = { positions: [], ...pointsData, ...newData }
 
 		const shade = Q.getShade(id).update({
@@ -60,7 +60,7 @@ export function createPoints2DSketch(
 		return sketch
 	}
 
-	const sketch = updatePoints()
+	const sketch = update()
 
-	return { sketch, updatePoints }
+	return { sketch, update}
 }
