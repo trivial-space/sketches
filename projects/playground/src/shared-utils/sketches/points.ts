@@ -8,6 +8,7 @@ import { flatten, repeat, times } from 'tvs-libs/dist/utils/sequence'
 interface PointsData {
 	positions?: Vec[]
 	colors?: ColorRGBA[]
+	color?: ColorRGBA
 	pointSize?: number
 	scalePerspective?: boolean
 	dynamicForm?: boolean
@@ -31,19 +32,15 @@ export function createPoints2DSketch(
 					buffer: new Float32Array(flatten(data.positions)),
 					storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 				},
-				color: data.colors
-					? {
-							buffer: new Float32Array(flatten(data.colors)),
-							storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
-					  }
-					: {
-							buffer: new Float32Array(
-								flatten(repeat(data.positions.length, [1, 1, 1, 1])),
-							),
-							storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
-					  },
 			},
 			itemCount: data.positions.length,
+		}
+
+		if (data.colors) {
+			formData.attribs.color = {
+				buffer: new Float32Array(flatten(data.colors)),
+				storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
+			}
 		}
 
 		const form = Q.getForm(id).update(formData)
@@ -53,6 +50,7 @@ export function createPoints2DSketch(
 			uniforms: {
 				pointSize: data.pointSize || 1,
 				size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+				uColor: data.color || [0, 0, 0, 0],
 			},
 			drawSettings: data.drawSettings,
 		})

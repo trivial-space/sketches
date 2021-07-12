@@ -10,17 +10,25 @@ export const Q = getPainterContext(canvas)
 
 const pointCount = 100
 
-const points = createPoints2DSketch(Q, 'points', {
-	pointSize: 11,
+const pointsDynamic = createPoints2DSketch(Q, 'points1', {
+	pointSize: 10,
 	dynamicForm: true,
-	drawSettings: {
-		clearColor: [0, 0, 0, 1],
-		clearBits: makeClear(Q.gl, 'color'),
-	},
+})
+
+const pointsStatic = createPoints2DSketch(Q, 'points2', {
+	pointSize: 30,
+	positions: times(
+		() => [
+			Math.random() * Q.gl.drawingBufferWidth,
+			Math.random() * Q.gl.drawingBufferHeight,
+		],
+		20,
+	),
+	color: [1, 1, 0, 1],
 })
 
 repeat(() => {
-	points.updatePoints({
+	pointsDynamic.updatePoints({
 		positions: times(
 			() => [
 				Math.random() * Q.gl.drawingBufferWidth,
@@ -34,7 +42,8 @@ repeat(() => {
 		),
 	})
 
-	Q.painter.draw(points.sketch)
+	Q.painter.draw(pointsStatic.sketch)
+	Q.painter.draw(pointsDynamic.sketch)
 }, 'loop')
 
 import.meta.hot?.accept()
