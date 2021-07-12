@@ -39,8 +39,10 @@ function processUpdates(newTime: number) {
 
 export function startLoop() {
 	oldTime = performance.now()
+	if (!isLoopRunning) {
+		requestAnimationFrame(processUpdates)
+	}
 	isLoopRunning = true
-	requestAnimationFrame(processUpdates)
 }
 
 export function stopLoop() {
