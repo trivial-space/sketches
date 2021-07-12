@@ -2,7 +2,7 @@ import {
 	baseEvents,
 	BaseState,
 	getPainterContext,
-} from '../../shared-utils/painterState'
+} from '../../../shared-utils/painterState'
 import { Tiles } from './state/tiles'
 import { ViewPort } from './viewport'
 

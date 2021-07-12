@@ -6,7 +6,7 @@ import { DrawSettings, FormData } from 'tvs-painter/dist'
 import { flatten, repeat, times } from 'tvs-libs/dist/utils/sequence'
 
 interface PointsData {
-	positions: Vec[]
+	positions?: Vec[]
 	colors?: ColorRGBA[]
 	pointSize?: number
 	scalePerspective?: boolean
@@ -19,7 +19,7 @@ export function createPoints2DSketch(
 	pointsData: PointsData,
 ) {
 	const updatePoints = (newData: Partial<PointsData> = {}) => {
-		const data = { ...pointsData, ...newData }
+		const data = { positions: [], ...pointsData, ...newData }
 		const shade = Q.getShade(id).update({
 			frag: pointFrag,
 			vert: point2DVert,

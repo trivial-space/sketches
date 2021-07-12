@@ -3,7 +3,7 @@ import {
 	walkLine3D,
 	lineSegment,
 	Line,
-} from '../../shared-utils/geometry/lines'
+} from '../../../shared-utils/geometry/lines'
 
 interface Step {
 	duration: number

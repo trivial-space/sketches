@@ -1,6 +1,5 @@
 import { mat4, vec3 } from 'gl-matrix'
 import * as geo from 'tvs-libs/dist/math/geometry'
-import { Q, State } from '../context'
 
 export const position: vec3 = [0, -3.6, 0]
 const normal = [0, 1, 0]
@@ -13,6 +12,9 @@ mat4.fromTranslation(transform, position)
 mat4.rotateX(transform, transform, Math.PI / 2)
 mat4.scale(transform, transform, [scale, scale, scale])
 
-export const planeEquation = geo.planeFromNormalAndCoplanarPoint(normal, position)
+export const planeEquation = geo.planeFromNormalAndCoplanarPoint(
+	normal,
+	position,
+)
 
 export const mirrorMatrix = geo.mirrorMatrixFromPlane(planeEquation)

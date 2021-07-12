@@ -1,5 +1,5 @@
 import { mat4, quat } from 'gl-matrix'
-import { pushTransition } from '../../../shared-utils/transitions'
+import { pushTransition } from '../../../../shared-utils/transitions'
 import { sign } from 'tvs-libs/dist/math/core'
 import { getRollQuat, getYawQuat } from 'tvs-libs/dist/math/geometry'
 import { normalRand, randInt } from 'tvs-libs/dist/math/random'

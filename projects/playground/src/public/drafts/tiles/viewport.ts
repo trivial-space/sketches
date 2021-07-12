@@ -1,4 +1,4 @@
-import { PerspectiveCamera } from '../../shared-utils/vr/camera'
+import { PerspectiveCamera } from '../../../shared-utils/vr/camera'
 import { events, Q } from './context'
 
 export class ViewPort {

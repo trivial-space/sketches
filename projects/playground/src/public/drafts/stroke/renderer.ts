@@ -1,10 +1,10 @@
 import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
-import { lineToTriangleStripGeometry } from '../../shared-utils/geometry/lines'
+import { lineToTriangleStripGeometry } from '../../../shared-utils/geometry/lines'
 import { line, strokePatch } from './state'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { clamp } from 'tvs-libs/dist/math/core'
-import { getNoiseTextureData } from '../../shared-utils/texture-helpers'
+import { getNoiseTextureData } from '../../../shared-utils/texture-helpers'
 import { Q } from './context'
 
 const shade = Q.getShade('line').update({

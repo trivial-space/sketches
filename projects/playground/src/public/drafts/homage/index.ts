@@ -1,4 +1,4 @@
-import { addToLoop, startLoop } from '../../shared-utils/frameLoop'
+import { addToLoop, startLoop } from '../../../shared-utils/frameLoop'
 import { events, Q } from './context'
 import {
 	mirrorScene,

@@ -5,7 +5,7 @@ import {
 	walkLine3D,
 	lineSegment,
 	Line,
-} from '../../shared-utils/geometry/lines'
+} from '../../../shared-utils/geometry/lines'
 import { normalize, add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
 
 function easeOutQuad(x: number) {

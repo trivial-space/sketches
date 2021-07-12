@@ -1,7 +1,7 @@
 import './state/tiles'
 import './viewport'
 
-import { repeat } from '../../shared-utils/scheduler'
+import { repeat } from '../../../shared-utils/scheduler'
 import { events, Q } from './context'
 import { tiles } from './renderer'
 

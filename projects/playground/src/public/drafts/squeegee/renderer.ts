@@ -1,8 +1,8 @@
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
-import { lineToTriangleStripGeometry } from '../../shared-utils/geometry/lines'
-import { getNoiseTextureData } from '../../shared-utils/texture-helpers'
-import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
+import { lineToTriangleStripGeometry } from '../../../shared-utils/geometry/lines'
+import { getNoiseTextureData } from '../../../shared-utils/texture-helpers'
+import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
 
 initPerspectiveViewport(Q, { position: [0, 0, 15] })
 
