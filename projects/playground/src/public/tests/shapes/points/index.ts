@@ -13,6 +13,10 @@ const pointCount = 100
 const pointsDynamic = createPoints2DSketch(Q, 'points1', {
 	pointSize: 10,
 	dynamicForm: true,
+	drawSettings: {
+		clearColor: [0, 0, 0, 1],
+		clearBits: makeClear(Q.gl, 'color'),
+	},
 })
 
 const pointsStatic = createPoints2DSketch(Q, 'points2', {
