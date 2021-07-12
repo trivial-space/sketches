@@ -4,43 +4,25 @@ import { canvas, Q } from './context'
 import { nodes, triples } from './nodes'
 import blendFrag from './shaders/compose.frag.glsl'
 import pointFrag from './shaders/point.frag.glsl'
-import pointVert from './shaders/point.vert.glsl'
 import sideFrag from './shaders/side.frag.glsl'
+import { createPoints2DSketch } from '../../../shared-utils/sketches/points'
+import { WHITE } from '../../../../../libs/dist/graphics/colors'
 
 const { gl } = Q
 
-// ===== shaders =====
-
-const pointsShade = Q.getShade('point').update({
-	vert: pointVert,
-	frag: pointFrag,
-})
-
 // ===== geometries =====
 
-const pointsForm = Q.getForm('points').update({
-	drawType: 'POINTS',
-	attribs: {
-		position: {
-			buffer: new Float32Array(flatten(nodes)),
-			storeType: 'DYNAMIC',
-		},
-	},
-	itemCount: nodes.length,
-})
-
-// ===== objects =====
-
-const pointsSketch = Q.getSketch('points').update({
-	form: pointsForm,
-	shade: pointsShade,
+const pointSketch = createPoints2DSketch(Q, 'points', {
+	frag: pointFrag,
+	pointSize: 12,
+	color: [1, 1, 0, 1],
+	positions: nodes,
 })
 
 // ===== layers =====
 
 const points = Q.getLayer('points').update({
-	sketches: [pointsSketch],
-	uniforms: { size: () => [canvas.width, canvas.height] },
+	sketches: [pointSketch.sketch],
 	drawSettings: {
 		clearColor: [0, 0, 0, 1],
 		clearBits: gl.COLOR_BUFFER_BIT,

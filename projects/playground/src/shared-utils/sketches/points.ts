@@ -13,6 +13,7 @@ interface PointsData {
 	scalePerspective?: boolean
 	dynamicForm?: boolean
 	drawSettings?: DrawSettings
+	frag?: string
 }
 export function createPoints2DSketch(
 	Q: PainterContext,
@@ -21,10 +22,12 @@ export function createPoints2DSketch(
 ) {
 	const updatePoints = (newData: Partial<PointsData> = {}) => {
 		const data = { positions: [], ...pointsData, ...newData }
+
 		const shade = Q.getShade(id).update({
-			frag: pointFrag,
+			frag: data.frag || pointFrag,
 			vert: point2DVert,
 		})
+
 		const formData: FormData = {
 			drawType: 'POINTS',
 			attribs: {
