@@ -1,9 +1,9 @@
 import { Vec } from 'tvs-libs/dist/math/vectors'
-import { ColorRGBA, WHITE } from 'tvs-libs/dist/graphics/colors'
+import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
 import { PainterContext } from '../painterState'
 import { point2DVert, point3DVert, pointFrag } from './points-shaders'
 import { DrawSettings, FormData } from 'tvs-painter/dist'
-import { flatten, repeat, times } from 'tvs-libs/dist/utils/sequence'
+import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { mat4 } from 'gl-matrix'
 
 interface PointsData {
