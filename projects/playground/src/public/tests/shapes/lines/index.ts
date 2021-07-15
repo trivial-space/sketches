@@ -21,12 +21,36 @@ const linesDynamic = createLines2DSketch(Q, 'lines1', {
 	},
 })
 
-const linesStatic = createLines2DSketch(Q, 'lines2', {
-	lineWidth: 16,
-	points: times(
+const linesStatic1 = createLines2DSketch(Q, 'lines2', {
+	lineWidth: 10,
+	segments: times(
 		() => [
-			Math.random() * Q.gl.drawingBufferWidth,
-			Math.random() * Q.gl.drawingBufferHeight,
+			[
+				(Math.random() * 0.5 + 0.3) * Q.gl.drawingBufferWidth,
+				(Math.random() * 0.5 + 0.3) * Q.gl.drawingBufferHeight,
+			],
+			[
+				(Math.random() * 0.5 + 0.3) * Q.gl.drawingBufferWidth,
+				(Math.random() * 0.5 + 0.3) * Q.gl.drawingBufferHeight,
+			],
+		],
+		10,
+	),
+	colors: times(() => [Math.random(), Math.random(), Math.random(), 1], 10),
+})
+
+const linesStatic2 = createLines2DSketch(Q, 'lines3', {
+	lineWidth: 20,
+	segments: times(
+		() => [
+			[
+				Math.random() * Q.gl.drawingBufferWidth,
+				Math.random() * Q.gl.drawingBufferHeight,
+			],
+			[
+				Math.random() * Q.gl.drawingBufferWidth,
+				Math.random() * Q.gl.drawingBufferHeight,
+			],
 		],
 		3,
 	),
@@ -49,7 +73,8 @@ addToLoop(() => {
 	})
 
 	Q.painter.draw(linesDynamic.sketch)
-	Q.painter.draw(linesStatic.sketch)
+	Q.painter.draw(linesStatic1.sketch)
+	Q.painter.draw(linesStatic2.sketch)
 }, 'loop')
 
 startLoop()
