@@ -1,5 +1,4 @@
 import {
-	$,
 	$w,
 	$y,
 	assign,
@@ -13,7 +12,6 @@ import {
 	FloatSym,
 	gt,
 	ifThen,
-	index,
 	indexMat,
 	input,
 	Mat4Sym,
@@ -33,8 +31,6 @@ import { getFragmentGenerator, getVertexGenerator } from '../shaders/ast'
 
 const vs = getVertexGenerator()
 const fs = getFragmentGenerator()
-
-// === 2D Points ===
 
 let aPosition2D: Vec2Sym
 let aPosition3D: Vec3Sym

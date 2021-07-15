@@ -3,7 +3,8 @@ import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
 import { PainterContext } from '../painterState'
 import { DrawSettings, FormData } from 'tvs-painter/dist'
 import { line2DVert, lineFrag } from './lines-shaders'
-import { flatMap, flatten } from 'tvs-libs/dist/utils/sequence'
+import { flatMap, flatten, times } from 'tvs-libs/dist/utils/sequence'
+import { triangulate } from '../../../../libs/dist/geometry/quad'
 
 interface LinesData {
 	points?: Vec[]
@@ -21,8 +22,13 @@ export function createLines2DSketch(
 	linesData: LinesData,
 ) {
 	const sketch = Q.getSketch(id)
+
 	const update = (newData: Partial<LinesData> = {}) => {
-		const { points, ...data } = { points: [], ...linesData, ...newData }
+		const { points, ...data }: LinesData = {
+			points: [],
+			...linesData,
+			...newData,
+		}
 
 		if (points.length < 2) {
 			throw Error('points must have at least two elements')
@@ -33,60 +39,74 @@ export function createLines2DSketch(
 			vert: line2DVert,
 		})
 
-		const [first, second] = points
-
-		const firstPrev = sub(first, sub(second, first))
-		const prev = points.slice(0, points.length - 1)
-		prev.unshift(firstPrev)
-
 		const formData: FormData = {
 			drawType: 'TRIANGLES',
 			attribs: {
-				position: {
-					buffer: new Float32Array(flatten(flatMap((p) => [p, p], points))),
+				position1: {
+					buffer: new Float32Array(
+						flatten(
+							flatten(
+								times((i) => {
+									const p = points[i]
+									const n = points[i + 1]
+									return [p, p, n, n]
+								}, points.length - 1),
+							),
+						),
+					),
 					storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 				},
-				prev: {
-					buffer: new Float32Array(flatten(flatMap((p) => [p, p], prev))),
+				position2: {
+					buffer: new Float32Array(
+						flatten(
+							flatten(
+								times((i) => {
+									const p = points[i]
+									const n = points[i + 1]
+									return [n, n, p, p]
+								}, points.length - 1),
+							),
+						),
+					),
 					storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 				},
 				direction: {
-					buffer: new Float32Array(flatMap(() => [1, -1], points)),
+					buffer: new Float32Array(flatMap(() => [-1, 1, -1, 1], points)),
 					storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 				},
 			},
-			itemCount: points.length * 2,
+			itemCount: (points.length - 1) * 6,
 			elements: {
-				buffer: new Uint32Array(
-					flatten(
-						points.map((p, i) => [
-							i * 4,
-							i * 4 + 2,
-							i * 4 + 1,
-							i * 4 + 1,
-							i * 4 + 2,
-							i * 4 + 3,
-						]),
-					),
-				),
+				buffer: new Uint32Array(flatten(triangulate(points.length - 1))),
 				storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 			},
 		}
 
 		if (data.colors) {
 			formData.attribs.color = {
-				buffer: new Float32Array(flatten(flatMap((c) => [c, c], data.colors))),
+				buffer: new Float32Array(
+					flatten(
+						flatten(
+							times((i) => {
+								const p = data.colors![i]
+								const n = data.colors![i + 1]
+								return [p, p, n, n]
+							}, points.length - 1),
+						),
+					),
+				),
 				storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 			}
 		}
 
 		const form = Q.getForm(id).update(formData)
+
 		sketch.update({
 			form,
 			shade,
 			uniforms: {
 				uLineWidth: data.lineWidth || 1,
-				size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+				uSize: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 				uColor: data.color || [0, 0, 0, 0],
 			},
 			drawSettings: data.drawSettings,

@@ -1,8 +1,8 @@
-import { repeat } from '../../../../shared-utils/scheduler'
 import { getPainterContext } from '../../../../shared-utils/painterState'
 import { createPoints2DSketch } from '../../../../shared-utils/sketches/points'
 import { times } from 'tvs-libs/dist/utils/sequence'
-import { makeClear } from '../../../../../../painter/dist/utils/context'
+import { makeClear } from 'tvs-painter/dist/utils/context'
+import { addToLoop, startLoop } from '../../../../shared-utils/frameLoop'
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 
@@ -31,7 +31,7 @@ const pointsStatic = createPoints2DSketch(Q, 'points2', {
 	color: [1, 1, 0, 1],
 })
 
-repeat(() => {
+addToLoop(() => {
 	pointsDynamic.update({
 		positions: times(
 			() => [
@@ -49,5 +49,7 @@ repeat(() => {
 	Q.painter.draw(pointsDynamic.sketch)
 	Q.painter.draw(pointsStatic.sketch)
 }, 'loop')
+
+startLoop()
 
 import.meta.hot?.accept()

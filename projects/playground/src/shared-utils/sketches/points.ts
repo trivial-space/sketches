@@ -52,8 +52,8 @@ export function createPoints2DSketch(
 			form,
 			shade,
 			uniforms: {
-				pointSize: data.pointSize || 1,
-				size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+				uPointSize: data.pointSize || 1,
+				uSize: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 				uColor: data.color || [0, 0, 0, 0],
 			},
 			drawSettings: data.drawSettings,
