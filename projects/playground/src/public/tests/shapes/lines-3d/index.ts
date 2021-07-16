@@ -15,8 +15,8 @@ initPerspectiveViewport(Q, {
 })
 
 const pointCount = 30
-const size = 4
-const scalePerspective = true
+const size = 10
+const scalePerspective = false
 
 const pointsMat = mat4.fromTranslation(mat4.create(), [0, 0, -100])
 const viewMat = mat4.create()

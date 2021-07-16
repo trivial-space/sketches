@@ -14,7 +14,6 @@ import {
 	FloatSym,
 	indexMat,
 	input,
-	IntSym,
 	Mat4Sym,
 	mul,
 	normalize,
@@ -121,16 +120,12 @@ export const line3DVert = vs(
 				(diff = sym(normalize(sub($xy(pos1_2), $xy(pos2_2))))),
 				(normal = sym(vec2($y(diff), mul(-1, $x(diff))))),
 				(projCol = sym(indexMat(uProjMat, 1))),
-				//vpSize.y * projectionMat[1][1] * 1.0 / gl_Position.w
+				//
 				assign(
 					width,
 					ternary(
 						uUseProjection,
-						mul(
-							// float(1),
-							$y(uSize),
-							mul($y(projCol), div(mul(width, 0.5), $w(pos1))),
-						),
+						mul($y(uSize), mul($y(projCol), div(mul(width, 0.5), $w(pos1)))),
 						width,
 					),
 				),
@@ -145,8 +140,6 @@ export const line3DVert = vs(
 				),
 
 				assign(vColor, ternary(eq($w(uColor), float(0)), aColor, uColor)),
-				// assign(vColor, vec4(vec3($z(div(pos1, float(100)))), float(1))),
-				// assign(vColor, vec4(vec3($x(pos1)), float(1))),
 			]
 		}),
 	]),

@@ -82,7 +82,7 @@ export const point3DVert = vs(
 					vs.gl_Position,
 					mul(uProjMat, mul(uViewMat, vec4(aPosition3D, 1))),
 				),
-				//vpSize.y * projectionMat[1][1] * 1.0 / gl_Position.w
+				//vpSize.y * projectionMat[1][1] * pointSize / gl_Position.w
 				assign(
 					vs.gl_PointSize,
 					ternary(
