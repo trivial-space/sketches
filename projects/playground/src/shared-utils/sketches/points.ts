@@ -29,25 +29,7 @@ export function createPoints2DSketch(
 			vert: point2DVert,
 		})
 
-		const formData: FormData = {
-			drawType: 'POINTS',
-			attribs: {
-				position: {
-					buffer: new Float32Array(flatten(data.positions)),
-					storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
-				},
-			},
-			itemCount: data.positions.length,
-		}
-
-		if (data.colors) {
-			formData.attribs.color = {
-				buffer: new Float32Array(flatten(data.colors)),
-				storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
-			}
-		}
-
-		const form = Q.getForm(id).update(formData)
+		const form = Q.getForm(id).update(createPointsForm(data))
 		const sketch = Q.getSketch(id).update({
 			form,
 			shade,
@@ -85,25 +67,7 @@ export function createPoints3DSketch(
 			vert: point3DVert,
 		})
 
-		const formData: FormData = {
-			drawType: 'POINTS',
-			attribs: {
-				position: {
-					buffer: new Float32Array(flatten(data.positions)),
-					storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
-				},
-			},
-			itemCount: data.positions.length,
-		}
-
-		if (data.colors) {
-			formData.attribs.color = {
-				buffer: new Float32Array(flatten(data.colors)),
-				storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
-			}
-		}
-
-		const form = Q.getForm(id).update(formData)
+		const form = Q.getForm(id).update(createPointsForm(data))
 		const sketch = Q.getSketch(id).update({
 			form,
 			shade,
@@ -123,4 +87,27 @@ export function createPoints3DSketch(
 	const sketch = update()
 
 	return { sketch, update }
+}
+
+// === private helper ===
+
+function createPointsForm({ positions = [], ...data }: PointsData) {
+	const formData: FormData = {
+		drawType: 'POINTS',
+		attribs: {
+			position: {
+				buffer: new Float32Array(flatten(positions)),
+				storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
+			},
+		},
+		itemCount: positions.length,
+	}
+
+	if (data.colors) {
+		formData.attribs.color = {
+			buffer: new Float32Array(flatten(data.colors)),
+			storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
+		}
+	}
+	return formData
 }
