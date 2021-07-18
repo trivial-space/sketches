@@ -1,67 +1,68 @@
 import { add, div, mul, vec, Vec } from '../../../../libs/dist/math/vectors'
+import { ForceReceiver } from './base'
 
 export interface ParticleData {
 	pos: Vec
 	vel: Vec
 	force: Vec
 	mass: number
-	inertia: number
+	damping: number
 }
 
-export class Particle implements ParticleData {
+export class Particle implements ParticleData, ForceReceiver {
 	pos!: Vec
 	vel!: Vec
 	force!: Vec
 	mass: number = 1
-	inertia: number = 1
+	damping: number = 1
 
-	addForce(newForce: Vec) {
+	applyForce(newForce: Vec) {
 		const { force } = this
 		add(force, newForce, force)
 	}
 
-	applyForce() {
-		const { vel, pos, force, mass, inertia } = this
+	accelerate() {
+		const { vel, pos, force, mass, damping } = this
 		if (mass !== 1) {
 			div(mass, force, force)
 		}
 		add(vel, force, vel)
-		if (inertia !== 1) {
-			mul(inertia, vel, vel)
+		if (damping !== 1) {
+			mul(damping, vel, vel)
 		}
 		add(pos, vel, pos)
 		mul(0, force, force)
 	}
 }
 
-export function makeParticle2D({
+export function createParticle2D({
 	pos,
 	vel,
 	force,
 	mass = 1,
-	inertia = 1,
+	damping = 1,
 }: Partial<ParticleData>) {
 	const p = new Particle()
 	p.pos = vec(pos || [0, 0])
 	p.vel = vec(vel || [0, 0])
 	p.force = vec(force || [0, 0])
 	p.mass = mass
-	p.inertia = inertia
+	p.damping = damping
 	return p
 }
 
-export function makeParticle3D({
+export function createParticle3D({
 	pos,
 	vel,
 	force,
 	mass = 1,
-	inertia = 1,
+	damping = 1,
 }: Partial<ParticleData>) {
 	const p = new Particle()
 	p.pos = vec(pos || [0, 0, 0])
 	p.vel = vec(vel || [0, 0, 0])
 	p.force = vec(force || [0, 0, 0])
 	p.mass = mass
-	p.inertia = inertia
+	p.damping = damping
 	return p
 }

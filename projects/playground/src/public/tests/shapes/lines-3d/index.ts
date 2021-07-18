@@ -1,4 +1,3 @@
-import { createPoints3DSketch } from '../../../../shared-utils/sketches/points'
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { mat4 } from 'gl-matrix'
 import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
@@ -7,7 +6,6 @@ import { makeClear } from 'tvs-painter/dist/utils/context'
 import { addToLoop, startLoop } from '../../../../shared-utils/frameLoop'
 import { baseEvents } from '../../../../shared-utils/painterState'
 import { createLines3DSketch } from '../../../../shared-utils/sketches/lines'
-import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
 
 initPerspectiveViewport(Q, {
 	moveSpeed: 40,
