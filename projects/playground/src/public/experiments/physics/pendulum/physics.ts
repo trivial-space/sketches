@@ -7,9 +7,9 @@ import {
 import { createParticle3D } from '../../../../shared-utils/physics/particle'
 import { doTimes } from '../../../../../../libs/dist/utils/sequence'
 
-export const p1 = createParticle3D({ pos: [10, 50, 0], damping: 0.99999 })
-export const p2 = createParticle3D({ pos: [20, 50, 0], damping: 0.99999 })
-export const p3 = createParticle3D({ pos: [30, 50, 0], damping: 0.99999 })
+export const p1 = createParticle3D({ pos: [10, 50, 0], damping: 1, mass: 10 })
+export const p2 = createParticle3D({ pos: [20, 50, 0], damping: 1 })
+export const p3 = createParticle3D({ pos: [30, 50, 0], damping: 1 })
 
 export const anchor = [0, 50, 0]
 const particles = [p1, p2, p3]
