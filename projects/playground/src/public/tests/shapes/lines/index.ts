@@ -3,6 +3,7 @@ import { times } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines'
 import { addToLoop, startLoop } from '../../../../shared-utils/frameLoop'
+import { defined } from 'tvs-libs/dist/types'
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 
@@ -11,18 +12,13 @@ export const Q = getPainterContext(canvas)
 const pointCount = 7
 
 const linesDynamic = createLines2DSketch(Q, 'lines1', {
-	lineWidth: 4,
+	lineWidth: 10,
 	dynamicForm: true,
-	drawSettings: {
-		clearColor: [0, 0, 0, 1],
-		clearBits: makeClear(Q.gl, 'color'),
-		cullFace: Q.gl.BACK,
-		enable: [Q.gl.CULL_FACE],
-	},
+	withPoints: true,
 })
 
 const linesStatic1 = createLines2DSketch(Q, 'lines2', {
-	lineWidth: 10,
+	lineWidth: 15,
 	segments: times(
 		() => [
 			[
@@ -37,10 +33,11 @@ const linesStatic1 = createLines2DSketch(Q, 'lines2', {
 		10,
 	),
 	colors: times(() => [Math.random(), Math.random(), Math.random(), 1], 10),
+	withPoints: true,
 })
 
 const linesStatic2 = createLines2DSketch(Q, 'lines3', {
-	lineWidth: 20,
+	lineWidth: 30,
 	segments: times(
 		() => [
 			[
@@ -57,6 +54,24 @@ const linesStatic2 = createLines2DSketch(Q, 'lines3', {
 	color: [1, 1, 0, 1],
 })
 
+const layer = Q.getLayer('lines').update({
+	drawSettings: {
+		clearColor: [0, 0, 0, 1],
+		clearBits: makeClear(Q.gl, 'color'),
+		cullFace: Q.gl.BACK,
+		enable: [Q.gl.CULL_FACE],
+	},
+	sketches: [
+		linesDynamic.pointsSketch,
+		linesDynamic.sketch,
+		linesStatic1.pointsSketch,
+		linesStatic1.sketch,
+		linesStatic2.sketch,
+	].filter(defined),
+})
+
+const scene = Q.getFrame('lines').update({ layers: [layer] })
+
 addToLoop(() => {
 	linesDynamic.update({
 		points: times(
@@ -72,9 +87,7 @@ addToLoop(() => {
 		),
 	})
 
-	Q.painter.draw(linesDynamic.sketch)
-	Q.painter.draw(linesStatic1.sketch)
-	Q.painter.draw(linesStatic2.sketch)
+	Q.painter.compose(scene).display(scene)
 }, 'loop')
 
 startLoop()

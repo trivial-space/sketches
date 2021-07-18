@@ -14,54 +14,37 @@ initPerspectiveViewport(Q, {
 	fovy: Math.PI * 0.6,
 })
 
-const pointCount = 30
-const size = 10
-const scalePerspective = false
-
 const pointsMat = mat4.fromTranslation(mat4.create(), [0, 0, -100])
 const viewMat = mat4.create()
 
-const positions = times(
-	() => [
-		Math.random() * 100 - 50,
-		Math.random() * 100 - 50,
-		Math.random() * 100 - 50,
-	],
-	pointCount,
-)
-
-const colors: ColorRGBA[] = times(
-	() => [Math.random(), Math.random(), Math.random(), 1],
-	pointCount,
-)
-
+const pointsCount = 30
 const lines = createLines3DSketch(Q, 'lines', {
-	lineWidth: size,
-	scalePerspective,
+	lineWidth: 3,
+
+	scalePerspective: true,
 	projectionMat: Q.state.viewPort.camera.projectionMat,
 	viewMat: viewMat,
 
-	points: positions,
-	colors,
+	points: times(
+		() => [
+			Math.random() * 100 - 50,
+			Math.random() * 100 - 50,
+			Math.random() * 100 - 50,
+		],
+		pointsCount,
+	),
+	colors: times(
+		() => [Math.random(), Math.random(), Math.random(), 1],
+		pointsCount,
+	),
 
 	drawSettings: {
 		enable: [Q.gl.DEPTH_TEST],
 		clearColor: [1, 0, 1, 1],
 		clearBits: makeClear(Q.gl, 'depth', 'color'),
 	},
-})
 
-const points = createPoints3DSketch(Q, 'points', {
-	pointSize: size,
-	scalePerspective,
-	projectionMat: Q.state.viewPort.camera.projectionMat,
-	viewMat: viewMat,
-
-	positions,
-	colors,
-	drawSettings: {
-		enable: [Q.gl.DEPTH_TEST],
-	},
+	withPoints: true,
 })
 
 addToLoop((tpf) => {
@@ -73,7 +56,7 @@ addToLoop((tpf) => {
 	mat4.mul(viewMat, Q.state.viewPort.camera.viewMat, pointsMat)
 
 	Q.painter.draw(lines.sketch)
-	Q.painter.draw(points.sketch)
+	lines.pointsSketch && Q.painter.draw(lines.pointsSketch)
 }, 'loop')
 
 Q.listen('', baseEvents.RESIZE, (s) => lines.update())

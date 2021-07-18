@@ -6,6 +6,7 @@ import { line2DVert, line3DVert, lineFrag } from './lines-shaders'
 import { flatMap, flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { triangulate } from '../../../../libs/dist/geometry/quad'
 import { mat4 } from 'gl-matrix'
+import { createPoints2DSketch, createPoints3DSketch } from './points'
 
 interface LinesData {
 	points?: Vec[]
@@ -16,6 +17,7 @@ interface LinesData {
 	dynamicForm?: boolean
 	drawSettings?: DrawSettings
 	frag?: string
+	withPoints?: boolean
 }
 
 function createLinesForm({ segments, points = [], ...data }: LinesData) {
@@ -101,6 +103,12 @@ export function createLines2DSketch(
 ) {
 	const sketch = Q.getSketch(id)
 
+	let points: ReturnType<typeof createPoints2DSketch> | undefined
+
+	if (linesData.withPoints) {
+		points = createPoints2DSketch(Q, id + '_edge_points', {})
+	}
+
 	const update = (newData: LinesData = {}) => {
 		const data: LinesData = {
 			points: [],
@@ -125,13 +133,33 @@ export function createLines2DSketch(
 			},
 			drawSettings: data.drawSettings,
 		})
+
+		if (data.withPoints) {
+			points!.update({
+				drawSettings: data.drawSettings && {
+					...data.drawSettings,
+					clearBits: undefined,
+					clearColor: undefined,
+				},
+				pointSize: data.lineWidth,
+				positions: data.segments
+					? data.segments.flatMap(([p1, p2]) => [p1, p2])
+					: data.points,
+				color: data.color,
+				colors:
+					data.colors && data.segments
+						? data.colors.flatMap((c) => [c, c])
+						: data.colors,
+				dynamicForm: data.dynamicForm,
+			})
+		}
 	}
 
 	if ((linesData.points?.length || 0) >= 2 || linesData.segments?.length) {
 		update()
 	}
 
-	return { sketch, update }
+	return { sketch, update, pointsSketch: points?.sketch }
 }
 
 interface Lines3DData extends LinesData {
@@ -146,6 +174,12 @@ export function createLines3DSketch(
 	linesData: Lines3DData,
 ) {
 	const sketch = Q.getSketch(id)
+
+	let points: ReturnType<typeof createPoints3DSketch> | undefined
+
+	if (linesData.withPoints) {
+		points = createPoints3DSketch(Q, id + '_edge_points', {})
+	}
 
 	const update = (newData: Lines3DData = {}) => {
 		const data: Lines3DData = {
@@ -174,11 +208,34 @@ export function createLines3DSketch(
 			},
 			drawSettings: data.drawSettings,
 		})
+
+		if (data.withPoints) {
+			points!.update({
+				drawSettings: data.drawSettings && {
+					...data.drawSettings,
+					clearBits: undefined,
+					clearColor: undefined,
+				},
+				pointSize: data.lineWidth,
+				positions: data.segments
+					? data.segments.flatMap(([p1, p2]) => [p1, p2])
+					: data.points,
+				color: data.color,
+				colors:
+					data.colors && data.segments
+						? data.colors.flatMap((c) => [c, c])
+						: data.colors,
+				dynamicForm: data.dynamicForm,
+				projectionMat: data.projectionMat,
+				scalePerspective: data.scalePerspective,
+				viewMat: data.viewMat,
+			})
+		}
 	}
 
 	if ((linesData.points?.length || 0) >= 2 || linesData.segments?.length) {
 		update()
 	}
 
-	return { sketch, update }
+	return { sketch, update, pointsSketch: points?.sketch }
 }
