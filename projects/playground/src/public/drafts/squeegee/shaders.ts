@@ -83,7 +83,7 @@ export const lineFrag = fs(
 					fit0111($w(noise))))
 			),
 			assign(noiseVal, pow(noiseVal, float(0.15))),
-			assign(noiseVal ,
+			assign(noiseVal,
 				mul(
 					mul(
 						noiseVal,
@@ -99,7 +99,7 @@ export const lineFrag = fs(
 			assign(fs.gl_FragColor, vec4(
 				// mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
 				// noiseVal
-				1, 0, 0,$x(vUv)
+				1, 0, 0,$x(vUv),
 			)),
 		]),
 	]),

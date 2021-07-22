@@ -1,8 +1,9 @@
-import { State, events, Q } from './context'
+import { events, Q } from './context'
 import {
 	walkLine3D,
 	lineSegment,
-	Line,
+	lineSegmentStartPoints,
+	lineSegmentsJoinPoints,
 } from '../../../shared-utils/geometry/lines'
 
 interface Step {
@@ -11,27 +12,32 @@ interface Step {
 	turn: number
 }
 
-const speed = 10
-const segmentLength = 1.3
+const speed = 3
+const segmentLength = 4.3
 let isStraight = false
 
 function nextStep(): Step {
 	isStraight = !isStraight
 	return {
 		currentTime: 0,
-		duration: isStraight ? segmentLength * 1000 : segmentLength * 300,
+		duration: isStraight ? segmentLength * 300 : segmentLength * 300,
 		turn: isStraight ? 0 : Math.random() >= 0.5 ? Math.PI : -Math.PI,
 	}
 }
 
+const segment = lineSegment({
+	direction: [0, 1, 0],
+	normal: [0, 0, 1],
+	vertex: [0, -3, 0],
+})
+
+const lineWidth = 0.9
+
 export class Squeegee {
 	step = nextStep()
-	segment = lineSegment({
-		direction: [0, 1, 0],
-		normal: [0, 0, 1],
-		vertex: [0, -7, 0],
-	})
-	line: Line = [this.segment, this.segment]
+	segment = segment
+	lineStartPoints!: number[][]
+	lineEndPoints: number[][] = lineSegmentStartPoints(lineWidth, segment)
 
 	update(tpf: number) {
 		const part = tpf / this.step.duration
@@ -43,7 +49,12 @@ export class Squeegee {
 			},
 			this.segment,
 		)
-		this.line = [this.segment, newSegment]
+		this.lineStartPoints = this.lineEndPoints
+		this.lineEndPoints = lineSegmentsJoinPoints(
+			lineWidth,
+			this.segment,
+			newSegment,
+		)
 		this.segment = newSegment
 		if (this.step.currentTime >= this.step.duration) {
 			this.step = nextStep()

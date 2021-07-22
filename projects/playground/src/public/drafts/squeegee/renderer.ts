@@ -1,8 +1,8 @@
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
-import { lineToTriangleStripGeometry } from '../../../shared-utils/geometry/lines'
 import { getNoiseTextureData } from '../../../shared-utils/texture-helpers'
 import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
+import { flatten } from '../../../../../libs/dist/utils/sequence'
 
 initPerspectiveViewport(Q, { position: [0, 0, 15] })
 
@@ -28,7 +28,7 @@ export const noiseTexFrame = Q.getFrame('noiseTex').update({
 })
 
 const sketch = Q.getSketch('line').update({
-	form: form,
+	form,
 	shade,
 	uniforms: {
 		noiseTex: noiseTexFrame.image(),
@@ -53,10 +53,20 @@ export const scene = Q.getFrame('scene').update({
 })
 
 Q.listen('renderer', events.FRAME, ({ squeegee }) => {
-	form.update(
-		lineToTriangleStripGeometry(squeegee.line, 1, {
-			storeType: 'DYNAMIC',
-			withUVs: true,
-		}),
-	)
+	form.update({
+		attribs: {
+			position: {
+				buffer: new Float32Array(
+					flatten(squeegee.lineStartPoints.concat(squeegee.lineEndPoints)),
+				),
+				storeType: 'DYNAMIC',
+			},
+			uv: {
+				buffer: new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]),
+				storeType: 'DYNAMIC',
+			},
+		},
+		drawType: 'TRIANGLE_STRIP',
+		itemCount: 4,
+	})
 })

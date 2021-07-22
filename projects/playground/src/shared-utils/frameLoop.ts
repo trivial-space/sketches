@@ -10,9 +10,10 @@ let isLoopRunning = false
 let uidCounter = 0
 let oldTime = 0
 
-function processUpdates(newTime: number) {
+function processUpdates() {
 	if (!isLoopRunning) return
 
+	const newTime = performance.now()
 	const tpf = oldTime ? newTime - oldTime : oldTime
 	oldTime = newTime
 
@@ -38,11 +39,11 @@ function processUpdates(newTime: number) {
 }
 
 export function startLoop() {
-	oldTime = performance.now()
 	if (!isLoopRunning) {
+		oldTime = performance.now()
 		requestAnimationFrame(processUpdates)
+		isLoopRunning = true
 	}
-	isLoopRunning = true
 }
 
 export function stopLoop() {

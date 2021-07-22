@@ -3,20 +3,11 @@ import {
 	mul,
 	add,
 	cross,
-	sub,
 	dot,
 	normalize,
 } from 'tvs-libs/dist/math/vectors'
 import { quat, vec3 } from 'gl-matrix'
-import {
-	flatMap,
-	flatten,
-	reverse,
-	repeat,
-	concat,
-	times,
-} from 'tvs-libs/dist/utils/sequence'
-import { partial, pipe } from 'tvs-libs/dist/fp/core'
+import { flatten, reverse, repeat, concat } from 'tvs-libs/dist/utils/sequence'
 import { FormData, FormStoreType } from 'tvs-painter'
 import { normal, side } from 'tvs-libs/dist/geometry/primitives'
 
@@ -156,22 +147,16 @@ export function lineSegmentsJoinPoints(
 			: (thickness(segmentBefore) + thickness(segmentNext)) / 2
 	const cosAngle = dot(segmentBefore.direction, segmentNext.direction)
 
-	const nextTangent = getSegmentTangent(segmentBefore)
+	const nextTangent = getSegmentTangent(segmentNext)
 	const beforeTangent = getSegmentTangent(segmentBefore)
 	const tangent = normalize(add(nextTangent, beforeTangent))
 
 	let mitterLenght = thickness / dot(tangent, beforeTangent)
-	mitterLenght = Math.min(
-		mitterLenght,
-		thickness * 3,
-		segmentBefore.length * 1.5,
-		segmentNext.length * 1.5,
-	)
+	mitterLenght = Math.min(mitterLenght, thickness * 3)
 
 	const bevel = cosAngle < -0.5
 
 	if (bevel) {
-		const nextTangent = getSegmentTangent(segmentNext)
 		const p1 = add(mul(-thickness, beforeTangent), segmentBefore.vertex)
 		const p2 = add(mul(mitterLenght, tangent), segmentNext.vertex)
 		const p3 = add(mul(-thickness, nextTangent), segmentNext.vertex)

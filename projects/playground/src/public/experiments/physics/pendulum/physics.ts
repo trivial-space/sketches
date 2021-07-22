@@ -1,4 +1,3 @@
-import { mul } from 'tvs-libs/dist/math/vectors'
 import { partial } from 'tvs-libs/dist/fp/core'
 import {
 	directionForce,
