@@ -130,6 +130,9 @@ export function lineSegmentEndPoints(
 	})
 }
 
+// TODO: add fix for case when points swap in certain situation:
+// when join switches between bevel and non-bevel in certain directions.
+// See bevel-line test for bug
 export function lineSegmentsJoinPoints(
 	thickness: number | ((seg: LineSegment) => number) = 1,
 	segmentBefore: LineSegment,
@@ -152,14 +155,21 @@ export function lineSegmentsJoinPoints(
 	const tangent = normalize(add(nextTangent, beforeTangent))
 
 	let mitterLenght = thickness / dot(tangent, beforeTangent)
-	mitterLenght = Math.min(mitterLenght, thickness * 3)
+	mitterLenght = Math.min(mitterLenght, thickness * 5)
 
-	const bevel = cosAngle < -0.5
+	const bevel = cosAngle < -0.9
 
 	if (bevel) {
-		const p1 = add(mul(-thickness, beforeTangent), segmentBefore.vertex)
-		const p2 = add(mul(mitterLenght, tangent), segmentNext.vertex)
-		const p3 = add(mul(-thickness, nextTangent), segmentNext.vertex)
+		const dir =
+			side(
+				[segmentBefore.vertex, segmentNext.vertex],
+				add(segmentNext.vertex, segmentNext.direction),
+			) >= 0
+				? -1
+				: 1
+		const p1 = add(mul(dir * thickness, beforeTangent), segmentNext.vertex)
+		const p2 = add(mul(dir * -mitterLenght, tangent), segmentNext.vertex)
+		const p3 = add(mul(dir * thickness, nextTangent), segmentNext.vertex)
 		return [p1, p2, p3]
 	} else {
 		const p1 = add(mul(mitterLenght, tangent), segmentNext.vertex)
@@ -211,18 +221,17 @@ export function lineToTriangleStripGeometry(
 			if (newPoints.length === 2) {
 				uvs.push([0, (i + 1) / line.length], [1, (i + 1) / line.length])
 			} else {
-				const n = normal(newPoints)
-				if (dot(n, newNormal) >= 0) {
+				if (side([newPoints[0], newPoints[1]], newPoints[2]) <= 0) {
 					uvs.push(
-						[0, (i + 1) / line.length],
 						[1, (i + 1) / line.length],
 						[0, (i + 1) / line.length],
+						[1, (i + 1) / line.length],
 					)
 				} else {
 					uvs.push(
-						[1, (i + 1) / line.length],
 						[0, (i + 1) / line.length],
 						[1, (i + 1) / line.length],
+						[0, (i + 1) / line.length],
 					)
 				}
 			}
@@ -266,8 +275,8 @@ export function lineToTriangleStripGeometry(
 						[0, (line.length - (i + 1)) / line.length],
 					)
 				} else {
-					const n = normal(newPoints)
-					if (dot(n, newNormal) >= 0) {
+					// TODO: add test
+					if (side([newPoints[0], newPoints[1]], newPoints[2]) <= 0) {
 						uvs.push(
 							[1, (i + 1) / line.length],
 							[0, (i + 1) / line.length],
