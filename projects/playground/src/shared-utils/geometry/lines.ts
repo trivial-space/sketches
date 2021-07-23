@@ -115,8 +115,8 @@ export function lineSegmentStartPoints(
 ) {
 	thickness = typeof thickness === 'number' ? thickness : thickness(segment)
 	const tangent = getSegmentTangent(segment)
-	const p1 = add(mul(-thickness, tangent), segment.vertex)
-	const p2 = add(mul(thickness, tangent), segment.vertex)
+	const p1 = add(mul(thickness, tangent), segment.vertex)
+	const p2 = add(mul(-thickness, tangent), segment.vertex)
 	return [p1, p2]
 }
 
@@ -162,8 +162,8 @@ export function lineSegmentsJoinPoints(
 		const p3 = add(mul(-thickness, nextTangent), segmentNext.vertex)
 		return [p1, p2, p3]
 	} else {
-		const p1 = add(mul(-mitterLenght, tangent), segmentNext.vertex)
-		const p2 = add(mul(mitterLenght, tangent), segmentNext.vertex)
+		const p1 = add(mul(mitterLenght, tangent), segmentNext.vertex)
+		const p2 = add(mul(-mitterLenght, tangent), segmentNext.vertex)
 		return [p1, p2]
 	}
 }
@@ -241,12 +241,15 @@ export function lineToTriangleStripGeometry(
 			const next = backLine[i + 1]
 
 			if (i === 0) {
-				points = lineSegmentEndPoints(lineWidth, cur).reverse()
-				normals = repeat(points.length, mul(-1, cur.normal) as number[])
-				uvs = [
+				points = concat(points, lineSegmentEndPoints(lineWidth, cur).reverse())
+				normals = concat(
+					normals,
+					repeat(points.length, mul(-1, cur.normal) as number[]),
+				)
+				uvs = uvs.concat([
 					[1, 1],
 					[0, 1],
-				]
+				])
 			}
 
 			if (next) {

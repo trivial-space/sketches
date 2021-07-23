@@ -61,8 +61,8 @@ export const scene = Q.getFrame('scene').update({
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
 			clearBits: makeClear(gl, 'depth', 'color'),
-			cullFace: gl.BACK,
-			enable: [gl.DEPTH_TEST, gl.CULL_FACE],
+			cullFace: gl.FRONT,
+			enable: [gl.DEPTH_TEST],
 		},
 	}),
 })

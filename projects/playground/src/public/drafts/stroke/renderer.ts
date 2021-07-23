@@ -53,7 +53,8 @@ export const scene = Q.getFrame('scene').update({
 		sketches: [sketch],
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
-			enable: [Q.gl.BLEND],
+			enable: [Q.gl.BLEND, Q.gl.CULL_FACE],
+			cullFace: Q.gl.BACK,
 		},
 	}),
 })

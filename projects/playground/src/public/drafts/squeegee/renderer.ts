@@ -47,7 +47,8 @@ export const scene = Q.getFrame('scene').update({
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
 			// clearBits: painter.gl.COLOR_BUFFER_BIT,
-			enable: [Q.gl.BLEND],
+			enable: [Q.gl.BLEND, Q.gl.CULL_FACE],
+			cullFace: Q.gl.BACK,
 		},
 	}),
 })
