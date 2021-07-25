@@ -16,7 +16,7 @@ import {
 	window,
 } from 'tvs-libs/dist/utils/sequence'
 import { FormData, FormStoreType } from 'tvs-painter'
-import { normal, side } from 'tvs-libs/dist/geometry/primitives'
+import { side } from 'tvs-libs/dist/geometry/primitives'
 
 export interface LineSegment {
 	vertex: Vec
@@ -25,6 +25,9 @@ export interface LineSegment {
 	length: number
 }
 
+// TODO: Change data structure.
+// Implement as double linked list of points, with vertex and variable additional data like width, normal, color, etc...
+// calculate direction and length on the fly.
 export type Line = LineSegment[]
 
 export interface LineStep {
