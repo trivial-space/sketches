@@ -1,12 +1,14 @@
-import { times, repeat, zip, flatten } from 'tvs-libs/dist/utils/sequence'
-import { Q } from './context'
-import { noise2d, noise1d } from 'tvs-libs/dist/math/noise'
 import {
-	walkLine3D,
-	lineSegment,
-	Line,
-} from '../../../shared-utils/geometry/lines'
-import { normalize, add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
+	times,
+	repeat,
+	zip,
+	flatten,
+	window,
+} from 'tvs-libs/dist/utils/sequence'
+import { Q } from './context'
+import { noise2d } from 'tvs-libs/dist/math/noise'
+import { lineSegment } from '../../../shared-utils/geometry/lines'
+import { add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
 
 function easeOutQuad(x: number) {
 	return 1 - (1 - x) * (1 - x)
@@ -19,10 +21,6 @@ function easeInOutQuart(x: number): number {
 }
 
 const last = <T>(arr: T[]) => arr[arr.length - 1]
-
-function window<A>(n: number, arr: A[]) {
-	return arr.slice(n - 1).map((a, i) => times((j) => arr[i + j], n))
-}
 
 export function line(
 	start: [number, number],

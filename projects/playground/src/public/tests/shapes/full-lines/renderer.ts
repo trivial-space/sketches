@@ -53,16 +53,16 @@ export const scene = Q.getFrame('scene').update({
 			view: () => s.viewPort.camera.viewMat,
 			projection: () => s.viewPort.camera.projectionMat,
 			normalMatrix: () =>
-				mat4.transpose(
+				mat4.invert(
 					normalMat,
-					mat4.invert(normalMat, s.viewPort.camera.viewMat),
+					mat4.transpose(normalMat, s.viewPort.camera.viewMat),
 				),
 		},
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
 			clearBits: makeClear(gl, 'depth', 'color'),
 			cullFace: gl.FRONT,
-			enable: [gl.DEPTH_TEST],
+			enable: [gl.DEPTH_TEST, gl.CULL_FACE],
 		},
 	}),
 })

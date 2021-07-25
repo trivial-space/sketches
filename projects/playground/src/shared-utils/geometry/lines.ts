@@ -5,9 +5,16 @@ import {
 	cross,
 	dot,
 	normalize,
+	sub,
 } from 'tvs-libs/dist/math/vectors'
 import { quat, vec3 } from 'gl-matrix'
-import { flatten, reverse, repeat, concat } from 'tvs-libs/dist/utils/sequence'
+import {
+	flatten,
+	reverse,
+	repeat,
+	concat,
+	window,
+} from 'tvs-libs/dist/utils/sequence'
 import { FormData, FormStoreType } from 'tvs-painter'
 import { normal, side } from 'tvs-libs/dist/geometry/primitives'
 
@@ -110,10 +117,9 @@ function getSegmentTangent(seg: LineSegment) {
 }
 
 export function lineSegmentStartPoints(
-	thickness: number | ((seg: LineSegment) => number) = 1,
+	thickness: number = 1,
 	segment: LineSegment,
 ) {
-	thickness = typeof thickness === 'number' ? thickness : thickness(segment)
 	const tangent = getSegmentTangent(segment)
 	const p1 = add(mul(thickness, tangent), segment.vertex)
 	const p2 = add(mul(-thickness, tangent), segment.vertex)
@@ -121,13 +127,56 @@ export function lineSegmentStartPoints(
 }
 
 export function lineSegmentEndPoints(
-	thickness: number | ((seg: LineSegment) => number) = 1,
+	thickness: number = 1,
 	segment: LineSegment,
 ) {
 	return lineSegmentStartPoints(thickness, {
 		...segment,
 		vertex: add(segment.vertex, mul(segment.length, segment.direction)),
 	})
+}
+
+export function splitSharpAngleSegments(
+	thickness: number,
+	segmentBefore: LineSegment,
+	segmentNext: LineSegment,
+): Line {
+	const cosAngle = dot(segmentBefore.direction, segmentNext.direction)
+	if (cosAngle < -0.8) {
+		console.log('adding sharp angle segment!')
+		const nextTangent = getSegmentTangent(segmentNext)
+		const beforeTangent = getSegmentTangent(segmentBefore)
+		const tangent = normalize(sub(nextTangent, beforeTangent))
+
+		const dir =
+			side(
+				[segmentBefore.vertex, segmentNext.vertex],
+				add(segmentNext.vertex, segmentNext.direction),
+			) >= 0
+				? -1
+				: 1
+
+		const v1 = add(segmentNext.vertex, mul((dir * -1 * thickness) / 2, tangent))
+
+		return [
+			{
+				...segmentBefore,
+				direction: normalize(sub(v1, segmentBefore.vertex)),
+			},
+			{
+				...segmentNext,
+				vertex: v1,
+				direction: mul(dir, tangent),
+				length: thickness,
+			},
+			{
+				...segmentNext,
+				vertex: add(segmentNext.vertex, mul((dir * thickness) / 2, tangent)),
+			},
+		]
+	} else {
+		return [segmentBefore, segmentNext]
+	}
 }
 
 // TODO: add fix for case when points swap in certain situation:
@@ -148,7 +197,6 @@ export function lineSegmentsJoinPoints(
 		typeof thickness === 'number'
 			? thickness
 			: (thickness(segmentBefore) + thickness(segmentNext)) / 2
-	const cosAngle = dot(segmentBefore.direction, segmentNext.direction)
 
 	const nextTangent = getSegmentTangent(segmentNext)
 	const beforeTangent = getSegmentTangent(segmentBefore)
@@ -157,25 +205,9 @@ export function lineSegmentsJoinPoints(
 	let mitterLenght = thickness / dot(tangent, beforeTangent)
 	mitterLenght = Math.min(mitterLenght, thickness * 5)
 
-	const bevel = cosAngle < -0.9
-
-	if (bevel) {
-		const dir =
-			side(
-				[segmentBefore.vertex, segmentNext.vertex],
-				add(segmentNext.vertex, segmentNext.direction),
-			) >= 0
-				? -1
-				: 1
-		const p1 = add(mul(dir * thickness, beforeTangent), segmentNext.vertex)
-		const p2 = add(mul(dir * -mitterLenght, tangent), segmentNext.vertex)
-		const p3 = add(mul(dir * thickness, nextTangent), segmentNext.vertex)
-		return [p1, p2, p3]
-	} else {
-		const p1 = add(mul(mitterLenght, tangent), segmentNext.vertex)
-		const p2 = add(mul(-mitterLenght, tangent), segmentNext.vertex)
-		return [p1, p2]
-	}
+	const p1 = add(mul(mitterLenght, tangent), segmentNext.vertex)
+	const p2 = add(mul(-mitterLenght, tangent), segmentNext.vertex)
+	return [p1, p2]
 }
 
 // === FormData helpers ===
@@ -196,15 +228,30 @@ export function lineToTriangleStripGeometry(
 		storeType,
 	}: opts = {},
 ): FormData {
+	line = [line[0]].concat(
+		window(2, line).flatMap(([before, next]) => {
+			const width =
+				typeof lineWidth === 'number'
+					? lineWidth
+					: (lineWidth(before) + lineWidth(next)) / 2
+			return splitSharpAngleSegments(width, before, next).slice(1)
+		}),
+	)
+
+	const lineLength = line.reduce((len, seg) => len + seg.length, 0)
+
 	let points: number[][] = []
 	let normals: number[][] = []
 	let uvs: number[][] = []
+	let currentLength = 0
 	for (let i = 0; i < line.length; i++) {
 		const cur = line[i]
 		const next = line[i + 1]
+		const thickness = typeof lineWidth === 'number' ? lineWidth : lineWidth(cur)
+		currentLength += cur.length
 
 		if (i === 0) {
-			points = lineSegmentStartPoints(lineWidth, cur)
+			points = lineSegmentStartPoints(thickness, cur)
 			normals = [cur.normal, cur.normal] as number[][]
 			uvs = [
 				[0, 0],
@@ -213,31 +260,13 @@ export function lineToTriangleStripGeometry(
 		}
 
 		if (next) {
-			const newPoints = lineSegmentsJoinPoints(lineWidth, cur, next)
-			points = concat(points, newPoints)
-			const newNormal = normalize(add(cur.normal, next.normal)) as number[]
-			normals = concat(normals, repeat(newPoints.length, newNormal))
-
-			if (newPoints.length === 2) {
-				uvs.push([0, (i + 1) / line.length], [1, (i + 1) / line.length])
-			} else {
-				if (side([newPoints[0], newPoints[1]], newPoints[2]) <= 0) {
-					uvs.push(
-						[1, (i + 1) / line.length],
-						[0, (i + 1) / line.length],
-						[1, (i + 1) / line.length],
-					)
-				} else {
-					uvs.push(
-						[0, (i + 1) / line.length],
-						[1, (i + 1) / line.length],
-						[0, (i + 1) / line.length],
-					)
-				}
-			}
+			points = concat(points, lineSegmentsJoinPoints(lineWidth, cur, next))
+			const newNormal = normalize(add(cur.normal, next.normal))
+			normals = concat(normals, repeat(2, newNormal))
+			const uvY = currentLength / lineLength
+			uvs.push([0, uvY], [1, uvY])
 		} else {
-			const newPoints = lineSegmentEndPoints(lineWidth, cur)
-			points = concat(points, newPoints)
+			points = concat(points, lineSegmentEndPoints(thickness, cur))
 			normals = concat(normals, [cur.normal, cur.normal] as number[][])
 			uvs.push([0, 1], [1, 1])
 		}
@@ -245,59 +274,33 @@ export function lineToTriangleStripGeometry(
 
 	if (withBackFace) {
 		const backLine = reverse(line)
+		currentLength = 0
 		for (let i = 0; i < line.length; i++) {
 			const cur = backLine[i]
 			const next = backLine[i + 1]
+			const thickness =
+				typeof lineWidth === 'number' ? lineWidth : lineWidth(cur)
+			currentLength += cur.length
 
 			if (i === 0) {
-				points = concat(points, lineSegmentEndPoints(lineWidth, cur).reverse())
-				normals = concat(
-					normals,
-					repeat(points.length, mul(-1, cur.normal) as number[]),
-				)
+				points = concat(points, lineSegmentEndPoints(thickness, cur))
+				normals = concat(normals, repeat(2, mul(-1, cur.normal)))
 				uvs = uvs.concat([
-					[1, 1],
 					[0, 1],
+					[1, 1],
 				])
 			}
 
 			if (next) {
-				const newPoints = lineSegmentsJoinPoints(lineWidth, next, cur).reverse()
-				points = concat(points, newPoints)
-				const newNormal = mul(
-					-1,
-					normalize(add(cur.normal, next.normal)) as number[],
-				)
-				normals = concat(normals, repeat(newPoints.length, newNormal))
-				if (newPoints.length === 2) {
-					uvs.push(
-						[1, (line.length - (i + 1)) / line.length],
-						[0, (line.length - (i + 1)) / line.length],
-					)
-				} else {
-					// TODO: add test
-					if (side([newPoints[0], newPoints[1]], newPoints[2]) <= 0) {
-						uvs.push(
-							[1, (i + 1) / line.length],
-							[0, (i + 1) / line.length],
-							[1, (i + 1) / line.length],
-						)
-					} else {
-						uvs.push(
-							[0, (i + 1) / line.length],
-							[1, (i + 1) / line.length],
-							[0, (i + 1) / line.length],
-						)
-					}
-				}
+				points = concat(points, lineSegmentsJoinPoints(lineWidth, next, cur))
+				const newNormal = mul(-1, normalize(add(cur.normal, next.normal)))
+				normals = concat(normals, repeat(2, newNormal))
+				const uvY = (lineLength - currentLength) / lineLength
+				uvs.push([0, uvY], [1, uvY])
 			} else {
-				const newPoints = lineSegmentStartPoints(lineWidth, cur)
-				points = concat(points, newPoints)
-				normals = concat(
-					normals,
-					repeat(newPoints.length, mul(-1, cur.normal as number[])),
-				)
-				uvs.push([1, 0], [0, 0])
+				points = concat(points, lineSegmentStartPoints(thickness, cur))
+				normals = concat(normals, repeat(2, mul(-1, cur.normal)))
+				uvs.push([0, 0], [1, 0])
 			}
 		}
 	}

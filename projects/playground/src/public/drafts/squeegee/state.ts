@@ -31,7 +31,7 @@ const segment = lineSegment({
 	vertex: [0, -3, 0],
 })
 
-const lineWidth = 1.2
+const lineWidth = 1.6
 
 export class Squeegee {
 	step = nextStep()
