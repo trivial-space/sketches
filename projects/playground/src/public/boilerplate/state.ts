@@ -1,6 +1,6 @@
 import { mat4 } from 'gl-matrix'
 import { normalRand } from 'tvs-libs/dist/math/random'
-import { times } from 'tvs-libs/lib/utils/sequence'
+import { times } from 'tvs-libs/dist/utils/sequence'
 import { events, Q } from './context'
 
 export class Quad {
