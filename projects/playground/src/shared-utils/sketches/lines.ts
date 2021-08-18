@@ -162,6 +162,8 @@ export function createLines2DSketch(
 	return { sketch, update, pointsSketch: points?.sketch }
 }
 
+export type Lines2DSketch = ReturnType<typeof createLines2DSketch>
+
 interface Lines3DData extends LinesData {
 	viewMat?: mat4
 	projectionMat?: mat4
