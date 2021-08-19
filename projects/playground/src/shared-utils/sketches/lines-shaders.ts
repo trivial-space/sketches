@@ -70,12 +70,12 @@ export const line2DVert = vs(
 				(normal = sym(vec2($y(diff), mul(-1, $x(diff))))),
 				assign(
 					vs.gl_Position,
-					vec4(fit0111(
+					vec4(mul(fit0111(
 						div(
 							add(aPosition1_2D, mul(normal, width)),
 							uSize
 						)
-					), 0, 1),
+					), vec2(1, -1)), 0, 1),
 				),
 				assign(vColor, ternary(eq($w(uColor), float(0)), aColor, uColor)),
 			]

@@ -16,6 +16,8 @@ const pointsDynamic = createPoints2DSketch(Q, 'points1', {
 	drawSettings: {
 		clearColor: [0, 0, 0, 1],
 		clearBits: makeClear(Q.gl, 'color'),
+		cullFace: Q.gl.BACK,
+		enable: [Q.gl.CULL_FACE],
 	},
 })
 

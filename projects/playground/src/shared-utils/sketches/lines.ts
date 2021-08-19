@@ -59,8 +59,8 @@ function createLinesForm({ segments, points = [], ...data }: LinesData) {
 			direction: {
 				buffer: new Float32Array(
 					segments
-						? segments.flatMap(() => [-1, 1, -1, 1])
-						: flatMap(() => [-1, 1, -1, 1], points),
+						? segments.flatMap(() => [1, -1, 1, -1])
+						: flatMap(() => [1, -1, 1, -1], points),
 				),
 				storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 			},
@@ -92,6 +92,7 @@ function createLinesForm({ segments, points = [], ...data }: LinesData) {
 			storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 		}
 	}
+	console.log(formData)
 
 	return formData
 }

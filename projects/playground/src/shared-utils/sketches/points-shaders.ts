@@ -21,6 +21,7 @@ import {
 	sym,
 	ternary,
 	uniform,
+	vec2,
 	Vec2Sym,
 	Vec3Sym,
 	vec4,
@@ -53,7 +54,10 @@ export const point2DVert = vs(
 		defMain(() => [
 			assign(vColor, ternary(eq($w(uColor), float(0)), aColor, uColor)),
 			assign(vs.gl_PointSize, uPointSize),
-			assign(vs.gl_Position, vec4(fit0111(div(aPosition2D, uSize)), 0, 1)),
+			assign(
+				vs.gl_Position,
+				vec4(mul(fit0111(div(aPosition2D, uSize)), vec2(1, -1)), 0, 1),
+			),
 		]),
 	]),
 )
