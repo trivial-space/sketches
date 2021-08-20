@@ -3,7 +3,7 @@ import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
 import { PainterContext } from '../painterState'
 import { DrawSettings, FormData } from 'tvs-painter/dist'
 import { line2DVert, line3DVert, lineFrag } from './lines-shaders'
-import { flatMap, flatten, times } from 'tvs-libs/dist/utils/sequence'
+import { flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { triangulate } from '../../../../libs/dist/geometry/quad'
 import { mat4 } from 'gl-matrix'
 import { createPoints2DSketch, createPoints3DSketch } from './points'
@@ -60,12 +60,14 @@ function createLinesForm({ segments, points = [], ...data }: LinesData) {
 				buffer: new Float32Array(
 					segments
 						? segments.flatMap(() => [1, -1, 1, -1])
-						: flatMap(() => [1, -1, 1, -1], points),
+						: flatten(times(() => [1, -1, 1, -1], points.length - 1)),
 				),
 				storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 			},
 		},
-		itemCount: segments ? segments.length * 6 : (points.length - 1) * 6,
+		itemCount: segments
+			? segments.length * 6
+			: points.length && (points.length - 1) * 6,
 		elements: {
 			buffer: new Uint32Array(
 				flatten(triangulate(segments ? segments.length : points.length - 1)),
@@ -87,6 +89,18 @@ function createLinesForm({ segments, points = [], ...data }: LinesData) {
 									return [p, p, n, n]
 								}, points.length - 1),
 						  ),
+				),
+			),
+			storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
+		}
+	} else {
+		const c = [0, 0, 0, 0]
+		formData.attribs.color = {
+			buffer: new Float32Array(
+				flatten(
+					segments
+						? segments.flatMap(() => [c, c, c, c])
+						: flatten(times((i) => [c, c, c, c], points.length - 1)),
 				),
 			),
 			storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
