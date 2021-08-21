@@ -34,7 +34,7 @@ export function createPoints2DSketch(
 			form,
 			shade,
 			uniforms: {
-				uPointSize: data.pointSize || 1,
+				uPointSize: (data.pointSize || 1) * Q.state.device.sizeMultiplier,
 				uSize: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 				uColor: data.color || [0, 0, 0, 0],
 			},

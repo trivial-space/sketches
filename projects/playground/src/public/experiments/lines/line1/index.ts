@@ -8,7 +8,7 @@ import { Buttons, pointer } from 'tvs-libs/dist/events/pointer'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines'
 import { makeClear } from '../../../../../../painter/dist/utils/context'
 
-// Q.state.device.sizeMultiplier = window.devicePixelRatio
+Q.state.device.sizeMultiplier = window.devicePixelRatio
 
 const scene = Q.getFrame('scene')
 
@@ -17,7 +17,7 @@ let currentLine: Line = startLine({ vertex: [0, 0] })
 let currentLineSketch = createLines2DSketch(Q, 'current-line', {
 	dynamicForm: true,
 	color: [0.1, 0.1, 0, 1],
-	lineWidth: 5,
+	lineWidth: 20,
 })
 
 scene.update({
@@ -36,11 +36,12 @@ let startPoint: [number, number] = [0, 0]
 
 pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 	if (val.dragging) {
+		const m = Q.state.device.sizeMultiplier
 		if (!dragging) {
 			dragging = true
 			startPoint = [
-				val.pressed[Buttons.LEFT].clientX,
-				val.pressed[Buttons.LEFT].clientY,
+				val.pressed[Buttons.LEFT].clientX * m,
+				val.pressed[Buttons.LEFT].clientY * m,
 			]
 
 			const point: LinePoint = {
@@ -50,7 +51,10 @@ pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 			currentLine = startLine(point)
 		} else {
 			const point: LinePoint = {
-				vertex: [startPoint[0] - val.drag.x, startPoint[1] - val.drag.y],
+				vertex: [
+					startPoint[0] - val.drag.x * m,
+					startPoint[1] - val.drag.y * m,
+				],
 			}
 			currentLine?.append(point)
 
@@ -79,5 +83,3 @@ Q.listen('index', events.RESIZE, () => {
 	})
 	Q.painter.compose(scene).display(scene)
 })
-
-import.meta.hot?.accept()

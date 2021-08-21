@@ -142,7 +142,7 @@ export function createLines2DSketch(
 			form,
 			shade,
 			uniforms: {
-				uLineWidth: data.lineWidth || 1,
+				uLineWidth: (data.lineWidth || 1) * Q.state.device.sizeMultiplier,
 				uSize: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 				uColor: data.color || [0, 0, 0, 0],
 			},
