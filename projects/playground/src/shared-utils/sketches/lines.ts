@@ -106,7 +106,6 @@ function createLinesForm({ segments, points = [], ...data }: LinesData) {
 			storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 		}
 	}
-	console.log(formData)
 
 	return formData
 }

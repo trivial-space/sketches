@@ -7,7 +7,6 @@ import {
 import { Buttons, pointer } from 'tvs-libs/dist/events/pointer'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines'
 import { makeClear } from '../../../../../../painter/dist/utils/context'
-import { once } from '../../../../shared-utils/scheduler'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -59,19 +58,17 @@ pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 			}
 			currentLine?.append(point)
 
-			once(() => {
-				currentLineSketch.update({
-					points: [...currentLine!].map((p) => p.vertex),
-				})
+			currentLineSketch.update({
+				points: [...currentLine!].map((p) => p.vertex),
+			})
 
-				scene.update({
-					layers: Q.getLayer('scene').update({
-						sketches: currentLineSketch.sketch,
-					}),
-				})
+			scene.update({
+				layers: Q.getLayer('scene').update({
+					sketches: currentLineSketch.sketch,
+				}),
+			})
 
-				Q.painter.compose(scene).display(scene)
-			}, 'update-and-paint')
+			Q.painter.compose(scene).display(scene)
 		}
 	} else if (!val.dragging && dragging) {
 		dragging = false
