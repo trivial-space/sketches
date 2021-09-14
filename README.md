@@ -52,7 +52,7 @@ Great inspiration was drawn from the creative and encouraging communities behind
 [Three.js](https://threejs.org/), [Stack.gl](https://github.com/stackgl) and
 others pioneering immersive WebGL experiences.
 
-A special thanks goes to the people and teams behind
+Thanks also to the people and teams behind
 [TypeScript](https://github.com/Microsoft/TypeScript) and
 [Webpack](https://github.com/webpack/webpack). These tools provide a major
 upgrade in terms of productivity and development comfort.
@@ -61,4 +61,4 @@ upgrade in terms of productivity and development comfort.
 
 MIT, see the LICENSE file in the repository.
 
-Copyright (c) 2016 - 2020 Thomas Gorny
+Copyright (c) 2016 - 2021 Thomas Gorny
