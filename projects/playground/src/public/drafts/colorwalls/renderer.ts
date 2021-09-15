@@ -36,3 +36,5 @@ export const scene = createMirrorScene(Q, [wallsSketch], {
 	blurRatioVertical: 2.5,
 	blurStrenghOffset: 2.5,
 })
+
+scene.scene.update({ directRender: true })
