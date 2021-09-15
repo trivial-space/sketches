@@ -3,11 +3,11 @@ import base from './glsl/base.frag.glsl'
 
 // ===== layers =====
 
-const paintLayer = Q.getFrame('paint')
+const paintLayer = Q.getLayer('paint')
 
 const bufferSize = 256
 
-const layer = Q.getEffect('layer').update({
+const effect = Q.getEffect('layer').update({
 	frag: base,
 	uniforms: {
 		size: bufferSize,
@@ -16,8 +16,8 @@ const layer = Q.getEffect('layer').update({
 	},
 })
 
-export const automaton = Q.getFrame('automaton').update({
-	layers: layer,
+export const automaton = Q.getLayer('automaton').update({
+	effects: effect,
 	width: bufferSize,
 	height: bufferSize,
 	selfReferencing: true,

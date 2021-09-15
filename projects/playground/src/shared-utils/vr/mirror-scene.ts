@@ -5,7 +5,7 @@ import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewp
 import { getBlurByAlphaEffect } from '../../shared-utils/shaders/effects/blur'
 import { makeXZPlane } from '../../shared-utils/geometry/helpers'
 import { groundVert, makeGroundFrag } from './mirror-scene-shaders'
-import { TaggedFn2, TaggedFn3 } from '@thi.ng/shader-ast'
+import { TaggedFn3 } from '@thi.ng/shader-ast'
 
 const sceneId = 'mirror-scene-ground'
 
@@ -57,24 +57,15 @@ export function createMirrorScene(
 		frag: makeGroundFrag(groundShaderColorFn),
 	})
 
-	const groundSketch = Q.getSketch(sceneId).update({
-		form: groundForm,
-		shade: groundShade,
-		uniforms: {
-			transform: floorTransform,
-			reflection: '0',
-			size: () => [
-				width || Q.painter.canvas.width,
-				height || Q.painter.canvas.height,
-			],
-			reflectionStrength,
-		},
+	const blurEffect = getBlurByAlphaEffect(Q, 'blur', {
+		strength: blurStrengh,
+		strengthOffset: blurStrenghOffset,
+		blurRatioVertical,
 	})
-
-	// ===== layers =====
 
 	const mirrorScene = Q.getLayer(sceneId).update({
 		sketches: objectSketches,
+		effects: blurEffect,
 		uniforms: {
 			view: () =>
 				mat4.multiply(
@@ -88,6 +79,22 @@ export function createMirrorScene(
 		drawSettings: {
 			clearBits: Q.gl.DEPTH_BUFFER_BIT | Q.gl.COLOR_BUFFER_BIT,
 		},
+		width,
+		height,
+	})
+
+	const groundSketch = Q.getSketch(sceneId).update({
+		form: groundForm,
+		shade: groundShade,
+		uniforms: {
+			transform: floorTransform,
+			reflection: () => mirrorScene.image(),
+			size: () => [
+				width || Q.painter.canvas.width,
+				height || Q.painter.canvas.height,
+			],
+			reflectionStrength,
+		},
 	})
 
 	const scene = Q.getLayer('scene').update({
@@ -100,25 +107,16 @@ export function createMirrorScene(
 		drawSettings: {
 			clearBits: Q.gl.DEPTH_BUFFER_BIT | Q.gl.COLOR_BUFFER_BIT,
 		},
-	})
-
-	const blurEffect = getBlurByAlphaEffect(Q, 'blur', {
-		strength: blurStrengh,
-		strengthOffset: blurStrenghOffset,
-		blurRatioVertical,
-	})
-
-	const main = Q.getFrame('main').update({
-		layers: [mirrorScene, blurEffect, scene],
 		width,
 		height,
 	})
 
 	if (!(width || height)) {
 		Q.listen(sceneId, baseEvents.RESIZE, () => {
-			main.update()
+			scene.update()
+			mirrorScene.update()
 		})
 	}
 
-	return main
+	return { scene, mirrorScene }
 }

@@ -10,8 +10,6 @@ import { makeClear } from '../../../../../../painter/dist/utils/context'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
-const scene = Q.getFrame('scene')
-
 let currentLine: Line = startLine({ vertex: [0, 0] })
 
 let currentLineSketch = createLines2DSketch(Q, 'current-line', {
@@ -20,15 +18,14 @@ let currentLineSketch = createLines2DSketch(Q, 'current-line', {
 	lineWidth: 20,
 })
 
-scene.update({
-	layers: Q.getLayer('scene').update({
-		sketches: currentLineSketch.sketch,
+const scene = Q.getLayer('scene').update({
+	sketches: currentLineSketch.sketch,
 
-		drawSettings: {
-			clearColor: [0.8, 0.8, 1, 1],
-			clearBits: makeClear(Q.gl, 'color'),
-		},
-	}),
+	drawSettings: {
+		clearColor: [0.8, 0.8, 1, 1],
+		clearBits: makeClear(Q.gl, 'color'),
+	},
+	directRender: true,
 })
 
 let dragging = false
@@ -63,12 +60,10 @@ pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 			})
 
 			scene.update({
-				layers: Q.getLayer('scene').update({
-					sketches: currentLineSketch.sketch,
-				}),
+				sketches: currentLineSketch.sketch,
 			})
 
-			Q.painter.compose(scene).display(scene)
+			Q.painter.compose(scene)
 		}
 	} else if (!val.dragging && dragging) {
 		dragging = false
@@ -81,5 +76,5 @@ Q.listen('index', events.RESIZE, () => {
 	currentLineSketch.update({
 		points: [...currentLine!].map((p) => p.vertex),
 	})
-	Q.painter.compose(scene).display(scene)
+	Q.painter.compose(scene)
 })

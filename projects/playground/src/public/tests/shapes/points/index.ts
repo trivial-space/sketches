@@ -48,8 +48,7 @@ addToLoop(() => {
 		),
 	})
 
-	Q.painter.draw(pointsDynamic.sketch)
-	Q.painter.draw(pointsStatic.sketch)
+	Q.painter.draw({ sketches: [pointsDynamic.sketch, pointsStatic.sketch] })
 }, 'loop')
 
 startLoop()

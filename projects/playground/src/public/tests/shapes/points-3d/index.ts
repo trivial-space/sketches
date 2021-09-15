@@ -52,7 +52,7 @@ addToLoop((tpf) => {
 	mat4.rotateY(pointsMat, pointsMat, 0.01)
 	mat4.mul(viewMat, Q.state.viewPort.camera.viewMat, pointsMat)
 
-	Q.painter.draw(points.sketch)
+	Q.painter.draw({ sketches: points.sketch })
 }, 'loop')
 
 Q.listen('', baseEvents.RESIZE, (s) => points.update())

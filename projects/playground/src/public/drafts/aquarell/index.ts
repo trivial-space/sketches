@@ -7,7 +7,7 @@ repeat((tpf) => {
 	Q.get('device').tpf = tpf
 	Q.emit(events.PROCESS_PAINT)
 	Q.emit(events.FRAME)
-	Q.painter.compose(automaton).display(automaton)
+	Q.painter.compose(automaton).show(automaton)
 	Q.emit(events.CLEANUP_PAINT)
 }, 'loop')
 

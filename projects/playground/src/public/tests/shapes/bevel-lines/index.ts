@@ -15,7 +15,7 @@ Q.state.device.sizeMultiplier = window.devicePixelRatio
 
 Q.listen('index', events.RESIZE, () => {
 	scene.update()
-	Q.painter.compose(scene).display(scene)
+	Q.painter.compose(scene)
 	console.log(scene._targets[0].width, Q.gl.drawingBufferWidth)
 })
 

@@ -29,7 +29,7 @@ const geoShade = Q.getShade('geo').update({
 
 // Textures
 
-const texture = Q.getFrame('tex').update({ texture: {} })
+const texture = Q.getLayer('tex').update({ texture: {} })
 
 const img = new Image()
 img.onload = () => {
@@ -74,7 +74,8 @@ const lightSketch = Q.getSketch('light').update({
 
 // Layers
 
-const sceneLayer = Q.getLayer('scene').update({
+const bufferSpec: TextureData = { type: 'FLOAT' }
+export const scene = Q.getLayer('scene').update({
 	sketches: [lightSketch, groundSketch],
 	uniforms: {
 		view: () => s.viewPort.camera.viewMat,
@@ -84,15 +85,10 @@ const sceneLayer = Q.getLayer('scene').update({
 		enable: [gl.DEPTH_TEST],
 		clearBits: makeClear(gl, 'color', 'depth'),
 	},
-})
-
-const bufferSpec: TextureData = { type: 'FLOAT' }
-export const scene = Q.getFrame('scene').update({
-	layers: sceneLayer,
 	bufferStructure: [bufferSpec, bufferSpec, bufferSpec, bufferSpec],
 })
 
-const lightLayer = Q.getEffect('light').update({
+export const light = Q.getEffect('light').update({
 	frag: lightFrag,
 	uniforms: {
 		eyePosition: () => s.viewPort.camera.position,
@@ -108,10 +104,6 @@ const lightLayer = Q.getEffect('light').update({
 		enable: [gl.BLEND],
 		clearBits: makeClear(gl, 'color'),
 	},
-})
-
-export const light = Q.getFrame('light').update({
-	layers: lightLayer,
 })
 
 Q.listen('renderer', events.RESIZE, () => {

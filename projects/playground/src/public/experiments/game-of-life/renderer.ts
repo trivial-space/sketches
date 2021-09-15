@@ -8,7 +8,7 @@ import planeVert from './glsl/plane-material.vert.glsl'
 
 // ===== gof layers =====
 
-const paintFrame = Q.getFrame('paint')
+const paintLayer = Q.getLayer('paint')
 
 const bufferSize = 256
 
@@ -16,13 +16,13 @@ const effect = Q.getEffect('layer').update({
 	frag: base,
 	uniforms: {
 		size: bufferSize,
-		paint: () => paintFrame.image(),
+		paint: () => paintLayer.image(),
 		previous: '0',
 	},
 })
 
-export const automaton = Q.getFrame('automaton').update({
-	layers: effect,
+export const automaton = Q.getLayer('automaton').update({
+	effects: effect,
 	selfReferencing: true,
 	width: bufferSize,
 	height: bufferSize,
@@ -64,5 +64,5 @@ export const sketch = Q.getSketch('plane').update({
 // ===== state =====
 
 Q.listen('renderer', events.FRAME, () => {
-	paintFrame.update({ texture: { asset: paint } })
+	paintLayer.update({ texture: { asset: paint } })
 })

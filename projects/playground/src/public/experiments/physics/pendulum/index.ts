@@ -50,7 +50,7 @@ addToLoop((tpf) => {
 	lines.update({ points: [anchor, p1.pos, p2.pos, p3.pos] })
 	points.update({ positions: [p1.pos, p2.pos, p3.pos] })
 
-	Q.painter.compose(scene).display(scene)
+	Q.painter.compose(scene.mirrorScene, scene.scene).show(scene.scene)
 }, 'loop')
 
 Q.listen('', baseEvents.RESIZE, (s) => lines.update())

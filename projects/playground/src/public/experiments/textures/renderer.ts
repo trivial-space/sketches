@@ -39,8 +39,8 @@ const noise = Q.getEffect('noise').update({
 	},
 })
 
-export const noiseFrame = Q.getFrame('noise').update({
-	layers: noise,
+export const noiseLayer = Q.getLayer('noise').update({
+	effects: noise,
 	width: 256,
 	height: 256,
 })
@@ -49,7 +49,7 @@ export const noiseSketch = Q.getSketch('noise').update({
 	form: planeForm,
 	shade: planeShade,
 	uniforms: {
-		texture: () => noiseFrame.image(),
+		texture: () => noiseLayer.image(),
 		transform: noisePlaneMatrix,
 	},
 })
@@ -59,7 +59,7 @@ export const noiseSketch = Q.getSketch('noise').update({
 const noiseTexPlaneMatrix = mat4.create()
 mat4.translate(noiseTexPlaneMatrix, noiseTexPlaneMatrix, [11, 5.5, 5])
 
-export const noiseTexFrame = Q.getFrame('noiseTex').update({
+export const noiseTex = Q.getLayer('noiseTex').update({
 	texture: getNoiseTextureData({
 		width: 256,
 		height: 256,
@@ -77,7 +77,7 @@ export const noiseTexSketch = Q.getSketch('noiseTex').update({
 	form: planeForm,
 	shade: planeShade,
 	uniforms: {
-		texture: () => noiseTexFrame.image(),
+		texture: () => noiseTex.image(),
 		transform: noiseTexPlaneMatrix,
 	},
 })
@@ -87,7 +87,7 @@ export const noiseTexSketch = Q.getSketch('noiseTex').update({
 const noiseTex2PlaneMatrix = mat4.create()
 mat4.translate(noiseTex2PlaneMatrix, noiseTex2PlaneMatrix, [-11, 5.5, 5])
 
-const noiseTex2 = Q.getEffect('noiseTex2').update({
+const noiseTex2Eff = Q.getEffect('noiseTex2').update({
 	frag: noise2Shader,
 	drawSettings: {
 		clearBits: makeClear(Q.gl, 'color', 'depth'),
@@ -95,12 +95,12 @@ const noiseTex2 = Q.getEffect('noiseTex2').update({
 	uniforms: {
 		time: () => Q.state.time,
 		resolution: () => [256, 256],
-		noiseTex: () => noiseTexFrame.image(),
+		noiseTex: () => noiseTex.image(),
 	},
 })
 
-export const noiseTex2Frame = Q.getFrame('noiseTex2').update({
-	layers: noiseTex2,
+export const noiseTex2 = Q.getLayer('noiseTex2').update({
+	effects: noiseTex2Eff,
 	width: 256,
 	height: 256,
 })
@@ -109,7 +109,7 @@ export const noiseTex2Sketch = Q.getSketch('noiseTex2').update({
 	form: planeForm,
 	shade: planeShade,
 	uniforms: {
-		texture: () => noiseTex2Frame.image(),
+		texture: () => noiseTex2.image(),
 		transform: noiseTex2PlaneMatrix,
 	},
 })
@@ -119,7 +119,7 @@ export const noiseTex2Sketch = Q.getSketch('noiseTex2').update({
 const lineTexPlaneMatrix = mat4.create()
 mat4.translate(lineTexPlaneMatrix, lineTexPlaneMatrix, [-22, 5.5, 5])
 
-const lineTex = Q.getEffect('lineTex').update({
+const lineTexEff = Q.getEffect('lineTex').update({
 	frag: lineShader,
 	drawSettings: {
 		clearBits: makeClear(Q.gl, 'color', 'depth'),
@@ -127,12 +127,12 @@ const lineTex = Q.getEffect('lineTex').update({
 	uniforms: {
 		time: () => Q.state.time,
 		resolution: () => [256, 256],
-		noiseTex: () => noiseTexFrame.image(),
+		noiseTex: () => noiseTex.image(),
 	},
 })
 
-export const lineTexFrame = Q.getFrame('lineTex').update({
-	layers: lineTex,
+export const lineTex = Q.getLayer('lineTex').update({
+	effects: lineTexEff,
 	width: 256,
 	height: 256,
 })
@@ -141,7 +141,7 @@ export const lineTexSketch = Q.getSketch('lineTex').update({
 	form: planeForm,
 	shade: planeShade,
 	uniforms: {
-		texture: () => lineTexFrame.image(),
+		texture: () => lineTex.image(),
 		transform: lineTexPlaneMatrix,
 	},
 })
@@ -165,5 +165,5 @@ Q.listen('renderer', events.FRAME, (s) => {
 })
 
 Q.listen('renderer', events.RESIZE, () => {
-	noiseFrame.update()
+	noiseLayer.update()
 })

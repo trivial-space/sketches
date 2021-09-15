@@ -4,11 +4,10 @@ import { keyboard, KeyState } from 'tvs-libs/dist/events/keyboard'
 import { deepOverride } from 'tvs-libs/dist/utils/object'
 import { GL, PainterOptions } from 'tvs-painter'
 import { Form } from 'tvs-painter/dist/form'
-import { Frame } from 'tvs-painter/dist/frame'
 import { Layer } from 'tvs-painter/dist/layer'
 import { Painter } from 'tvs-painter/dist/painter'
 import { Shade } from 'tvs-painter/dist/shade'
-import { Sketch } from 'tvs-painter/dist/sketch'
+import { Effect, Sketch } from 'tvs-painter/dist/sketch'
 import { PointerState, pointer } from 'tvs-libs/dist/events/pointer'
 
 // === Painter ===
@@ -36,12 +35,7 @@ function getLayer(id: string) {
 	return layers[id] || (layers[id] = painter.createLayer('Layer_' + id))
 }
 
-const frames: { [id: string]: Frame } = {}
-function getFrame(id: string) {
-	return frames[id] || (frames[id] = painter.createFrame('Frame_' + id))
-}
-
-const effects: { [id: string]: Layer } = {}
+const effects: { [id: string]: Effect } = {}
 function getEffect(id: string) {
 	return effects[id] || (effects[id] = painter.createEffect('Effect_' + id))
 }
@@ -128,7 +122,6 @@ export function getPainterContext<S extends BaseState>(
 		getShade,
 		getSketch,
 		getLayer,
-		getFrame,
 		getEffect,
 
 		state: state as S,
@@ -179,7 +172,6 @@ export interface PainterContext<S extends BaseState = BaseState> {
 	getShade: typeof getShade
 	getSketch: typeof getSketch
 	getLayer: typeof getLayer
-	getFrame: typeof getFrame
 	getEffect: typeof getEffect
 	state: S
 	get<K extends keyof S = keyof S>(prop: K): S[K]

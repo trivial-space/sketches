@@ -17,13 +17,12 @@ const sketch = Q.getSketch('line').update({ form, shade })
 
 // === scene ===
 
-export const scene = Q.getFrame('scene').update({
-	layers: Q.getLayer('scene').update({
-		sketches: [sketch],
-		drawSettings: {
-			clearColor: [1, 1, 1, 1],
-			enable: [Q.gl.CULL_FACE],
-			cullFace: Q.gl.BACK,
-		},
-	}),
+export const scene = Q.getLayer('scene').update({
+	sketches: sketch,
+	drawSettings: {
+		clearColor: [1, 1, 1, 1],
+		enable: [Q.gl.CULL_FACE],
+		cullFace: Q.gl.BACK,
+	},
+	directRender: true,
 })

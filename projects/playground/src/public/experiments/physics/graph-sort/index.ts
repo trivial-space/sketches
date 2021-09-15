@@ -42,8 +42,7 @@ repeat((tpf) => {
 		segments: connections.map(([p1, p2]) => [nodes[p1].pos, nodes[p2].pos]),
 	})
 
-	Q.painter.draw(lines.sketch)
-	Q.painter.draw(points.sketch)
+	Q.painter.draw({ sketches: [lines.sketch, points.sketch] })
 
 	if (time >= timeToSort * 1000) stop('render')
 }, 'render')

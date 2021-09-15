@@ -1,8 +1,6 @@
 import { lineFrag, lineVert } from './shaders'
-import { mat4 } from 'gl-matrix'
 import { lineToTriangleStripGeometry } from '../../../shared-utils/geometry/lines'
-import { line, strokePatch } from './state'
-import { flatten } from 'tvs-libs/dist/utils/sequence'
+import { strokePatch } from './state'
 import { clamp } from 'tvs-libs/dist/math/core'
 import { getNoiseTextureData } from '../../../shared-utils/texture-helpers'
 import { Q } from './context'
@@ -24,7 +22,7 @@ const data = lineToTriangleStripGeometry(
 )
 const form = Q.getForm('line').update(data)
 
-export const noiseTexFrame = Q.getFrame('noiseTex').update({
+export const noiseTex = Q.getLayer('noiseTex').update({
 	texture: getNoiseTextureData({
 		width: 256,
 		height: 256,
@@ -42,19 +40,18 @@ const sketch = Q.getSketch('line').update({
 	form: form,
 	shade,
 	uniforms: {
-		noiseTex: noiseTexFrame.image(),
+		noiseTex: noiseTex.image(),
 	},
 })
 
 // === scene ===
 
-export const scene = Q.getFrame('scene').update({
-	layers: Q.getLayer('scene').update({
-		sketches: [sketch],
-		drawSettings: {
-			clearColor: [1, 1, 1, 1],
-			enable: [Q.gl.BLEND, Q.gl.CULL_FACE],
-			cullFace: Q.gl.BACK,
-		},
-	}),
+export const scene = Q.getLayer('scene').update({
+	sketches: [sketch],
+	drawSettings: {
+		clearColor: [1, 1, 1, 1],
+		enable: [Q.gl.BLEND, Q.gl.CULL_FACE],
+		cullFace: Q.gl.BACK,
+	},
+	directRender: true,
 })

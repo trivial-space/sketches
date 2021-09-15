@@ -11,7 +11,7 @@ Q.listen('start', events.ON_IMAGES_LOADED, (s) => {
 	repeat((tpf) => {
 		s.device.tpf = tpf
 		Q.emit(events.FRAME)
-		Q.painter.draw(tiles)
+		Q.painter.draw({ sketches: tiles })
 	}, 'loop')
 })
 

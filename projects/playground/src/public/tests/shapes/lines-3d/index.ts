@@ -6,6 +6,7 @@ import { makeClear } from 'tvs-painter/dist/utils/context'
 import { addToLoop, startLoop } from '../../../../shared-utils/frameLoop'
 import { baseEvents } from '../../../../shared-utils/painterState'
 import { createLines3DSketch } from '../../../../shared-utils/sketches/lines'
+import { defined } from 'tvs-libs/dist/types'
 
 initPerspectiveViewport(Q, {
 	moveSpeed: 40,
@@ -53,8 +54,9 @@ addToLoop((tpf) => {
 	mat4.rotateY(pointsMat, pointsMat, 0.01)
 	mat4.mul(viewMat, Q.state.viewPort.camera.viewMat, pointsMat)
 
-	Q.painter.draw(lines.sketch)
-	lines.pointsSketch && Q.painter.draw(lines.pointsSketch)
+	Q.painter.draw({
+		sketches: [lines.sketch, lines.pointsSketch].filter(defined),
+	})
 }, 'loop')
 
 Q.listen('', baseEvents.RESIZE, (s) => lines.update())

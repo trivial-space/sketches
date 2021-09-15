@@ -1,5 +1,5 @@
 import { each } from 'tvs-libs/dist/utils/sequence'
-import { Frame } from 'tvs-painter/dist/frame'
+import { Layer } from 'tvs-painter/dist/layer'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { events, Q } from './context'
 import frag from './glsl/base-frag.glsl'
@@ -23,7 +23,7 @@ const form = Q.getForm('form').update(plane(tileSize, tileSize, 3, 3))
 
 // ===== textures =====
 
-const textures: { [id: string]: Frame } = {}
+const textures: { [id: string]: Layer } = {}
 
 // ===== objects =====
 
@@ -31,7 +31,7 @@ export const tiles = Q.getSketch('tiles')
 
 Q.listen('render', events.ON_IMAGES_LOADED, (s) => {
 	each((img, key) => {
-		textures[key] = Q.getFrame(key).update({
+		textures[key] = Q.getLayer(key).update({
 			texture: {
 				minFilter: 'LINEAR_MIPMAP_LINEAR',
 				magFilter: 'LINEAR',

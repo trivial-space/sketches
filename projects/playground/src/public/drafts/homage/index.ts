@@ -27,7 +27,7 @@ videos.then((vs) => {
 		videoTextures.forEach((t, i) =>
 			t.update({ texture: { ...videoTextureData, asset: vs[i] } }),
 		)
-		Q.painter.compose(...videoLights, mirrorScene, scene).display(scene)
+		Q.painter.compose(...videoLights, mirrorScene, scene)
 	}, 'render')
 
 	startLoop()

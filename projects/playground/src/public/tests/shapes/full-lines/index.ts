@@ -9,7 +9,7 @@ addToLoop((tpf) => {
 	Q.state.device.tpf = tpf
 	Q.state.time += tpf / 1000
 	Q.emit(events.FRAME)
-	Q.painter.compose(scene).display(scene)
+	Q.painter.compose(scene)
 }, 'loop')
 
 startLoop()

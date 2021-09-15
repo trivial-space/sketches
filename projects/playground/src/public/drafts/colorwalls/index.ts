@@ -5,7 +5,7 @@ import { scene } from './renderer'
 addToLoop((tpf) => {
 	Q.get('device').tpf = tpf
 	Q.emit(events.FRAME)
-	Q.painter.compose(scene).display(scene)
+	Q.painter.compose(scene.mirrorScene, scene.scene).show(scene.scene)
 }, 'loop')
 
 startLoop()

@@ -23,7 +23,7 @@ const sketch = Q.getSketch('quad').update({
 
 // ===== layers =====
 
-const scene = Q.getLayer('scene').update({
+export const scene = Q.getLayer('scene').update({
 	sketches: [sketch],
 	uniforms: {
 		view: () => Q.state.viewPort.camera.viewMat,
@@ -32,8 +32,5 @@ const scene = Q.getLayer('scene').update({
 	drawSettings: {
 		clearBits: Q.gl.DEPTH_BUFFER_BIT | Q.gl.COLOR_BUFFER_BIT,
 	},
-})
-
-export const main = Q.getFrame('main').update({
-	layers: scene,
+	directRender: true,
 })

@@ -36,12 +36,12 @@ export const videoTextureData: TextureData = {
 	wrap: 'CLAMP_TO_EDGE',
 }
 
-export const videoTextures = videos.names.map((n) => Q.getFrame(n))
+export const videoTextures = videos.names.map((n) => Q.getLayer(n))
 
 const reflSize = 256
 export const videoLights = videoTextures.map((t, i) => {
 	const id = 'vref' + i
-	return Q.getFrame(id).update({
+	return Q.getLayer(id).update({
 		bufferStructure: [
 			{
 				minFilter: 'LINEAR',
@@ -50,10 +50,10 @@ export const videoLights = videoTextures.map((t, i) => {
 		],
 		width: reflSize,
 		height: reflSize,
-		layers: getBlurByAlphaEffect(Q, id, {
+		effects: getBlurByAlphaEffect(Q, id, {
 			strength: 4,
 			size: [reflSize, reflSize],
-			startFrame: t,
+			startLayer: t,
 		}),
 	})
 })
@@ -84,8 +84,16 @@ const pedestalSketch = Q.getSketch('pedestals').update({
 
 // MirrorLayer
 
-const mirrorSceneLayer = Q.getLayer('mirrorScene').update({
+const blurEffect = getBlurByAlphaEffect(Q, 'blur', {
+	strength: 4,
+	strengthOffset: 0.3,
+	blurRatioVertical: 3,
+	size: [256, 256],
+})
+
+export const mirrorScene = Q.getLayer('mirrorScene').update({
 	sketches: [screenSketch, pedestalSketch],
+	effects: blurEffect,
 	drawSettings,
 	uniforms: {
 		view: () =>
@@ -98,17 +106,6 @@ const mirrorSceneLayer = Q.getLayer('mirrorScene').update({
 		withDistance: 1,
 		groundHeight: () => ground.position[1],
 	},
-})
-
-const blurEffect = getBlurByAlphaEffect(Q, 'blur', {
-	strength: 4,
-	strengthOffset: 0.3,
-	blurRatioVertical: 3,
-	size: [256, 256],
-})
-
-export const mirrorScene = Q.getFrame('mirror').update({
-	layers: [mirrorSceneLayer, blurEffect],
 	width: 256,
 	height: 256,
 	bufferStructure: [
@@ -136,7 +133,7 @@ const groundSketch = Q.getSketch('ground').update({
 
 // Scene
 
-const sceneLayer = Q.getLayer('scene').update({
+export const scene = Q.getLayer('scene').update({
 	sketches: [screenSketch, pedestalSketch, groundSketch],
 	drawSettings,
 	uniforms: {
@@ -144,10 +141,7 @@ const sceneLayer = Q.getLayer('scene').update({
 		projection: () => s.viewPort.camera.projectionMat,
 		withDistance: 0,
 	},
-})
-
-export const scene = Q.getFrame('scene').update({
-	layers: sceneLayer,
+	directRender: true,
 })
 
 Q.listen('renderer', events.RESIZE, () => {

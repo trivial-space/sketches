@@ -1,5 +1,5 @@
 import { LayerData } from 'tvs-painter'
-import { Frame } from 'tvs-painter/dist/frame'
+import { Layer } from 'tvs-painter/dist/layer'
 import { PainterContext } from '../../painterState'
 import frag from './blur_with_alpha.glsl'
 
@@ -10,7 +10,7 @@ interface BlurOpts {
 	blurRatioVertical?: number
 	scaleFactor?: number
 	layerOpts?: LayerData
-	startFrame?: Frame
+	startLayer?: Layer
 }
 
 export function getBlurByAlphaEffect(
@@ -20,7 +20,7 @@ export function getBlurByAlphaEffect(
 		strength,
 		size,
 		layerOpts,
-		startFrame: startLayer,
+		startLayer,
 		strengthOffset = 0,
 		blurRatioVertical = 1,
 		scaleFactor = 0.6,

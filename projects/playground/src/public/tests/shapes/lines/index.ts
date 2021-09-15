@@ -57,7 +57,7 @@ requestAnimationFrame(() => {
 		color: [1, 1, 0, 1],
 	})
 
-	const layer = Q.getLayer('lines').update({
+	const scene = Q.getLayer('lines').update({
 		drawSettings: {
 			clearColor: [0, 0, 0, 1],
 			clearBits: makeClear(Q.gl, 'color'),
@@ -71,9 +71,8 @@ requestAnimationFrame(() => {
 			linesStatic1.sketch,
 			linesStatic2.sketch,
 		].filter(defined),
+		directRender: true,
 	})
-
-	const scene = Q.getFrame('lines').update({ layers: [layer] })
 
 	addToLoop(() => {
 		linesDynamic.update({
@@ -90,7 +89,7 @@ requestAnimationFrame(() => {
 			),
 		})
 
-		Q.painter.compose(scene).display(scene)
+		Q.painter.compose(scene)
 	}, 'loop')
 	startLoop()
 })

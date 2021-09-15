@@ -8,7 +8,7 @@ Q.state.device.sizeMultiplier = window.devicePixelRatio
 addToLoop((tpf) => {
 	Q.state.device.tpf = Math.min(tpf, 60)
 	Q.emit(events.FRAME)
-	Q.painter.compose(scene).display(scene)
+	Q.painter.compose(scene).show(scene)
 }, 'loop')
 
 Q.listen('index', events.RESIZE, () => {

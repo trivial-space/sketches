@@ -46,25 +46,24 @@ const sketch2 = Q.getSketch('line2').update({
 // === scene ===
 
 const normalMat = mat4.create()
-export const scene = Q.getFrame('scene').update({
-	layers: Q.getLayer('scene').update({
-		sketches: [sketch1, sketch2],
-		uniforms: {
-			view: () => s.viewPort.camera.viewMat,
-			projection: () => s.viewPort.camera.projectionMat,
-			normalMatrix: () =>
-				mat4.invert(
-					normalMat,
-					mat4.transpose(normalMat, s.viewPort.camera.viewMat),
-				),
-		},
-		drawSettings: {
-			clearColor: [1, 1, 1, 1],
-			clearBits: makeClear(gl, 'depth', 'color'),
-			cullFace: gl.FRONT,
-			enable: [gl.DEPTH_TEST, gl.CULL_FACE],
-		},
-	}),
+export const scene = Q.getLayer('scene').update({
+	sketches: [sketch1, sketch2],
+	uniforms: {
+		view: () => s.viewPort.camera.viewMat,
+		projection: () => s.viewPort.camera.projectionMat,
+		normalMatrix: () =>
+			mat4.invert(
+				normalMat,
+				mat4.transpose(normalMat, s.viewPort.camera.viewMat),
+			),
+	},
+	drawSettings: {
+		clearColor: [1, 1, 1, 1],
+		clearBits: makeClear(gl, 'depth', 'color'),
+		cullFace: gl.FRONT,
+		enable: [gl.DEPTH_TEST, gl.CULL_FACE],
+	},
+	directRender: true,
 })
 
 Q.listen('renderer', events.FRAME, (s) => {
