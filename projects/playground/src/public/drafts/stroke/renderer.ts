@@ -1,5 +1,5 @@
 import { lineFrag, lineVert } from './shaders'
-import { lineToTriangleStripGeometry } from '../../../shared-utils/geometry/lines'
+import { lineToTriangleStripGeometry } from '../../../shared-utils/geometry/lines_3d'
 import { strokePatch } from './state'
 import { clamp } from 'tvs-libs/dist/math/core'
 import { getNoiseTextureData } from '../../../shared-utils/texture-helpers'

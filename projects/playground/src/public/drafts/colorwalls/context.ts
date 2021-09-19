@@ -11,3 +11,5 @@ export const Q = getPainterContext<PerspectiveViewportState>(canvas)
 export const events = {
 	...baseEvents,
 }
+
+import.meta.hot?.accept()

@@ -4,7 +4,7 @@ import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspective
 import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines'
+import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_3d'
 
 const { gl, state: s } = Q
 

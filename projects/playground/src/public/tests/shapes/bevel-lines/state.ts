@@ -1,6 +1,6 @@
 import { times, window } from 'tvs-libs/dist/utils/sequence'
 import { Q } from './context'
-import { lineSegment } from '../../../../shared-utils/geometry/lines'
+import { lineSegment } from '../../../../shared-utils/geometry/lines_3d'
 import { div, length, sub } from 'tvs-libs/dist/math/vectors'
 
 export function strokePatch2(width: number, height: number, points: number) {

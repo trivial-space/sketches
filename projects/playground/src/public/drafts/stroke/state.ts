@@ -7,7 +7,7 @@ import {
 } from 'tvs-libs/dist/utils/sequence'
 import { Q } from './context'
 import { noise2d } from 'tvs-libs/dist/math/noise'
-import { lineSegment } from '../../../shared-utils/geometry/lines'
+import { lineSegment } from '../../../shared-utils/geometry/lines_3d'
 import { add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
 
 function easeOutQuad(x: number) {

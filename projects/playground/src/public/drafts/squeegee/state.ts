@@ -4,7 +4,7 @@ import {
 	lineSegment,
 	lineSegmentStartPoints,
 	lineSegmentsJoinPoints,
-} from '../../../shared-utils/geometry/lines'
+} from '../../../shared-utils/geometry/lines_3d'
 
 interface Step {
 	duration: number
