@@ -1,9 +1,8 @@
 import { times, window } from 'tvs-libs/dist/utils/sequence'
-import { Q } from './context'
 import { lineSegment } from '../../../../shared-utils/geometry/lines_3d'
 import { div, length, sub } from 'tvs-libs/dist/math/vectors'
 
-export function strokePatch2(width: number, height: number, points: number) {
+export function strokePatch(width: number, height: number, points: number) {
 	const lines = window(
 		2,
 		times(
@@ -19,5 +18,3 @@ export function strokePatch2(width: number, height: number, points: number) {
 
 	return lines
 }
-
-Q.set('lines', { line1: [] })

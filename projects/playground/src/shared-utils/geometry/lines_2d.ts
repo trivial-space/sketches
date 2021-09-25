@@ -1,5 +1,4 @@
 import {
-	Vec,
 	mul,
 	add,
 	dot,
@@ -14,7 +13,7 @@ import {
 } from 'tvs-libs/dist/datastructures/double-linked-list'
 import { Maybe, Opt } from 'tvs-libs/dist/types'
 import { FormData, FormStoreType } from 'tvs-painter'
-import { concat, flatten } from 'tvs-libs/dist/utils/sequence'
+import { flatten } from 'tvs-libs/dist/utils/sequence'
 
 type Vec2D = [number, number]
 export interface LinePoint {
@@ -165,8 +164,8 @@ export function lineEndPositions(
 
 export function isSharpAngle(node: LineNode): boolean {
 	if (!node.prev || !node.next) return false
-	const cosAngle = dot(node.prev.val.direction, node.next.val.direction)
-	if (cosAngle < -0.8) {
+	const cosAngle = dot(node.prev.val.direction, node.val.direction)
+	if (cosAngle < -0.85) {
 		return true
 	}
 	return false
@@ -193,10 +192,10 @@ export function lineJoinPositions(node: LineNode, thickness?: number) {
 	}
 
 	thickness = node.val.width || thickness || 1
-	const tangent = normalize(
-		sub(node.prev.val.direction, node.next.val.direction),
-	)
-	let mitterLenght = thickness / dot(tangent, node.prev.val.direction)
+	const nextTangent = getTangent(node.val.direction)
+	const prevTangent = getTangent(node.prev.val.direction)
+	const tangent = normalize(add(nextTangent, prevTangent))
+	let mitterLenght = thickness / dot(tangent, prevTangent)
 	mitterLenght = Math.min(mitterLenght, thickness * 5)
 	return linePositions(node.val.vertex, tangent as Vec2D, mitterLenght)
 }
@@ -226,32 +225,25 @@ export function lineToTriangleStripGeometry(
 			currentLine.append(node.val, false)
 		}
 	}
+	lines.push(currentLine)
 
+	let currentLength = 0
+	let swap = false
 	return lines.map((line) => {
+		swap = !swap
 		let points: Vec2D[] = []
 		let uvs: Vec2D[] = []
-		let currentLength = 0
 		let curr = line.first
 		while (curr) {
-			const next = curr.next
-			currentLength += curr.val.length
+			const uvY = currentLength / lineLength
+			uvs.push([swap ? 0 : 1, uvY], [swap ? 1 : 0, uvY])
+			points.push(...lineJoinPositions(curr, lineWidth))
 
-			if (curr === line.first) {
-				points = lineStartPositions(line, lineWidth)
-				uvs = [
-					[0, 0],
-					[1, 0],
-				]
+			if (curr.next) {
+				currentLength += curr.val.length
 			}
 
-			if (next) {
-				points = concat(points, lineJoinPositions(curr, lineWidth))
-				const uvY = currentLength / lineLength
-				uvs.push([0, uvY], [1, uvY])
-			} else {
-				points = concat(points, lineEndPositions(line, lineWidth))
-				uvs.push([0, 1], [1, 1])
-			}
+			curr = curr.next
 		}
 
 		const data: FormData = {

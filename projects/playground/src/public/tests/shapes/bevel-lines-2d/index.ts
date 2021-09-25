@@ -1,7 +1,7 @@
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
-import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_3d'
-import { strokePatch } from './state'
+import { strokePatch, strokePatch2 } from './state'
+import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_2d'
 
 Q.state.time = 0
 Q.state.device.sizeMultiplier = window.devicePixelRatio
@@ -11,17 +11,21 @@ const shade = Q.getShade('line').update({
 	frag: lineFrag,
 })
 
-const linePoints = strokePatch(1.9, 1.9, 20)
+const linePoints = strokePatch2(20)
+// const linePoints = strokePatch(1.5, 1.5, 20)
 
-const data = lineToTriangleStripGeometry(linePoints, 0.05, { withUVs: true })
-const form = Q.getForm('line').update(data)
+const data = lineToTriangleStripGeometry(linePoints, 0.05)
 
-const sketch = Q.getSketch('line').update({ form, shade })
+const forms = data.map((line, i) => Q.getForm('line' + i).update(line))
+
+const sketches = forms.map((form, i) =>
+	Q.getSketch('line' + i).update({ form, shade }),
+)
 
 // === scene ===
 
 export const scene = Q.getLayer('scene').update({
-	sketches: sketch,
+	sketches,
 	drawSettings: {
 		clearColor: [1, 1, 1, 1],
 		enable: [Q.gl.CULL_FACE],
@@ -30,12 +34,10 @@ export const scene = Q.getLayer('scene').update({
 	directRender: true,
 })
 
-// === draw ===
-
 Q.listen('index', events.RESIZE, () => {
 	scene.update()
 	Q.painter.compose(scene)
 	console.log(scene._targets[0].width, Q.gl.drawingBufferWidth)
 })
 
-import.meta.hot?.accept()
+// import.meta.hot?.accept()
