@@ -25,7 +25,6 @@ import {
 	uniform,
 	vec2,
 	Vec2Sym,
-	vec3,
 	Vec3Sym,
 	vec4,
 	Vec4Sym,

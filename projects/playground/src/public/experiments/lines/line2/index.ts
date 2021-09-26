@@ -52,7 +52,6 @@ pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 			currentLine?.append(point, true)
 
 			const formDatas = lineToTriangleStripGeometry(currentLine, 40, 'DYNAMIC')
-			console.log(formDatas)
 
 			sketches = formDatas
 				.map((formData, i) => Q.getForm('line' + i).update(formData))
