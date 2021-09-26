@@ -1,7 +1,5 @@
 import { events, Q } from './context'
 import {
-	Line,
-	LinePoint,
 	createLine,
 	newLinePoint,
 } from '../../../../shared-utils/geometry/lines_2d'
@@ -12,7 +10,7 @@ import { once } from '../../../../shared-utils/scheduler'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
-let currentLine: Line = createLine().append(newLinePoint([0, 0]))
+let currentLine = createLine().append(newLinePoint([0, 0]))
 
 let currentLineSketch = createLines2DSketch(Q, 'current-line', {
 	dynamicForm: true,

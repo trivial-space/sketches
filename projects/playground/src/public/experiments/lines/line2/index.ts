@@ -1,26 +1,26 @@
 import { events, Q } from './context'
 import {
-	LinePoint,
 	createLine,
+	lineToTriangleStripGeometry,
 	newLinePoint,
 } from '../../../../shared-utils/geometry/lines_2d'
 import { Buttons, pointer } from 'tvs-libs/dist/events/pointer'
-import { createLines2DSketch } from '../../../../shared-utils/sketches/lines'
 import { makeClear } from '../../../../../../painter/dist/utils/context'
+import { Sketch } from 'tvs-painter/dist/sketch'
+import { lineFrag, lineVert } from './shaders'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
 let currentLine = createLine().append(newLinePoint([0, 0]))
 
-let currentLineSketch = createLines2DSketch(Q, 'current-line', {
-	dynamicForm: true,
-	color: [0.1, 0.1, 0, 1],
-	lineWidth: 20,
+let sketches: Sketch[] = []
+
+const shade = Q.getShade('shade').update({
+	frag: lineFrag,
+	vert: lineVert,
 })
 
 const scene = Q.getLayer('scene').update({
-	sketches: currentLineSketch.sketch,
-
 	drawSettings: {
 		clearColor: [0.8, 0.8, 1, 1],
 		clearBits: makeClear(Q.gl, 'color'),
@@ -49,14 +49,20 @@ pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 				startPoint[0] - val.drag.x * m,
 				startPoint[1] - val.drag.y * m,
 			])
-			currentLine?.append(point)
+			currentLine?.append(point, true)
 
-			currentLineSketch.update({
-				points: [...currentLine!].map((p) => p.vertex),
-			})
+			const formDatas = lineToTriangleStripGeometry(currentLine, 40, 'DYNAMIC')
+			console.log(formDatas)
+
+			sketches = formDatas
+				.map((formData, i) => Q.getForm('line' + i).update(formData))
+				.map((form, i) => Q.getSketch('sketch' + i).update({ form, shade }))
 
 			scene.update({
-				sketches: currentLineSketch.sketch,
+				sketches,
+				uniforms: {
+					uSize: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+				},
 			})
 
 			Q.painter.compose(scene)
@@ -68,9 +74,5 @@ pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 
 Q.listen('index', events.RESIZE, () => {
 	scene.update()
-
-	currentLineSketch.update({
-		points: [...currentLine!].map((p) => p.vertex),
-	})
 	Q.painter.compose(scene)
 })

@@ -14,7 +14,10 @@ import {
 	$y,
 	$x,
 	vec2,
+	div,
+	uniform,
 } from '@thi.ng/shader-ast'
+import { fit0111 } from '@thi.ng/shader-ast-stdlib'
 
 const fs = getFragmentGenerator()
 const vs = getVertexGenerator()
@@ -27,16 +30,19 @@ let vUv: Vec2Sym
 
 let aPosition: Vec2Sym
 let aUV: Vec2Sym
+let uSize: Vec2Sym
 export const lineVert = vs(
-	// prettier-ignore
 	program([
 		(aPosition = input('vec2', 'position')),
 		(aUV = input('vec2', 'uv')),
 		(vUv = output('vec2', 'vUv')),
-
+		(uSize = uniform('vec2', 'uSize')),
 		defMain(() => [
 			assign(vUv, aUV),
-			assign(vs.gl_Position, vec4(mul(aPosition, vec2(1, -1)), 0, 1)),
+			assign(
+				vs.gl_Position,
+				vec4(mul(fit0111(div(aPosition, uSize)), vec2(1, -1)), 0, 1),
+			),
 		]),
 	]),
 )
