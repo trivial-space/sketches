@@ -11,8 +11,8 @@ const shade = Q.getShade('line').update({
 	frag: lineFrag,
 })
 
-const linePoints = strokePatch2(20)
-// const linePoints = strokePatch(1.5, 1.5, 20)
+// const linePoints = strokePatch2(20)
+const linePoints = strokePatch(1.5, 1.5, 20)
 
 const data = lineToTriangleStripGeometry(linePoints, 0.05)
 

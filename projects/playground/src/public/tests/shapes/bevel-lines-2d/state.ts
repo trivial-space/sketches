@@ -1,7 +1,7 @@
 import { times } from 'tvs-libs/dist/utils/sequence'
 import {
 	newLinePoint,
-	startLine,
+	createLine,
 } from '../../../../shared-utils/geometry/lines_2d'
 
 export function strokePatch(
@@ -9,7 +9,7 @@ export function strokePatch(
 	height: number,
 	pointsCount: number,
 ) {
-	const [first, ...points] = times(
+	const points = times(
 		(i) =>
 			[(Math.random() - 0.5) * width, (Math.random() - 0.5) * height] as [
 				number,
@@ -19,12 +19,12 @@ export function strokePatch(
 	)
 
 	return points.reduce((line, point) => {
-		return line.append(newLinePoint(point))
-	}, startLine(newLinePoint(first)))
+		return line.append(newLinePoint(point), true)
+	}, createLine())
 }
 
 export function strokePatch2(pointsCount: number) {
-	const [first, ...points] = times(
+	const points = times(
 		(i) =>
 			[
 				Math.sin(Math.PI * 2 * (i / pointsCount)) * 0.8,
@@ -34,6 +34,6 @@ export function strokePatch2(pointsCount: number) {
 	)
 
 	return points.reduce((line, point) => {
-		return line.append(newLinePoint(point))
-	}, startLine(newLinePoint(first)))
+		return line.append(newLinePoint(point), true)
+	}, createLine())
 }

@@ -2,7 +2,8 @@ import { events, Q } from './context'
 import {
 	Line,
 	LinePoint,
-	startLine,
+	createLine,
+	newLinePoint,
 } from '../../../../shared-utils/geometry/lines_2d'
 import { Buttons, pointer } from 'tvs-libs/dist/events/pointer'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines'
@@ -11,7 +12,7 @@ import { once } from '../../../../shared-utils/scheduler'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
-let currentLine: Line = startLine({ vertex: [0, 0] })
+let currentLine: Line = createLine().append(newLinePoint([0, 0]))
 
 let currentLineSketch = createLines2DSketch(Q, 'current-line', {
 	dynamicForm: true,
@@ -42,18 +43,14 @@ pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 				val.pressed[Buttons.LEFT].clientY * m,
 			]
 
-			const point: LinePoint = {
-				vertex: [startPoint[0], startPoint[1]],
-			}
+			const point = newLinePoint([startPoint[0], startPoint[1]])
 
-			currentLine = startLine(point)
+			currentLine = createLine().append(point)
 		} else {
-			const point: LinePoint = {
-				vertex: [
-					startPoint[0] - val.drag.x * m,
-					startPoint[1] - val.drag.y * m,
-				],
-			}
+			const point = newLinePoint([
+				startPoint[0] - val.drag.x * m,
+				startPoint[1] - val.drag.y * m,
+			])
 			currentLine?.append(point)
 
 			once(() => {
