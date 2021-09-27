@@ -63,7 +63,7 @@ function linePositions(
 export function isSharpAngle(node: LineNode): boolean {
 	if (!node.prev || !node.next) return false
 	const cosAngle = dot(node.prev.val.direction, node.val.direction)
-	if (cosAngle < -0.85) {
+	if (cosAngle < -0.5) {
 		return true
 	}
 	return false
