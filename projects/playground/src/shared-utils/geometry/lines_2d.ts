@@ -11,6 +11,7 @@ import {
 	createDoubleLinkedList,
 	DoubleLinkedList,
 	DoubleLinkedNode,
+	LinkedListOptions,
 } from 'tvs-libs/dist/datastructures/double-linked-list'
 import { Maybe } from 'tvs-libs/dist/types'
 import { FormData, FormStoreType } from 'tvs-painter'
@@ -40,9 +41,15 @@ function updatePoint(point: Maybe<LinePoint>, nextPoint: Maybe<LinePoint>) {
 	}
 }
 
-export function createLine<P extends LinePoint = LinePoint>(): Line<P> {
+export function createLine<P extends LinePoint = LinePoint>(
+	opts?: LinkedListOptions<P>,
+): Line<P> {
 	return createDoubleLinkedList<P>([], {
-		onNextUpdated: (n) => updatePoint(n.val, n.next && n.next.val),
+		onNextUpdated: (n) => {
+			updatePoint(n.val, n.next && n.next.val)
+			opts?.onNextUpdated?.(n)
+		},
+		onPrevUpdated: opts?.onPrevUpdated,
 	})
 }
 

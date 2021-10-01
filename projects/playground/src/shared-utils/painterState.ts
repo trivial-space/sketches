@@ -71,6 +71,8 @@ const eventHandlers: {
 export const baseEvents = {
 	FRAME: 'frame',
 	RESIZE: 'resize',
+	POINTER: 'pointer',
+	KEYBOARD: 'keyboard',
 }
 
 // === Context ===
@@ -109,10 +111,16 @@ export function getPainterContext<S extends BaseState>(
 				holdRadius: 7,
 				holdDelay: 250,
 			},
-			(m) => (state.device.pointer = m),
+			(m) => {
+				state.device.pointer = m
+				emit(baseEvents.POINTER)
+			},
 		)
 
-		cancelKeys = keyboard((k) => (state.device.keys = k))
+		cancelKeys = keyboard((k) => {
+			state.device.keys = k
+			emit(baseEvents.KEYBOARD)
+		})
 	}
 
 	return {

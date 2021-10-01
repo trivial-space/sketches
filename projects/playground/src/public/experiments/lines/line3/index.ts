@@ -16,7 +16,7 @@ let currentLine = createLine().append(newLinePoint([0, 0]))
 let currentLineSketch = createLines2DSketch(Q, 'current-line', {
 	dynamicForm: true,
 	color: [0.1, 0.1, 0, 1],
-	lineWidth: 20,
+	lineWidth: 40,
 })
 
 const scene = Q.getLayer('scene').update({
@@ -32,15 +32,15 @@ const scene = Q.getLayer('scene').update({
 let dragging = false
 let startPoint: [number, number] = [0, 0]
 
-Q.listen('index', baseEvents.POINTER, (s) => {
-	const p = s.device.pointer
-	if (p.dragging) {
+Q.listen('', baseEvents.POINTER, (s) => {
+	const val = s.device.pointer
+	if (val.dragging) {
 		const m = Q.state.device.sizeMultiplier
 		if (!dragging) {
 			dragging = true
 			startPoint = [
-				p.pressed[Buttons.LEFT].clientX * m,
-				p.pressed[Buttons.LEFT].clientY * m,
+				val.pressed[Buttons.LEFT].clientX * m,
+				val.pressed[Buttons.LEFT].clientY * m,
 			]
 
 			const point = newLinePoint([startPoint[0], startPoint[1]])
@@ -48,8 +48,8 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 			currentLine = createLine().append(point)
 		} else {
 			const point = newLinePoint([
-				startPoint[0] - p.drag.x * m,
-				startPoint[1] - p.drag.y * m,
+				startPoint[0] - val.drag.x * m,
+				startPoint[1] - val.drag.y * m,
 			])
 			currentLine?.append(point)
 
@@ -65,7 +65,7 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 				Q.painter.compose(scene)
 			}, 'update-and-paint')
 		}
-	} else if (!p.dragging && dragging) {
+	} else if (!val.dragging && dragging) {
 		dragging = false
 	}
 })
@@ -78,3 +78,5 @@ Q.listen('index', events.RESIZE, () => {
 	})
 	Q.painter.compose(scene)
 })
+
+import.meta.hot?.accept()

@@ -1,17 +1,28 @@
 import { events, Q } from './context'
 import {
 	createLine,
+	LinePoint,
 	lineToTriangleStripGeometry,
 	newLinePoint,
 } from '../../../../shared-utils/geometry/lines_2d'
-import { Buttons, pointer } from 'tvs-libs/dist/events/pointer'
+import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { makeClear } from '../../../../../../painter/dist/utils/context'
 import { Sketch } from 'tvs-painter/dist/sketch'
 import { lineFrag, lineVert } from './shaders'
+import { LinkedListOptions } from 'tvs-libs/dist/datastructures/double-linked-list'
+import { baseEvents } from '../../../../shared-utils/painterState'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
-let currentLine = createLine().append(newLinePoint([0, 0]))
+const lineWidth = 40
+
+const opts: LinkedListOptions<LinePoint> = {
+	onNextUpdated(n) {
+		n.val.width = Math.min(n.val.length * 2, lineWidth)
+	},
+}
+
+let currentLine = createLine(opts).append(newLinePoint([0, 0]))
 
 let sketches: Sketch[] = []
 
@@ -31,27 +42,32 @@ const scene = Q.getLayer('scene').update({
 let dragging = false
 let startPoint: [number, number] = [0, 0]
 
-pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
-	if (val.dragging) {
+Q.listen('index', baseEvents.POINTER, (s) => {
+	const p = s.device.pointer
+	if (p.dragging) {
 		const m = Q.state.device.sizeMultiplier
 		if (!dragging) {
 			dragging = true
 			startPoint = [
-				val.pressed[Buttons.LEFT].clientX * m,
-				val.pressed[Buttons.LEFT].clientY * m,
+				p.pressed[Buttons.LEFT].clientX * m,
+				p.pressed[Buttons.LEFT].clientY * m,
 			]
 
 			const point = newLinePoint([startPoint[0], startPoint[1]])
 
-			currentLine = createLine().append(point)
+			currentLine = createLine(opts).append(point)
 		} else {
 			const point = newLinePoint([
-				startPoint[0] - val.drag.x * m,
-				startPoint[1] - val.drag.y * m,
+				startPoint[0] - p.drag.x * m,
+				startPoint[1] - p.drag.y * m,
 			])
 			currentLine?.append(point, true)
 
-			const formDatas = lineToTriangleStripGeometry(currentLine, 40, 'DYNAMIC')
+			const formDatas = lineToTriangleStripGeometry(
+				currentLine,
+				undefined,
+				'DYNAMIC',
+			)
 
 			sketches = formDatas
 				.map((formData, i) => Q.getForm('line' + i).update(formData))
@@ -66,7 +82,7 @@ pointer({ element: Q.gl.canvas as HTMLCanvasElement }, (val) => {
 
 			Q.painter.compose(scene)
 		}
-	} else if (!val.dragging && dragging) {
+	} else if (!p.dragging && dragging) {
 		dragging = false
 	}
 })
