@@ -4,6 +4,7 @@ import {
 	LinePoint,
 	lineToTriangleStripGeometry,
 	newLinePoint,
+	smouthenPoint,
 } from '../../../../shared-utils/geometry/lines_2d'
 import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { makeClear } from '../../../../../../painter/dist/utils/context'
@@ -62,6 +63,9 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 				startPoint[1] - p.drag.y * m,
 			])
 			currentLine?.append(point, true)
+			smouthenPoint(currentLine.last?.prev)
+			smouthenPoint(currentLine.last?.prev?.prev)
+			smouthenPoint(currentLine.last?.prev)
 
 			const formDatas = lineToTriangleStripGeometry(
 				currentLine,

@@ -2,6 +2,7 @@ import { events, Q } from './context'
 import {
 	createLine,
 	newLinePoint,
+	smouthenPoint,
 } from '../../../../shared-utils/geometry/lines_2d'
 import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines'
@@ -11,16 +12,23 @@ import { baseEvents } from '../../../../shared-utils/painterState'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
-let currentLine = createLine().append(newLinePoint([0, 0]))
+let currentLine1 = createLine().append(newLinePoint([0, 0]))
+let currentLine2 = createLine().append(newLinePoint([0, 0]))
 
-let currentLineSketch = createLines2DSketch(Q, 'current-line', {
+let currentLineSketch1 = createLines2DSketch(Q, 'current-line1', {
 	dynamicForm: true,
 	color: [0.1, 0.1, 0, 1],
-	lineWidth: 40,
+	lineWidth: 5,
+})
+
+let currentLineSketch2 = createLines2DSketch(Q, 'current-line2', {
+	dynamicForm: true,
+	color: [1, 0.1, 0.1, 1],
+	lineWidth: 5,
 })
 
 const scene = Q.getLayer('scene').update({
-	sketches: currentLineSketch.sketch,
+	sketches: [currentLineSketch2.sketch, currentLineSketch1.sketch],
 
 	drawSettings: {
 		clearColor: [0.8, 0.8, 1, 1],
@@ -45,22 +53,32 @@ Q.listen('', baseEvents.POINTER, (s) => {
 
 			const point = newLinePoint([startPoint[0], startPoint[1]])
 
-			currentLine = createLine().append(point)
+			currentLine1 = createLine().append(point)
+			currentLine2 = createLine().append({ ...point })
 		} else {
 			const point = newLinePoint([
 				startPoint[0] - val.drag.x * m,
 				startPoint[1] - val.drag.y * m,
 			])
-			currentLine?.append(point)
+			currentLine1!.append(point, true)
+			currentLine2!.append({ ...point }, true)
+
+			smouthenPoint(currentLine1.last?.prev)
+			smouthenPoint(currentLine1.last?.prev?.prev)
+			smouthenPoint(currentLine1.last?.prev)
 
 			once(() => {
-				currentLineSketch.update({
-					points: [...currentLine!].map((p) => p.vertex),
+				currentLineSketch1.update({
+					points: [...currentLine1!].map((p) => p.vertex),
+				})
+				currentLineSketch2.update({
+					points: [...currentLine2!].map((p) => p.vertex),
 				})
 
-				scene.update({
-					sketches: currentLineSketch.sketch,
-				})
+				// scene.update({
+				// 	sketches: [currentLineSketch2.sketch, currentLineSketch1.sketch],
+				// })
+				console.log(scene)
 
 				Q.painter.compose(scene)
 			}, 'update-and-paint')
@@ -73,8 +91,11 @@ Q.listen('', baseEvents.POINTER, (s) => {
 Q.listen('index', events.RESIZE, () => {
 	scene.update()
 
-	currentLineSketch.update({
-		points: [...currentLine!].map((p) => p.vertex),
+	currentLineSketch2.update({
+		points: [...currentLine2!].map((p) => p.vertex),
+	})
+	currentLineSketch1.update({
+		points: [...currentLine1!].map((p) => p.vertex),
 	})
 	Q.painter.compose(scene)
 })

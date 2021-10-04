@@ -15,7 +15,9 @@ import {
 } from 'tvs-libs/dist/datastructures/double-linked-list'
 import { Maybe } from 'tvs-libs/dist/types'
 import { FormData, FormStoreType } from 'tvs-painter'
-import { flatten } from 'tvs-libs/dist/utils/sequence'
+import { flatten, zip } from 'tvs-libs/dist/utils/sequence'
+import { lerp } from 'tvs-libs/dist/math/core'
+import { partial } from 'tvs-libs/dist/fp/core'
 
 type Vec2D = [number, number]
 export interface LinePoint {
@@ -38,6 +40,47 @@ function updatePoint(point: Maybe<LinePoint>, nextPoint: Maybe<LinePoint>) {
 		const len = length(dir)
 		point.length = len
 		point.direction = div(len, dir, dir) as Vec2D
+	}
+	return point
+}
+
+export function smouthenPoint<P extends LinePoint>(
+	node: Maybe<DoubleLinkedNode<P>>,
+	ratio: number = 0.25,
+	minLength: number = 3,
+) {
+	if (
+		node &&
+		node.prev &&
+		node.next &&
+		node.prev.val.length > minLength &&
+		node.val.length > minLength
+	) {
+		console.log('smouthening point', node.val)
+		node.list.prependAt(
+			node,
+			newLinePoint(
+				zip(
+					partial(lerp, 1 - ratio),
+					node.prev.val.vertex,
+					node.val.vertex,
+				) as Vec2D,
+			) as P,
+			true,
+		)
+		node.set(
+			updatePoint(
+				newLinePoint(
+					zip(
+						partial(lerp, ratio),
+						node.val.vertex,
+						node.next.val.vertex,
+					) as Vec2D,
+				),
+				node.next.val,
+			) as P,
+			true,
+		)
 	}
 }
 
