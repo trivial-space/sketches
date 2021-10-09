@@ -48,6 +48,7 @@ export function smouthenPoint<P extends LinePoint>(
 	node: Maybe<DoubleLinkedNode<P>>,
 	ratio: number = 0.25,
 	minLength: number = 3,
+	depth = 3,
 ) {
 	if (
 		node &&
@@ -56,7 +57,7 @@ export function smouthenPoint<P extends LinePoint>(
 		node.prev.val.length > minLength &&
 		node.val.length > minLength
 	) {
-		console.log('smouthening point', node.val)
+		// console.log('smouthening point', node.val)
 		node.list.prependAt(
 			node,
 			newLinePoint(
@@ -81,6 +82,11 @@ export function smouthenPoint<P extends LinePoint>(
 			) as P,
 			true,
 		)
+
+		if (depth > 1) {
+			smouthenPoint(node.prev, ratio, minLength, depth - 1)
+			smouthenPoint(node, ratio, minLength, depth - 1)
+		}
 	}
 }
 

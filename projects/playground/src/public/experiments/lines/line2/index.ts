@@ -12,6 +12,8 @@ import { Sketch } from 'tvs-painter/dist/sketch'
 import { lineFrag, lineVert } from './shaders'
 import { LinkedListOptions } from 'tvs-libs/dist/datastructures/double-linked-list'
 import { baseEvents } from '../../../../shared-utils/painterState'
+import { lerp } from 'tvs-libs/dist/math/core'
+import { dot } from 'tvs-libs/dist/math/vectors'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -19,7 +21,14 @@ const lineWidth = 40
 
 const opts: LinkedListOptions<LinePoint> = {
 	onNextUpdated(n) {
-		n.val.width = Math.min(n.val.length * 2, lineWidth)
+		const minWidth = Math.min(n.val.length * 2, lineWidth)
+		if (n.prev) {
+			const lerpDot = (dot(n.prev.val.direction, n.val.direction) + 1) / 2
+			console.log(lerpDot)
+			n.val.width = lerp(lerpDot, minWidth, lineWidth)
+		} else {
+			n.val.width = minWidth
+		}
 	},
 }
 
@@ -63,8 +72,6 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 				startPoint[1] - p.drag.y * m,
 			])
 			currentLine?.append(point, true)
-			smouthenPoint(currentLine.last?.prev)
-			smouthenPoint(currentLine.last?.prev?.prev)
 			smouthenPoint(currentLine.last?.prev)
 
 			const formDatas = lineToTriangleStripGeometry(
