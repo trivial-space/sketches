@@ -21,18 +21,20 @@ const lineWidth = 40
 
 const opts: LinkedListOptions<LinePoint> = {
 	onNextUpdated(n) {
-		const minWidth = Math.min(n.val.length * 2, lineWidth)
+		const minWidth = Math.min((n.val.length || 1) * 2, lineWidth)
 		if (n.prev) {
 			const lerpDot = (dot(n.prev.val.direction, n.val.direction) + 1) / 2
 			console.log(lerpDot)
-			n.val.width = lerp(lerpDot, minWidth, lineWidth)
+			n.val.width = lerp(lerpDot * lerpDot * lerpDot, minWidth, lineWidth)
+			// n.val.width = minWidth
+			// n.val.width = lineWidth
 		} else {
 			n.val.width = minWidth
 		}
 	},
 }
 
-let currentLine = createLine(opts).append(newLinePoint([0, 0]))
+let currentLine = createLine(opts).append(newLinePoint([0, 0], 1))
 
 let sketches: Sketch[] = []
 
@@ -63,20 +65,20 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 				p.pressed[Buttons.LEFT].clientY * m,
 			]
 
-			const point = newLinePoint([startPoint[0], startPoint[1]])
+			const point = newLinePoint([startPoint[0], startPoint[1]], 1)
 
 			currentLine = createLine(opts).append(point)
 		} else {
-			const point = newLinePoint([
-				startPoint[0] - p.drag.x * m,
-				startPoint[1] - p.drag.y * m,
-			])
+			const point = newLinePoint(
+				[startPoint[0] - p.drag.x * m, startPoint[1] - p.drag.y * m],
+				1,
+			)
 			currentLine?.append(point, true)
-			smouthenPoint(currentLine.last?.prev)
+			smouthenPoint(currentLine.last?.prev, { depth: 3 })
 
 			const formDatas = lineToTriangleStripGeometry(
 				currentLine,
-				undefined,
+				lineWidth,
 				'DYNAMIC',
 			)
 

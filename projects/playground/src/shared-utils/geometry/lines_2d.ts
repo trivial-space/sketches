@@ -46,9 +46,7 @@ function updatePoint(point: Maybe<LinePoint>, nextPoint: Maybe<LinePoint>) {
 
 export function smouthenPoint<P extends LinePoint>(
 	node: Maybe<DoubleLinkedNode<P>>,
-	ratio: number = 0.25,
-	minLength: number = 3,
-	depth = 3,
+	{ ratio = 0.25, minLength = 3, depth = 1 } = {},
 ) {
 	if (
 		node &&
@@ -58,34 +56,37 @@ export function smouthenPoint<P extends LinePoint>(
 		node.val.length > minLength
 	) {
 		// console.log('smouthening point', node.val)
+		const lerp1 = partial(lerp, 1 - ratio)
+		const prev = node.prev
 		node.list.prependAt(
 			node,
 			newLinePoint(
-				zip(
-					partial(lerp, 1 - ratio),
-					node.prev.val.vertex,
-					node.val.vertex,
-				) as Vec2D,
+				zip(lerp1, node.prev.val.vertex, node.val.vertex) as Vec2D,
+				node.prev.val.width &&
+					node.val.width &&
+					lerp1(node.prev.val.width, node.val.width),
 			) as P,
 			true,
 		)
+		prev.set(prev.val, true)
+		const lerp2 = partial(lerp, ratio)
 		node.set(
 			updatePoint(
 				newLinePoint(
-					zip(
-						partial(lerp, ratio),
-						node.val.vertex,
-						node.next.val.vertex,
-					) as Vec2D,
+					zip(lerp2, node.val.vertex, node.next.val.vertex) as Vec2D,
+					node.val.width &&
+						node.next.val.width &&
+						lerp2(node.val.width, node.next.val.width),
 				),
 				node.next.val,
 			) as P,
 			true,
 		)
+		node.next.set(node.next.val, true)
 
 		if (depth > 1) {
-			smouthenPoint(node.prev, ratio, minLength, depth - 1)
-			smouthenPoint(node, ratio, minLength, depth - 1)
+			smouthenPoint(node.prev, { ratio, minLength, depth: depth - 1 })
+			smouthenPoint(node, { ratio, minLength, depth: depth - 1 })
 		}
 	}
 }
@@ -135,16 +136,16 @@ export function lineMitterPositions(node: LineNode, thickness?: number) {
 		throw 'incomplete Line'
 	}
 	const point = node.val
+	thickness = point.width || thickness || 1
 	if (!node.prev) {
 		const tangent = getTangent(point.direction)
-		return linePositions(point.vertex, tangent, point.width || thickness || 1)
+		return linePositions(point.vertex, tangent, thickness)
 	}
 	if (!node.next) {
 		const tangent = getTangent(node.prev.val.direction)
-		return linePositions(point.vertex, tangent, point.width || thickness || 1)
+		return linePositions(point.vertex, tangent, thickness)
 	}
 
-	thickness = node.val.width || thickness || 1
 	const nextTangent = getTangent(node.val.direction)
 	const prevTangent = getTangent(node.prev.val.direction)
 	const tangent = normalize(add(nextTangent, prevTangent))
@@ -170,7 +171,12 @@ export function lineToTriangleStripGeometry(
 	for (const node of lineData.nodes) {
 		lineLength += node.val.length
 		if (isSharpAngle(node)) {
-			currentLine.append(newLinePoint(node.val.vertex, node.val.width))
+			currentLine.append({
+				vertex: node.val.vertex,
+				width: node.val.width,
+				direction: node.prev!.val.direction,
+				length: 0,
+			})
 			lines.push(currentLine)
 			currentLine = createLine()
 		}

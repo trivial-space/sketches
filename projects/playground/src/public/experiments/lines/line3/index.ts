@@ -28,7 +28,11 @@ let currentLineSketch2 = createLines2DSketch(Q, 'current-line2', {
 })
 
 const scene = Q.getLayer('scene').update({
-	sketches: [currentLineSketch2.sketch, currentLineSketch1.sketch],
+	sketches: [
+		//
+		currentLineSketch2.sketch,
+		currentLineSketch1.sketch,
+	],
 
 	drawSettings: {
 		clearColor: [0.8, 0.8, 1, 1],
@@ -63,6 +67,10 @@ Q.listen('', baseEvents.POINTER, (s) => {
 			currentLine1!.append(point, true)
 			currentLine2!.append({ ...point }, true)
 
+			smouthenPoint(currentLine1.last?.prev?.prev?.prev?.prev?.prev)
+			smouthenPoint(currentLine1.last?.prev?.prev?.prev?.prev)
+			smouthenPoint(currentLine1.last?.prev?.prev?.prev)
+			smouthenPoint(currentLine1.last?.prev?.prev)
 			smouthenPoint(currentLine1.last?.prev)
 
 			once(() => {
@@ -72,11 +80,6 @@ Q.listen('', baseEvents.POINTER, (s) => {
 				currentLineSketch2.update({
 					points: [...currentLine2!].map((p) => p.vertex),
 				})
-
-				// scene.update({
-				// 	sketches: [currentLineSketch2.sketch, currentLineSketch1.sketch],
-				// })
-				console.log(scene)
 
 				Q.painter.compose(scene)
 			}, 'update-and-paint')
