@@ -67,11 +67,7 @@ Q.listen('', baseEvents.POINTER, (s) => {
 			currentLine1!.append(point, true)
 			currentLine2!.append({ ...point }, true)
 
-			smouthenPoint(currentLine1.last?.prev?.prev?.prev?.prev?.prev)
-			smouthenPoint(currentLine1.last?.prev?.prev?.prev?.prev)
-			smouthenPoint(currentLine1.last?.prev?.prev?.prev)
-			smouthenPoint(currentLine1.last?.prev?.prev)
-			smouthenPoint(currentLine1.last?.prev)
+			smouthenPoint(currentLine1.last?.prev, { depth: 2 })
 
 			once(() => {
 				currentLineSketch1.update({

@@ -14,6 +14,7 @@ import { LinkedListOptions } from 'tvs-libs/dist/datastructures/double-linked-li
 import { baseEvents } from '../../../../shared-utils/painterState'
 import { lerp } from 'tvs-libs/dist/math/core'
 import { dot } from 'tvs-libs/dist/math/vectors'
+import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -47,10 +48,26 @@ const shade = Q.getShade('shade').update({
 	vert: lineVert,
 })
 
+export const noiseTex = Q.getLayer('noiseTex').update({
+	texture: getNoiseTextureData({
+		width: 256,
+		height: 256,
+		startX: 3,
+		startY: 3,
+		data: {
+			magFilter: 'LINEAR',
+			minFilter: 'LINEAR',
+			wrap: 'REPEAT',
+		},
+	}),
+})
+
 const scene = Q.getLayer('scene').update({
 	drawSettings: {
-		clearColor: [0.8, 0.8, 1, 1],
+		clearColor: [0.5, 0, 0, 1],
 		clearBits: makeClear(Q.gl, 'color'),
+		enable: [Q.gl.BLEND],
+		// blendFunc: [Q.gl.SRC_ALPHA, Q.gl.ONE_MINUS_DST_ALPHA],
 	},
 	directRender: true,
 })
@@ -94,6 +111,7 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 				sketches,
 				uniforms: {
 					uSize: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+					noiseTex: noiseTex.image(),
 				},
 			})
 

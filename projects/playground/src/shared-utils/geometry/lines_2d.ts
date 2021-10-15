@@ -46,7 +46,13 @@ function updatePoint(point: Maybe<LinePoint>, nextPoint: Maybe<LinePoint>) {
 
 export function smouthenPoint<P extends LinePoint>(
 	node: Maybe<DoubleLinkedNode<P>>,
-	{ ratio = 0.25, minLength = 3, depth = 1 } = {},
+	{
+		ratio = 0.25,
+		minLength = 3,
+		depth = 1,
+		recalculate = true,
+		interPolate = ['width'] as Array<keyof P>,
+	} = {},
 ) {
 	if (
 		node &&
@@ -56,37 +62,45 @@ export function smouthenPoint<P extends LinePoint>(
 		node.val.length > minLength
 	) {
 		// console.log('smouthening point', node.val)
-		const lerp1 = partial(lerp, 1 - ratio)
 		const prev = node.prev
-		node.list.prependAt(
-			node,
-			newLinePoint(
-				zip(lerp1, node.prev.val.vertex, node.val.vertex) as Vec2D,
-				node.prev.val.width &&
-					node.val.width &&
-					lerp1(node.prev.val.width, node.val.width),
-			) as P,
-			true,
-		)
-		prev.set(prev.val, true)
+
+		const lerp1 = partial(lerp, 1 - ratio)
+		const newPrevPoint = newLinePoint(
+			zip(lerp1, node.prev.val.vertex, node.val.vertex) as Vec2D,
+		) as P
+		for (const key of interPolate) {
+			const prevVal = node.prev.val[key]
+			const nodeVal = node.val[key]
+			if (typeof nodeVal === 'number' && typeof prevVal === 'number') {
+				newPrevPoint[key] = lerp1(prevVal, nodeVal) as any
+			}
+			if (Array.isArray(nodeVal) && Array.isArray(prevVal)) {
+				newPrevPoint[key] = zip(lerp1, prevVal, nodeVal) as any
+			}
+		}
+		node.list.prependAt(node, newPrevPoint, recalculate)
+
+		prev.set(prev.val, recalculate)
+
 		const lerp2 = partial(lerp, ratio)
-		node.set(
-			updatePoint(
-				newLinePoint(
-					zip(lerp2, node.val.vertex, node.next.val.vertex) as Vec2D,
-					node.val.width &&
-						node.next.val.width &&
-						lerp2(node.val.width, node.next.val.width),
-				),
-				node.next.val,
-			) as P,
-			true,
+		const newNodePoint = newLinePoint(
+			zip(lerp2, node.val.vertex, node.next.val.vertex) as Vec2D,
+			node.val.width &&
+				node.next.val.width &&
+				lerp2(node.val.width, node.next.val.width),
 		)
-		node.next.set(node.next.val, true)
+		node.set(updatePoint(newNodePoint, node.next.val) as P, recalculate)
+
+		node.next.set(node.next.val, recalculate)
 
 		if (depth > 1) {
-			smouthenPoint(node.prev, { ratio, minLength, depth: depth - 1 })
-			smouthenPoint(node, { ratio, minLength, depth: depth - 1 })
+			smouthenPoint(node.prev, {
+				ratio,
+				minLength,
+				depth: depth - 1,
+				recalculate,
+			})
+			smouthenPoint(node, { ratio, minLength, depth: depth - 1, recalculate })
 		}
 	}
 }
@@ -157,6 +171,70 @@ export function lineMitterPositions(node: LineNode, thickness?: number) {
 // === FormData helpers ===
 
 export function lineToTriangleStripGeometry(
+	lineData: Line,
+	lineWidth?: number,
+	storeType?: FormStoreType,
+): FormData[] {
+	if (lineData.size < 2) {
+		return [{ attribs: {}, itemCount: 0 }]
+	}
+
+	const lines: Line[] = []
+	let lineLength = 0
+	let currentLine: Line = createLine()
+	for (const node of lineData.nodes) {
+		lineLength += node.val.length
+		if (isSharpAngle(node)) {
+			currentLine.append({
+				vertex: node.val.vertex,
+				width: node.val.width,
+				direction: node.prev!.val.direction,
+				length: 0,
+			})
+			lines.push(currentLine)
+			currentLine = createLine()
+		}
+		currentLine.append(node.val)
+	}
+	lines.push(currentLine)
+
+	let currentLength = 0
+	let swap = false
+	return lines.map((line) => {
+		swap = !swap
+		let points: Vec2D[] = []
+		let uvs: Vec2D[] = []
+
+		for (const curr of line.nodes) {
+			const uvY = currentLength / lineLength
+			uvs.push([swap ? 0 : 1, uvY], [swap ? 1 : 0, uvY])
+			points.push(...lineMitterPositions(curr, lineWidth))
+
+			if (curr.next) {
+				currentLength += curr.val.length
+			}
+		}
+
+		const data: FormData = {
+			attribs: {
+				position: {
+					buffer: new Float32Array(flatten(points)),
+					storeType,
+				},
+				uv: {
+					buffer: new Float32Array(flatten(uvs)),
+					storeType,
+				},
+			},
+			drawType: 'TRIANGLE_STRIP',
+			itemCount: points.length,
+		}
+
+		return data
+	})
+}
+
+export function lineToSmouthTriangleStripGeometry(
 	lineData: Line,
 	lineWidth?: number,
 	storeType?: FormStoreType,

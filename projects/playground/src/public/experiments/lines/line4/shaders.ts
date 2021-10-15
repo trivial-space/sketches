@@ -1,34 +1,34 @@
 import {
 	getFragmentGenerator,
 	getVertexGenerator,
-} from '../../../shared-utils/shaders/ast'
+} from '../../../../shared-utils/shaders/ast'
 import {
 	program,
 	defMain,
 	assign,
 	vec4,
-	Vec3Sym,
 	input,
-	uniform,
 	output,
 	mul,
-	vec3,
 	Vec2Sym,
 	$y,
 	$x,
+	vec2,
+	div,
+	uniform,
 	Sampler2DSym,
 	Vec4Sym,
-	texture,
-	sym,
 	FloatSym,
-	add,
 	$w,
 	$z,
-	pow,
+	add,
 	float,
 	mix,
-	vec2,
+	pow,
 	sub,
+	sym,
+	texture,
+	vec3,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 
@@ -37,28 +37,40 @@ const vs = getVertexGenerator()
 
 // varyings
 
-let vNormal: Vec3Sym
 let vUv: Vec2Sym
 
 // Vertex
 
 let aPosition: Vec2Sym
 let aUV: Vec2Sym
+let uSize: Vec2Sym
 export const lineVert = vs(
-	// prettier-ignore
 	program([
 		(aPosition = input('vec2', 'position')),
 		(aUV = input('vec2', 'uv')),
 		(vUv = output('vec2', 'vUv')),
-
+		(uSize = uniform('vec2', 'uSize')),
 		defMain(() => [
 			assign(vUv, aUV),
-			assign(vs.gl_Position, vec4(mul(aPosition, vec2(1, -1)), 0, 1)),
+			assign(
+				vs.gl_Position,
+				vec4(mul(fit0111(div(aPosition, uSize)), vec2(1, -1)), 0, 1),
+			),
 		]),
 	]),
 )
 
 // Fragment
+
+// export const lineFrag = fs(
+// 	// prettier-ignore
+// 	program([
+// 		(vUv = input('vec2', 'vUv')),
+// 		defMain(() => [
+// 			assign(fs.gl_FragColor, vec4($x(vUv), $y(vUv), 1, 1)),
+// 		]),
+// 	]),
+// )
 
 let uNoiseTex: Sampler2DSym
 let noise: Vec4Sym
@@ -67,7 +79,6 @@ export const lineFrag = fs(
 	// prettier-ignore
 	program([
 		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
-		(vNormal = input('vec3', 'vNormal')),
 		(vUv = input('vec2', 'vUv')),
 		defMain(() => [
 			noise = sym(texture(uNoiseTex, mul(vUv, vec2(1.0, 10)))),
@@ -94,7 +105,8 @@ export const lineFrag = fs(
 					1
 				)),
 			assign(fs.gl_FragColor, vec4(
-				mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
+				vec3(0.4, 1, 0.6),
+				// mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
 				noiseVal
 			)),
 		]),
