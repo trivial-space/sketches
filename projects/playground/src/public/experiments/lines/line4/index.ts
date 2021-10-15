@@ -15,6 +15,7 @@ import { baseEvents } from '../../../../shared-utils/painterState'
 import { lerp } from 'tvs-libs/dist/math/core'
 import { dot } from 'tvs-libs/dist/math/vectors'
 import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
+import { GL2 } from 'tvs-painter'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -64,13 +65,18 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 
 const scene = Q.getLayer('scene').update({
 	drawSettings: {
-		clearColor: [0.5, 0, 0, 1],
-		clearBits: makeClear(Q.gl, 'color'),
-		enable: [Q.gl.BLEND],
-		// blendFunc: [Q.gl.SRC_ALPHA, Q.gl.ONE_MINUS_DST_ALPHA],
+		clearColor: [1, 1, 1, 1],
+		clearBits: makeClear(Q.gl, 'color', 'depth'),
+		enable: [
+			Q.gl.BLEND,
+			//AX
+			// Q.gl.DEPTH_TEST,
+		],
+		blendFunc: [Q.gl.ONE, Q.gl.ONE],
 	},
 	directRender: true,
 })
+Q.gl.blendEquation((Q.gl as GL2).MIN)
 
 let dragging = false
 let startPoint: [number, number] = [0, 0]

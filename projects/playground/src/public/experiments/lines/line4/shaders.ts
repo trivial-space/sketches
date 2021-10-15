@@ -76,39 +76,48 @@ let uNoiseTex: Sampler2DSym
 let noise: Vec4Sym
 let noiseVal: FloatSym
 export const lineFrag = fs(
-	// prettier-ignore
 	program([
 		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
 		(vUv = input('vec2', 'vUv')),
 		defMain(() => [
-			noise = sym(texture(uNoiseTex, mul(vUv, vec2(1.0, 10)))),
+			(noise = sym(texture(uNoiseTex, mul(vUv, vec2(1.0, 10))))),
 			// noiseVal = sym(($x(noise))),
-			noiseVal = sym(
-				fit1101(add(
-					add(
-						add(fit0111($x(noise)), fit0111($y(noise))),
-						fit0111($z(noise))),
-					fit0111($w(noise))))
-			),
-			assign(noiseVal, pow(noiseVal, float(0.15))),
-			assign(noiseVal ,
+			(noiseVal = sym(
+				fit1101(
+					div(
+						add(
+							add(
+								add(fit0111($x(noise)), fit0111($y(noise))),
+								fit0111($z(noise)),
+							),
+							fit0111($w(noise)),
+						),
+						4,
+					),
+				),
+			)),
+			assign(noiseVal, pow(noiseVal, float(1.5))),
+			assign(
+				noiseVal,
 				mul(
 					mul(
 						noiseVal,
-						mul(
-							sub(add(float(1), noiseVal), pow($y(vUv), float(4))),
-							0.5
-						)
+						mul(sub(add(1, noiseVal), pow($y(vUv), float(4))), 0.5),
 						// 1
 					),
 					// sub(1, pow(abs(fit0111($x(vUv))), float(8)))
-					1
-				)),
-			assign(fs.gl_FragColor, vec4(
-				vec3(0.4, 1, 0.6),
-				// mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
-				noiseVal
-			)),
+					1,
+				),
+			),
+			assign(
+				fs.gl_FragColor,
+				vec4(
+					mul(vec3(0, 0.2, 0.1), noiseVal),
+					// vec3(0, 0.7, 0.1),
+					// mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
+					noiseVal,
+				),
+			),
 		]),
 	]),
 )
