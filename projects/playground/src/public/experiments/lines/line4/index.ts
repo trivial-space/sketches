@@ -72,11 +72,17 @@ const scene = Q.getLayer('scene').update({
 			//AX
 			// Q.gl.DEPTH_TEST,
 		],
-		blendFunc: [Q.gl.ONE, Q.gl.ONE],
+		// blendFunc: [Q.gl.ONE, Q.gl.ONE],
 	},
 	directRender: true,
 })
-Q.gl.blendEquation((Q.gl as GL2).MIN)
+// TODO: add to drawSettings
+Q.gl.blendFuncSeparate(
+	Q.gl.SRC_ALPHA,
+	Q.gl.ONE_MINUS_SRC_ALPHA,
+	Q.gl.ZERO,
+	Q.gl.ONE,
+)
 
 let dragging = false
 let startPoint: [number, number] = [0, 0]

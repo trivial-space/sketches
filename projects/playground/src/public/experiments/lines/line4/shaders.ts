@@ -80,41 +80,35 @@ export const lineFrag = fs(
 		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
 		(vUv = input('vec2', 'vUv')),
 		defMain(() => [
-			(noise = sym(texture(uNoiseTex, mul(vUv, vec2(1.0, 10))))),
+			(noise = sym(texture(uNoiseTex, mul(vUv, vec2(1, 3))))),
 			// noiseVal = sym(($x(noise))),
 			(noiseVal = sym(
 				fit1101(
-					div(
+					add(
 						add(
-							add(
-								add(fit0111($x(noise)), fit0111($y(noise))),
-								fit0111($z(noise)),
-							),
-							fit0111($w(noise)),
+							add(fit0111($x(noise)), fit0111($y(noise))),
+							fit0111($z(noise)),
 						),
-						4,
+						fit0111($w(noise)),
 					),
 				),
 			)),
-			assign(noiseVal, pow(noiseVal, float(1.5))),
+			assign(noiseVal, pow(noiseVal, float(0.2))),
 			assign(
 				noiseVal,
 				mul(
 					mul(
 						noiseVal,
 						mul(sub(add(1, noiseVal), pow($y(vUv), float(4))), 0.5),
-						// 1
 					),
-					// sub(1, pow(abs(fit0111($x(vUv))), float(8)))
 					1,
 				),
 			),
 			assign(
 				fs.gl_FragColor,
 				vec4(
-					mul(vec3(0, 0.2, 0.1), noiseVal),
 					// vec3(0, 0.7, 0.1),
-					// mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
+					mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
 					noiseVal,
 				),
 			),
