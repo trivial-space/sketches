@@ -107,7 +107,7 @@ export const lineFrag = fs(
 			assign(
 				fs.gl_FragColor,
 				vec4(
-					// vec3(0, 0.7, 0.1),
+					// vec3(0, 0.6, 0.2),
 					mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
 					noiseVal,
 				),
