@@ -2,7 +2,7 @@ import { events, Q } from './context'
 import {
 	createLine,
 	LinePoint,
-	lineToTriangleStripGeometry,
+	lineToSmouthTriangleStripGeometry,
 	newLinePoint,
 	smouthenPoint,
 } from '../../../../shared-utils/geometry/lines_2d'
@@ -15,7 +15,6 @@ import { baseEvents } from '../../../../shared-utils/painterState'
 import { lerp } from 'tvs-libs/dist/math/core'
 import { dot } from 'tvs-libs/dist/math/vectors'
 import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
-import { GL2 } from 'tvs-painter'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -109,7 +108,7 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 			currentLine?.append(point, true)
 			smouthenPoint(currentLine.last?.prev, { depth: 2 })
 
-			const formDatas = lineToTriangleStripGeometry(
+			const formDatas = lineToSmouthTriangleStripGeometry(
 				currentLine,
 				lineWidth,
 				'DYNAMIC',

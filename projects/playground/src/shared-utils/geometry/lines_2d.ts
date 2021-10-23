@@ -6,6 +6,7 @@ import {
 	sub,
 	length,
 	div,
+	cross2D,
 } from 'tvs-libs/dist/math/vectors'
 import {
 	createDoubleLinkedList,
@@ -264,6 +265,7 @@ export function lineToSmouthTriangleStripGeometry(
 
 	let currentLength = 0
 	let swap = false
+	let prev: DoubleLinkedNode<LinePoint> | null = null
 	return lines.map((line) => {
 		swap = !swap
 		let points: Vec2D[] = []
@@ -272,11 +274,56 @@ export function lineToSmouthTriangleStripGeometry(
 		for (const curr of line.nodes) {
 			const uvY = currentLength / lineLength
 			uvs.push([swap ? 0 : 1, uvY], [swap ? 1 : 0, uvY])
-			points.push(...lineMitterPositions(curr, lineWidth))
+			const newPoints = lineMitterPositions(curr, lineWidth)
+			if (curr === line.first && prev) {
+				const width = curr.val.width || lineWidth || 1
+				const c = width / dot(prev.val.direction, curr.val.direction)
+				const a = Math.sqrt(c * c - width * width) / 2
+				if (a > 0.001) {
+					if (cross2D(curr.val.direction, prev.val.direction) > 0) {
+						newPoints[0] = add(
+							newPoints[0],
+							mul(-a, curr.val.direction),
+						) as Vec2D
+						newPoints[1] = add(
+							newPoints[1],
+							mul(a, curr.val.direction),
+						) as Vec2D
+						// points[points.length - 2] = add(
+						// 	points[points.length - 2],
+						// 	mul(-a, prev.val.direction),
+						// ) as Vec2D
+						// points[points.length - 1] = add(
+						// 	points[points.length - 1],
+						// 	mul(a, prev.val.direction),
+						// ) as Vec2D
+					} else {
+						newPoints[0] = add(
+							newPoints[0],
+							mul(a, curr.val.direction),
+						) as Vec2D
+						newPoints[1] = add(
+							newPoints[1],
+							mul(-a, curr.val.direction),
+						) as Vec2D
+						// points[points.length - 2] = add(
+						// 	points[points.length - 2],
+						// 	mul(a, prev.val.direction),
+						// ) as Vec2D
+						// points[points.length - 1] = add(
+						// 	points[points.length - 1],
+						// 	mul(-a, prev.val.direction),
+						// ) as Vec2D
+					}
+				}
+			}
+			points.push(...newPoints)
 
 			if (curr.next) {
 				currentLength += curr.val.length
 			}
+
+			prev = curr
 		}
 
 		const data: FormData = {
