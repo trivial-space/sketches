@@ -12,7 +12,7 @@ const shade = Q.getShade('line').update({
 })
 
 // const linePoints = strokePatch2(20)
-const linePoints = strokePatch(1.5, 1.5, 3)
+const linePoints = strokePatch(1.5, 1.5, 20)
 
 const data = lineToSmouthTriangleStripGeometry(linePoints, 0.05)
 

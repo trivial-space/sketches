@@ -289,10 +289,11 @@ export function lineToSmouthTriangleStripGeometry(
 	const data = lines.map((line) => {
 		swap = !swap
 
+		let uvY = currentLength / lineLength
+
 		const topLine: Line<LineAttributes> = createLine()
 		const bottomLine: Line<LineAttributes> = createLine()
 
-		let uvY = currentLength / lineLength
 		topLine.append({
 			...line.first!.val,
 			uv: [0.5, uvY],
@@ -307,13 +308,12 @@ export function lineToSmouthTriangleStripGeometry(
 		})
 
 		for (const curr of line.nodes) {
+			uvY = currentLength / lineLength
 			const width = curr.val.width || lineWidth || 1
 			const newPoints = lineMitterPositions(curr, lineWidth)
 
-			uvY = currentLength / lineLength
-
-			if (curr === line.first && prev) {
-				adjustEdgePoints(newPoints, prevPoints!, curr, prev, lineWidth)
+			if (curr === line.first && prev && prevPoints) {
+				adjustEdgePoints(newPoints, prevPoints, curr, prev, lineWidth)
 			}
 
 			topLine.append({
@@ -359,17 +359,17 @@ export function lineToSmouthTriangleStripGeometry(
 		doTimes(() => {
 			for (const node of topLine.nodes) {
 				smouthenPoint(node, {
-					minLength: 0,
+					minLength: -1,
 					interPolate: ['currentLength', 'direction', 'length', 'uv', 'width'],
 				})
 			}
 			for (const node of bottomLine.nodes) {
 				smouthenPoint(node, {
-					minLength: 0,
+					minLength: -1,
 					interPolate: ['currentLength', 'direction', 'length', 'uv', 'width'],
 				})
 			}
-		}, 3)
+		}, 4)
 
 		const points: Vec2D[] = []
 		const uvs: Vec2D[] = []
@@ -418,7 +418,7 @@ function adjustEdgePoints(
 			curr.val.direction,
 		)
 	const a = Math.sqrt(c * c - width * width)
-	if (a > 0.01) {
+	if (a > 0.001) {
 		if (cross2D(curr.val.direction, prev.val.direction) > 0) {
 			add(newPoints[0], mul(-a, curr.val.direction), newPoints[0])
 			add(newPoints[1], mul(a, curr.val.direction), newPoints[1])

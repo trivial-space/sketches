@@ -93,7 +93,7 @@ export const lineFrag = fs(
 					),
 				),
 			)),
-			assign(noiseVal, pow(noiseVal, float(0.2))),
+			assign(noiseVal, pow(noiseVal, float(0.12))),
 			assign(
 				noiseVal,
 				mul(
@@ -101,7 +101,7 @@ export const lineFrag = fs(
 						noiseVal,
 						mul(sub(add(1, noiseVal), pow($y(vUv), float(4))), 0.5),
 					),
-					1,
+					0.9,
 				),
 			),
 			assign(
