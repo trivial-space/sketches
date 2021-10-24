@@ -16,7 +16,7 @@ import {
 } from 'tvs-libs/dist/datastructures/double-linked-list'
 import { Maybe } from 'tvs-libs/dist/types'
 import { FormData, FormStoreType } from 'tvs-painter'
-import { flatten, zip } from 'tvs-libs/dist/utils/sequence'
+import { doTimes, flatten, zip } from 'tvs-libs/dist/utils/sequence'
 import { lerp } from 'tvs-libs/dist/math/core'
 import { partial } from 'tvs-libs/dist/fp/core'
 
@@ -86,11 +86,18 @@ export function smouthenPoint<P extends LinePoint>(
 		const lerp2 = partial(lerp, ratio)
 		const newNodePoint = newLinePoint(
 			zip(lerp2, node.val.vertex, node.next.val.vertex) as Vec2D,
-			node.val.width &&
-				node.next.val.width &&
-				lerp2(node.val.width, node.next.val.width),
-		)
-		node.set(updatePoint(newNodePoint, node.next.val) as P, recalculate)
+		) as P
+		for (const key of interPolate) {
+			const nodeVal = node.val[key]
+			const nextVal = node.next.val[key]
+			if (typeof nodeVal === 'number' && typeof nextVal === 'number') {
+				newNodePoint[key] = lerp2(nodeVal, nextVal) as any
+			}
+			if (Array.isArray(nodeVal) && Array.isArray(nextVal)) {
+				newNodePoint[key] = zip(lerp2, nodeVal, nextVal) as any
+			}
+		}
+		node.set(newNodePoint, recalculate)
 
 		node.next.set(node.next.val, recalculate)
 
@@ -100,8 +107,15 @@ export function smouthenPoint<P extends LinePoint>(
 				minLength,
 				depth: depth - 1,
 				recalculate,
+				interPolate,
 			})
-			smouthenPoint(node, { ratio, minLength, depth: depth - 1, recalculate })
+			smouthenPoint(node, {
+				ratio,
+				minLength,
+				depth: depth - 1,
+				recalculate,
+				interPolate,
+			})
 		}
 	}
 }
@@ -235,6 +249,11 @@ export function lineToTriangleStripGeometry(
 	})
 }
 
+type LineAttributes = LinePoint & {
+	currentLength: number
+	uv: [number, number]
+	width: number
+}
 export function lineToSmouthTriangleStripGeometry(
 	lineData: Line,
 	lineWidth?: number,
@@ -266,64 +285,103 @@ export function lineToSmouthTriangleStripGeometry(
 	let currentLength = 0
 	let swap = false
 	let prev: DoubleLinkedNode<LinePoint> | null = null
-	return lines.map((line) => {
+	let prevPoints: [Vec2D, Vec2D] | null = null
+	const data = lines.map((line) => {
 		swap = !swap
-		let points: Vec2D[] = []
-		let uvs: Vec2D[] = []
+
+		const topLine: Line<LineAttributes> = createLine()
+		const bottomLine: Line<LineAttributes> = createLine()
+
+		let uvY = currentLength / lineLength
+		topLine.append({
+			...line.first!.val,
+			uv: [0.5, uvY],
+			currentLength,
+			width: 0,
+		})
+		bottomLine.append({
+			...line.first!.val,
+			uv: [0.5, uvY],
+			currentLength,
+			width: 0,
+		})
 
 		for (const curr of line.nodes) {
-			const uvY = currentLength / lineLength
-			uvs.push([swap ? 0 : 1, uvY], [swap ? 1 : 0, uvY])
+			const width = curr.val.width || lineWidth || 1
 			const newPoints = lineMitterPositions(curr, lineWidth)
+
+			uvY = currentLength / lineLength
+
 			if (curr === line.first && prev) {
-				const width = curr.val.width || lineWidth || 1
-				const c = width / dot(prev.val.direction, curr.val.direction)
-				const a = Math.sqrt(c * c - width * width) / 2
-				if (a > 0.001) {
-					if (cross2D(curr.val.direction, prev.val.direction) > 0) {
-						newPoints[0] = add(
-							newPoints[0],
-							mul(-a, curr.val.direction),
-						) as Vec2D
-						newPoints[1] = add(
-							newPoints[1],
-							mul(a, curr.val.direction),
-						) as Vec2D
-						// points[points.length - 2] = add(
-						// 	points[points.length - 2],
-						// 	mul(-a, prev.val.direction),
-						// ) as Vec2D
-						// points[points.length - 1] = add(
-						// 	points[points.length - 1],
-						// 	mul(a, prev.val.direction),
-						// ) as Vec2D
-					} else {
-						newPoints[0] = add(
-							newPoints[0],
-							mul(a, curr.val.direction),
-						) as Vec2D
-						newPoints[1] = add(
-							newPoints[1],
-							mul(-a, curr.val.direction),
-						) as Vec2D
-						// points[points.length - 2] = add(
-						// 	points[points.length - 2],
-						// 	mul(a, prev.val.direction),
-						// ) as Vec2D
-						// points[points.length - 1] = add(
-						// 	points[points.length - 1],
-						// 	mul(-a, prev.val.direction),
-						// ) as Vec2D
-					}
-				}
+				adjustEdgePoints(newPoints, prevPoints!, curr, prev, lineWidth)
 			}
-			points.push(...newPoints)
+
+			topLine.append({
+				...curr.val,
+				vertex: newPoints[0],
+				uv: [swap ? 0 : 1, uvY],
+				currentLength,
+				width,
+			})
+			bottomLine.append({
+				...curr.val,
+				vertex: newPoints[1],
+				uv: [swap ? 1 : 0, uvY],
+				currentLength,
+				width,
+			})
 
 			if (curr.next) {
 				currentLength += curr.val.length
 			}
 
 			prev = curr
+			prevPoints = newPoints
+		}
+
+		topLine.append({
+			...line.last!.val,
+			uv: [0.5, uvY],
+			currentLength,
+			width: 0,
+		})
+		bottomLine.append({
+			...line.last!.val,
+			uv: [0.5, uvY],
+			currentLength,
+			width: 0,
+		})
+
+		return { bottomLine, topLine }
+	})
+
+	return data.map(({ topLine, bottomLine }) => {
+		doTimes(() => {
+			for (const node of topLine.nodes) {
+				smouthenPoint(node, {
+					minLength: 0,
+					interPolate: ['currentLength', 'direction', 'length', 'uv', 'width'],
+				})
+			}
+			for (const node of bottomLine.nodes) {
+				smouthenPoint(node, {
+					minLength: 0,
+					interPolate: ['currentLength', 'direction', 'length', 'uv', 'width'],
+				})
+			}
+		}, 3)
+
+		const points: Vec2D[] = []
+		const uvs: Vec2D[] = []
+
+		let top = topLine.first
+		let bottom = bottomLine.first
+
+		while (top && bottom) {
+			points.push(top.val.vertex, bottom.val.vertex)
+			uvs.push(top.val.uv, bottom.val.uv)
+			top = top.next
+			bottom = bottom.next
 		}
 
 		const data: FormData = {
@@ -343,4 +401,34 @@ export function lineToSmouthTriangleStripGeometry(
 
 		return data
 	})
+}
+
+function adjustEdgePoints(
+	newPoints: [Vec2D, Vec2D],
+	prevPoints: [Vec2D, Vec2D],
+	curr: DoubleLinkedNode<LinePoint>,
+	prev: DoubleLinkedNode<LinePoint>,
+	lineWidth?: number,
+) {
+	const width = curr.val.width || lineWidth || 1
+	const c =
+		width /
+		dot(
+			normalize(add(mul(-1, prev.val.direction), curr.val.direction)),
+			curr.val.direction,
+		)
+	const a = Math.sqrt(c * c - width * width)
+	if (a > 0.01) {
+		if (cross2D(curr.val.direction, prev.val.direction) > 0) {
+			add(newPoints[0], mul(-a, curr.val.direction), newPoints[0])
+			add(newPoints[1], mul(a, curr.val.direction), newPoints[1])
+			add(prevPoints[0], mul(a, prev.val.direction), prevPoints[0])
+			add(prevPoints[1], mul(-a, prev.val.direction), prevPoints[1])
+		} else {
+			add(newPoints[0], mul(a, curr.val.direction), newPoints[0])
+			add(newPoints[1], mul(-a, curr.val.direction), newPoints[1])
+			add(prevPoints[0], mul(-a, prev.val.direction), prevPoints[0])
+			add(prevPoints[1], mul(a, prev.val.direction), prevPoints[1])
+		}
+	}
 }
