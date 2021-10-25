@@ -19,9 +19,9 @@
     "test:types": "tsc --noEmit"
   },
   "dependencies": {
-    "@thi.ng/shader-ast": "^0.11.4",
-    "@thi.ng/shader-ast-glsl": "^0.3.4",
-    "@thi.ng/shader-ast-stdlib": "^0.10.4",
+    "@thi.ng/shader-ast": "0.10.*",
+    "@thi.ng/shader-ast-glsl": "0.2.*",
+    "@thi.ng/shader-ast-stdlib": "0.9.*",
     "geo-3d-box": "^2.0.2",
     "gl-matrix": "3.4.3",
     "glsl-fast-gaussian-blur": "^1.0.2",
