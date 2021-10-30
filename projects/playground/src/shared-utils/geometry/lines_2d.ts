@@ -252,6 +252,7 @@ export function lineToTriangleStripGeometry(
 type LineAttributes = LinePoint & {
 	currentLength: number
 	uv: [number, number]
+	localUV: [number, number]
 	width: number
 }
 export function lineToSmouthTriangleStripGeometry(
@@ -289,7 +290,13 @@ export function lineToSmouthTriangleStripGeometry(
 	const data = lines.map((line) => {
 		swap = !swap
 
+		let currentLocalLength = 0
+		let localLineLength = [...line]
+			.map((n) => n.length)
+			.reduce((a, b) => a + b, 0)
+
 		let uvY = currentLength / lineLength
+		let localUvY = currentLocalLength / localLineLength
 
 		const topLine: Line<LineAttributes> = createLine()
 		const bottomLine: Line<LineAttributes> = createLine()
@@ -297,18 +304,21 @@ export function lineToSmouthTriangleStripGeometry(
 		topLine.append({
 			...line.first!.val,
 			uv: [0.5, uvY],
+			localUV: [0.5, localUvY],
 			currentLength,
 			width: 0,
 		})
 		bottomLine.append({
 			...line.first!.val,
 			uv: [0.5, uvY],
+			localUV: [0.5, localUvY],
 			currentLength,
 			width: 0,
 		})
 
 		for (const curr of line.nodes) {
 			uvY = currentLength / lineLength
+			localUvY = currentLocalLength / localLineLength
 			const width = curr.val.width || lineWidth || 1
 			const newPoints = lineMitterPositions(curr, lineWidth)
 
@@ -320,6 +330,7 @@ export function lineToSmouthTriangleStripGeometry(
 				...curr.val,
 				vertex: newPoints[0],
 				uv: [swap ? 0 : 1, uvY],
+				localUV: [swap ? 0 : 1, localUvY],
 				currentLength,
 				width,
 			})
@@ -327,12 +338,14 @@ export function lineToSmouthTriangleStripGeometry(
 				...curr.val,
 				vertex: newPoints[1],
 				uv: [swap ? 1 : 0, uvY],
+				localUV: [swap ? 1 : 0, localUvY],
 				currentLength,
 				width,
 			})
 
 			if (curr.next) {
 				currentLength += curr.val.length
+				currentLocalLength += curr.val.length
 			}
 
 			prev = curr
@@ -342,12 +355,14 @@ export function lineToSmouthTriangleStripGeometry(
 		topLine.append({
 			...line.last!.val,
 			uv: [0.5, uvY],
+			localUV: [0.5, 1],
 			currentLength,
 			width: 0,
 		})
 		bottomLine.append({
 			...line.last!.val,
 			uv: [0.5, uvY],
+			localUV: [0.5, 1],
 			currentLength,
 			width: 0,
 		})
@@ -360,19 +375,35 @@ export function lineToSmouthTriangleStripGeometry(
 			for (const node of topLine.nodes) {
 				smouthenPoint(node, {
 					minLength: -1,
-					interPolate: ['currentLength', 'direction', 'length', 'uv', 'width'],
+					interPolate: [
+						'currentLength',
+						'direction',
+						'length',
+						'uv',
+						'localUV',
+						'width',
+					],
 				})
 			}
 			for (const node of bottomLine.nodes) {
 				smouthenPoint(node, {
 					minLength: -1,
-					interPolate: ['currentLength', 'direction', 'length', 'uv', 'width'],
+					interPolate: [
+						'currentLength',
+						'direction',
+						'length',
+						'uv',
+						'localUV',
+						'width',
+					],
 				})
 			}
 		}, 4)
 
 		const points: Vec2D[] = []
 		const uvs: Vec2D[] = []
+		const localUvs: Vec2D[] = []
+		const lengths: number[] = []
 
 		let top = topLine.first
 		let bottom = bottomLine.first
@@ -380,6 +411,9 @@ export function lineToSmouthTriangleStripGeometry(
 		while (top && bottom) {
 			points.push(top.val.vertex, bottom.val.vertex)
 			uvs.push(top.val.uv, bottom.val.uv)
+			localUvs.push(top.val.localUV, bottom.val.localUV)
+			lengths.push(top.val.currentLength, bottom.val.currentLength)
+
 			top = top.next
 			bottom = bottom.next
 		}
@@ -392,6 +426,14 @@ export function lineToSmouthTriangleStripGeometry(
 				},
 				uv: {
 					buffer: new Float32Array(flatten(uvs)),
+					storeType,
+				},
+				localUv: {
+					buffer: new Float32Array(flatten(localUvs)),
+					storeType,
+				},
+				length: {
+					buffer: new Float32Array(lengths),
 					storeType,
 				},
 			},

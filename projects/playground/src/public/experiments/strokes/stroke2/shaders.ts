@@ -31,29 +31,36 @@ import {
 	sub,
 	abs,
 	div,
+	max,
+	min,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 
-const fs = getFragmentGenerator()
+const fs = getFragmentGenerator('precision highp float;')
 const vs = getVertexGenerator()
 
 // varyings
 
 let vUv: Vec2Sym
+let vLength: FloatSym
 
 // Vertex
 
 let uSize: Vec2Sym
 let aPosition: Vec2Sym
-let aUV: Vec2Sym
+let aLength: FloatSym
+let aLocalUV: Vec2Sym
 export const lineVert = vs(
 	program([
 		(uSize = uniform('vec2', 'size')),
 		(aPosition = input('vec2', 'position')),
-		(aUV = input('vec2', 'uv')),
+		(aLength = input('float', 'length')),
+		(aLocalUV = input('vec2', 'localUv')),
 		(vUv = output('vec2', 'vUv')),
+		(vLength = output('float', 'vLength')),
 		defMain(() => [
-			assign(vUv, aUV),
+			assign(vUv, aLocalUV),
+			assign(vLength, aLength),
 			assign(
 				vs.gl_Position,
 				vec4(
@@ -76,8 +83,12 @@ export const lineFrag = fs(
 	program([
 		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
 		(vUv = input('vec2', 'vUv')),
+		(vLength = input('float', 'vLength')),
+		(uSize = uniform('vec2', 'size')),
 		defMain(() => [
-			(noise = sym(texture(uNoiseTex, mul(vUv, vec2(1.0, 1))))),
+			(noise = sym(
+				texture(uNoiseTex, mul(vec2($x(vUv), vLength), vec2(1.0, 0.1))),
+			)),
 			// noiseVal = sym(($x(noise))),
 			(noiseVal = sym(
 				fit1101(
@@ -93,23 +104,24 @@ export const lineFrag = fs(
 			assign(noiseVal, mul(1.1, noiseVal)),
 			assign(noiseVal, pow(noiseVal, float(0.1))),
 			assign(noiseVal, sub(noiseVal, pow(abs(fit0111($x(vUv))), float(10)))),
-			assign(noiseVal, sub(noiseVal, pow(abs(fit0111($y(vUv))), float(50)))),
+			assign(noiseVal, sub(noiseVal, pow(abs(fit0111($y(vUv))), float(30)))),
 			assign(
 				noiseVal,
 				mul(
+					noiseVal,
 					mul(
-						noiseVal,
-						mul(sub(add(float(1), noiseVal), pow($y(vUv), float(4))), 0.5),
-						// 1
+						sub(
+							add(float(1), noiseVal),
+							pow(min(float(1), div(vLength, 10)), float(4)),
+						),
+						0.5,
 					),
-					// sub(1, pow(abs(fit0111($x(vUv))), float(8)))
-					1,
 				),
 			),
 			assign(
 				fs.gl_FragColor,
 				vec4(
-					// mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
+					// mix(vec3(0.2, 0.8, 0.6), vec3(0, 0.6, 0.2), noiseVal),
 					vec3(0, 0.6, 0.2),
 					mul(0.9, noiseVal),
 				),

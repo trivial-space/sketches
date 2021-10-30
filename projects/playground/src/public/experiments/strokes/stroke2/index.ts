@@ -1,28 +1,16 @@
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
-import { makeLine, makeLine2 } from './state'
+import { makeLine } from './state'
 import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
-import { lineToSmouthTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_2d'
+import {
+	createLine,
+	lineToSmouthTriangleStripGeometry,
+} from '../../../../shared-utils/geometry/lines_2d'
 
 const shade = Q.getShade('line').update({
 	vert: lineVert,
 	frag: lineFrag,
 })
-
-// const linePoints = line([-0.5, 0], [0.5, 0], 30)
-const line = makeLine2(1.2, 0.6, 5)
-
-const data = lineToSmouthTriangleStripGeometry(line, 0.07)
-console.log(data)
-
-const sketches = data
-	.map((d, i) => Q.getForm('form' + i).update(d))
-	.map((form, i) =>
-		Q.getSketch('line' + i).update({
-			form,
-			shade,
-		}),
-	)
 
 export const noiseTex = Q.getLayer('noiseTex').update({
 	texture: getNoiseTextureData({
@@ -41,7 +29,6 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 // === scene ===
 
 export const scene = Q.getLayer('scene').update({
-	sketches,
 	drawSettings: {
 		clearColor: [1, 1, 1, 1],
 		clearBits: Q.gl.COLOR_BUFFER_BIT,
@@ -62,15 +49,39 @@ Q.gl.blendFuncSeparate(
 )
 
 Q.listen('index', events.RESIZE, () => {
-	scene.update()
 	scene.update({
 		uniforms: {
 			noiseTex: noiseTex.image(),
-			size: [scene.width, scene.height],
+			size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 		},
 	})
-	Q.painter.compose(scene)
+	render()
 })
-Q.painter.compose(scene)
 
-import.meta.hot?.accept()
+const line = makeLine(1.2, 0.6, 4)
+const currentLine = createLine()
+let next = line.first
+
+function render() {
+	if (next) {
+		currentLine.append(next.val)
+		next = next.next
+		if (next) currentLine.append(next.val)
+		const data = lineToSmouthTriangleStripGeometry(currentLine, 0.08, 'DYNAMIC')
+
+		const sketches = data
+			.map((d, i) => Q.getForm('form' + i).update(d))
+			.map((form, i) =>
+				Q.getSketch('line' + i).update({
+					form,
+					shade,
+				}),
+			)
+
+		scene.update({ sketches })
+		Q.painter.compose(scene)
+
+		next = next && next.next
+		requestAnimationFrame(render)
+	}
+}
