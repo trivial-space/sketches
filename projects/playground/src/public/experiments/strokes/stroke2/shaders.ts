@@ -29,6 +29,8 @@ import {
 	mix,
 	vec2,
 	sub,
+	abs,
+	div,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 
@@ -37,23 +39,30 @@ const vs = getVertexGenerator()
 
 // varyings
 
-let vNormal: Vec3Sym
 let vUv: Vec2Sym
 
 // Vertex
 
+let uSize: Vec2Sym
 let aPosition: Vec2Sym
 let aUV: Vec2Sym
 export const lineVert = vs(
-	// prettier-ignore
 	program([
+		(uSize = uniform('vec2', 'size')),
 		(aPosition = input('vec2', 'position')),
 		(aUV = input('vec2', 'uv')),
 		(vUv = output('vec2', 'vUv')),
-
 		defMain(() => [
 			assign(vUv, aUV),
-			assign(vs.gl_Position, vec4(mul(aPosition, vec2(1, -1)), 0, 1)),
+			assign(
+				vs.gl_Position,
+				vec4(
+					$x(aPosition),
+					mul(-1, mul(div($x(uSize), $y(uSize)), $y(aPosition))),
+					0,
+					1,
+				),
+			),
 		]),
 	]),
 )
@@ -66,10 +75,9 @@ let noiseVal: FloatSym
 export const lineFrag = fs(
 	program([
 		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
-		(vNormal = input('vec3', 'vNormal')),
 		(vUv = input('vec2', 'vUv')),
 		defMain(() => [
-			(noise = sym(texture(uNoiseTex, mul(vUv, vec2(1.0, 10))))),
+			(noise = sym(texture(uNoiseTex, mul(vUv, vec2(1.0, 1))))),
 			// noiseVal = sym(($x(noise))),
 			(noiseVal = sym(
 				fit1101(
@@ -82,7 +90,10 @@ export const lineFrag = fs(
 					),
 				),
 			)),
-			assign(noiseVal, pow(noiseVal, float(0.15))),
+			assign(noiseVal, mul(1.1, noiseVal)),
+			assign(noiseVal, pow(noiseVal, float(0.1))),
+			assign(noiseVal, sub(noiseVal, pow(abs(fit0111($x(vUv))), float(10)))),
+			assign(noiseVal, sub(noiseVal, pow(abs(fit0111($y(vUv))), float(50)))),
 			assign(
 				noiseVal,
 				mul(
@@ -95,11 +106,15 @@ export const lineFrag = fs(
 					1,
 				),
 			),
-			// assign(fs.gl_FragColor, vec4(
-			// 	mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
-			// 	noiseVal
-			// )),
-			assign(fs.gl_FragColor, vec4(1, 0, 0, 0)),
+			assign(
+				fs.gl_FragColor,
+				vec4(
+					// mix(vec3(0.4, 1, 0.6), vec3(0, 0.6, 0.2), noiseVal),
+					vec3(0, 0.6, 0.2),
+					mul(0.9, noiseVal),
+				),
+			),
+			// assign(fs.gl_FragColor, vec4(1, 0, 0, 1)),
 		]),
 	]),
 )

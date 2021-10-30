@@ -257,7 +257,7 @@ type LineAttributes = LinePoint & {
 export function lineToSmouthTriangleStripGeometry(
 	lineData: Line,
 	lineWidth?: number,
-	storeType?: FormStoreType,
+	storeType: FormStoreType = 'STATIC',
 ): FormData[] {
 	if (lineData.size < 2) {
 		return [{ attribs: {}, itemCount: 0 }]
