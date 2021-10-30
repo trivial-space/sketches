@@ -1,8 +1,8 @@
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
 import { makeLine } from './state'
-import { getNoiseTextureData } from '../../../shared-utils/texture-helpers'
-import { lineToSmouthTriangleStripGeometry } from '../../../shared-utils/geometry/lines_2d'
+import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
+import { lineToSmouthTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_2d'
 
 const shade = Q.getShade('line').update({
 	vert: lineVert,

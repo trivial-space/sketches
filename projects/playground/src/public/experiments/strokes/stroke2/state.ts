@@ -3,7 +3,7 @@ import { noise2d } from 'tvs-libs/dist/math/noise'
 import {
 	createLine,
 	newLinePoint,
-} from '../../../shared-utils/geometry/lines_2d'
+} from '../../../../shared-utils/geometry/lines_2d'
 
 export function makeLine(width: number, height: number, steps: number) {
 	const step = height / steps
