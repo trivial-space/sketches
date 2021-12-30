@@ -14,7 +14,7 @@ const shade = Q.getShade('line').update({
 // const linePoints = strokePatch2(20)
 const linePoints = strokePatch(1.5, 1.5, 20)
 
-const data = lineToSmouthTriangleStripGeometry(linePoints, 0.05)
+const data = lineToSmouthTriangleStripGeometry(linePoints, { lineWidth: 0.05 })
 
 const forms = data.map((line, i) => Q.getForm('line' + i).update(line))
 

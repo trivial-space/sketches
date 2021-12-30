@@ -67,7 +67,11 @@ function render() {
 		currentLine.append(next.val)
 		next = next.next
 		if (next) currentLine.append(next.val)
-		const data = lineToSmouthTriangleStripGeometry(currentLine, 0.07, 'DYNAMIC')
+		const data = lineToSmouthTriangleStripGeometry(currentLine, {
+			lineWidth: 0.07,
+			storeType: 'DYNAMIC',
+			smouthCount: 2,
+		})
 
 		const sketches = data
 			.map((d, i) => Q.getForm('form' + i).update(d))

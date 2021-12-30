@@ -31,6 +31,7 @@ mat4.translate(noisePlaneMatrix, noisePlaneMatrix, [0, 5.5, 5])
 const noise = Q.getEffect('noise').update({
 	frag: noiseShader,
 	drawSettings: {
+		clearColor: [0, 0, 0, 1],
 		clearBits: makeClear(Q.gl, 'color', 'depth'),
 	},
 	uniforms: {

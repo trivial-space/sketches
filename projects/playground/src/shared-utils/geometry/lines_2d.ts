@@ -255,10 +255,15 @@ type LineAttributes = LinePoint & {
 	localUV: [number, number]
 	width: number
 }
+interface SmouthLineOptions {
+	lineWidth?: number
+	storeType?: FormStoreType
+	smouthCount?: number
+}
+
 export function lineToSmouthTriangleStripGeometry(
 	lineData: Line,
-	lineWidth?: number,
-	storeType: FormStoreType = 'STATIC',
+	{ lineWidth, storeType = 'STATIC', smouthCount = 4 }: SmouthLineOptions = {},
 ): FormData[] {
 	if (lineData.size < 2) {
 		return [{ attribs: {}, itemCount: 0 }]
@@ -398,7 +403,7 @@ export function lineToSmouthTriangleStripGeometry(
 					],
 				})
 			}
-		}, 4)
+		}, smouthCount)
 
 		const points: Vec2D[] = []
 		const uvs: Vec2D[] = []

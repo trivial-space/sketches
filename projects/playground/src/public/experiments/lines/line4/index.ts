@@ -104,11 +104,10 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 			)
 			currentLine?.append(point, true)
 
-			const formDatas = lineToSmouthTriangleStripGeometry(
-				currentLine,
+			const formDatas = lineToSmouthTriangleStripGeometry(currentLine, {
 				lineWidth,
-				'DYNAMIC',
-			)
+				storeType: 'DYNAMIC',
+			})
 
 			sketches = formDatas
 				.map((formData, i) => Q.getForm('line' + i).update(formData))

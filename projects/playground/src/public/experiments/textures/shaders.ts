@@ -30,6 +30,8 @@ import {
 	fit1101,
 	fit0111,
 	voronoise2,
+	additive,
+	snoise2,
 } from '@thi.ng/shader-ast-stdlib'
 import { getFragmentGenerator } from '../../../shared-utils/shaders/ast'
 
