@@ -31,6 +31,8 @@ export interface LinePoint {
 export type LineNode<T extends LinePoint = LinePoint> = DoubleLinkedNode<T>
 export type Line<T extends LinePoint = LinePoint> = DoubleLinkedList<T>
 
+// === Line point functions ===
+
 export function newLinePoint(vertex: Vec2D, width?: number): LinePoint {
 	return { direction: [0, 0], length: 0, vertex, width }
 }
@@ -120,18 +122,6 @@ export function smouthenPoint<P extends LinePoint>(
 	}
 }
 
-export function createLine<P extends LinePoint = LinePoint>(
-	opts?: LinkedListOptions<P>,
-): Line<P> {
-	return createDoubleLinkedList<P>([], {
-		onNextUpdated: (n) => {
-			updatePoint(n.val, n.next && n.next.val)
-			opts?.onNextUpdated?.(n)
-		},
-		onPrevUpdated: opts?.onPrevUpdated,
-	})
-}
-
 function getTangent(direction: Vec2D): Vec2D {
 	return [direction[1], -direction[0]]
 }
@@ -183,22 +173,62 @@ export function lineMitterPositions(node: LineNode, thickness?: number) {
 	return linePositions(node.val.vertex, tangent as Vec2D, mitterLenght)
 }
 
-// === FormData helpers ===
-
-export function lineToTriangleStripGeometry(
-	lineData: Line,
+function adjustEdgePoints(
+	newPoints: [Vec2D, Vec2D],
+	prevPoints: [Vec2D, Vec2D],
+	curr: DoubleLinkedNode<LinePoint>,
+	prev: DoubleLinkedNode<LinePoint>,
 	lineWidth?: number,
-	storeType?: FormStoreType,
-): FormData[] {
-	if (lineData.size < 2) {
-		return [{ attribs: {}, itemCount: 0 }]
+) {
+	const width = curr.val.width || lineWidth || 1
+	const c =
+		width /
+		dot(
+			normalize(add(mul(-1, prev.val.direction), curr.val.direction)),
+			curr.val.direction,
+		)
+	const a = Math.sqrt(c * c - width * width)
+	if (a > 0.001) {
+		if (cross2D(curr.val.direction, prev.val.direction) > 0) {
+			add(newPoints[0], mul(-a, curr.val.direction), newPoints[0])
+			add(newPoints[1], mul(a, curr.val.direction), newPoints[1])
+			add(prevPoints[0], mul(a, prev.val.direction), prevPoints[0])
+			add(prevPoints[1], mul(-a, prev.val.direction), prevPoints[1])
+		} else {
+			add(newPoints[0], mul(a, curr.val.direction), newPoints[0])
+			add(newPoints[1], mul(-a, curr.val.direction), newPoints[1])
+			add(prevPoints[0], mul(-a, prev.val.direction), prevPoints[0])
+			add(prevPoints[1], mul(a, prev.val.direction), prevPoints[1])
+		}
 	}
+}
 
-	const lines: Line[] = []
+// === Line functions ===
+
+export function createLine<P extends LinePoint = LinePoint>(
+	opts?: LinkedListOptions<P>,
+): Line<P> {
+	return createDoubleLinkedList<P>([], {
+		onNextUpdated: (n) => {
+			updatePoint(n.val, n.next && n.next.val)
+			opts?.onNextUpdated?.(n)
+		},
+		onPrevUpdated: opts?.onPrevUpdated,
+	})
+}
+
+export function getLineLength(line: Line) {
 	let lineLength = 0
-	let currentLine: Line = createLine()
-	for (const node of lineData.nodes) {
+	for (const node of line.nodes) {
 		lineLength += node.val.length
+	}
+	return lineLength
+}
+
+export function splitLineAtSharpAngle(line: Line) {
+	const lines: Line[] = []
+	let currentLine: Line = createLine()
+	for (const node of line.nodes) {
 		if (isSharpAngle(node)) {
 			currentLine.append({
 				vertex: node.val.vertex,
@@ -212,42 +242,31 @@ export function lineToTriangleStripGeometry(
 		currentLine.append(node.val)
 	}
 	lines.push(currentLine)
-
-	let currentLength = 0
-	let swap = false
-	return lines.map((line) => {
-		swap = !swap
-		let points: Vec2D[] = []
-		let uvs: Vec2D[] = []
-
-		for (const curr of line.nodes) {
-			const uvY = currentLength / lineLength
-			uvs.push([swap ? 0 : 1, uvY], [swap ? 1 : 0, uvY])
-			points.push(...lineMitterPositions(curr, lineWidth))
-
-			if (curr.next) {
-				currentLength += curr.val.length
-			}
-		}
-
-		const data: FormData = {
-			attribs: {
-				position: {
-					buffer: new Float32Array(flatten(points)),
-					storeType,
-				},
-				uv: {
-					buffer: new Float32Array(flatten(uvs)),
-					storeType,
-				},
-			},
-			drawType: 'TRIANGLE_STRIP',
-			itemCount: points.length,
-		}
-
-		return data
-	})
+	return lines
 }
+
+export function smouthenLine(
+	topLine: Line<LineAttributes>,
+	smouthCount: number = 1,
+) {
+	doTimes(() => {
+		for (const node of topLine.nodes) {
+			smouthenPoint(node, {
+				minLength: -1,
+				interPolate: [
+					'currentLength',
+					'direction',
+					'length',
+					'uv',
+					'localUV',
+					'width',
+				],
+			})
+		}
+	}, smouthCount)
+}
+
+// === FormData helpers ===
 
 type LineAttributes = LinePoint & {
 	currentLength: number
@@ -261,38 +280,92 @@ interface SmouthLineOptions {
 	smouthCount?: number
 }
 
-export function lineToSmouthTriangleStripGeometry(
-	lineData: Line,
-	{ lineWidth, storeType = 'STATIC', smouthCount = 4 }: SmouthLineOptions = {},
+export function lineToFormCollection(
+	line: Line,
+	{ lineWidth, storeType = 'STATIC', smouthCount = 0 }: SmouthLineOptions = {},
 ): FormData[] {
-	if (lineData.size < 2) {
+	if (line.size < 2) {
 		return [{ attribs: {}, itemCount: 0 }]
 	}
 
-	const lines: Line[] = []
-	let lineLength = 0
-	let currentLine: Line = createLine()
-	for (const node of lineData.nodes) {
-		lineLength += node.val.length
-		if (isSharpAngle(node)) {
-			currentLine.append({
-				vertex: node.val.vertex,
-				width: node.val.width,
-				direction: node.prev!.val.direction,
-				length: 0,
-			})
-			lines.push(currentLine)
-			currentLine = createLine()
-		}
-		currentLine.append(node.val)
+	const outlines = lineToOutlinesAttributes(line, lineWidth)
+	if (smouthCount) {
+		outlines.map(({ bottomLine, topLine }) => {
+			smouthenLine(topLine, smouthCount)
+			smouthenLine(bottomLine, smouthCount)
+		})
 	}
-	lines.push(currentLine)
+	return outlines.map((outline) => {
+		return lineOutlineToFormData(outline, storeType)
+	})
+}
+
+type LineOutline = {
+	bottomLine: Line<LineAttributes>
+	topLine: Line<LineAttributes>
+}
+
+function lineOutlineToFormData(
+	{ bottomLine, topLine }: LineOutline,
+	storeType: FormStoreType,
+) {
+	const points: Vec2D[] = []
+	const uvs: Vec2D[] = []
+	const localUvs: Vec2D[] = []
+	const lengths: number[] = []
+
+	let top = topLine.first
+	let bottom = bottomLine.first
+
+	while (top && bottom) {
+		points.push(top.val.vertex, bottom.val.vertex)
+		uvs.push(top.val.uv, bottom.val.uv)
+		localUvs.push(top.val.localUV, bottom.val.localUV)
+		lengths.push(top.val.currentLength, bottom.val.currentLength)
+
+		top = top.next
+		bottom = bottom.next
+	}
+
+	const data: FormData = {
+		attribs: {
+			position: {
+				buffer: new Float32Array(flatten(points)),
+				storeType,
+			},
+			uv: {
+				buffer: new Float32Array(flatten(uvs)),
+				storeType,
+			},
+			localUv: {
+				buffer: new Float32Array(flatten(localUvs)),
+				storeType,
+			},
+			length: {
+				buffer: new Float32Array(lengths),
+				storeType,
+			},
+		},
+		drawType: 'TRIANGLE_STRIP',
+		itemCount: points.length,
+	}
+
+	return data
+}
+
+function lineToOutlinesAttributes(
+	line: Line<LinePoint>,
+	lineWidth?: number,
+): LineOutline[] {
+	const lineLength = getLineLength(line)
+	const lineFragments = splitLineAtSharpAngle(line)
 
 	let currentLength = 0
 	let swap = false
 	let prev: DoubleLinkedNode<LinePoint> | null = null
 	let prevPoints: [Vec2D, Vec2D] | null = null
-	const data = lines.map((line) => {
+
+	return lineFragments.map((line) => {
 		swap = !swap
 
 		let currentLocalLength = 0
@@ -374,108 +447,4 @@ export function lineToSmouthTriangleStripGeometry(
 
 		return { bottomLine, topLine }
 	})
-
-	return data.map(({ topLine, bottomLine }) => {
-		doTimes(() => {
-			for (const node of topLine.nodes) {
-				smouthenPoint(node, {
-					minLength: -1,
-					interPolate: [
-						'currentLength',
-						'direction',
-						'length',
-						'uv',
-						'localUV',
-						'width',
-					],
-				})
-			}
-			for (const node of bottomLine.nodes) {
-				smouthenPoint(node, {
-					minLength: -1,
-					interPolate: [
-						'currentLength',
-						'direction',
-						'length',
-						'uv',
-						'localUV',
-						'width',
-					],
-				})
-			}
-		}, smouthCount)
-
-		const points: Vec2D[] = []
-		const uvs: Vec2D[] = []
-		const localUvs: Vec2D[] = []
-		const lengths: number[] = []
-
-		let top = topLine.first
-		let bottom = bottomLine.first
-
-		while (top && bottom) {
-			points.push(top.val.vertex, bottom.val.vertex)
-			uvs.push(top.val.uv, bottom.val.uv)
-			localUvs.push(top.val.localUV, bottom.val.localUV)
-			lengths.push(top.val.currentLength, bottom.val.currentLength)
-
-			top = top.next
-			bottom = bottom.next
-		}
-
-		const data: FormData = {
-			attribs: {
-				position: {
-					buffer: new Float32Array(flatten(points)),
-					storeType,
-				},
-				uv: {
-					buffer: new Float32Array(flatten(uvs)),
-					storeType,
-				},
-				localUv: {
-					buffer: new Float32Array(flatten(localUvs)),
-					storeType,
-				},
-				length: {
-					buffer: new Float32Array(lengths),
-					storeType,
-				},
-			},
-			drawType: 'TRIANGLE_STRIP',
-			itemCount: points.length,
-		}
-
-		return data
-	})
-}
-
-function adjustEdgePoints(
-	newPoints: [Vec2D, Vec2D],
-	prevPoints: [Vec2D, Vec2D],
-	curr: DoubleLinkedNode<LinePoint>,
-	prev: DoubleLinkedNode<LinePoint>,
-	lineWidth?: number,
-) {
-	const width = curr.val.width || lineWidth || 1
-	const c =
-		width /
-		dot(
-			normalize(add(mul(-1, prev.val.direction), curr.val.direction)),
-			curr.val.direction,
-		)
-	const a = Math.sqrt(c * c - width * width)
-	if (a > 0.001) {
-		if (cross2D(curr.val.direction, prev.val.direction) > 0) {
-			add(newPoints[0], mul(-a, curr.val.direction), newPoints[0])
-			add(newPoints[1], mul(a, curr.val.direction), newPoints[1])
-			add(prevPoints[0], mul(a, prev.val.direction), prevPoints[0])
-			add(prevPoints[1], mul(-a, prev.val.direction), prevPoints[1])
-		} else {
-			add(newPoints[0], mul(a, curr.val.direction), newPoints[0])
-			add(newPoints[1], mul(-a, curr.val.direction), newPoints[1])
-			add(prevPoints[0], mul(-a, prev.val.direction), prevPoints[0])
-			add(prevPoints[1], mul(a, prev.val.direction), prevPoints[1])
-		}
-	}
 }

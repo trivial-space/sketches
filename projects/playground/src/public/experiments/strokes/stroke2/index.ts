@@ -4,7 +4,7 @@ import { makeLine } from './state'
 import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
 import {
 	createLine,
-	lineToSmouthTriangleStripGeometry,
+	lineToFormCollection,
 } from '../../../../shared-utils/geometry/lines_2d'
 
 const shade = Q.getShade('line').update({
@@ -67,7 +67,7 @@ function render() {
 		currentLine.append(next.val)
 		next = next.next
 		if (next) currentLine.append(next.val)
-		const data = lineToSmouthTriangleStripGeometry(currentLine, {
+		const data = lineToFormCollection(currentLine, {
 			lineWidth: 0.07,
 			storeType: 'DYNAMIC',
 			smouthCount: 2,

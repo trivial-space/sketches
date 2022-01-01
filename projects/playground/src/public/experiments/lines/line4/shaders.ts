@@ -38,20 +38,25 @@ const vs = getVertexGenerator()
 // varyings
 
 let vUv: Vec2Sym
+let vLength: FloatSym
 
 // Vertex
 
 let aPosition: Vec2Sym
+let aLength: FloatSym
 let aUV: Vec2Sym
 let uSize: Vec2Sym
 export const lineVert = vs(
 	program([
+		(uSize = uniform('vec2', 'uSize')),
 		(aPosition = input('vec2', 'position')),
+		(aLength = input('float', 'length')),
 		(aUV = input('vec2', 'uv')),
 		(vUv = output('vec2', 'vUv')),
-		(uSize = uniform('vec2', 'uSize')),
+		(vLength = output('float', 'vLength')),
 		defMain(() => [
 			assign(vUv, aUV),
+			assign(vLength, aLength),
 			assign(
 				vs.gl_Position,
 				vec4(mul(fit0111(div(aPosition, uSize)), vec2(1, -1)), 0, 1),
@@ -62,16 +67,6 @@ export const lineVert = vs(
 
 // Fragment
 
-// export const lineFrag = fs(
-// 	// prettier-ignore
-// 	program([
-// 		(vUv = input('vec2', 'vUv')),
-// 		defMain(() => [
-// 			assign(fs.gl_FragColor, vec4($x(vUv), $y(vUv), 1, 1)),
-// 		]),
-// 	]),
-// )
-
 let uNoiseTex: Sampler2DSym
 let noise: Vec4Sym
 let noiseVal: FloatSym
@@ -79,9 +74,10 @@ export const lineFrag = fs(
 	program([
 		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
 		(vUv = input('vec2', 'vUv')),
+		(vLength = input('float', 'vLength')),
 		defMain(() => [
-			(noise = sym(texture(uNoiseTex, mul(vUv, vec2(1, 3))))),
-			// noiseVal = sym(($x(noise))),
+			(noise = sym(texture(uNoiseTex, vec2($x(vUv), mul(vLength, 0.0002))))),
+			// (noiseVal = sym($x(noise))),
 			(noiseVal = sym(
 				fit1101(
 					add(

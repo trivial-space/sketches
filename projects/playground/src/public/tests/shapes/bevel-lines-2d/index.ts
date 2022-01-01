@@ -1,7 +1,7 @@
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
 import { strokePatch, strokePatch2 } from './state'
-import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_2d'
+import { lineToFormCollection } from '../../../../shared-utils/geometry/lines_2d'
 
 Q.state.time = 0
 Q.state.device.sizeMultiplier = window.devicePixelRatio
@@ -14,7 +14,7 @@ const shade = Q.getShade('line').update({
 // const linePoints = strokePatch2(20)
 const linePoints = strokePatch(1.5, 1.5, 20)
 
-const data = lineToTriangleStripGeometry(linePoints, 0.05)
+const data = lineToFormCollection(linePoints, { lineWidth: 0.05 })
 
 const forms = data.map((line, i) => Q.getForm('line' + i).update(line))
 

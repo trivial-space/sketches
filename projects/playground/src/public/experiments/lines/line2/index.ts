@@ -2,7 +2,7 @@ import { events, Q } from './context'
 import {
 	createLine,
 	LinePoint,
-	lineToTriangleStripGeometry,
+	lineToFormCollection,
 	newLinePoint,
 	smouthenPoint,
 } from '../../../../shared-utils/geometry/lines_2d'
@@ -20,25 +20,25 @@ Q.state.device.sizeMultiplier = window.devicePixelRatio
 const lineWidth = 40
 
 const opts: LinkedListOptions<LinePoint> = {
-	onNextUpdated(n) {
-		const minWidth = Math.min((n.val.length || 1) * 2, lineWidth)
-		if (n.prev) {
-			const lerpDot = Math.max(0, dot(n.prev.val.direction, n.val.direction))
-			console.log(lerpDot)
-			n.val.width = lerp(
-				lerpDot * lerpDot * lerpDot * lerpDot,
-				minWidth,
-				lineWidth,
-			)
-			// n.val.width = minWidth
-			// n.val.width = lineWidth
-		} else {
-			n.val.width = minWidth
-		}
-	},
+	// onNextUpdated(n) {
+	// 	const minWidth = Math.min((n.val.length || 1) * 2, lineWidth)
+	// 	if (n.prev) {
+	// 		const lerpDot = Math.max(0, dot(n.prev.val.direction, n.val.direction))
+	// 		console.log(lerpDot)
+	// 		n.val.width = lerp(
+	// 			lerpDot * lerpDot * lerpDot * lerpDot,
+	// 			minWidth,
+	// 			lineWidth,
+	// 		)
+	// 		// n.val.width = minWidth
+	// 		// n.val.width = lineWidth
+	// 	} else {
+	// 		n.val.width = minWidth
+	// 	}
+	// },
 }
 
-let currentLine = createLine(opts).append(newLinePoint([0, 0], 1))
+let currentLine = createLine(opts).append(newLinePoint([0, 0], lineWidth))
 
 let sketches: Sketch[] = []
 
@@ -69,22 +69,21 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 				p.pressed[Buttons.LEFT].clientY * m,
 			]
 
-			const point = newLinePoint([startPoint[0], startPoint[1]], 1)
+			const point = newLinePoint([startPoint[0], startPoint[1]], lineWidth)
 
 			currentLine = createLine(opts).append(point)
 		} else {
 			const point = newLinePoint(
 				[startPoint[0] - p.drag.x * m, startPoint[1] - p.drag.y * m],
-				1,
+				lineWidth,
 			)
 			currentLine?.append(point, true)
 			smouthenPoint(currentLine.last?.prev, { depth: 2 })
 
-			const formDatas = lineToTriangleStripGeometry(
-				currentLine,
+			const formDatas = lineToFormCollection(currentLine, {
 				lineWidth,
-				'DYNAMIC',
-			)
+				storeType: 'DYNAMIC',
+			})
 
 			sketches = formDatas
 				.map((formData, i) => Q.getForm('line' + i).update(formData))
