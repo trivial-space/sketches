@@ -313,6 +313,7 @@ function lineOutlineToFormData(
 	const uvs: Vec2D[] = []
 	const localUvs: Vec2D[] = []
 	const lengths: number[] = []
+	const widths: number[] = []
 
 	let top = topLine.first
 	let bottom = bottomLine.first
@@ -322,6 +323,7 @@ function lineOutlineToFormData(
 		uvs.push(top.val.uv, bottom.val.uv)
 		localUvs.push(top.val.localUV, bottom.val.localUV)
 		lengths.push(top.val.currentLength, bottom.val.currentLength)
+		widths.push(top.val.width, bottom.val.width)
 
 		top = top.next
 		bottom = bottom.next
@@ -343,6 +345,10 @@ function lineOutlineToFormData(
 			},
 			length: {
 				buffer: new Float32Array(lengths),
+				storeType,
+			},
+			width: {
+				buffer: new Float32Array(widths),
 				storeType,
 			},
 		},

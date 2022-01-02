@@ -7,9 +7,12 @@ import {
 import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { makeClear } from '../../../../../../painter/dist/utils/context'
 import { Sketch } from 'tvs-painter/dist/sketch'
-import { lineFrag, lineVert } from './shaders'
 import { baseEvents } from '../../../../shared-utils/painterState'
 import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
+import {
+	brushStrokeFrag,
+	brushStrokeVert,
+} from '../../../../shared-utils/shaders/brushStrokeLineShader'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -20,8 +23,8 @@ let currentLine = createLine().append(newLinePoint([0, 0], lineWidth))
 let sketches: Sketch[] = []
 
 const shade = Q.getShade('shade').update({
-	frag: lineFrag,
-	vert: lineVert,
+	frag: brushStrokeFrag,
+	vert: brushStrokeVert,
 })
 
 export const noiseTex = Q.getLayer('noiseTex').update({
@@ -91,8 +94,11 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 			scene.update({
 				sketches,
 				uniforms: {
-					uSize: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+					size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 					noiseTex: noiseTex.image(),
+					color: [0.9, 0.2, 0.7],
+					texScale: [10, 0.1],
+					edgeSharpness: 4,
 				},
 			})
 
@@ -106,4 +112,5 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 Q.listen('index', events.RESIZE, () => {
 	scene.update()
 	Q.painter.compose(scene)
+	Q.painter.show(noiseTex)
 })
