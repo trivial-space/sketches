@@ -1,15 +1,23 @@
 import { events, Q } from './context'
-import { lineFrag, lineVert } from './shaders'
-import { makeLine } from './state'
+import { makeBrushStroke } from './brushStrokes'
 import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
 import {
 	createLine,
+	Line,
 	lineToFormCollection,
 } from '../../../../shared-utils/geometry/lines_2d'
+import {
+	brushStrokeFrag,
+	brushStrokeVert,
+} from '../../../../shared-utils/shaders/brushStrokeLineShader'
+import { subdivideTiles, Tile } from './tiles'
+import { doTimes } from 'tvs-libs/dist/utils/sequence'
+
+const lineWidth = 20
 
 const shade = Q.getShade('line').update({
-	vert: lineVert,
-	frag: lineFrag,
+	frag: brushStrokeFrag,
+	vert: brushStrokeVert,
 })
 
 export const noiseTex = Q.getLayer('noiseTex').update({
@@ -28,23 +36,16 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 
 // === scene ===
 
-export const scene = Q.getLayer('scene').update({
-	drawSettings: {
-		clearColor: [1, 1, 1, 1],
-		clearBits: Q.gl.COLOR_BUFFER_BIT,
-		enable: [
-			Q.gl.BLEND,
-			//
-			Q.gl.CULL_FACE,
-		],
-		cullFace: Q.gl.BACK,
-	},
-	directRender: true,
+Q.painter.updateDrawSettings({
+	clearBits: 0,
+	enable: [Q.gl.BLEND],
 })
+
+export const scene = Q.getLayer('scene')
 Q.gl.blendFuncSeparate(
 	Q.gl.SRC_ALPHA,
 	Q.gl.ONE_MINUS_SRC_ALPHA,
-	Q.gl.ZERO,
+	Q.gl.ONE,
 	Q.gl.ONE,
 )
 
@@ -53,39 +54,69 @@ Q.listen('index', events.RESIZE, () => {
 		uniforms: {
 			noiseTex: noiseTex.image(),
 			size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+			texScale: [20, 1],
+			edgeSharpness: 3,
 		},
+		sketches: [
+			Q.getEffect('').update({
+				frag: 'precision mediump float; void main(void) {gl_FragColor = vec4(1.0);}',
+			}),
+		],
 	})
-	render()
+
+	Q.painter.compose(scene)
+
+	animate()
 })
 
-const line = makeLine(1.2, 0.6, 4)
-const currentLine = createLine()
-let next = line.first
+let tiles: Tile[] = [
+	{
+		color: [1, 1, 1],
+		top: 0,
+		left: 0,
+		width: Q.gl.drawingBufferWidth,
+		height: Q.gl.drawingBufferHeight,
+	},
+]
 
-function render() {
-	if (next) {
-		currentLine.append(next.val)
-		next = next.next
-		if (next) currentLine.append(next.val)
-		const data = lineToFormCollection(currentLine, {
-			lineWidth: 0.07,
-			storeType: 'DYNAMIC',
-			smouthCount: 2,
-		})
+doTimes(() => {
+	tiles = subdivideTiles(tiles, lineWidth)
+}, 7)
 
+const animations = tiles.map((t) => {
+	return createLineAnimation(
+		makeBrushStroke(t.top, t.left, t.width, t.height, lineWidth),
+		t.color,
+	)
+})
+
+function animate() {
+	for (const run of animations) {
+		run()
+	}
+}
+
+function createLineAnimation(line: Line, color: [number, number, number]) {
+	const data = lineToFormCollection(line, {
+		lineWidth,
+		storeType: 'DYNAMIC',
+		smouthCount: 3,
+	})
+
+	function render() {
 		const sketches = data
 			.map((d, i) => Q.getForm('form' + i).update(d))
 			.map((form, i) =>
 				Q.getSketch('line' + i).update({
 					form,
 					shade,
+					uniforms: { color },
 				}),
 			)
 
 		scene.update({ sketches })
-		Q.painter.compose(scene)
-
-		next = next && next.next
-		requestAnimationFrame(render)
+		Q.painter.compose(scene).show(scene)
 	}
+
+	return render
 }
