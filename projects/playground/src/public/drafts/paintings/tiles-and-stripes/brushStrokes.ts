@@ -14,19 +14,20 @@ export function makeBrushStroke(
 	height: number,
 	lineWidth: number,
 ) {
-	const steps = Math.floor(height / (lineWidth * 1.1))
+	const steps = Math.floor(height / (lineWidth * 1.2))
 
-	const stepY = height / steps
-	const start = [left, top]
-	const end = [left + width, top + stepY / 2]
+	const stepY = (height - lineWidth * 1.5) / steps
+
+	const start = [left - lineWidth / 3, top + lineWidth / 1.5]
+	const end = [left + width + lineWidth / 3, top + lineWidth / 1.5 + stepY / 2]
 	const [sX, sY] = start
 	const [eX, eY] = end
 
 	const seedX = Math.random() * 20
 	const seedY = Math.random() * 20
 
-	const deltaX = (i: number) => lineWidth * 0.8 * noise2d(i, seedX)
-	const deltaY = (i: number) => lineWidth * 0.3 * noise2d(i, seedY)
+	const deltaX = (i: number) => lineWidth * 0.7 * noise2d(i, seedX)
+	const deltaY = (i: number) => lineWidth * 0.4 * noise2d(i, seedY)
 
 	const points = flatten(
 		times(
