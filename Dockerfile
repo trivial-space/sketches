@@ -7,7 +7,7 @@ COPY --chown=node:node ./projects/playground/public /home/node/app
 
 WORKDIR /home/node/app
 
-RUN yarn global add serve
+RUN npm i --global serve
 
 USER node
 
