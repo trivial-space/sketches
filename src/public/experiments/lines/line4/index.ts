@@ -46,16 +46,15 @@ const scene = Q.getLayer('scene').update({
 		clearColor: [1, 1, 1, 1],
 		clearBits: makeClear(Q.gl, 'color', 'depth'),
 		enable: [Q.gl.BLEND],
+		blendFuncSeparate: [
+			Q.gl.SRC_ALPHA,
+			Q.gl.ONE_MINUS_SRC_ALPHA,
+			Q.gl.ZERO,
+			Q.gl.ONE,
+		],
 	},
 	directRender: true,
 })
-// TODO: add to drawSettings
-Q.gl.blendFuncSeparate(
-	Q.gl.SRC_ALPHA,
-	Q.gl.ONE_MINUS_SRC_ALPHA,
-	Q.gl.ZERO,
-	Q.gl.ONE,
-)
 
 let dragging = false
 let startPoint: [number, number] = [0, 0]

@@ -38,15 +38,15 @@ export const scene = Q.getLayer('scene').update({
 			Q.gl.CULL_FACE,
 		],
 		cullFace: Q.gl.BACK,
+		blendFuncSeparate: [
+			Q.gl.SRC_ALPHA,
+			Q.gl.ONE_MINUS_SRC_ALPHA,
+			Q.gl.ZERO,
+			Q.gl.ONE,
+		],
 	},
 	directRender: true,
 })
-Q.gl.blendFuncSeparate(
-	Q.gl.SRC_ALPHA,
-	Q.gl.ONE_MINUS_SRC_ALPHA,
-	Q.gl.ZERO,
-	Q.gl.ONE,
-)
 
 Q.listen('index', events.RESIZE, () => {
 	scene.update({

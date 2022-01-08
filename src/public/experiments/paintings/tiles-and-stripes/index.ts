@@ -41,13 +41,16 @@ Q.painter.updateDrawSettings({
 	enable: [Q.gl.BLEND],
 })
 
-export const scene = Q.getLayer('scene')
-Q.gl.blendFuncSeparate(
-	Q.gl.SRC_ALPHA,
-	Q.gl.ONE_MINUS_SRC_ALPHA,
-	Q.gl.ONE,
-	Q.gl.ONE,
-)
+export const scene = Q.getLayer('scene').update({
+	drawSettings: {
+		blendFuncSeparate: [
+			Q.gl.SRC_ALPHA,
+			Q.gl.ONE_MINUS_SRC_ALPHA,
+			Q.gl.ONE,
+			Q.gl.ONE,
+		],
+	},
+})
 
 Q.listen('index', events.RESIZE, () => {
 	scene.update({
