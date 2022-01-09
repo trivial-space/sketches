@@ -1,12 +1,12 @@
 import { Vec } from 'tvs-libs/dist/math/vectors'
 import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
-import { PainterContext } from '../painterState'
+import { PainterContext } from '../../painterState'
 import { DrawSettings, FormData } from 'tvs-painter/dist'
 import { line2DVert, line3DVert, lineFrag } from './lines-shaders'
 import { flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { triangulate } from 'tvs-libs/dist/geometry/quad'
 import { mat4 } from 'gl-matrix'
-import { createPoints2DSketch, createPoints3DSketch } from './points'
+import { createPoints2DSketch, createPoints3DSketch } from '../points/points'
 
 interface LinesData {
 	points?: Vec[]

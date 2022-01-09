@@ -375,7 +375,9 @@ function lineToOutlinesAttributes(
 		swap = !swap
 
 		let currentLocalLength = 0
-		let localLineLength = [...line]
+		const lengthNodes = [...line]
+		lengthNodes.pop()
+		let localLineLength = lengthNodes
 			.map((n) => n.length)
 			.reduce((a, b) => a + b, 0)
 

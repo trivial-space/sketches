@@ -4,7 +4,7 @@ import { nodes, triples } from './nodes'
 import blendFrag from './shaders/compose.frag.glsl'
 import pointFrag from './shaders/point.frag.glsl'
 import sideFrag from './shaders/side.frag.glsl'
-import { createPoints2DSketch } from '../../../shared-utils/sketches/points'
+import { createPoints2DSketch } from '../../../shared-utils/sketches/points/points'
 
 const { gl } = Q
 

@@ -1,7 +1,7 @@
 import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
 import { repeat, stop } from '../../../../shared-utils/scheduler'
-import { createLines2DSketch } from '../../../../shared-utils/sketches/lines'
-import { createPoints2DSketch } from '../../../../shared-utils/sketches/points'
+import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
+import { createPoints2DSketch } from '../../../../shared-utils/sketches/points/points'
 import { Q } from './context'
 import { connections, nameSpaceCount, nodes, updateNodes } from './nodes'
 

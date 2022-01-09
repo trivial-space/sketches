@@ -1,4 +1,4 @@
-import { createPoints3DSketch } from '../../../../shared-utils/sketches/points'
+import { createPoints3DSketch } from '../../../../shared-utils/sketches/points/points'
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { mat4 } from 'gl-matrix'
 import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'

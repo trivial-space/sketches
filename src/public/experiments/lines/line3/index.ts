@@ -5,7 +5,7 @@ import {
 	smouthenPoint,
 } from '../../../../shared-utils/geometry/lines_2d'
 import { Buttons } from 'tvs-libs/dist/events/pointer'
-import { createLines2DSketch } from '../../../../shared-utils/sketches/lines'
+import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { once } from '../../../../shared-utils/scheduler'
 import { baseEvents } from '../../../../shared-utils/painterState'

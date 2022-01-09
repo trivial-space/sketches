@@ -65,8 +65,8 @@ let next = line.first
 function render() {
 	if (next) {
 		currentLine.append(next.val)
-		next = next.next
-		if (next) currentLine.append(next.val)
+		// next = next.next
+		// if (next) currentLine.append(next.val)
 		const data = lineToFormCollection(currentLine, {
 			lineWidth: 0.07,
 			storeType: 'DYNAMIC',

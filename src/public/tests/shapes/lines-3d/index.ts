@@ -5,7 +5,7 @@ import { Q } from './context'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { addToLoop, startLoop } from '../../../../shared-utils/frameLoop'
 import { baseEvents } from '../../../../shared-utils/painterState'
-import { createLines3DSketch } from '../../../../shared-utils/sketches/lines'
+import { createLines3DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { defined } from 'tvs-libs/dist/types'
 
 initPerspectiveViewport(Q, {

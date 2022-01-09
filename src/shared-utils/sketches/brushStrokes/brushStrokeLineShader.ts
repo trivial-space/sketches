@@ -32,14 +32,14 @@ import {
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 import { Texture } from 'tvs-painter/dist/texture'
-import { getFragmentGenerator, getVertexGenerator } from './ast'
+import { getFragmentGenerator, getVertexGenerator } from '../../shaders/ast'
 
 export interface BrushStrokeUniforms {
 	size: [number, number]
 	noiseTex: Texture
 	color: [number, number, number]
 	texScale: [number, number]
-	edgeSharpness: 4
+	edgeSharpness: number
 }
 
 const fs = getFragmentGenerator('precision highp float;')

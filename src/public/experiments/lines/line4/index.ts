@@ -12,7 +12,7 @@ import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
 import {
 	brushStrokeFrag,
 	brushStrokeVert,
-} from '../../../../shared-utils/shaders/brushStrokeLineShader'
+} from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

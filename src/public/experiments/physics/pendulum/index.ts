@@ -2,8 +2,8 @@ import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspective
 import { Q } from './context'
 import { addToLoop, startLoop } from '../../../../shared-utils/frameLoop'
 import { baseEvents } from '../../../../shared-utils/painterState'
-import { createLines3DSketch } from '../../../../shared-utils/sketches/lines'
-import { createPoints3DSketch } from '../../../../shared-utils/sketches/points'
+import { createLines3DSketch } from '../../../../shared-utils/sketches/lines/lines'
+import { createPoints3DSketch } from '../../../../shared-utils/sketches/points/points'
 import { createMirrorScene } from '../../../../shared-utils/vr/mirror-scene'
 import { anchor, p1, p2, p3, update } from './physics'
 

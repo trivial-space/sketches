@@ -1,5 +1,5 @@
 import { events, Q } from './context'
-import { makeBrushStroke } from './brushStrokes'
+import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
 import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
 import {
 	createLine,
@@ -9,7 +9,7 @@ import {
 import {
 	brushStrokeFrag,
 	brushStrokeVert,
-} from '../../../../shared-utils/shaders/brushStrokeLineShader'
+} from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
 import { subdivideTiles, Tile } from './tiles'
 import { doTimes } from 'tvs-libs/dist/utils/sequence'
 
@@ -36,17 +36,14 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 
 // === scene ===
 
-Q.painter.updateDrawSettings({
-	clearBits: 0,
-	enable: [Q.gl.BLEND],
-})
-
 export const scene = Q.getLayer('scene').update({
 	drawSettings: {
+		clearBits: 0,
+		enable: [Q.gl.BLEND],
 		blendFuncSeparate: [
 			Q.gl.SRC_ALPHA,
 			Q.gl.ONE_MINUS_SRC_ALPHA,
-			Q.gl.ONE,
+			Q.gl.SRC_ALPHA,
 			Q.gl.ONE,
 		],
 	},
@@ -88,7 +85,17 @@ doTimes(() => {
 
 const animations = tiles.map((t) => {
 	return createLineAnimation(
-		makeBrushStroke(t.top, t.left, t.width, t.height, lineWidth),
+		makeBrushStroke({
+			left: t.left - lineWidth / 3,
+			top: t.top + lineWidth / 1.5,
+			width: t.width + lineWidth / 3,
+			height: t.height - lineWidth * 1.5,
+			offsetX: lineWidth * 0.7,
+			offsetY: lineWidth * 0.4,
+			steps: Math.floor(t.height / (lineWidth * 1.2)),
+			curveHeight: lineWidth,
+			heightFactorFunction: (n) => n * 1.5 - 0.6,
+		}),
 		t.color,
 	)
 })

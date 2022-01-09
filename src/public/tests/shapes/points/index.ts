@@ -1,5 +1,5 @@
 import { getPainterContext } from '../../../../shared-utils/painterState'
-import { createPoints2DSketch } from '../../../../shared-utils/sketches/points'
+import { createPoints2DSketch } from '../../../../shared-utils/sketches/points/points'
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { addToLoop, startLoop } from '../../../../shared-utils/frameLoop'

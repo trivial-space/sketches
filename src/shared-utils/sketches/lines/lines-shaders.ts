@@ -30,7 +30,7 @@ import {
 	Vec4Sym,
 } from '@thi.ng/shader-ast'
 import { fit0111 } from '@thi.ng/shader-ast-stdlib'
-import { getFragmentGenerator, getVertexGenerator } from '../shaders/ast'
+import { getFragmentGenerator, getVertexGenerator } from '../../shaders/ast'
 
 const vs = getVertexGenerator()
 const fs = getFragmentGenerator()
