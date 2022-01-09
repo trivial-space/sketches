@@ -14,7 +14,7 @@ const shade = Q.getShade('line').update({
 // const linePoints = strokePatch2(20)
 const linePoints = strokePatch(1.5, 1.5, 20)
 
-const data = lineToFormCollection(linePoints, { lineWidth: 0.05 })
+const data = lineToFormCollection(linePoints, { lineWidth: 0.05 })[0]
 
 const forms = data.map((line, i) => Q.getForm('line' + i).update(line))
 

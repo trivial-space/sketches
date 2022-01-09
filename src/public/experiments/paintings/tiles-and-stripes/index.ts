@@ -13,7 +13,7 @@ import {
 import { subdivideTiles, Tile } from './tiles'
 import { doTimes } from 'tvs-libs/dist/utils/sequence'
 
-const lineWidth = 20
+const lineWidth = Q.state.device.canvas.height / 32
 
 const shade = Q.getShade('line').update({
 	frag: brushStrokeFrag,
@@ -111,7 +111,7 @@ function createLineAnimation(line: Line, color: [number, number, number]) {
 		lineWidth,
 		storeType: 'DYNAMIC',
 		smouthCount: 3,
-	})
+	})[0]
 
 	function render() {
 		const sketches = data

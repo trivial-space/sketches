@@ -17,7 +17,7 @@ const linePoints = strokePatch(1.5, 1.5, 20)
 const data = lineToFormCollection(linePoints, {
 	lineWidth: 0.05,
 	smouthCount: 4,
-})
+})[0]
 
 const forms = data.map((line, i) => Q.getForm('line' + i).update(line))
 

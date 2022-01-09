@@ -266,6 +266,38 @@ export function smouthenLine(
 	}, smouthCount)
 }
 
+export function splitAfterLength(
+	lines: Line<LineAttributes>[],
+	length: number,
+): Line<LineAttributes>[][] {
+	const result: Line<LineAttributes>[][] = []
+
+	let currentLength = 0
+	let currentLines: Line<LineAttributes>[] = []
+	result.push(currentLines)
+
+	for (const line of lines) {
+		let currentLine: Line<LineAttributes> = createLine()
+		currentLines.push(currentLine)
+
+		for (const val of line) {
+			currentLength += val.length
+
+			if (currentLine.size > 1 && currentLength >= length) {
+				currentLine.append(val)
+
+				currentLength = 0
+				currentLine = createLine()
+				currentLines = [currentLine]
+				result.push(currentLines)
+			}
+			currentLine.append(val)
+		}
+	}
+
+	return result
+}
+
 // === FormData helpers ===
 
 type LineAttributes = LinePoint & {
@@ -278,26 +310,39 @@ interface SmouthLineOptions {
 	lineWidth?: number
 	storeType?: FormStoreType
 	smouthCount?: number
+	splitAfterLength?: number
 }
 
 export function lineToFormCollection(
 	line: Line,
-	{ lineWidth, storeType = 'STATIC', smouthCount = 0 }: SmouthLineOptions = {},
-): FormData[] {
+	{
+		lineWidth,
+		storeType = 'STATIC',
+		smouthCount = 0,
+		splitAfterLength,
+	}: SmouthLineOptions = {},
+): FormData[][] {
 	if (line.size < 2) {
-		return [{ attribs: {}, itemCount: 0 }]
+		return [[{ attribs: {}, itemCount: 0 }]]
 	}
 
 	const outlines = lineToOutlinesAttributes(line, lineWidth)
+
 	if (smouthCount) {
-		outlines.map(({ bottomLine, topLine }) => {
+		outlines.forEach(({ bottomLine, topLine }) => {
 			smouthenLine(topLine, smouthCount)
 			smouthenLine(bottomLine, smouthCount)
 		})
 	}
-	return outlines.map((outline) => {
-		return lineOutlineToFormData(outline, storeType)
-	})
+
+	const splitOutlines = splitAfterLength
+		? splitOutlineAfterLength(outlines, splitAfterLength)
+		: [outlines]
+	return splitOutlines.map((outlines) =>
+		outlines.map((outline) => {
+			return lineOutlineToFormData(outline, storeType)
+		}),
+	)
 }
 
 type LineOutline = {
@@ -455,4 +500,32 @@ function lineToOutlinesAttributes(
 
 		return { bottomLine, topLine }
 	})
+}
+
+function splitOutlineAfterLength(
+	outlines: LineOutline[],
+	length: number,
+): LineOutline[][] {
+	const tops: Line<LineAttributes>[] = []
+	const bottoms: Line<LineAttributes>[] = []
+	for (const outline of outlines) {
+		tops.push(outline.topLine)
+		bottoms.push(outline.bottomLine)
+	}
+	const splitTops = splitAfterLength(tops, length)
+	const splitBottoms = splitAfterLength(bottoms, length)
+
+	const result: LineOutline[][] = []
+	splitTops.forEach((partTop, i) => {
+		const partBottom = splitBottoms[i]
+		result.push(
+			zip(
+				(topLine, bottomLine) => ({ bottomLine, topLine }),
+				partTop,
+				partBottom,
+			),
+		)
+	})
+
+	return result
 }

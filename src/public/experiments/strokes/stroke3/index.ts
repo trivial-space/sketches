@@ -82,32 +82,21 @@ Q.listen('index', events.RESIZE, () => {
 		offsetX: left / 2,
 		offsetY: top / 4,
 	})
-	const currentLine = createLine()
-	let next = line.first
-	if (next) {
-		currentLine.append(next.val)
-		next = next.next
-	}
-	if (next) {
-		currentLine.append(next.val)
-		next = next.next
-	}
+
+	const data = lineToFormCollection(line, {
+		lineWidth: 50,
+		storeType: 'DYNAMIC',
+		smouthCount: 2,
+		splitAfterLength: 400,
+	})
+
+	let i = 0
+	let max = data.length
+	console.log(max)
 
 	function render() {
-		console.log('render', next)
-		if (next) {
-			currentLine.append(next.val)
-			// next = next.next
-			// if (next) currentLine.append(next.val)
-			const data = lineToFormCollection(currentLine, {
-				lineWidth: 50,
-				storeType: 'DYNAMIC',
-				smouthCount: 2,
-			})
-
-			console.log(data)
-
-			const sketches = data
+		if (i < max) {
+			const sketches = data[i]
 				.map((d, i) => Q.getForm('form' + i).update(d))
 				.map((form, i) =>
 					Q.getSketch('line' + i).update({
@@ -119,10 +108,8 @@ Q.listen('index', events.RESIZE, () => {
 			scene.update({ sketches })
 			Q.painter.compose(scene).show(scene)
 
-			next = next && next.next
-			currentLine.drop(1)
+			i++
 			requestAnimationFrame(render)
-			// render()
 		}
 	}
 

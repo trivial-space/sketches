@@ -71,7 +71,7 @@ function render() {
 			lineWidth: 0.07,
 			storeType: 'DYNAMIC',
 			smouthCount: 2,
-		})
+		})[0]
 
 		const sketches = data
 			.map((d, i) => Q.getForm('form' + i).update(d))
