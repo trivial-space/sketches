@@ -278,20 +278,23 @@ export function splitAfterLength(
 
 	for (const line of lines) {
 		let currentLine: Line<LineAttributes> = createLine()
-		currentLines.push(currentLine)
-
 		for (const val of line) {
 			currentLength += val.length
 
 			if (currentLine.size > 1 && currentLength >= length) {
 				currentLine.append(val)
+				currentLines.push(currentLine)
 
 				currentLength = 0
 				currentLine = createLine()
-				currentLines = [currentLine]
+				currentLines = []
 				result.push(currentLines)
 			}
 			currentLine.append(val)
+		}
+
+		if (currentLine.size > 1) {
+			currentLines.push(currentLine)
 		}
 	}
 
@@ -319,11 +322,10 @@ export function lineToFormCollection(
 		lineWidth,
 		storeType = 'STATIC',
 		smouthCount = 0,
-		splitAfterLength,
-	}: SmouthLineOptions = {},
-): FormData[][] {
+	}: Omit<SmouthLineOptions, 'splitAfterLength'> = {},
+): FormData[] {
 	if (line.size < 2) {
-		return [[{ attribs: {}, itemCount: 0 }]]
+		return [{ attribs: {}, itemCount: 0 }]
 	}
 
 	const outlines = lineToOutlinesAttributes(line, lineWidth)
@@ -335,9 +337,39 @@ export function lineToFormCollection(
 		})
 	}
 
+	return outlines.map((outline) => {
+		return lineOutlineToFormData(outline, storeType)
+	})
+}
+
+export function lineToAnimatedFormCollection(
+	line: Line,
+	{
+		lineWidth,
+		storeType = 'STATIC',
+		smouthCount = 0,
+		splitAfterLength,
+	}: SmouthLineOptions = {},
+): FormData[][] {
+	if (line.size < 2) {
+		return [[{ attribs: {}, itemCount: 0 }]]
+	}
+
+	const outlines = lineToOutlinesAttributes(line, lineWidth)
+
 	const splitOutlines = splitAfterLength
 		? splitOutlineAfterLength(outlines, splitAfterLength)
 		: [outlines]
+
+	if (smouthCount) {
+		splitOutlines.forEach((outlines) =>
+			outlines.forEach(({ bottomLine, topLine }) => {
+				smouthenLine(topLine, smouthCount)
+				smouthenLine(bottomLine, smouthCount)
+			}),
+		)
+	}
+
 	return splitOutlines.map((outlines) =>
 		outlines.map((outline) => {
 			return lineOutlineToFormData(outline, storeType)

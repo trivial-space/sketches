@@ -84,7 +84,7 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 				lineWidth,
 				smouthCount: 3,
 				storeType: 'DYNAMIC',
-			})[0]
+			})
 
 			sketches = formDatas
 				.map((formData, i) => Q.getForm('line' + i).update(formData))

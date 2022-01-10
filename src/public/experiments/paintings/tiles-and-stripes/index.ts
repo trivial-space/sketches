@@ -111,7 +111,7 @@ function createLineAnimation(line: Line, color: [number, number, number]) {
 		lineWidth,
 		storeType: 'DYNAMIC',
 		smouthCount: 3,
-	})[0]
+	})
 
 	function render() {
 		const sketches = data

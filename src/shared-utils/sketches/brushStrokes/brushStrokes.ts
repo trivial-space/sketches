@@ -14,6 +14,7 @@ interface BrushStrokeOptions {
 	offsetY: number
 	curveHeight: number
 	heightFactorFunction?: (n: number) => number
+	strokePointCount?: number
 }
 
 export function makeBrushStroke({
@@ -26,6 +27,7 @@ export function makeBrushStroke({
 	offsetX,
 	curveHeight,
 	heightFactorFunction = (n) => n,
+	strokePointCount = 10,
 }: BrushStrokeOptions) {
 	const stepY = height / steps
 
@@ -49,6 +51,7 @@ export function makeBrushStroke({
 					false,
 					curveHeight,
 					heightFactorFunction,
+					strokePointCount,
 				),
 				makeCurve(
 					[eX + deltaX(i + steps), eY + stepY * i + deltaY(i + steps)],
@@ -56,6 +59,7 @@ export function makeBrushStroke({
 					true,
 					curveHeight,
 					heightFactorFunction,
+					strokePointCount,
 				),
 			],
 			steps,
@@ -71,6 +75,7 @@ export function makeBrushStroke({
 				false,
 				curveHeight,
 				heightFactorFunction,
+				strokePointCount,
 			),
 		])
 		.flat()
@@ -90,6 +95,7 @@ function makeCurve(
 	reverse = false,
 	maxHeight: number,
 	heightFactorFunction: (n: number) => number,
+	pointCount: number,
 ) {
 	const line = sub(p2, p1)
 	const t = normalize(reverse ? [-line[1], line[0]] : [line[1], -line[0]])
@@ -97,5 +103,6 @@ function makeCurve(
 		mul(heightFactorFunction(Math.random()) * maxHeight, t),
 		add(p1, mul(0.5, line)),
 	)
-	return range(0.1, 1, 0.1).map((t) => bezierCurve3P(p1, p3, p2, t))
+	const step = 1 / pointCount
+	return range(step, 1, step).map((t) => bezierCurve3P(p1, p3, p2, t))
 }

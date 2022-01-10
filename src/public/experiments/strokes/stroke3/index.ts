@@ -1,9 +1,6 @@
 import { events, Q } from './context'
 import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
-import {
-	createLine,
-	lineToFormCollection,
-} from '../../../../shared-utils/geometry/lines_2d'
+import { lineToAnimatedFormCollection } from '../../../../shared-utils/geometry/lines_2d'
 import {
 	brushStrokeFrag,
 	BrushStrokeUniforms,
@@ -56,7 +53,7 @@ Q.listen('index', events.RESIZE, () => {
 			size: [screenWidth, screenHeight],
 			color: [0.1, 0.5, 0.3],
 			edgeSharpness: 5,
-			texScale: [10, 0.1],
+			texScale: [8, 0.1],
 		} as BrushStrokeUniforms,
 		sketches: [
 			Q.getEffect('').update({
@@ -79,15 +76,16 @@ Q.listen('index', events.RESIZE, () => {
 		top,
 		steps: 4,
 		curveHeight: 200,
-		offsetX: left / 2,
+		offsetX: left,
 		offsetY: top / 4,
+		strokePointCount: 30,
 	})
 
-	const data = lineToFormCollection(line, {
+	const data = lineToAnimatedFormCollection(line, {
 		lineWidth: 50,
 		storeType: 'DYNAMIC',
-		smouthCount: 2,
-		splitAfterLength: 400,
+		smouthCount: 0,
+		splitAfterLength: 10,
 	})
 
 	let i = 0

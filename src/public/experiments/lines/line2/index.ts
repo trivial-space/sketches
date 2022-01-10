@@ -83,7 +83,7 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 			const formDatas = lineToFormCollection(currentLine, {
 				lineWidth,
 				storeType: 'DYNAMIC',
-			})[0]
+			})
 
 			sketches = formDatas
 				.map((formData, i) => Q.getForm('line' + i).update(formData))
