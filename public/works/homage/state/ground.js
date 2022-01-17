@@ -1,0 +1,12 @@
+import {mat4} from "../../../_snowpack/pkg/gl-matrix.js";
+import * as geo from "../../../_snowpack/link/projects/libs/dist/math/geometry.js";
+export const position = [0, -3.6, 0];
+const normal = [0, 1, 0];
+const scale = 1e3;
+export const transform = mat4.create();
+export const groundMirrorView = mat4.create();
+mat4.fromTranslation(transform, position);
+mat4.rotateX(transform, transform, Math.PI / 2);
+mat4.scale(transform, transform, [scale, scale, scale]);
+export const planeEquation = geo.planeFromNormalAndCoplanarPoint(normal, position);
+export const mirrorMatrix = geo.mirrorMatrixFromPlane(planeEquation);
