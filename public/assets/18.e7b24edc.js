@@ -1,0 +1,1 @@
+import"./modulepreload-polyfill.b7f2da20.js";const o={};function l(){console.log("fn1, module1",o.url)}function n(){console.log("fn2, module2",o.url)}console.log("loading module2 ff");l();n();console.log("index",o.url);

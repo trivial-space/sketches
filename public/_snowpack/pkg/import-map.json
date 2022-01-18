@@ -1,9 +1,0 @@
-{
-  "imports": {
-    "@thi.ng/shader-ast": "./@thi.ng/shader-ast.js",
-    "@thi.ng/shader-ast-glsl": "./@thi.ng/shader-ast-glsl.js",
-    "@thi.ng/shader-ast-stdlib": "./@thi.ng/shader-ast-stdlib.js",
-    "geo-3d-box": "./geo-3d-box.js",
-    "gl-matrix": "./gl-matrix.js"
-  }
-}
