@@ -8,10 +8,10 @@ COPY --chown=node:node . /home/node/app
 
 WORKDIR /home/node/app
 
-RUN run npm i && npm run build
-RUN npm i --global serve
-
 USER node
+
+RUN npm i && npm run build
+RUN npm i --global serve
 
 WORKDIR /home/node/app/public
 
