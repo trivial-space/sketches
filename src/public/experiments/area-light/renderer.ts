@@ -6,6 +6,7 @@ import frag from './shaders/geo-frag.glsl'
 import vert from './shaders/geo-vert.glsl'
 import lightFrag from './shaders/light-frag.glsl'
 import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
+import imgSrc from './tree.jpg'
 
 const { state: s, gl } = Q
 
@@ -41,7 +42,7 @@ img.onload = () => {
 		},
 	})
 }
-img.src = 'tree.jpg'
+img.src = imgSrc
 
 // Sketches
 
