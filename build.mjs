@@ -9,8 +9,6 @@ import { glslify } from 'vite-plugin-glslify'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-console.log(glslify)
-
 async function makeBuild() {
 	const publicSrcDir = resolve(__dirname, 'src', 'public')
 
