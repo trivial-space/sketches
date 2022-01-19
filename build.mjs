@@ -22,6 +22,7 @@ async function makeBuild() {
 		root: publicSrcDir,
 		plugins: [glslify()],
 		build: {
+			assetsDir: '__assets',
 			rollupOptions: {
 				input: apps.reduce((entries, entry, i) => {
 					entries[i] = resolve(publicSrcDir, entry)
