@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "node dev-server.js",
-    "build": "tsc && rm -rf ./public && vite build",
+    "build": "tsc && rm -rf ./public && rm -rf ./dist && node build.mjs",
     "start": "cd public && serve",
     "deploy": "git push dokku master",
     "test:types": "tsc --noEmit",
