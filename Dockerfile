@@ -3,6 +3,8 @@ FROM node:16-alpine
 ENV NODE_ENV production
 ENV PORT 5000
 
+RUN npm run build
+
 COPY --chown=node:node ./public /home/node/app
 
 WORKDIR /home/node/app
