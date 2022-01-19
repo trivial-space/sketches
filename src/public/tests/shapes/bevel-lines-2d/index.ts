@@ -40,4 +40,6 @@ Q.listen('index', events.RESIZE, () => {
 	console.log(scene._targets[0].width, Q.gl.drawingBufferWidth)
 })
 
-// import.meta.hot?.accept()
+// if (import.meta.hot) {
+// 	import.meta.hot.accept()
+// }

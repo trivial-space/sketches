@@ -47,4 +47,6 @@ repeat((tpf) => {
 	if (time >= timeToSort * 1000) stop('render')
 }, 'render')
 
-import.meta.hot?.accept()
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

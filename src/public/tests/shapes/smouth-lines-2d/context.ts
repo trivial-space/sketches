@@ -18,4 +18,6 @@ export const events = {
 	...baseEvents,
 }
 
-// import.meta.hot?.accept()
+// if (import.meta.hot) {
+// 	import.meta.hot.accept()
+// }

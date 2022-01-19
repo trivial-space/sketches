@@ -11,4 +11,6 @@ repeat((tpf) => {
 	Q.painter.draw({ effects: light })
 }, 'loop')
 
-import.meta.hot?.accept()
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

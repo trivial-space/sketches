@@ -10,4 +10,6 @@ repeat((tpf) => {
 	Q.painter.compose(scene)
 }, 'loop')
 
-import.meta.hot?.accept()
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

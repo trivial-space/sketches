@@ -12,4 +12,6 @@ repeat((tpf) => {
 	Q.emit(events.CLEANUP_PAINT)
 }, 'loop')
 
-import.meta.hot?.accept()
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

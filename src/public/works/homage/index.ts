@@ -33,4 +33,6 @@ videos.then((vs) => {
 	startLoop()
 })
 
-import.meta.hot?.accept()
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

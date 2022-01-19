@@ -164,6 +164,9 @@ function slow(part: number) {
 }
 
 // ===== basic properties =====
+function getImageUrl(name: string) {
+	return new URL(`../img/${name}.jpg`, import.meta.url).href
+}
 
 Q.listen('tiles', events.INIT, ({ tiles: t }) => {
 	t.images = {}
@@ -174,7 +177,7 @@ Q.listen('tiles', events.INIT, ({ tiles: t }) => {
 					new Promise((res) => {
 						const img = new Image()
 						img.onload = res
-						img.src = 'img/' + specs[key].file + '.jpg'
+						img.src = getImageUrl(specs[key].file)
 						t.images[key] = img
 					}),
 				t.set,

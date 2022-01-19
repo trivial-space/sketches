@@ -5,4 +5,6 @@ obj.incJ()
 console.log('loading index')
 console.log('i', obj.i, 'j', obj.j, 'k', obj.k)
 
-import.meta.hot?.accept()
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

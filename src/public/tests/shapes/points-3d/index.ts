@@ -59,4 +59,6 @@ Q.listen('', baseEvents.RESIZE, (s) => points.update())
 
 startLoop()
 
-import.meta.hot?.accept()
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

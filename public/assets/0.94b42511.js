@@ -24,4 +24,4 @@ void main() {
 	vColor = color;
 	gl_Position = projection * view * transform * vec4(position, 1.0);
 }
-`;console.log("frag",p);console.log("vert",l);B(o);const _=o.getShade("base").update({vert:l,frag:p}),k=o.getSketch("quad").update({form:P,shade:_,uniforms:{transform:()=>o.state.entities.quad.transform}}),I=o.getLayer("scene").update({sketches:[k],uniforms:{view:()=>o.state.viewPort.camera.viewMat,projection:()=>o.state.viewPort.camera.projectionMat},drawSettings:{clearBits:o.gl.DEPTH_BUFFER_BIT|o.gl.COLOR_BUFFER_BIT},directRender:!0});w(t=>{o.state.device.tpf=t,o.emit(m.FRAME),o.painter.compose(I)},"loop");(!1).accept();
+`;console.log("frag",p);console.log("vert",l);B(o);const _=o.getShade("base").update({vert:l,frag:p}),k=o.getSketch("quad").update({form:P,shade:_,uniforms:{transform:()=>o.state.entities.quad.transform}}),I=o.getLayer("scene").update({sketches:[k],uniforms:{view:()=>o.state.viewPort.camera.viewMat,projection:()=>o.state.viewPort.camera.projectionMat},drawSettings:{clearBits:o.gl.DEPTH_BUFFER_BIT|o.gl.COLOR_BUFFER_BIT},directRender:!0});w(t=>{o.state.device.tpf=t,o.emit(m.FRAME),o.painter.compose(I)},"loop");

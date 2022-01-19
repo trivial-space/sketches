@@ -97,4 +97,6 @@ Q.listen('index', events.RESIZE, () => {
 	Q.painter.compose(scene)
 })
 
-import.meta.hot?.accept()
+if (import.meta.hot) {
+	import.meta.hot.accept()
+}

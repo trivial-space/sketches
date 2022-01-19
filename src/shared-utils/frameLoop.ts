@@ -92,7 +92,9 @@ export function removeKeyboardLoopToggle() {
 
 initKeyboardLoopToggle()
 
-import.meta.hot?.dispose(() => {
-	removeKeyboardLoopToggle()
-	stopLoop()
-})
+if (import.meta.hot) {
+	import.meta.hot.dispose(() => {
+		removeKeyboardLoopToggle()
+		stopLoop()
+	})
+}
