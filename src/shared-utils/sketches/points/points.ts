@@ -104,7 +104,7 @@ function createPointsForm({ positions = [], ...data }: PointsData) {
 	}
 
 	if (data.colors) {
-		formData.attribs.color = {
+		formData.attribs!.color = {
 			buffer: new Float32Array(flatten(data.colors)),
 			storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',
 		}

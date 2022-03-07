@@ -77,7 +77,7 @@ function createLinesForm({ segments, points = [], ...data }: LinesData) {
 	}
 
 	if (data.colors) {
-		formData.attribs.color = {
+		formData.attribs!.color = {
 			buffer: new Float32Array(
 				flatten(
 					segments
@@ -95,7 +95,7 @@ function createLinesForm({ segments, points = [], ...data }: LinesData) {
 		}
 	} else {
 		const c = [0, 0, 0, 0]
-		formData.attribs.color = {
+		formData.attribs!.color = {
 			buffer: new Float32Array(
 				flatten(
 					segments

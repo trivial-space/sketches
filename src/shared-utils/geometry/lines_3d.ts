@@ -317,14 +317,14 @@ export function lineToTriangleStripGeometry(
 	}
 
 	if (withNormals) {
-		data.attribs.normal = {
+		data.attribs!.normal = {
 			buffer: new Float32Array(flatten(normals)),
 			storeType,
 		}
 	}
 
 	if (withUVs) {
-		data.attribs.uv = {
+		data.attribs!.uv = {
 			buffer: new Float32Array(flatten(uvs)),
 			storeType,
 		}
