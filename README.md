@@ -39,9 +39,9 @@ main places where progress and updates can be observed.
 To install the playground locally and play with the sketches and technologies,
 clone this repository, and run
 
-    yarn git-init
-    yarn install
-    yarn start
+    npm run git-init
+    npm run install
+    npm run start
 
 The drafts within a (hopefully) working live coding environment will be
 available at `localhost:8080`.
