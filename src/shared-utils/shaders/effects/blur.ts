@@ -1,6 +1,6 @@
 import { LayerData } from 'tvs-painter'
 import { Layer } from 'tvs-painter/dist/layer'
-import { PainterContext } from '../../painterState'
+import { PainterContext } from 'tvs-utils/dist/app/painterState'
 import frag from './blur_with_alpha.glsl'
 
 interface BlurOpts {

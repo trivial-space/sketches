@@ -7,8 +7,8 @@ import {
 import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { once } from '../../../../shared-utils/scheduler'
-import { baseEvents } from '../../../../shared-utils/painterState'
+import { once } from 'tvs-utils/src/app/scheduler'
+import { baseEvents } from 'tvs-utils/dist/app/painterState'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

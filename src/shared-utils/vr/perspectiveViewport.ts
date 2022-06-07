@@ -1,4 +1,8 @@
-import { BaseState, baseEvents, PainterContext } from '../painterState'
+import {
+	BaseState,
+	PainterContext,
+	baseEvents,
+} from 'tvs-utils/dist/app/painterState'
 import {
 	PerspectiveCamera,
 	WithInputNavigation,

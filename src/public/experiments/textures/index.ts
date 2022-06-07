@@ -1,5 +1,5 @@
 import { events, Q } from './context'
-import { repeat } from '../../../shared-utils/scheduler'
+import { repeat } from 'tvs-utils/src/app/scheduler'
 import { scene, noiseTex2, lineTex, noiseLayer } from './renderer'
 
 repeat((tpf) => {

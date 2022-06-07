@@ -1,4 +1,4 @@
-import { baseEvents, PainterContext } from './painterState'
+import { baseEvents, PainterContext } from 'tvs-utils/dist/app/painterState'
 
 export const linear = (step: number) => step
 

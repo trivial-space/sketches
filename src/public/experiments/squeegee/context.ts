@@ -1,7 +1,4 @@
-import {
-	baseEvents,
-	getPainterContext,
-} from '../../../shared-utils/painterState'
+import { getPainterContext, baseEvents } from 'tvs-utils/dist/app/painterState'
 import { PerspectiveViewportState } from '../../../shared-utils/vr/perspectiveViewport'
 import { Squeegee } from './state'
 

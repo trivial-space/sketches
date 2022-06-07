@@ -1,8 +1,8 @@
 import {
-	baseEvents,
 	BaseState,
 	getPainterContext,
-} from '../../../shared-utils/painterState'
+	baseEvents,
+} from 'tvs-utils/dist/app/painterState'
 import { Tiles } from './state/tiles'
 import { ViewPort } from './viewport'
 

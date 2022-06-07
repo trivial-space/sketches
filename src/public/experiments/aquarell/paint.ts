@@ -1,4 +1,4 @@
-import { events, paint, State, Q } from './context'
+import { events, paint, Q } from './context'
 
 const ctx = paint.getContext('2d')
 if (!ctx) throw Error('unable to initialize 2d context')

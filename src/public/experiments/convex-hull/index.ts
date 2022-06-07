@@ -1,4 +1,4 @@
-import { repeat, stop } from '../../../shared-utils/scheduler'
+import { repeat, stop } from 'tvs-utils/src/app/scheduler'
 import { canvas, Q } from './context'
 import { nodes, triples } from './nodes'
 import blendFrag from './shaders/compose.frag.glsl'

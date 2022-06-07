@@ -11,9 +11,7 @@ import { makeClear } from 'tvs-painter/dist/utils/context'
 import { Sketch } from 'tvs-painter/dist/sketch'
 import { lineFrag, lineVert } from './shaders'
 import { LinkedListOptions } from 'tvs-libs/dist/datastructures/double-linked-list'
-import { baseEvents } from '../../../../shared-utils/painterState'
-import { lerp } from 'tvs-libs/dist/math/core'
-import { dot } from 'tvs-libs/dist/math/vectors'
+import { baseEvents } from 'tvs-utils/dist/app/painterState'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

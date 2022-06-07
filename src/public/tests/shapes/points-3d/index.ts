@@ -4,8 +4,8 @@ import { mat4 } from 'gl-matrix'
 import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
 import { Q } from './context'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { addToLoop, startLoop } from '../../../../shared-utils/frameLoop'
-import { baseEvents } from '../../../../shared-utils/painterState'
+import { addToLoop, startLoop } from 'tvs-utils/src/app/frameLoop'
+import { baseEvents } from 'tvs-utils/dist/app/painterState'
 
 initPerspectiveViewport(Q, {
 	moveSpeed: 40,

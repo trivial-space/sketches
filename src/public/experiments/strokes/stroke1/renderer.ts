@@ -2,7 +2,7 @@ import { lineFrag, lineVert } from './shaders'
 import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_3d'
 import { strokePatch } from './state'
 import { clamp } from 'tvs-libs/dist/math/core'
-import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
+import { getNoiseTextureData } from 'tvs-utils/src/graphics/texture-helpers'
 import { Q } from './context'
 
 const shade = Q.getShade('line').update({

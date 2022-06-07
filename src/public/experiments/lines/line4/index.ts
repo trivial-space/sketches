@@ -7,12 +7,12 @@ import {
 import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { Sketch } from 'tvs-painter/dist/sketch'
-import { baseEvents } from '../../../../shared-utils/painterState'
-import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
+import { getNoiseTextureData } from 'tvs-utils/src/graphics/texture-helpers'
 import {
 	brushStrokeFrag,
 	brushStrokeVert,
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
+import { baseEvents } from 'tvs-utils/dist/app/painterState'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

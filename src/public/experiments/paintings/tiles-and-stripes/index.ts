@@ -1,6 +1,6 @@
 import { events, Q } from './context'
 import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
-import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
+import { getNoiseTextureData } from 'tvs-utils/src/graphics/texture-helpers'
 import {
 	createLine,
 	Line,

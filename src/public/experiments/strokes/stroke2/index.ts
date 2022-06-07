@@ -1,7 +1,7 @@
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
 import { makeLine } from './state'
-import { getNoiseTextureData } from '../../../../shared-utils/texture-helpers'
+import { getNoiseTextureData } from 'tvs-utils/src/graphics/texture-helpers'
 import {
 	createLine,
 	lineToFormCollection,
