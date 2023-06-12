@@ -122,17 +122,17 @@ export function smouthenPoint<P extends LinePoint>(
 	}
 }
 
-function getTangent(direction: Vec2D): Vec2D {
+function getNormal(direction: Vec2D): Vec2D {
 	return [direction[1], -direction[0]]
 }
 
 function linePositions(
 	vertex: Vec2D,
-	tangent: Vec2D,
+	normal: Vec2D,
 	width: number,
 ): [Vec2D, Vec2D] {
-	const p1 = add(mul(width, tangent), vertex) as Vec2D
-	const p2 = add(mul(-width, tangent), vertex) as Vec2D
+	const p1 = add(mul(width, normal), vertex) as Vec2D
+	const p2 = add(mul(-width, normal), vertex) as Vec2D
 	return [p1, p2]
 }
 
@@ -157,20 +157,20 @@ export function lineMitterPositions(node: LineNode, thickness?: number) {
 	const point = node.val
 	thickness = point.width || thickness || 1
 	if (!node.prev) {
-		const tangent = getTangent(point.direction)
-		return linePositions(point.vertex, tangent, thickness)
+		const normal = getNormal(point.direction)
+		return linePositions(point.vertex, normal, thickness)
 	}
 	if (!node.next) {
-		const tangent = getTangent(node.prev.val.direction)
-		return linePositions(point.vertex, tangent, thickness)
+		const normal = getNormal(node.prev.val.direction)
+		return linePositions(point.vertex, normal, thickness)
 	}
 
-	const nextTangent = getTangent(node.val.direction)
-	const prevTangent = getTangent(node.prev.val.direction)
-	const tangent = normalize(add(nextTangent, prevTangent))
-	let mitterLenght = thickness / dot(tangent, prevTangent)
+	const nextNormal = getNormal(node.val.direction)
+	const prevNormal = getNormal(node.prev.val.direction)
+	const normal = normalize(add(nextNormal, prevNormal))
+	let mitterLenght = thickness / dot(normal, prevNormal)
 	mitterLenght = Math.min(mitterLenght, thickness * 5)
-	return linePositions(node.val.vertex, tangent as Vec2D, mitterLenght)
+	return linePositions(node.val.vertex, normal as Vec2D, mitterLenght)
 }
 
 function adjustEdgePoints(
