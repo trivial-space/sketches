@@ -1,6 +1,6 @@
 import { planeForm } from './geometries'
-import frag from './glsl/base.frag.glsl'
-import vert from './glsl/base.vert.glsl'
+import frag from './glsl/base.frag.glsl?raw'
+import vert from './glsl/base.vert.glsl?raw'
 import { initPerspectiveViewport } from '../../shared-utils/vr/perspectiveViewport'
 import { Q } from './context'
 

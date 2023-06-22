@@ -2,8 +2,8 @@ import { each } from 'tvs-libs/dist/utils/sequence'
 import { Layer } from 'tvs-painter/dist/layer'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { events, Q } from './context'
-import frag from './glsl/base-frag.glsl'
-import vert from './glsl/base-vert.glsl'
+import frag from './glsl/base-frag.glsl?raw'
+import vert from './glsl/base-vert.glsl?raw'
 
 // ===== Settings =====
 

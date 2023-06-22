@@ -49,4 +49,4 @@ vec4 diffuseAreaLight(sampler2D tex, mat4 lightMat, vec3 V, vec3 N, vec2 areaSiz
 }
 
 
-#pragma glslify: export(diffuseAreaLight)
+// #pragma glslify: export(diffuseAreaLight)

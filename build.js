@@ -1,11 +1,9 @@
 import { build } from 'vite'
-import glob from 'glob'
-import { promisify } from 'util'
-import { dirname, resolve } from 'path'
-import { fileURLToPath } from 'url'
-import { glslify } from 'vite-plugin-glslify'
+import * as glob from 'glob'
+import { promisify } from 'node:util'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-// @ts-ignore
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -18,7 +16,7 @@ async function makeBuild() {
 
 	await build({
 		root: publicSrcDir,
-		plugins: [glslify()],
+		plugins: [],
 		build: {
 			assetsDir: '__assets',
 			rollupOptions: {
@@ -36,7 +34,7 @@ async function makeBuild() {
 
 		await build({
 			root: resolve(publicSrcDir, appDir),
-			plugins: [glslify()],
+			plugins: [],
 			build: { outDir: resolve(__dirname, 'dist', appDir) },
 		})
 	}

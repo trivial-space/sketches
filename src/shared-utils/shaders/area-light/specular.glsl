@@ -43,4 +43,4 @@ float specularAreaLight(mat4 lightMat, vec3 V, vec3 N, vec3 eyePosition, vec2 ar
 }
 
 
-#pragma glslify: export(specularAreaLight)
+// #pragma glslify: export(specularAreaLight)

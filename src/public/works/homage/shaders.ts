@@ -1,10 +1,10 @@
 import { Q } from './context'
-import groundFrag from './glsl/ground-frag.glsl'
-import groundVert from './glsl/ground-vert.glsl'
-import objectFrag from './glsl/object-frag.glsl'
-import objectVert from './glsl/object-vert.glsl'
-import screenFrag from './glsl/screen-frag.glsl'
-import screenVert from './glsl/screen-vert.glsl'
+import groundFrag from './glsl/ground-frag.glsl?raw'
+import groundVert from './glsl/ground-vert.glsl?raw'
+import objectFrag from './glsl/object-frag.glsl?raw'
+import objectVert from './glsl/object-vert.glsl?raw'
+import screenFrag from './glsl/screen-frag.glsl?raw'
+import screenVert from './glsl/screen-vert.glsl?raw'
 
 export const groundShade = Q.getShade('ground').update({
 	vert: groundVert,

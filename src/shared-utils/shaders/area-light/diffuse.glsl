@@ -36,4 +36,4 @@ float diffuseAreaLight(mat4 lightMat, vec3 V, vec3 N, vec2 areaSize) {
 }
 
 
-#pragma glslify: export(diffuseAreaLight)
+// #pragma glslify: export(diffuseAreaLight)

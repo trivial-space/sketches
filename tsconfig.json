@@ -11,10 +11,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": [
-    "./src",
-    "projects/utils/src/app/scheduler.ts",
-    "projects/utils/src/app/frameLoop.ts",
-    "projects/utils/src/graphics/texture-helpers.ts"
-  ]
+  "include": ["./src"]
 }
