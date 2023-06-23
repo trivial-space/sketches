@@ -1,6 +1,5 @@
 import { build } from 'vite'
 import * as glob from 'glob'
-import { promisify } from 'node:util'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -10,7 +9,7 @@ const __dirname = dirname(__filename)
 async function makeBuild() {
 	const publicSrcDir = resolve(__dirname, 'src', 'public')
 
-	const apps = await promisify(glob.glob)('**/index.html', {
+	const apps = await glob.glob('**/index.html', {
 		cwd: publicSrcDir,
 	})
 
@@ -41,3 +40,5 @@ async function makeBuild() {
 }
 
 makeBuild()
+	.then(() => console.log('done'))
+	.catch(console.error)
