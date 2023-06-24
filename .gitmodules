@@ -7,3 +7,6 @@
 [submodule "projects/utils"]
 	path = projects/utils
 	url = git@github.com:trivial-space/utils.git
+[submodule "projects/libs-wasm"]
+	path = projects/libs-wasm
+	url = git@github.com:trivial-space/libs-wasm.git

@@ -1,0 +1,12 @@
+[workspace]
+
+members = [
+	"projects/libs-wasm",
+	"src/public/experiments/wasm/balls/crate",
+	"src/public/experiments/wasm/strokes/crate",
+]
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+lto = true      # this makes all the #[inline] anotation unneccessary

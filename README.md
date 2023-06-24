@@ -19,6 +19,8 @@ This workflow builds on following libraries:
   for live coding.
 - [Libs](https://github.com/trivial-space/libs), a collection of useful
   functions and helpers.
+- [Libs-wasm](https://github.com/trivial-space/libs-wasm), collection of rust
+  utilities for creative coding targeting web assembly.
 
 This playground is the primary testing environment for these libraries. Here
 first experiments are run, while working both on the programming tools as well
@@ -45,6 +47,13 @@ clone this repository, and run
 
 The drafts within a (hopefully) working live coding environment will be
 available at `localhost:8080`.
+
+### Building and watching wasm rust crates
+
+To build a create once run `npx wasm-pack build --target web path/to/crate`
+
+To watch and rebuild a create on rust file changes run
+`npm run wasm path/to/crate`
 
 ## Credits
 
