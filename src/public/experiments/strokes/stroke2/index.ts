@@ -1,16 +1,15 @@
 import { events, Q } from './context'
-import { lineFrag, lineVert } from './shaders'
 import { makeLine } from './state'
 import { getNoiseTextureData } from 'tvs-utils/src/graphics/texture-helpers'
 import {
 	createLine,
 	lineToFormCollection,
 } from '../../../../shared-utils/geometry/lines_2d'
+import { lineShader } from './shaders'
 
-const shade = Q.getShade('line').update({
-	vert: lineVert,
-	frag: lineFrag,
-})
+Q.state.device.sizeMultiplier = window.devicePixelRatio
+
+const shade = Q.getShade('line').update(lineShader)
 
 export const noiseTex = Q.getLayer('noiseTex').update({
 	texture: getNoiseTextureData({

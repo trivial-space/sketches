@@ -13,7 +13,8 @@ import {
 import { subdivideTiles, Tile } from './tiles'
 import { doTimes } from 'tvs-libs/dist/utils/sequence'
 
-const lineWidth = Q.state.device.canvas.height / 32
+Q.state.device.sizeMultiplier = window.devicePixelRatio
+const lineWidth = (Q.state.device.canvas.height * window.devicePixelRatio) / 32
 
 const shade = Q.getShade('line').update({
 	frag: brushStrokeFrag,
@@ -74,8 +75,8 @@ let tiles: Tile[] = [
 		color: [1, 1, 1],
 		top: 0,
 		left: 0,
-		width: Q.gl.drawingBufferWidth,
-		height: Q.gl.drawingBufferHeight,
+		width: Q.gl.drawingBufferWidth * window.devicePixelRatio,
+		height: Q.gl.drawingBufferHeight * window.devicePixelRatio,
 	},
 ]
 

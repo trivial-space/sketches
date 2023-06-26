@@ -8,6 +8,8 @@ import {
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
 import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
 
+Q.state.device.sizeMultiplier = window.devicePixelRatio
+
 const shade = Q.getShade('line').update({
 	vert: brushStrokeVert,
 	frag: brushStrokeFrag,
@@ -82,7 +84,7 @@ Q.listen('index', events.RESIZE, () => {
 	})
 
 	const data = lineToAnimatedFormCollection(line, {
-		lineWidth: 50,
+		lineWidth: 50 * Q.state.device.sizeMultiplier,
 		storeType: 'DYNAMIC',
 		smouthCount: 0,
 		splitAfterLength: 10,

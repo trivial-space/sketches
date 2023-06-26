@@ -3,7 +3,7 @@
 members = [
 	"projects/libs-wasm",
 	"src/public/experiments/wasm/balls/crate",
-	"src/public/experiments/wasm/strokes/crate",
+	"src/public/experiments/strokes/stroke-wasm1/crate",
 ]
 
 [profile.release]

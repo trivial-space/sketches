@@ -1,22 +1,12 @@
+import { defShader } from '../../../../shared-utils/shaders/ast'
 import {
-	getFragmentGenerator,
-	getVertexGenerator,
-} from '../../../../shared-utils/shaders/ast'
-import {
-	program,
 	defMain,
 	assign,
 	vec4,
-	Vec3Sym,
-	input,
-	uniform,
-	output,
 	mul,
 	vec3,
-	Vec2Sym,
 	$y,
 	$x,
-	Sampler2DSym,
 	Vec4Sym,
 	texture,
 	sym,
@@ -26,107 +16,99 @@ import {
 	$z,
 	pow,
 	float,
-	mix,
 	vec2,
 	sub,
 	abs,
 	div,
-	max,
 	min,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 
-const fs = getFragmentGenerator('precision highp float;')
-const vs = getVertexGenerator()
-
-// varyings
-
-let vUv: Vec2Sym
-let vLength: FloatSym
-
-// Vertex
-
-let uSize: Vec2Sym
-let aPosition: Vec2Sym
-let aLength: FloatSym
-let aLocalUV: Vec2Sym
-export const lineVert = vs(
-	program([
-		(uSize = uniform('vec2', 'size')),
-		(aPosition = input('vec2', 'position')),
-		(aLength = input('float', 'length')),
-		(aLocalUV = input('vec2', 'localUv')),
-		(vUv = output('vec2', 'vUv')),
-		(vLength = output('float', 'vLength')),
+export const lineShader = defShader({
+	attribs: {
+		position: 'vec2',
+		length: 'float',
+		localUv: 'vec2',
+	},
+	uniforms: {
+		size: 'vec2',
+		noiseTex: 'sampler2D',
+	},
+	varying: {
+		vUv: 'vec2',
+		vLength: 'float',
+	},
+	vs: (gl, unis, ins, outs) => [
 		defMain(() => [
-			assign(vUv, aLocalUV),
-			assign(vLength, aLength),
+			assign(outs.vUv, ins.localUv),
+			assign(outs.vLength, ins.length),
 			assign(
-				vs.gl_Position,
+				gl.gl_Position,
 				vec4(
-					$x(aPosition),
-					mul(-1, mul(div($x(uSize), $y(uSize)), $y(aPosition))),
+					$x(ins.position),
+					mul(-1, mul(div($x(unis.size), $y(unis.size)), $y(ins.position))),
 					0,
 					1,
 				),
 			),
 		]),
-	]),
-)
-
-// Fragment
-
-let uNoiseTex: Sampler2DSym
-let noise: Vec4Sym
-let noiseVal: FloatSym
-export const lineFrag = fs(
-	program([
-		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
-		(vUv = input('vec2', 'vUv')),
-		(vLength = input('float', 'vLength')),
-		(uSize = uniform('vec2', 'size')),
-		defMain(() => [
-			(noise = sym(
-				texture(uNoiseTex, mul(vec2($x(vUv), vLength), vec2(1.0, 0.1))),
-			)),
-			// noiseVal = sym(($x(noise))),
-			(noiseVal = sym(
-				fit1101(
-					add(
-						add(
-							add(fit0111($x(noise)), fit0111($y(noise))),
-							fit0111($z(noise)),
-						),
-						fit0111($w(noise)),
+	],
+	fs: (gl, unis, ins, outs) => {
+		let noise: Vec4Sym
+		let noiseVal: FloatSym
+		return [
+			defMain(() => [
+				(noise = sym(
+					texture(
+						unis.noiseTex,
+						mul(vec2($x(ins.vUv), ins.vLength), vec2(1.0, 0.1)),
 					),
+				)),
+				// noiseVal = sym(($x(noise))),
+				(noiseVal = sym(
+					fit1101(
+						add(
+							add(
+								add(fit0111($x(noise)), fit0111($y(noise))),
+								fit0111($z(noise)),
+							),
+							fit0111($w(noise)),
+						),
+					),
+				)),
+				assign(noiseVal, mul(1.1, noiseVal)),
+				assign(noiseVal, pow(noiseVal, float(0.1))),
+				assign(
+					noiseVal,
+					sub(noiseVal, pow(abs(fit0111($x(ins.vUv))), float(10))),
 				),
-			)),
-			assign(noiseVal, mul(1.1, noiseVal)),
-			assign(noiseVal, pow(noiseVal, float(0.1))),
-			assign(noiseVal, sub(noiseVal, pow(abs(fit0111($x(vUv))), float(10)))),
-			assign(noiseVal, sub(noiseVal, pow(abs(fit0111($y(vUv))), float(20)))),
-			assign(
-				noiseVal,
-				mul(
+				assign(
+					noiseVal,
+					sub(noiseVal, pow(abs(fit0111($y(ins.vUv))), float(20))),
+				),
+				assign(
 					noiseVal,
 					mul(
-						sub(
-							add(float(1), noiseVal),
-							pow(min(float(1), div(vLength, 10)), float(4)),
+						noiseVal,
+						mul(
+							sub(
+								add(float(1), noiseVal),
+								pow(min(float(1), div(ins.vLength, 10)), float(4)),
+							),
+							0.5,
 						),
-						0.5,
 					),
 				),
-			),
-			assign(
-				fs.gl_FragColor,
-				vec4(
-					// mix(vec3(0.2, 0.8, 0.6), vec3(0, 0.6, 0.2), noiseVal),
-					vec3(0, 0.6, 0.2),
-					mul(0.9, noiseVal),
+				assign(
+					outs.fragColor,
+					vec4(
+						// mix(vec3(0.2, 0.8, 0.6), vec3(0, 0.6, 0.2), noiseVal),
+						vec3(0, 0.6, 0.2),
+						mul(0.9, noiseVal),
+					),
 				),
-			),
-			// assign(fs.gl_FragColor, vec4(1, 0, 0, 1)),
-		]),
-	]),
-)
+				// assign(outs.fragColor, vec4(1, 0, 0, 1)),
+			]),
+		]
+	},
+})
