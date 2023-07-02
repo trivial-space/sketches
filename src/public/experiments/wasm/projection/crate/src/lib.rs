@@ -1,4 +1,4 @@
-use geom::create_ball1_geom;
+use geom::create_glass;
 use js_sys::Float32Array;
 use tvs_libs::prelude::*;
 use tvs_libs::rendering::scene::Scene;
@@ -42,7 +42,7 @@ pub fn setup() {
 
 #[wasm_bindgen]
 pub fn get_geom() -> JsValue {
-    serde_wasm_bindgen::to_value(&create_ball1_geom()).unwrap()
+    serde_wasm_bindgen::to_value(&create_glass()).unwrap()
 }
 
 #[wasm_bindgen]

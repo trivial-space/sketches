@@ -6,7 +6,7 @@ import init, {
 	get_normal_mat,
 	setup,
 	update,
-} from '../crate/pkg/tvs_sketch_balls'
+} from '../crate/pkg/tvs_sketch_projection'
 import { render, renderInit } from './render'
 import { wasmGeometryToFormData } from '../../../../../shared-utils/wasm/utils'
 
