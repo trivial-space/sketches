@@ -3,8 +3,29 @@
 members = [
 	"projects/libs-wasm",
 	"src/public/experiments/wasm/balls/crate",
+	"src/public/experiments/wasm/projection/crate",
 	"src/public/experiments/strokes/stroke-wasm1/crate",
 ]
+
+[workspace.dependencies]
+tvs-libs = { path = "projects/libs-wasm" }
+wasm-bindgen = "0.2.87"
+web-sys = "0.3.64"
+js-sys = "0.3.64"
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.5.0"
+rand = "0.8.5"
+getrandom = { version = "0.2", features = ["js"] }
+approx = "0.5.1"
+palette = '0.7.2'
+bytemuck = { version = "1.13.1", features = ["derive"] }
+glam = { version = "0.24.0", features = [
+	"bytemuck",
+	"serde",
+	"rand",
+	"approx",
+] }
+wasm-bindgen-test = "0.3.33"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

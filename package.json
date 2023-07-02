@@ -20,7 +20,7 @@
     "deploy": "git push dokku master",
     "test:types": "tsc --noEmit",
     "git-init": "git submodule update --init --recursive",
-    "wasm": "node scripts/watch-rust.ts"
+    "wasm": "node scripts/watch-rust.js"
   },
   "dependencies": {
     "@thi.ng/shader-ast": "^0.12.8",

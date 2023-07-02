@@ -284,7 +284,26 @@ dependencies = [
 ]
 
 [[package]]
-name = "tvs-sketch-strokes"
+name = "tvs-sketch-projection"
+version = "0.1.0"
+dependencies = [
+ "approx",
+ "bytemuck",
+ "console_error_panic_hook",
+ "getrandom",
+ "glam",
+ "js-sys",
+ "rand",
+ "serde",
+ "serde-wasm-bindgen",
+ "tvs-libs",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
+name = "tvs-sketch-strokes1"
 version = "0.1.0"
 dependencies = [
  "approx",
