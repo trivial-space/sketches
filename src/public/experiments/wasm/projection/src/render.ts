@@ -12,6 +12,7 @@ import { FormData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { Q } from './context'
 import { defShader } from '../../../../../shared-utils/shaders/ast'
+import { Sketch } from 'tvs-painter/dist/sketch'
 
 Q.painter.updateDrawSettings({
 	enable: [Q.gl.DEPTH_TEST],
@@ -55,25 +56,29 @@ const shader = defShader({
 		]),
 	],
 })
+const shade = Q.getShade('plate').update(shader)
 
-const form = Q.getForm('ball')
-const shade = Q.getShade('ball').update(shader)
-const sketch = Q.getSketch('ball').update({
-	form,
-	shade,
-})
+let sketches: Sketch[] = []
 
-export function renderInit(geometry: FormData) {
-	form.update(geometry)
+export function renderInit(geometries: FormData[]) {
+	sketches = geometries.map((g, i) => {
+		const form = Q.getForm('plate' + i).update(g)
+		return Q.getSketch('plate' + i).update({ shade, form })
+	})
 }
 
 export function render(
-	camera: Float32Array,
-	normalMatrix: Float32Array,
+	plateUniforms: {
+		camera: Float32Array
+		normalMatrix: Float32Array
+	}[],
 	light: Float32Array,
 ) {
+	sketches.forEach((s, i) => {
+		s.update({ uniforms: plateUniforms[i] })
+	})
 	Q.painter.draw({
-		sketches: sketch,
-		uniforms: { camera, light, normalMatrix },
+		sketches,
+		uniforms: { light },
 	})
 }

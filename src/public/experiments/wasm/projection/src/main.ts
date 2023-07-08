@@ -9,17 +9,28 @@ import init, {
 } from '../crate/pkg/tvs_sketch_projection'
 import { render, renderInit } from './render'
 import { wasmGeometryToFormData } from '../../../../../shared-utils/wasm/utils'
+import { FormData } from 'tvs-painter'
+import { times } from 'tvs-libs/dist/utils/sequence'
 
 init().then(() => {
 	setup()
-	const geom = get_geom()
-	console.log('wasm geometry', geom)
-	const ball = wasmGeometryToFormData(geom)
-	renderInit(ball)
+	const geometries = get_geom()
+	console.log('wasm geometries', geometries)
+	const forms: FormData[] = geometries.map((g: any) =>
+		wasmGeometryToFormData(g),
+	)
+	renderInit(forms)
 
 	addToLoop((tpf) => {
 		update(tpf)
-		render(get_mvp(), get_normal_mat(), get_light())
+		const uniforms = times(
+			(i) => ({
+				camera: get_mvp(i),
+				normalMatrix: get_normal_mat(i),
+			}),
+			forms.length,
+		)
+		render(uniforms, get_light())
 	}, 'mainLoop')
 
 	startLoop()

@@ -1,7 +1,12 @@
 use geom::create_ball1_geom;
 use js_sys::Float32Array;
-use tvs_libs::prelude::*;
-use tvs_libs::rendering::scene::Scene;
+use tvs_libs::{
+    prelude::*,
+    rendering::{
+        camera::PerspectiveCamera,
+        scene::{model_normal_mat, model_view_proj_mat},
+    },
+};
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
@@ -10,7 +15,8 @@ mod utils;
 
 #[derive(Default)]
 pub struct State {
-    pub scene: Scene,
+    pub ball1: Transform,
+    pub cam: PerspectiveCamera,
     pub light_dir: Vec3,
 }
 
@@ -21,21 +27,16 @@ impl AppState for State {
     }
 }
 
-const BALL_1: &str = "ball1";
-
 #[wasm_bindgen]
 pub fn setup() {
     utils::set_panic_hook();
     console::log_1(&"Hello, wasm-pack, balls!".into());
 
     State::update(|s| {
-        s.scene
-            .set_obj(BALL_1, Transform::from_translation(vec3(0.0, 0.0, -20.0)));
-        s.scene.update_cam(|c| {
-            c.aspect_ratio = 4.0 / 3.0;
-            c.fov = 0.6;
-            c.recalculate_proj_mat();
-        });
+        s.ball1 = Transform::from_translation(vec3(0.0, 0.0, -20.0));
+        s.cam.aspect_ratio = 4.0 / 3.0;
+        s.cam.fov = 0.6;
+        s.cam.recalculate_proj_mat();
         s.light_dir = vec3(1.0, 1.0, 1.0).normalize();
     });
 }
@@ -47,13 +48,16 @@ pub fn get_geom() -> JsValue {
 
 #[wasm_bindgen]
 pub fn get_mvp() -> Float32Array {
-    let mat = State::read().scene.model_view_proj_mat(BALL_1);
+    let t = &State::read().ball1;
+    let cam = &State::read().cam;
+    let mat = model_view_proj_mat(t, cam);
     mat4_to_js(&mat)
 }
 
 #[wasm_bindgen]
 pub fn get_normal_mat() -> Float32Array {
-    let mat = State::read().scene.model_normal_mat(BALL_1);
+    let t = &State::read().ball1;
+    let mat = model_normal_mat(t);
     mat3_to_js(&mat)
 }
 
@@ -66,8 +70,6 @@ pub fn get_light() -> Float32Array {
 #[wasm_bindgen]
 pub fn update(tpf: f32) {
     State::update(|s| {
-        s.scene.update_obj_transform(BALL_1, |t| {
-            t.rotate(Quat::from_rotation_y(0.0003 * tpf));
-        });
+        s.ball1.rotate(Quat::from_rotation_y(0.0003 * tpf));
     });
 }

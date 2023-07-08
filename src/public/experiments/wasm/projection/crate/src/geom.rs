@@ -1,5 +1,6 @@
 use bytemuck::{Pod, Zeroable};
 use glam::{vec3, Vec3};
+use rand::random;
 use serde::Serialize;
 use tvs_libs::{
     geometry::{
@@ -36,12 +37,14 @@ fn vert(pos: Vec3) -> MeshVertex<VertIdx3f, Vertex> {
     }
 }
 
-pub fn create_glass() -> BufferedGeometry {
-    let mut rnd = rand::thread_rng();
+fn offset() -> f32 {
+    random::<f32>() - 0.5
+}
 
+pub fn create_glass() -> BufferedGeometry {
     let mut geom = MeshGeometry::new();
-    let tl = vec3(-1.0, 1.0, 0.0);
-    let tr = vec3(1.0, 1.0, 0.0);
+    let tl = vec3(-1.0 + offset(), 4.0 + offset(), 0.0);
+    let tr = vec3(1.0 + offset(), 4.0 + offset(), 0.0);
     let bl = vec3(-1.0, 0.0, 0.0);
     let br = vec3(1.0, 0.0, 0.0);
     geom.add_face4(vert(tl), vert(tr), vert(br), vert(bl));
@@ -51,11 +54,4 @@ pub fn create_glass() -> BufferedGeometry {
     geom.triangulate();
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormalFaceData)
-}
-
-#[test]
-fn test_ball1() {
-    let res = create_glass();
-    print!("{:?}", res);
-    assert!(res.buffer.len() > 0);
 }
