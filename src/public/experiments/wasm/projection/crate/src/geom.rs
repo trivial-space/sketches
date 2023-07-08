@@ -37,14 +37,14 @@ fn vert(pos: Vec3) -> MeshVertex<VertIdx3f, Vertex> {
     }
 }
 
-fn offset() -> f32 {
-    random::<f32>() - 0.5
+fn offset(scale: f32) -> f32 {
+    (random::<f32>() - 0.5) * scale
 }
 
 pub fn create_glass() -> BufferedGeometry {
     let mut geom = MeshGeometry::new();
-    let tl = vec3(-1.0 + offset(), 4.0 + offset(), 0.0);
-    let tr = vec3(1.0 + offset(), 4.0 + offset(), 0.0);
+    let tl = vec3(-1.0 + offset(1.5), 4.0 + offset(2.0), 0.0);
+    let tr = vec3(1.0 + offset(1.5), 4.0 + offset(2.0), 0.0);
     let bl = vec3(-1.0, 0.0, 0.0);
     let br = vec3(1.0, 0.0, 0.0);
     geom.add_face4(vert(tl), vert(tr), vert(br), vert(bl));

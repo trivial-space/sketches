@@ -37,7 +37,7 @@ impl Default for State {
         s.camera.aspect_ratio = 4.0 / 3.0;
         s.camera.fov = 0.6;
         s.camera.recalculate_proj_mat();
-        s.camera.translation = vec3(0.0, 0.0, -20.0);
+        s.camera.translation = vec3(0.0, -3.0, -20.0);
         s.light_dir = vec3(1.0, 1.0, 1.0).normalize();
 
         s
