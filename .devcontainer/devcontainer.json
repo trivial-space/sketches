@@ -1,0 +1,27 @@
+{
+	"image": "mcr.microsoft.com/devcontainers/universal:2",
+	"features": {
+		"ghcr.io/devcontainers/features/rust:1": {
+			"version": "latest",
+			"profile": "default"
+		}
+	},
+	"customizations": {
+    "codespaces": {
+      "repositories": {
+        "trivial-space/libs": {
+          "permissions": "write-all"
+        },
+        "trivial-space/libs-wasm": {
+          "permissions": "write-all"
+        },
+        "trivial-space/painter": {
+          "permissions": "write-all"
+        },
+        "trivial-space/utils": {
+          "permissions": "write-all"
+        }
+      }
+    }
+  }
+}
