@@ -17,7 +17,6 @@
     "dev": "vite",
     "build": "tsc && rm -rf ./public && rm -rf ./dist && node build.js && rm ./dist/index.html && rm ./public/index.html",
     "start": "cd public && serve -p 5000",
-    "deploy": "git push dokku master",
     "test:types": "tsc --noEmit",
     "git-init": "git submodule update --init --recursive",
     "wasm": "node scripts/watch-rust.js"
