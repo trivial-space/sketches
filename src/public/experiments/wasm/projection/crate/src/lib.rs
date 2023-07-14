@@ -4,7 +4,7 @@ use tvs_libs::{
     prelude::*,
     rendering::{
         buffered_geometry::BufferedGeometry,
-        camera::PerspectiveCamera,
+        camera::{CamOptions, PerspectiveCamera},
         scene::{model_normal_mat, model_view_proj_mat},
     },
 };
@@ -34,10 +34,13 @@ impl Default for State {
             let t = Transform::from_translation(vec3(-8.0 + (i as f32) * 4.0, 0.0, 0.0));
             s.transforms.push(t);
         }
-        s.camera.aspect_ratio = 4.0 / 3.0;
-        s.camera.fov = 0.6;
-        s.camera.recalculate_proj_mat();
-        s.camera.translation = vec3(0.0, -3.0, -20.0);
+
+        s.camera.set(CamOptions {
+            fov: Some(0.6),
+            translation: Some(vec3(0.0, -3.0, -20.0)),
+            ..default()
+        });
+
         s.light_dir = vec3(1.0, 1.0, 1.0).normalize();
 
         s
@@ -80,6 +83,16 @@ pub fn get_normal_mat(i: usize) -> Float32Array {
 pub fn get_light() -> Float32Array {
     let v = State::read().light_dir;
     vec3_to_js(&v)
+}
+
+#[wasm_bindgen]
+pub fn update_screen(width: f32, height: f32) {
+    State::update(|s| {
+        s.camera.set(CamOptions {
+            aspect_ratio: Some(width / height),
+            ..default()
+        })
+    })
 }
 
 #[wasm_bindgen]
