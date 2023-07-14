@@ -1,10 +1,10 @@
-import { repeat, stop } from 'tvs-utils/src/app/scheduler'
 import { canvas, Q } from './context'
 import { nodes, triples } from './nodes'
 import blendFrag from './shaders/compose.frag.glsl?raw'
 import pointFrag from './shaders/point.frag.glsl?raw'
 import sideFrag from './shaders/side.frag.glsl?raw'
 import { createPoints2DSketch } from '../../../shared-utils/sketches/points/points'
+import { addToLoop, startLoop, stopLoop } from 'tvs-utils/dist/app/frameLoop'
 
 const { gl } = Q
 
@@ -50,7 +50,7 @@ const main = Q.getLayer('main').update({
 // ===== render =====
 
 let i = 0
-repeat(() => {
+addToLoop(() => {
 	const triple = triples[i]
 
 	currentTriple.update({
@@ -68,10 +68,12 @@ repeat(() => {
 
 	console.log(i++)
 
-	if (i === triples.length) stop('render')
+	if (i === triples.length) stopLoop()
 }, 'render')
 
 console.log(triples.length)
+
+startLoop()
 
 if (import.meta.hot) {
 	import.meta.hot.accept()

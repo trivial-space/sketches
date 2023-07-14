@@ -1,9 +1,9 @@
 import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
-import { repeat, stop } from 'tvs-utils/src/app/scheduler'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { createPoints2DSketch } from '../../../../shared-utils/sketches/points/points'
 import { Q } from './context'
 import { connections, nameSpaceCount, nodes, updateNodes } from './nodes'
+import { addToLoop, startLoop, stopLoop } from 'tvs-utils/dist/app/frameLoop'
 
 export const points = createPoints2DSketch(Q, 'points', {
 	pointSize: 20,
@@ -25,7 +25,7 @@ export const lines = createLines2DSketch(Q, 'lines', {
 const timeToSort = 10
 let time = 0
 
-repeat((tpf) => {
+addToLoop((tpf) => {
 	time += tpf
 
 	updateNodes(tpf)
@@ -44,8 +44,10 @@ repeat((tpf) => {
 
 	Q.painter.draw({ sketches: [lines.sketch, points.sketch] })
 
-	if (time >= timeToSort * 1000) stop('render')
+	if (time >= timeToSort * 1000) stopLoop()
 }, 'render')
+
+startLoop()
 
 if (import.meta.hot) {
 	import.meta.hot.accept()

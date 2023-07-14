@@ -1,5 +1,4 @@
 import './state'
-import { repeat } from 'tvs-utils/src/app/scheduler'
 import { events, Q } from './context'
 import { scene } from './renderer'
 

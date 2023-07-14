@@ -1,18 +1,20 @@
 import './state/tiles'
 import './viewport'
 
-import { repeat } from 'tvs-utils/src/app/scheduler'
 import { events, Q } from './context'
 import { tiles } from './renderer'
+import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 
 // state.device.sizeMultiplier = window.devicePixelRatio
 
-Q.listen('start', events.ON_IMAGES_LOADED, (s) => {
-	repeat((tpf) => {
-		s.device.tpf = tpf
-		Q.emit(events.FRAME)
-		Q.painter.draw({ sketches: tiles })
-	}, 'loop')
+addToLoop((tpf) => {
+	Q.state.device.tpf = tpf
+	Q.emit(events.FRAME)
+	Q.painter.draw({ sketches: tiles })
+}, 'loop')
+
+Q.listen('start', events.ON_IMAGES_LOADED, () => {
+	startLoop()
 })
 
 Q.emit(events.INIT)

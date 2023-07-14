@@ -1,9 +1,9 @@
-import { repeat } from 'tvs-utils/src/app/scheduler'
+import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { events, Q } from './context'
 import './paint'
 import { automaton, sketch } from './renderer'
 
-repeat((tpf) => {
+addToLoop((tpf) => {
 	Q.get('device').tpf = tpf
 	Q.emit(events.PROCESS_PAINT)
 	Q.emit(events.FRAME)
@@ -11,6 +11,8 @@ repeat((tpf) => {
 	Q.painter.draw({ sketches: sketch })
 	Q.emit(events.CLEANUP_PAINT)
 }, 'loop')
+
+startLoop()
 
 if (import.meta.hot) {
 	import.meta.hot.accept()

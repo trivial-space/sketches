@@ -6,8 +6,8 @@ import {
 import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { once } from 'tvs-utils/src/app/scheduler'
 import { baseEvents } from 'tvs-utils/dist/app/painterState'
+import { onNextFrame, startLoop } from 'tvs-utils/dist/app/frameLoop'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -53,7 +53,7 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 			])
 			currentLine?.append(point)
 
-			once(() => {
+			onNextFrame(() => {
 				currentLineSketch.update({
 					points: [...currentLine!].map((p) => p.vertex),
 				})
@@ -64,6 +64,8 @@ Q.listen('index', baseEvents.POINTER, (s) => {
 
 				Q.painter.compose(scene)
 			}, 'update-and-paint')
+
+			startLoop()
 		}
 	} else if (!p.dragging && dragging) {
 		dragging = false

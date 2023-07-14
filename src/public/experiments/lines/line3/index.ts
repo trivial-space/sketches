@@ -7,8 +7,8 @@ import {
 import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { once } from 'tvs-utils/src/app/scheduler'
 import { baseEvents } from 'tvs-utils/dist/app/painterState'
+import { onNextFrame, startLoop } from 'tvs-utils/dist/app/frameLoop'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -69,7 +69,7 @@ Q.listen('', baseEvents.POINTER, (s) => {
 
 			smouthenPoint(currentLine1.last?.prev, { depth: 2 })
 
-			once(() => {
+			onNextFrame(() => {
 				currentLineSketch1.update({
 					points: [...currentLine1!].map((p) => p.vertex),
 				})
@@ -79,6 +79,8 @@ Q.listen('', baseEvents.POINTER, (s) => {
 
 				Q.painter.compose(scene)
 			}, 'update-and-paint')
+
+			startLoop()
 		}
 	} else if (!val.dragging && dragging) {
 		dragging = false
