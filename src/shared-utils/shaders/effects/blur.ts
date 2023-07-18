@@ -56,7 +56,7 @@ export function getBlurByAlphaEffect(
 			...data,
 			blurRatioVertical,
 			strengthOffset,
-			size: size || (() => [Q.gl.canvas.width, Q.gl.canvas.height]),
+			size: size || (() => [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight]),
 		})),
 	})
 }

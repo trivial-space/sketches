@@ -1,4 +1,4 @@
-import { addToLoop, startLoop } from 'tvs-utils/src/app/frameLoop'
+import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { events, Q } from './context'
 import {
 	mirrorScene,
@@ -21,8 +21,7 @@ videos.then((vs) => {
 	d.canvas.addEventListener('mousedown', startVideos)
 	d.canvas.addEventListener('touchstart', startVideos)
 
-	addToLoop((tpf) => {
-		d.tpf = tpf
+	addToLoop(() => {
 		Q.emit(events.FRAME)
 		videoTextures.forEach((t, i) =>
 			t.update({ texture: { ...videoTextureData, asset: vs[i] } }),

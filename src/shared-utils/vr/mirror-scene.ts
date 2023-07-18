@@ -90,8 +90,8 @@ export function createMirrorScene(
 			transform: floorTransform,
 			reflection: () => mirrorScene.image(),
 			size: () => [
-				width || Q.painter.canvas.width,
-				height || Q.painter.canvas.height,
+				width || Q.gl.drawingBufferWidth,
+				height || Q.gl.drawingBufferHeight,
 			],
 			reflectionStrength,
 		},

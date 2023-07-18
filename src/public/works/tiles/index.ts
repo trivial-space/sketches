@@ -7,8 +7,7 @@ import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 
 // state.device.sizeMultiplier = window.devicePixelRatio
 
-addToLoop((tpf) => {
-	Q.state.device.tpf = tpf
+addToLoop(() => {
 	Q.emit(events.FRAME)
 	Q.painter.draw({ sketches: tiles })
 }, 'loop')

@@ -4,7 +4,7 @@ import { mat4 } from 'gl-matrix'
 import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
 import { Q } from './context'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { addToLoop, startLoop } from 'tvs-utils/src/app/frameLoop'
+import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { baseEvents } from 'tvs-utils/dist/app/painterState'
 
 initPerspectiveViewport(Q, {
@@ -44,9 +44,7 @@ const points = createPoints3DSketch(Q, 'points', {
 	},
 })
 
-addToLoop((tpf) => {
-	// make camera work
-	Q.state.device.tpf = tpf
+addToLoop(() => {
 	Q.emit(baseEvents.FRAME)
 
 	mat4.rotateY(pointsMat, pointsMat, 0.01)

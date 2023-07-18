@@ -1,7 +1,7 @@
 import { createPoints2DSketch } from '../../../../shared-utils/sketches/points/points'
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { addToLoop, startLoop } from 'tvs-utils/src/app/frameLoop'
+import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { getPainterContext } from 'tvs-utils/dist/app/painterState'
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement

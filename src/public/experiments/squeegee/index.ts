@@ -1,7 +1,7 @@
 import './state'
 import { events, Q } from './context'
 import { scene } from './renderer'
-import { addToLoop, startLoop } from 'tvs-utils/src/app/frameLoop'
+import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

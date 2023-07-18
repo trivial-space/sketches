@@ -4,8 +4,7 @@ import { events, Q } from './context'
 import { scene } from './renderer'
 import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 
-addToLoop((tpf) => {
-	Q.state.device.tpf = tpf
+addToLoop(() => {
 	Q.emit(events.FRAME)
 	Q.painter.compose(scene)
 }, 'loop')

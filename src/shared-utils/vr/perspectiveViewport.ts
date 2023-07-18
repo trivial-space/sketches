@@ -72,8 +72,8 @@ export function initPerspectiveViewport(
 		const dragInfo = {
 			dragging: p.dragging,
 			drag: {
-				x: (d.sizeMultiplier * p.drag.x) / d.canvas.width,
-				y: (d.sizeMultiplier * p.drag.y) / d.canvas.height,
+				x: (d.sizeMultiplier * p.drag.x) / 1000,
+				y: (d.sizeMultiplier * p.drag.y) / 1000,
 			},
 		}
 		v.camera.updateRotFromPointer(v.lookSpeed, dragInfo)
@@ -81,8 +81,8 @@ export function initPerspectiveViewport(
 		return
 	})
 
-	ctx.listen('viewPort', baseEvents.RESIZE, ({ device: d, viewPort: v }) => {
-		v.camera.aspect = d.canvas.width / d.canvas.height
+	ctx.listen('viewPort', baseEvents.RESIZE, ({ viewPort: v }) => {
+		v.camera.aspect = ctx.gl.drawingBufferWidth / ctx.gl.drawingBufferHeight
 		v.camera.needsUpdateProjection = true
 	})
 }

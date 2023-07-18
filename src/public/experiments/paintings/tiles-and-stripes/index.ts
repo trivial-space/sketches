@@ -1,8 +1,7 @@
 import { events, Q } from './context'
 import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
-import { getNoiseTextureData } from 'tvs-utils/src/graphics/texture-helpers'
+import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import {
-	createLine,
 	Line,
 	lineToFormCollection,
 } from '../../../../shared-utils/geometry/lines_2d'
@@ -54,7 +53,7 @@ Q.listen('index', events.RESIZE, () => {
 	scene.update({
 		uniforms: {
 			noiseTex: noiseTex.image(),
-			size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+			size: () => [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 			texScale: [20, 1],
 			edgeSharpness: 3,
 		},

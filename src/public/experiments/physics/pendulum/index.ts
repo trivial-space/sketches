@@ -1,6 +1,6 @@
 import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
 import { Q } from './context'
-import { addToLoop, startLoop } from 'tvs-utils/src/app/frameLoop'
+import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { createLines3DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { createPoints3DSketch } from '../../../../shared-utils/sketches/points/points'
 import { createMirrorScene } from '../../../../shared-utils/vr/mirror-scene'
@@ -41,8 +41,6 @@ const points = createPoints3DSketch(Q, 'points', {
 const scene = createMirrorScene(Q, [lines.sketch, points.sketch])
 
 addToLoop((tpf) => {
-	// make camera work
-	Q.state.device.tpf = tpf
 	Q.emit(baseEvents.FRAME)
 
 	update(tpf)

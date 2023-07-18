@@ -79,8 +79,6 @@ Q.listen('', baseEvents.POINTER, (s) => {
 
 				Q.painter.compose(scene)
 			}, 'update-and-paint')
-
-			startLoop()
 		}
 	} else if (!val.dragging && dragging) {
 		dragging = false

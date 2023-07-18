@@ -7,7 +7,7 @@ import {
 import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { Sketch } from 'tvs-painter/dist/sketch'
-import { getNoiseTextureData } from 'tvs-utils/src/graphics/texture-helpers'
+import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import {
 	brushStrokeFrag,
 	brushStrokeVert,

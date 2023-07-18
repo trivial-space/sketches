@@ -1,7 +1,7 @@
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
-import { addToLoop, startLoop } from 'tvs-utils/src/app/frameLoop'
+import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { defined } from 'tvs-libs/dist/types'
 import { getPainterContext } from 'tvs-utils/dist/app/painterState'
 

@@ -1,5 +1,5 @@
 import { events, Q } from './context'
-import { getNoiseTextureData } from 'tvs-utils/src/graphics/texture-helpers'
+import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import { lineToAnimatedFormCollection } from '../../../../shared-utils/geometry/lines_2d'
 import {
 	brushStrokeFrag,

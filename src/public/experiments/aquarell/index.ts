@@ -3,8 +3,7 @@ import { events, Q } from './context'
 import './paint'
 import { automaton } from './renderer'
 
-addToLoop((tpf) => {
-	Q.get('device').tpf = tpf
+addToLoop(() => {
 	Q.emit(events.PROCESS_PAINT)
 	Q.emit(events.FRAME)
 	Q.painter.compose(automaton).show(automaton)
