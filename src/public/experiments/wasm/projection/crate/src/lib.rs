@@ -36,8 +36,8 @@ impl Default for State {
         }
 
         s.camera.set(CamProps {
-            fov: Some(0.6),
-            translation: Some(vec3(0.0, -3.0, -20.0)),
+            fov: Some(0.8),
+            translation: Some(vec3(0.0, 3.0, 20.0)),
             ..default()
         });
 
@@ -97,26 +97,7 @@ pub fn update_screen(width: f32, height: f32) {
 
 #[wasm_bindgen]
 pub fn update_camera(forward: f32, left: f32, up: f32, rot_y: f32, rot_x: f32) {
-    State::update(|s| {
-        if rot_x != 0.0 || rot_y != 0.0 {
-            s.camera.set(CamProps {
-                rot_horizontal: Some(s.camera.rot_horizontal + rot_y),
-                rot_vertical: Some(s.camera.rot_vertical + rot_x),
-                ..default()
-            })
-        }
-        let mut translation = s.camera.translation;
-        if up != 0.0 {
-            translation += Vec3::Y * up;
-        }
-        if forward != 0.0 {
-            translation += vec3(0.0, 0.0, 0.0) * forward; // TODO: use horizontal rotation
-        }
-        if left != 0.0 {
-            translation += vec3(0.0, 0.0, 0.0) * left; // TODO: use horizontal rotation
-        }
-        s.camera.translation = translation;
-    })
+    State::update(|s| s.camera.update(forward, left, up, rot_y, rot_x))
 }
 
 #[wasm_bindgen]

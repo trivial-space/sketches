@@ -6,6 +6,7 @@ import init, {
 	get_normal_mat,
 	setup,
 	update,
+	update_camera,
 	update_screen,
 } from '../crate/pkg/tvs_sketch_projection'
 import { render, renderInit } from './render'
@@ -14,9 +15,13 @@ import { FormData } from 'tvs-painter'
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { Q } from './context'
 import { baseEvents } from 'tvs-utils/dist/app/painterState'
+import { initCamera } from '../../../../../shared-utils/vr/wasmCamera'
 
 init().then(() => {
 	setup()
+	initCamera(Q, { updateScreen: update_screen, updateTransform: update_camera })
+	Q.emit(baseEvents.RESIZE)
+
 	const geometries = get_geom()
 	console.log('wasm geometries', geometries)
 	const forms: FormData[] = geometries.map((g: any) =>
@@ -24,13 +29,9 @@ init().then(() => {
 	)
 	renderInit(forms)
 
-	Q.listen('resize', baseEvents.RESIZE, (s) => {
-		update_screen(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight)
-	})
-	Q.emit(baseEvents.RESIZE)
-
 	addToLoop((tpf) => {
 		update(tpf)
+		Q.emit(baseEvents.FRAME)
 		const uniforms = times(
 			(i) => ({
 				camera: get_mvp(i),
