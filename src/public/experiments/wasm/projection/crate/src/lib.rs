@@ -87,12 +87,7 @@ pub fn get_light() -> Float32Array {
 
 #[wasm_bindgen]
 pub fn update_screen(width: f32, height: f32) {
-    State::update(|s| {
-        s.camera.set(CamProps {
-            aspect_ratio: Some(width / height),
-            ..default()
-        })
-    })
+    State::update(|s| s.camera.set_aspect_ratio(width / height))
 }
 
 #[wasm_bindgen]
