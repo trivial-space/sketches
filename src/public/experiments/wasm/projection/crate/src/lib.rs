@@ -1,4 +1,4 @@
-use geom::create_glass;
+use geom::{create_glass, create_ground};
 use js_sys::Float32Array;
 use tvs_libs::{
     prelude::*,
@@ -60,9 +60,14 @@ pub fn setup() {
 }
 
 #[wasm_bindgen]
-pub fn get_geom() -> JsValue {
+pub fn get_glass_geoms() -> JsValue {
     let geoms = &State::read().geometries;
     serde_wasm_bindgen::to_value(geoms).unwrap()
+}
+
+#[wasm_bindgen]
+pub fn get_ground_geom() -> JsValue {
+    serde_wasm_bindgen::to_value(&create_ground()).unwrap()
 }
 
 #[wasm_bindgen]

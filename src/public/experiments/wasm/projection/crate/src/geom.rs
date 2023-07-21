@@ -3,6 +3,7 @@ use glam::{vec3, Vec3};
 use rand::random;
 use serde::Serialize;
 use tvs_libs::{
+    data_structures::grid::make_grid,
     geometry::{
         mesh_geometry_3d::{MeshBufferedGeometryType, MeshGeometry, MeshVertex, Position3D},
         vertex_index::VertIdx3f,
@@ -57,12 +58,21 @@ pub fn create_glass() -> BufferedGeometry {
 }
 
 pub fn create_ground() -> BufferedGeometry {
+    let mut grid = make_grid();
+    grid.add_col(vec![vec3(-20.0, 0.0, -20.0), vec3(-20.0, 0.0, 20.0)]);
+    grid.add_col(vec![vec3(20.0, 0.0, -20.0), vec3(20.0, 0.0, 20.0)]);
+    let grid = grid.subdivide(10, 10, Vec3::lerp);
     let mut geom = MeshGeometry::new();
-    let tl = vec3(-1.0 + offset(1.5), 4.0 + offset(2.0), 0.0);
-    let tr = vec3(1.0 + offset(1.5), 4.0 + offset(2.0), 0.0);
-    let bl = vec3(-1.0, 0.0, 0.0);
-    let br = vec3(1.0, 0.0, 0.0);
-    geom.add_face4(vert(tl), vert(tr), vert(br), vert(bl));
+    for quad in grid.to_ccw_quads() {
+        geom.add_face4_data(
+            vert(quad[0]),
+            vert(quad[1]),
+            vert(quad[2]),
+            vert(quad[3]),
+            Some(vec3(0.0, 1.0, 0.0)),
+            None,
+        );
+    }
 
     geom.generate_face_normals();
     geom.generate_vertex_normals();

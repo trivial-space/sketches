@@ -1,6 +1,6 @@
 use bytemuck::{Pod, Zeroable};
 use glam::{vec3, Quat, Vec3};
-use rand::Rng;
+use rand::random;
 use serde::Serialize;
 use std::f32::consts::PI;
 use tvs_libs::{
@@ -51,8 +51,6 @@ fn vert(pos: Vec3, color: Vec3, x: usize, y: usize) -> MeshVertex<VertIdx2Usize,
 }
 
 pub fn create_ball1_geom() -> BufferedGeometry {
-    let mut rnd = rand::thread_rng();
-
     let mut grid = make_grid_with_coord_ops(CIRCLE_COLS_COORD_OPS);
     let mut col1 = vec![];
     let mut y = 5.0;
@@ -79,9 +77,9 @@ pub fn create_ball1_geom() -> BufferedGeometry {
             let v3 = v2.right().unwrap();
             let v4 = v3.top().unwrap();
 
-            let r: f32 = rnd.gen();
-            let g: f32 = rnd.gen();
-            let b: f32 = rnd.gen();
+            let r: f32 = random();
+            let g: f32 = random();
+            let b: f32 = random();
 
             let color = vec3(r, g, b);
             geom.add_face4_data(

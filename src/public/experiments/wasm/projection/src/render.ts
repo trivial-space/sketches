@@ -56,14 +56,22 @@ const shader = defShader({
 		]),
 	],
 })
-const shade = Q.getShade('plate').update(shader)
+const shade = Q.getShade('glass').update(shader)
 
-let sketches: Sketch[] = []
+let glassSketches: Sketch[] = []
+let groundSketch = Q.getSketch('ground')
 
-export function renderInit(geometries: FormData[]) {
-	sketches = geometries.map((g, i) => {
-		const form = Q.getForm('plate' + i).update(g)
-		return Q.getSketch('plate' + i).update({ shade, form })
+export function renderInit(
+	glassGeometries: FormData[],
+	groundGeometry: FormData,
+) {
+	glassSketches = glassGeometries.map((g, i) => {
+		const form = Q.getForm('glass' + i).update(g)
+		return Q.getSketch('glass' + i).update({ shade, form })
+	})
+	groundSketch.update({
+		form: Q.getForm('ground').update(groundGeometry),
+		shade,
 	})
 }
 
@@ -74,11 +82,12 @@ export function render(
 	}[],
 	light: Float32Array,
 ) {
-	sketches.forEach((s, i) => {
+	glassSketches.forEach((s, i) => {
 		s.update({ uniforms: plateUniforms[i] })
 	})
 	Q.painter.draw({
-		sketches,
+		sketches: [groundSketch].concat(glassSketches),
 		uniforms: { light },
+		directRender: true,
 	})
 }

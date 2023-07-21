@@ -1,6 +1,7 @@
 import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import init, {
-	get_geom,
+	get_glass_geoms,
+	get_ground_geom,
 	get_light,
 	get_mvp,
 	get_normal_mat,
@@ -11,7 +12,6 @@ import init, {
 } from '../crate/pkg/tvs_sketch_projection'
 import { render, renderInit } from './render'
 import { wasmGeometryToFormData } from '../../../../../shared-utils/wasm/utils'
-import { FormData } from 'tvs-painter'
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { Q } from './context'
 import { baseEvents } from 'tvs-utils/dist/app/painterState'
@@ -22,12 +22,13 @@ init().then(() => {
 	initCamera(Q, { updateScreen: update_screen, updateTransform: update_camera })
 	Q.emit(baseEvents.RESIZE)
 
-	const geometries = get_geom()
-	console.log('wasm geometries', geometries)
-	const forms: FormData[] = geometries.map((g: any) =>
-		wasmGeometryToFormData(g),
-	)
-	renderInit(forms)
+	const glassGeometries = get_glass_geoms()
+	const groundGeom = get_ground_geom()
+	console.log('wasm geometries', glassGeometries, groundGeom)
+	const glassForms = glassGeometries.map((g: any) => wasmGeometryToFormData(g))
+	const groundForm = wasmGeometryToFormData(groundGeom)
+
+	renderInit(glassForms, groundForm)
 
 	addToLoop((tpf) => {
 		update(tpf)
@@ -37,7 +38,7 @@ init().then(() => {
 				camera: get_mvp(i),
 				normalMatrix: get_normal_mat(i),
 			}),
-			forms.length,
+			glassForms.length,
 		)
 		render(uniforms, get_light())
 	}, 'mainLoop')
