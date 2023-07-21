@@ -5,6 +5,7 @@ import init, {
 	get_light,
 	get_mvp,
 	get_normal_mat,
+	get_cam_mat,
 	setup,
 	update,
 	update_camera,
@@ -22,11 +23,10 @@ init().then(() => {
 	initCamera(Q, { updateScreen: update_screen, updateTransform: update_camera })
 	Q.emit(baseEvents.RESIZE)
 
-	const glassGeometries = get_glass_geoms()
-	const groundGeom = get_ground_geom()
-	console.log('wasm geometries', glassGeometries, groundGeom)
-	const glassForms = glassGeometries.map((g: any) => wasmGeometryToFormData(g))
-	const groundForm = wasmGeometryToFormData(groundGeom)
+	const glassForms = get_glass_geoms().map((g: any) =>
+		wasmGeometryToFormData(g),
+	)
+	const groundForm = wasmGeometryToFormData(get_ground_geom())
 
 	renderInit(glassForms, groundForm)
 
@@ -40,7 +40,7 @@ init().then(() => {
 			}),
 			glassForms.length,
 		)
-		render(uniforms, get_light())
+		render(uniforms, get_cam_mat(), get_light())
 	}, 'mainLoop')
 
 	startLoop()

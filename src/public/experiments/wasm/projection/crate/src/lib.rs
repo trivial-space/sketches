@@ -5,7 +5,7 @@ use tvs_libs::{
     rendering::{
         buffered_geometry::BufferedGeometry,
         camera::{CamProps, PerspectiveCamera},
-        scene::{model_normal_mat, model_view_proj_mat},
+        scene::{model_normal_mat, model_view_proj_mat, view_proj_mat},
     },
 };
 use wasm_bindgen::prelude::*;
@@ -75,6 +75,12 @@ pub fn get_mvp(i: usize) -> Float32Array {
     let t = State::read().transforms.get(i).unwrap();
     let cam = &State::read().camera;
     mat4_to_js(&model_view_proj_mat(t, cam))
+}
+
+#[wasm_bindgen]
+pub fn get_cam_mat() -> Float32Array {
+    let cam = &State::read().camera;
+    mat4_to_js(&view_proj_mat(cam))
 }
 
 #[wasm_bindgen]

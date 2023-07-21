@@ -80,13 +80,16 @@ export function render(
 		camera: Float32Array
 		normalMatrix: Float32Array
 	}[],
+	viewMat: Float32Array,
 	light: Float32Array,
 ) {
 	glassSketches.forEach((s, i) => {
 		s.update({ uniforms: plateUniforms[i] })
 	})
 	Q.painter.draw({
-		sketches: [groundSketch].concat(glassSketches),
+		sketches: [groundSketch.update({ uniforms: { camera: viewMat } })].concat(
+			glassSketches,
+		),
 		uniforms: { light },
 		directRender: true,
 	})
