@@ -55,3 +55,18 @@ pub fn create_glass() -> BufferedGeometry {
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormalFaceData)
 }
+
+pub fn create_ground() -> BufferedGeometry {
+    let mut geom = MeshGeometry::new();
+    let tl = vec3(-1.0 + offset(1.5), 4.0 + offset(2.0), 0.0);
+    let tr = vec3(1.0 + offset(1.5), 4.0 + offset(2.0), 0.0);
+    let bl = vec3(-1.0, 0.0, 0.0);
+    let br = vec3(1.0, 0.0, 0.0);
+    geom.add_face4(vert(tl), vert(tr), vert(br), vert(bl));
+
+    geom.generate_face_normals();
+    geom.generate_vertex_normals();
+    geom.triangulate();
+
+    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormalFaceData)
+}

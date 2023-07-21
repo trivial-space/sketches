@@ -74,7 +74,7 @@ pub fn create_ball1_geom() -> BufferedGeometry {
     let mut geom = MeshGeometry::new();
     for y in 0..(grid.height - 1) {
         for x in 0..grid.width {
-            let v1 = grid.vertex(x as i32, y as i32).unwrap();
+            let v1 = grid.vertex(x as i32, y as i32);
             let v2 = v1.bottom().unwrap();
             let v3 = v2.right().unwrap();
             let v4 = v3.top().unwrap();
@@ -89,6 +89,7 @@ pub fn create_ball1_geom() -> BufferedGeometry {
                 vert(v2.val, color, v2.x, v2.y),
                 vert(v3.val, color, v3.x, v3.y),
                 vert(v4.val, color, v4.x, v4.y),
+                None,
                 Some(Vertex { pos: v1.val, color }),
             );
         }
