@@ -5,7 +5,7 @@ use tvs_libs::{
     rendering::{
         buffered_geometry::BufferedGeometry,
         camera::{CamProps, PerspectiveCamera},
-        scene::{model_normal_mat, model_view_proj_mat, view_proj_mat},
+        scene::SceneObject,
     },
 };
 use wasm_bindgen::prelude::*;
@@ -74,20 +74,19 @@ pub fn get_ground_geom() -> JsValue {
 pub fn get_mvp(i: usize) -> Float32Array {
     let t = State::read().transforms.get(i).unwrap();
     let cam = &State::read().camera;
-    mat4_to_js(&model_view_proj_mat(t, cam))
+    mat4_to_js(&t.model_view_proj_mat(cam))
 }
 
 #[wasm_bindgen]
 pub fn get_cam_mat() -> Float32Array {
     let cam = &State::read().camera;
-    mat4_to_js(&view_proj_mat(cam))
+    mat4_to_js(&cam.view_proj_mat())
 }
 
 #[wasm_bindgen]
 pub fn get_normal_mat(i: usize) -> Float32Array {
     let t = State::read().transforms.get(i).unwrap();
-    let mat = model_normal_mat(t);
-    mat3_to_js(&mat)
+    mat3_to_js(&t.model_normal_mat())
 }
 
 #[wasm_bindgen]
@@ -103,7 +102,7 @@ pub fn update_screen(width: f32, height: f32) {
 
 #[wasm_bindgen]
 pub fn update_camera(forward: f32, left: f32, up: f32, rot_y: f32, rot_x: f32) {
-    State::update(|s| s.camera.update(forward, left, up, rot_y, rot_x))
+    State::update(|s| s.camera.update_transform(forward, left, up, rot_y, rot_x))
 }
 
 #[wasm_bindgen]
