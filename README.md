@@ -5,22 +5,21 @@ possibilities of current web technologies as presentation platform for virtual
 art spaces.
 
 Since a first prototype and exhibition in 2013, the main focus shifted to
-improve the technical workflow for creating and developing such virtual
-exhibition spaces. During a long research and learning period, some
-interconnected programming libraries and tools evolved, that improve the
-creation of web based virtual reality by code. Together they enable a live
-coding environment for WebGL scenes, with hot JavaScript and shader code
-reloading as well as controlled application and WebGL state preservation in live
-coding sessions.
+improve the technical workflow for creating and developing such virtual spaces.
+During a long research and learning period, some interconnected programming
+libraries and tools evolved, that improve the creation of web based virtual
+reality by code. Together they enable a live coding environment for WebGL
+scenes, with hot code and shader reloading as well as controlled application and
+WebGL state preservation in live coding sessions.
 
 This workflow builds on following libraries:
 
 - [Painter](https://github.com/trivial-space/painter), a WebGL rendering engine
-  for live coding.
+  tweaked for live coding / hot reloading.
 - [Libs](https://github.com/trivial-space/libs), a collection of useful
   functions and helpers.
 - [Libs-wasm](https://github.com/trivial-space/libs-wasm), collection of rust
-  utilities for creative coding targeting web assembly.
+  utilities for creative coding and geometric alorithms targeting web assembly.
 
 This playground is the primary testing environment for these libraries. Here
 first experiments are run, while working both on the programming tools as well
@@ -38,15 +37,15 @@ main places where progress and updates can be observed.
 
 ## Local development
 
-To install the playground locally and play with the sketches and technologies,
-clone this repository, and run
+To install the playground locally and play with the sketches, clone this
+repository, and run
 
     npm run git-init
     npm run install
-    npm run start
+    npm run dev
 
-The drafts within a (hopefully) working live coding environment will be
-available at `localhost:8080`.
+The drafts within a live coding environment will be available at
+`localhost:8000`.
 
 ### Building and watching wasm rust crates
 
@@ -55,19 +54,8 @@ To build a create once run `npx wasm-pack build --target web path/to/crate`
 To watch and rebuild a create on rust file changes run
 `npm run wasm path/to/crate`
 
-## Credits
-
-Great inspiration was drawn from the creative and encouraging communities behind
-[Three.js](https://threejs.org/), [Stack.gl](https://github.com/stackgl) and
-others pioneering immersive WebGL experiences.
-
-Thanks also to the people and teams behind
-[TypeScript](https://github.com/Microsoft/TypeScript) and
-[Webpack](https://github.com/webpack/webpack). These tools provide a major
-upgrade in terms of productivity and development comfort.
-
 ## License
 
 MIT, see the LICENSE file in the repository.
 
-Copyright (c) 2016 - 2021 Thomas Gorny
+Copyright (c) 2016 - 2023 Thomas Gorny
