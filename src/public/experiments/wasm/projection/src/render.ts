@@ -15,7 +15,8 @@ import { defShader } from '../../../../../shared-utils/shaders/ast'
 import { Sketch } from 'tvs-painter/dist/sketch'
 
 Q.painter.updateDrawSettings({
-	enable: [Q.gl.DEPTH_TEST],
+	enable: [Q.gl.DEPTH_TEST, Q.gl.BLEND],
+
 	clearBits: makeClear(Q.gl, 'depth', 'color'),
 })
 
@@ -28,6 +29,7 @@ const shader = defShader({
 		camera: 'mat4',
 		normalMatrix: 'mat3',
 		light: 'vec3',
+		color: 'vec3',
 	},
 	varying: {
 		vNormal: 'vec3',
@@ -46,11 +48,11 @@ const shader = defShader({
 				vec4(
 					diffuseLighting(
 						halfLambert(normalize(inp.vNormal), uniforms.light),
-						vec3(1, 0.5, 1),
+						uniforms.color,
 						vec3(1, 1, 1),
 						vec3(0.1, 0, 0),
 					),
-					1,
+					0.8,
 				),
 			),
 		]),
@@ -76,20 +78,30 @@ export function renderInit(
 }
 
 export function render(
-	plateUniforms: {
-		camera: Float32Array
-		normalMatrix: Float32Array
+	objects: {
+		id: number
+		color: number[]
+		mvp: number[]
+		normal_mat: number[]
 	}[],
 	viewMat: Float32Array,
 	light: Float32Array,
 ) {
-	glassSketches.forEach((s, i) => {
-		s.update({ uniforms: plateUniforms[i] })
+	objects.forEach((o) => {
+		glassSketches[o.id].update({
+			uniforms: {
+				camera: o.mvp,
+				normalMatrix: o.normal_mat,
+				color: o.color,
+			},
+		})
 	})
 	Q.painter.draw({
-		sketches: [groundSketch.update({ uniforms: { camera: viewMat } })].concat(
-			glassSketches,
-		),
+		sketches: [
+			groundSketch.update({
+				uniforms: { camera: viewMat, color: [0.5, 0.5, 0.5] },
+			}),
+		].concat(objects.map((o) => glassSketches[o.id])),
 		uniforms: { light },
 		directRender: true,
 	})

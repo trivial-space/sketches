@@ -3,17 +3,15 @@ import init, {
 	get_glass_geoms,
 	get_ground_geom,
 	get_light,
-	get_mvp,
-	get_normal_mat,
 	get_cam_mat,
 	setup,
 	update,
 	update_camera,
 	update_screen,
+	get_glass_objects,
 } from '../crate/pkg/tvs_sketch_projection'
 import { render, renderInit } from './render'
 import { wasmGeometryToFormData } from '../../../../../shared-utils/wasm/utils'
-import { times } from 'tvs-libs/dist/utils/sequence'
 import { Q } from './context'
 import { baseEvents } from 'tvs-utils/dist/app/painterState'
 import { initCamera } from '../../../../../shared-utils/vr/wasmCamera'
@@ -33,14 +31,7 @@ init().then(() => {
 	addToLoop((tpf) => {
 		update(tpf)
 		Q.emit(baseEvents.FRAME)
-		const uniforms = times(
-			(i) => ({
-				camera: get_mvp(i),
-				normalMatrix: get_normal_mat(i),
-			}),
-			glassForms.length,
-		)
-		render(uniforms, get_cam_mat(), get_light())
+		render(get_glass_objects(), get_cam_mat(), get_light())
 	}, 'mainLoop')
 
 	startLoop()

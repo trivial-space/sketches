@@ -1,5 +1,9 @@
+use std::f32::consts::{PI, TAU};
+
 use geom::{create_glass, create_ground};
 use js_sys::Float32Array;
+use rand::random;
+use serde::Serialize;
 use tvs_libs::{
     prelude::*,
     rendering::{
@@ -13,9 +17,24 @@ use wasm_bindgen::prelude::*;
 mod geom;
 mod utils;
 
+pub struct Object {
+    pub color: Vec3,
+    pub transform: Transform,
+}
+
+impl SceneObject for Object {
+    fn transform(&self) -> &Transform {
+        &self.transform
+    }
+
+    fn parent(&self) -> Option<&Self> {
+        None
+    }
+}
+
 pub struct State {
     pub geometries: Vec<BufferedGeometry>,
-    pub transforms: Vec<Transform>,
+    pub objects: Vec<Object>,
     pub camera: PerspectiveCamera,
     pub light_dir: Vec3,
 }
@@ -24,20 +43,44 @@ impl Default for State {
     fn default() -> Self {
         let mut s = Self {
             geometries: Vec::new(),
-            transforms: Vec::new(),
+            objects: Vec::new(),
             camera: PerspectiveCamera::default(),
             light_dir: Vec3::ZERO,
         };
 
-        for i in 0..8 {
-            s.geometries.push(create_glass());
-            let t = Transform::from_translation(vec3(-8.0 + (i as f32) * 4.0, 0.0, 0.0));
-            s.transforms.push(t);
-        }
+        // let grid_rows = [4, 5, 6, 7, 6, 5, 4];
+        let grid_rows = [3, 4, 5, 4, 3];
+        let distance_x = 4.0;
+        let distance_z = f32::sin(PI / 3.0) * distance_x;
+        let top = -distance_z * grid_rows.len() as f32 / 2.0;
+
+        grid_rows
+            .iter()
+            .enumerate()
+            .for_each(|(row_count, col_count)| {
+                let width = distance_x * (*col_count as f32);
+                let left = -width / 2.0;
+
+                for i in 0..*col_count {
+                    s.geometries.push(create_glass());
+                    let c = vec3(random(), random(), random());
+
+                    let mut t = Transform::from_translation(vec3(
+                        left + (i as f32) * distance_x + random::<f32>() - 0.5,
+                        0.0,
+                        top + (row_count as f32) * distance_z + random::<f32>() - 0.5,
+                    ));
+                    t.rotate_y(TAU * random::<f32>());
+                    s.objects.push(Object {
+                        color: c,
+                        transform: t,
+                    });
+                }
+            });
 
         s.camera.set(CamProps {
             fov: Some(0.8),
-            translation: Some(vec3(0.0, 3.0, 20.0)),
+            translation: Some(vec3(0.0, 1.5, 20.0)),
             ..default()
         });
 
@@ -70,23 +113,34 @@ pub fn get_ground_geom() -> JsValue {
     serde_wasm_bindgen::to_value(&create_ground()).unwrap()
 }
 
+#[derive(Serialize)]
+pub struct BufferedObject {
+    pub id: usize,
+    pub color: Vec3,
+    pub mvp: Mat4,
+    pub normal_mat: Mat3,
+}
 #[wasm_bindgen]
-pub fn get_mvp(i: usize) -> Float32Array {
-    let t = State::read().transforms.get(i).unwrap();
+pub fn get_glass_objects() -> JsValue {
     let cam = &State::read().camera;
-    mat4_to_js(&t.model_view_proj_mat(cam))
+    let objs: Vec<BufferedObject> = State::read()
+        .objects
+        .iter()
+        .enumerate()
+        .map(|(id, o)| BufferedObject {
+            id,
+            color: o.color,
+            mvp: o.model_view_proj_mat(cam),
+            normal_mat: o.model_normal_mat(),
+        })
+        .collect();
+    serde_wasm_bindgen::to_value(&objs).unwrap()
 }
 
 #[wasm_bindgen]
 pub fn get_cam_mat() -> Float32Array {
     let cam = &State::read().camera;
     mat4_to_js(&cam.view_proj_mat())
-}
-
-#[wasm_bindgen]
-pub fn get_normal_mat(i: usize) -> Float32Array {
-    let t = State::read().transforms.get(i).unwrap();
-    mat3_to_js(&t.model_normal_mat())
 }
 
 #[wasm_bindgen]
@@ -108,8 +162,8 @@ pub fn update_camera(forward: f32, left: f32, up: f32, rot_y: f32, rot_x: f32) {
 #[wasm_bindgen]
 pub fn update(tpf: f32) {
     State::update(|s| {
-        for t in s.transforms.iter_mut() {
-            t.rotate(Quat::from_rotation_y(0.0003 * tpf));
+        for obj in s.objects.iter_mut() {
+            obj.transform.rotate(Quat::from_rotation_y(0.0001 * tpf));
         }
     });
 }
