@@ -1,101 +1,13 @@
-use std::f32::consts::{PI, TAU};
-
-use geom::{create_glass, create_ground};
+use geom::create_ground;
 use js_sys::Float32Array;
-use rand::random;
 use serde::Serialize;
-use tvs_libs::{
-    prelude::*,
-    rendering::{
-        buffered_geometry::BufferedGeometry,
-        camera::{CamProps, PerspectiveCamera},
-        scene::SceneObject,
-    },
-};
+use state::State;
+use tvs_libs::{prelude::*, rendering::scene::SceneObject};
 use wasm_bindgen::prelude::*;
 
 mod geom;
+mod state;
 mod utils;
-
-pub struct Object {
-    pub color: Vec3,
-    pub transform: Transform,
-}
-
-impl SceneObject for Object {
-    fn transform(&self) -> &Transform {
-        &self.transform
-    }
-
-    fn parent(&self) -> Option<&Self> {
-        None
-    }
-}
-
-pub struct State {
-    pub geometries: Vec<BufferedGeometry>,
-    pub objects: Vec<Object>,
-    pub camera: PerspectiveCamera,
-    pub light_dir: Vec3,
-}
-
-impl Default for State {
-    fn default() -> Self {
-        let mut s = Self {
-            geometries: Vec::new(),
-            objects: Vec::new(),
-            camera: PerspectiveCamera::default(),
-            light_dir: Vec3::ZERO,
-        };
-
-        // let grid_rows = [4, 5, 6, 7, 6, 5, 4];
-        let grid_rows = [3, 4, 5, 4, 3];
-        let distance_x = 4.0;
-        let distance_z = f32::sin(PI / 3.0) * distance_x;
-        let top = -distance_z * grid_rows.len() as f32 / 2.0;
-
-        grid_rows
-            .iter()
-            .enumerate()
-            .for_each(|(row_count, col_count)| {
-                let width = distance_x * (*col_count as f32);
-                let left = -width / 2.0;
-
-                for i in 0..*col_count {
-                    s.geometries.push(create_glass());
-                    let c = vec3(random(), random(), random());
-
-                    let mut t = Transform::from_translation(vec3(
-                        left + (i as f32) * distance_x + random::<f32>() - 0.5,
-                        0.0,
-                        top + (row_count as f32) * distance_z + random::<f32>() - 0.5,
-                    ));
-                    t.rotate_y(TAU * random::<f32>());
-                    s.objects.push(Object {
-                        color: c,
-                        transform: t,
-                    });
-                }
-            });
-
-        s.camera.set(CamProps {
-            fov: Some(0.8),
-            translation: Some(vec3(0.0, 1.5, 20.0)),
-            ..default()
-        });
-
-        s.light_dir = vec3(1.0, 1.0, 1.0).normalize();
-
-        s
-    }
-}
-
-impl AppState for State {
-    unsafe fn state_cell() -> &'static mut OnceCell<Self> {
-        static mut STATE: OnceCell<State> = OnceCell::new();
-        &mut STATE
-    }
-}
 
 #[wasm_bindgen]
 pub fn setup() {
@@ -123,10 +35,12 @@ pub struct BufferedObject {
 #[wasm_bindgen]
 pub fn get_glass_objects() -> JsValue {
     let cam = &State::read().camera;
-    let objs: Vec<BufferedObject> = State::read()
-        .objects
+    let objs = &State::read().objects;
+    let indices = &State::read().get_glass_indices(cam.rot_horizontal);
+
+    let objs: Vec<BufferedObject> = indices
         .iter()
-        .enumerate()
+        .map(|i| (*i, &objs[*i]))
         .map(|(id, o)| BufferedObject {
             id,
             color: o.color,
