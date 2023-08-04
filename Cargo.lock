@@ -295,7 +295,6 @@ dependencies = [
  "serde-wasm-bindgen",
  "tvs-libs",
  "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]
@@ -307,7 +306,6 @@ dependencies = [
  "serde-wasm-bindgen",
  "tvs-libs",
  "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]

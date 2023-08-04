@@ -13,7 +13,6 @@ default = ["console_error_panic_hook"]
 [dependencies]
 tvs-libs.workspace = true
 wasm-bindgen.workspace = true
-web-sys = { workspace = true, features = ["console"] }
 js-sys.workspace = true
 serde.workspace = true
 serde-wasm-bindgen.workspace = true
