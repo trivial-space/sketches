@@ -3,8 +3,6 @@ use tvs_libs::{
 };
 use wasm_bindgen::prelude::*;
 
-mod utils;
-
 pub struct State {
     pub line: Line,
 }
