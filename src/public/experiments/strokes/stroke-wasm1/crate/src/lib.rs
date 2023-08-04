@@ -3,6 +3,7 @@ use tvs_libs::{
 };
 use wasm_bindgen::prelude::*;
 
+#[derive(AppState)]
 pub struct State {
     pub line: Line,
 }
@@ -17,13 +18,6 @@ impl Default for State {
         line.add(vec2(300.0, 100.0));
 
         State { line }
-    }
-}
-
-impl AppState for State {
-    unsafe fn state_cell() -> &'static mut OnceCell<Self> {
-        static mut STATE: OnceCell<State> = OnceCell::new();
-        &mut STATE
     }
 }
 
