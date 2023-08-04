@@ -1,6 +1,4 @@
 use bytemuck::{Pod, Zeroable};
-use glam::{vec3, Quat, Vec3};
-use rand::random;
 use serde::Serialize;
 use std::f32::consts::PI;
 use tvs_libs::{
@@ -9,6 +7,7 @@ use tvs_libs::{
         mesh_geometry_3d::{MeshBufferedGeometryType, MeshGeometry, MeshVertex, Position3D},
         vertex_index::VertIdx2Usize,
     },
+    prelude::*,
     rendering::buffered_geometry::{
         vert_type, BufferedGeometry, BufferedVertexData, OverrideAttributesWith, VertexFormat,
         VertexType,

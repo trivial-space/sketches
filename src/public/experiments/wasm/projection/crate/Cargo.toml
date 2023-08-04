@@ -17,10 +17,6 @@ web-sys = { workspace = true, features = ["console"] }
 js-sys.workspace = true
 serde.workspace = true
 serde-wasm-bindgen.workspace = true
-glam.workspace = true
-rand.workspace = true
-getrandom.workspace = true
-approx.workspace = true
 bytemuck.workspace = true
 
 # The `console_error_panic_hook` crate provides better debugging of panics by

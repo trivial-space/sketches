@@ -1,6 +1,4 @@
 use bytemuck::{Pod, Zeroable};
-use glam::{vec3, Vec3};
-use rand::random;
 use serde::Serialize;
 use tvs_libs::{
     data_structures::grid::make_grid,
@@ -8,6 +6,7 @@ use tvs_libs::{
         mesh_geometry_3d::{MeshBufferedGeometryType, MeshGeometry, MeshVertex, Position3D},
         vertex_index::VertIdx3f,
     },
+    prelude::*,
     rendering::buffered_geometry::{
         vert_type, BufferedGeometry, BufferedVertexData, NoAttributeOverride, VertexFormat,
         VertexType,

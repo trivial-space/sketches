@@ -1,6 +1,5 @@
 use std::f32::consts::{PI, TAU};
 
-use rand::random;
 use tvs_libs::{
     prelude::*,
     rendering::{
@@ -26,6 +25,7 @@ impl SceneObject for Object {
     }
 }
 
+#[derive(AppState)]
 pub struct State {
     pub geometries: Vec<BufferedGeometry>,
     pub objects: Vec<Object>,
@@ -115,11 +115,4 @@ fn create_glass_indices() -> [[usize; 19]; 6] {
     dir_2.reverse();
 
     [dir_0, dir_1, dir_2, dir_3, dir_4, dir_5]
-}
-
-impl AppState for State {
-    unsafe fn state_cell() -> &'static mut OnceCell<Self> {
-        static mut STATE: OnceCell<State> = OnceCell::new();
-        &mut STATE
-    }
 }
