@@ -3,7 +3,10 @@ use serde::Serialize;
 use state::State;
 use tvs_libs::{
     prelude::*,
-    rendering::{buffered_geometry::BufferedGeometry, scene::SceneObject},
+    rendering::{
+        buffered_geometry::BufferedGeometry,
+        scene::{normal_mat, SceneObject},
+    },
 };
 use wasm_bindgen::prelude::*;
 
@@ -24,10 +27,19 @@ struct Light {
 }
 
 #[derive(Serialize)]
+struct BufferedObject {
+    id: usize,
+    color: Vec3,
+    model_mat: Mat4,
+    normal_mat: Mat3,
+}
+
+#[derive(Serialize)]
 struct InitData {
     glass_geoms: Vec<BufferedGeometry>,
     ground_geom: BufferedGeometry,
     light: Light,
+    ground: BufferedObject,
 }
 
 #[wasm_bindgen]
@@ -42,6 +54,12 @@ pub fn get_init_data() -> JsValue {
             dir: light.transform.forward(),
             pos: light.transform.translation,
         },
+        ground: BufferedObject {
+            id: 0,
+            color: vec3(0.5, 0.5, 0.5),
+            model_mat: Mat4::IDENTITY,
+            normal_mat: normal_mat(Mat4::IDENTITY),
+        },
     };
 
     for _i in 0..count {
@@ -49,14 +67,6 @@ pub fn get_init_data() -> JsValue {
     }
 
     serde_wasm_bindgen::to_value(&data).unwrap()
-}
-
-#[derive(Serialize)]
-struct BufferedObject {
-    id: usize,
-    color: Vec3,
-    model_mat: Mat4,
-    normal_mat: Mat3,
 }
 
 #[derive(Serialize)]

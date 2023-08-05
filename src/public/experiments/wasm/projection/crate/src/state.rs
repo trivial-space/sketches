@@ -39,7 +39,7 @@ impl Default for State {
         });
 
         let light = Object {
-            transform: Transform::from_translation(vec3(20.0, 5.0, 20.0))
+            transform: Transform::from_translation(vec3(0.0, 5.0, 20.0))
                 .looking_at(Vec3::ZERO, Vec3::Y),
             color: vec3(1.0, 1.0, 1.0),
         };
@@ -52,7 +52,7 @@ impl Default for State {
         };
 
         let grid_rows = [3, 4, 5, 4, 3];
-        let distance_x = 4.0;
+        let distance_x = 5.0;
         let distance_z = f32::sin(PI / 3.0) * distance_x;
         let top = -distance_z * grid_rows.len() as f32 / 2.0;
 
@@ -91,7 +91,7 @@ impl State {
 
     pub fn update(&mut self, tpf: f32) {
         for obj in self.objects.iter_mut() {
-            obj.transform.rotate(Quat::from_rotation_y(0.0001 * tpf));
+            obj.transform.rotate(Quat::from_rotation_y(0.0003 * tpf));
         }
     }
 }

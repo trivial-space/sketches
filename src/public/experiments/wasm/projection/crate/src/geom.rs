@@ -58,8 +58,8 @@ pub fn create_glass() -> BufferedGeometry {
 
 pub fn create_ground() -> BufferedGeometry {
     let mut grid = make_grid();
-    grid.add_col(vec![vec3(-20.0, 0.0, -20.0), vec3(-20.0, 0.0, 20.0)]);
-    grid.add_col(vec![vec3(20.0, 0.0, -20.0), vec3(20.0, 0.0, 20.0)]);
+    grid.add_col(vec![vec3(-200.0, 0.0, -200.0), vec3(-200.0, 0.0, 200.0)]);
+    grid.add_col(vec![vec3(200.0, 0.0, -200.0), vec3(200.0, 0.0, 200.0)]);
     let grid = grid.subdivide(10, 10, Vec3::lerp);
     let mut geom = MeshGeometry::new();
     for quad in grid.to_ccw_quads() {

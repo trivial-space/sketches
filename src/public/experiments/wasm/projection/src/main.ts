@@ -25,9 +25,11 @@ init().then(() => {
 	)
 	const groundForm = wasmGeometryToFormData(initData.ground_geom)
 
-	renderInit(glassForms, groundForm)
+	renderInit(glassForms, groundForm, initData.ground)
 
 	console.log('initData', initData)
+	const frameData = get_frame_data()
+	console.log('frameData', frameData)
 
 	addToLoop((tpf) => {
 		update(tpf)
