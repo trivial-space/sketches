@@ -12,7 +12,6 @@ import {
 	Vec3Sym,
 	sub,
 	add,
-	neg,
 	div,
 	pow,
 	FloatSym,
@@ -20,13 +19,15 @@ import {
 	dot,
 	abs,
 } from '@thi.ng/shader-ast'
-import { diffuseLighting, halfLambert } from '@thi.ng/shader-ast-stdlib'
+import { diffuseLighting } from '@thi.ng/shader-ast-stdlib'
 import { defShader } from '../../../../../shared-utils/shaders/ast'
 import {
 	distanceDivisor,
 	specularLight,
 	spotLight,
 } from '../../../../../shared-utils/shaders/lights'
+
+const spotLightFactor = 10
 
 export const glassLitShader = defShader({
 	attribs: {
@@ -74,7 +75,7 @@ export const glassLitShader = defShader({
 				(distance = sym(length(lightDir))),
 				(lightDir = sym(div(lightDir, distance))),
 				(eyeDir = sym(normalize(sub(uniforms.eyePos, inp.vPos)))),
-				(divisor = sym(distanceDivisor(distance, vec3(1, 0.001, 0.0001)))),
+				(divisor = sym(distanceDivisor(distance, vec3(1, 0.01, 0.001)))),
 				(diffuse = sym(
 					div(
 						mul(
@@ -87,7 +88,7 @@ export const glassLitShader = defShader({
 							spotLight(
 								lightDir,
 								uniforms.lightDir,
-								float(20),
+								float(spotLightFactor),
 								uniforms.lightColor,
 							),
 						),
@@ -154,7 +155,7 @@ export const groundShader = defShader({
 				(lightDir = sym(sub(uniforms.lightPos, inp.vPos))),
 				(distance = sym(length(lightDir))),
 				(lightDir = sym(div(lightDir, distance))),
-				(divisor = sym(distanceDivisor(distance, vec3(1, 0.001, 0.0001)))),
+				(divisor = sym(distanceDivisor(distance, vec3(1, 0.01, 0.001)))),
 				(diffuse = sym(
 					div(
 						mul(
@@ -162,7 +163,7 @@ export const groundShader = defShader({
 							spotLight(
 								lightDir,
 								uniforms.lightDir,
-								float(20),
+								float(spotLightFactor),
 								uniforms.lightColor,
 							),
 						),
