@@ -25,7 +25,7 @@ init().then(() => {
 	)
 	const groundForm = wasmGeometryToFormData(initData.ground_geom)
 
-	renderInit(glassForms, groundForm, initData.ground)
+	renderInit(glassForms, groundForm, initData.ground, initData.light)
 
 	console.log('initData', initData)
 	const frameData = get_frame_data()

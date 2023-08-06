@@ -22,11 +22,18 @@ impl SceneObject for Object {
     }
 }
 
+pub struct Light {
+    pub color: Vec3,
+    pub transform: Transform,
+    pub texcoords_projection: Mat4,
+    pub cam_projection: Mat4,
+}
+
 #[derive(AppState)]
 pub struct State {
     pub objects: Vec<Object>,
     pub camera: PerspectiveCamera,
-    pub light: Object,
+    pub light: Light,
     glass_indices: [[usize; 19]; 6],
 }
 
@@ -38,10 +45,19 @@ impl Default for State {
             ..default()
         });
 
-        let light = Object {
-            transform: Transform::from_translation(vec3(0.0, 5.0, 20.0))
-                .looking_at(Vec3::ZERO, Vec3::Y),
+        let light_transform =
+            Transform::from_translation(vec3(0.0, 7.0, 20.0)).looking_at(Vec3::ZERO, Vec3::Y);
+
+        let light_projection = Mat4::perspective_rh(PI / 4.5, 2.0, 0.1, 1000.0);
+        let texcoord_transform =
+            Transform::from_translation(vec3(0.5, 0.5, 0.5)).with_scale(vec3(0.5, 0.5, 0.5));
+
+        let cam_projection = light_projection * light_transform.compute_matrix().inverse();
+        let light = Light {
+            transform: light_transform,
             color: vec3(1.0, 1.0, 1.0),
+            texcoords_projection: texcoord_transform.compute_matrix() * cam_projection,
+            cam_projection,
         };
 
         let mut s = Self {

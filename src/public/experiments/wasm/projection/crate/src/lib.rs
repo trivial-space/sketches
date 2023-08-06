@@ -24,11 +24,12 @@ struct Light {
     color: Vec3,
     dir: Vec3,
     pos: Vec3,
+    texcoord_projection: Mat4,
+    cam_projection: Mat4,
 }
 
 #[derive(Serialize)]
 struct BufferedObject {
-    id: usize,
     color: Vec3,
     model_mat: Mat4,
     normal_mat: Mat3,
@@ -53,9 +54,10 @@ pub fn get_init_data() -> JsValue {
             color: light.color,
             dir: light.transform.forward(),
             pos: light.transform.translation,
+            texcoord_projection: light.texcoords_projection,
+            cam_projection: light.cam_projection,
         },
         ground: BufferedObject {
-            id: 0,
             color: vec3(0.5, 0.5, 0.5),
             model_mat: Mat4::IDENTITY,
             normal_mat: normal_mat(Mat4::IDENTITY),
@@ -71,6 +73,8 @@ pub fn get_init_data() -> JsValue {
 
 #[derive(Serialize)]
 struct FrameData {
+    cam_indices: Vec<usize>,
+    proj_indices: Vec<usize>,
     objects: Vec<BufferedObject>,
     camera_mat: Mat4,
     camera_pos: Vec3,
@@ -78,15 +82,15 @@ struct FrameData {
 
 #[wasm_bindgen]
 pub fn get_frame_data() -> JsValue {
-    let cam = &State::read().camera;
-    let objs = &State::read().objects;
-    let indices = &State::read().get_glass_indices(cam.rot_horizontal);
+    let s = State::read();
+    let cam = &s.camera;
+    let objs = &s.objects;
+    let cam_indices = s.get_glass_indices(cam.rot_horizontal);
+    let proj_indices = s.get_glass_indices(0.0);
 
-    let objects = indices
+    let objects = objs
         .iter()
-        .map(|i| (*i, &objs[*i]))
-        .map(|(id, o)| BufferedObject {
-            id,
+        .map(|o| BufferedObject {
             color: o.color,
             model_mat: o.model_mat(),
             normal_mat: o.model_normal_mat(),
@@ -97,6 +101,8 @@ pub fn get_frame_data() -> JsValue {
         objects,
         camera_mat: cam.view_proj_mat(),
         camera_pos: cam.translation,
+        cam_indices: cam_indices.to_vec(),
+        proj_indices: proj_indices.to_vec(),
     })
     .unwrap()
 }

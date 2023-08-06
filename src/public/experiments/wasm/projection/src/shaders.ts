@@ -18,6 +18,19 @@ import {
 	length,
 	dot,
 	abs,
+	BoolSym,
+	$w,
+	texture,
+	$xy,
+	and,
+	gte,
+	FLOAT0,
+	$y,
+	$x,
+	FLOAT1,
+	lte,
+	ternary,
+	VEC3_1,
 } from '@thi.ng/shader-ast'
 import { diffuseLighting } from '@thi.ng/shader-ast-stdlib'
 import { defShader } from '../../../../../shared-utils/shaders/ast'
@@ -37,7 +50,7 @@ export const glassLitShader = defShader({
 	uniforms: {
 		modelMat: 'mat4',
 		cameraMat: 'mat4',
-		normalMatrix: 'mat3',
+		normalMat: 'mat3',
 		lightPos: 'vec3',
 		lightDir: 'vec3',
 		lightColor: 'vec3',
@@ -55,8 +68,7 @@ export const glassLitShader = defShader({
 				(pos = sym(mul(uniforms.modelMat, vec4(inp.position, 1)))),
 				assign(out.vPos, $xyz(pos)),
 				assign(gl.gl_Position, mul(uniforms.cameraMat, pos)),
-				assign(gl.gl_PointSize, float(2)),
-				assign(out.vNormal, mul(uniforms.normalMatrix, inp.normal)),
+				assign(out.vNormal, mul(uniforms.normalMat, inp.normal)),
 			]),
 		]
 	},
@@ -114,6 +126,32 @@ export const glassLitShader = defShader({
 })
 console.log('glassLitShader', glassLitShader)
 
+export const glassProjectionShader = defShader({
+	attribs: {
+		position: 'vec3',
+	},
+	uniforms: {
+		modelMat: 'mat4',
+		cameraMat: 'mat4',
+		color: 'vec3',
+	},
+	vs: (gl, uniforms, inp, out) => {
+		let pos: Vec4Sym
+		return [
+			defMain(() => [
+				(pos = sym(mul(uniforms.modelMat, vec4(inp.position, 1)))),
+				assign(gl.gl_Position, mul(uniforms.cameraMat, pos)),
+			]),
+		]
+	},
+	fs: (gl, uniforms, inp, out) => [
+		defMain(() => {
+			return [assign(out.fragColor, vec4(uniforms.color, 0.2))]
+		}),
+	],
+})
+console.log('glassProjectionShader', glassProjectionShader)
+
 export const groundShader = defShader({
 	attribs: {
 		position: 'vec3',
@@ -122,16 +160,19 @@ export const groundShader = defShader({
 	uniforms: {
 		modelMat: 'mat4',
 		cameraMat: 'mat4',
-		normalMatrix: 'mat3',
+		normalMat: 'mat3',
+		textureMat: 'mat4',
 		lightDir: 'vec3',
 		lightPos: 'vec3',
 		lightColor: 'vec3',
 		eyePos: 'vec3',
 		color: 'vec3',
+		projectedTex: 'sampler2D',
 	},
 	varying: {
 		vNormal: 'vec3',
 		vPos: 'vec3',
+		vProjTexCoords: 'vec4',
 	},
 	vs: (gl, uniforms, inp, out) => {
 		let pos: Vec4Sym
@@ -140,8 +181,8 @@ export const groundShader = defShader({
 				(pos = sym(mul(uniforms.modelMat, vec4(inp.position, 1)))),
 				assign(out.vPos, $xyz(pos)),
 				assign(gl.gl_Position, mul(uniforms.cameraMat, pos)),
-				assign(gl.gl_PointSize, float(2)),
-				assign(out.vNormal, mul(uniforms.normalMatrix, inp.normal)),
+				assign(out.vProjTexCoords, mul(uniforms.textureMat, pos)),
+				assign(out.vNormal, mul(uniforms.normalMat, inp.normal)),
 			]),
 		]
 	},
@@ -151,15 +192,34 @@ export const groundShader = defShader({
 			let lightDir: Vec3Sym
 			let distance: FloatSym
 			let divisor: FloatSym
+			let projInRange: BoolSym
+			let texCoords: Vec3Sym
+			let texColor: Vec4Sym
 			return [
 				(lightDir = sym(sub(uniforms.lightPos, inp.vPos))),
 				(distance = sym(length(lightDir))),
 				(lightDir = sym(div(lightDir, distance))),
 				(divisor = sym(distanceDivisor(distance, vec3(1, 0.01, 0.001)))),
+				(texCoords = sym(
+					div($xyz(inp.vProjTexCoords), $w(inp.vProjTexCoords)),
+				)),
+				(texColor = sym(texture(uniforms.projectedTex, $xy(texCoords)))),
+				(projInRange = sym(
+					and(
+						gte($x(texCoords), FLOAT0),
+						and(
+							gte($y(texCoords), FLOAT0),
+							and(lte($x(texCoords), FLOAT1), lte($y(texCoords), FLOAT1)),
+						),
+					),
+				)),
 				(diffuse = sym(
 					div(
 						mul(
-							uniforms.color,
+							mul(
+								uniforms.color,
+								ternary(projInRange, $xyz(pow(texColor, vec4(3))), VEC3_1),
+							),
 							spotLight(
 								lightDir,
 								uniforms.lightDir,
