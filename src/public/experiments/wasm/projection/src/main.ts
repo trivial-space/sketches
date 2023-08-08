@@ -1,4 +1,5 @@
 import init, {
+	get_angle,
 	get_frame_data,
 	get_init_data,
 	setup,
@@ -19,24 +20,24 @@ init().then(() => {
 	Q.emit(baseEvents.RESIZE)
 
 	const initData = get_init_data()
+	console.log('initData', initData)
+	const frameData = get_frame_data()
+	console.log('frameData', frameData)
 
 	const glassForms = initData.glass_geoms.map((g: any) =>
 		wasmGeometryToFormData(g),
 	)
 	const groundForm = wasmGeometryToFormData(initData.ground_geom)
 
-	renderInit(glassForms, groundForm, initData.ground, initData.light)
-
-	console.log('initData', initData)
-	const frameData = get_frame_data()
-	console.log('frameData', frameData)
+	renderInit(glassForms, groundForm, initData.ground)
 
 	addToLoop((tpf) => {
 		update(tpf)
 		Q.emit(baseEvents.FRAME)
 		const frameData = get_frame_data()
+		console.log(get_angle())
 		// console.log('frameData', frameData)
-		render(frameData, initData.light)
+		render(frameData)
 	}, 'mainLoop')
 
 	startLoop()

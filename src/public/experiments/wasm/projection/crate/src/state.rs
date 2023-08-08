@@ -11,6 +11,8 @@ use tvs_libs::{
 pub struct Object {
     pub color: Vec3,
     pub transform: Transform,
+    neg_rotation: bool,
+    rotation_speed: f32,
 }
 
 impl SceneObject for Object {
@@ -35,6 +37,8 @@ pub struct State {
     pub camera: PerspectiveCamera,
     pub light: Light,
     glass_indices: [[usize; 19]; 6],
+    texcoord_transform: Mat4,
+    light_projection: Mat4,
 }
 
 impl Default for State {
@@ -45,18 +49,20 @@ impl Default for State {
             ..default()
         });
 
+        let texcoord_transform: Mat4 = Transform::from_translation(vec3(0.5, 0.5, 0.5))
+            .with_scale(vec3(0.5, 0.5, 0.5))
+            .compute_matrix();
+
+        let light_projection: Mat4 = Mat4::perspective_rh(PI / 4.5, 2.0, 0.1, 1000.0);
+
         let light_transform =
             Transform::from_translation(vec3(0.0, 7.0, 20.0)).looking_at(Vec3::ZERO, Vec3::Y);
-
-        let light_projection = Mat4::perspective_rh(PI / 4.5, 2.0, 0.1, 1000.0);
-        let texcoord_transform =
-            Transform::from_translation(vec3(0.5, 0.5, 0.5)).with_scale(vec3(0.5, 0.5, 0.5));
 
         let cam_projection = light_projection * light_transform.compute_matrix().inverse();
         let light = Light {
             transform: light_transform,
             color: vec3(1.0, 1.0, 1.0),
-            texcoords_projection: texcoord_transform.compute_matrix() * cam_projection,
+            texcoords_projection: texcoord_transform * cam_projection,
             cam_projection,
         };
 
@@ -65,6 +71,8 @@ impl Default for State {
             glass_indices: create_glass_indices(),
             camera,
             light,
+            light_projection,
+            texcoord_transform,
         };
 
         let grid_rows = [3, 4, 5, 4, 3];
@@ -91,6 +99,8 @@ impl Default for State {
                     s.objects.push(Object {
                         color: c,
                         transform: t,
+                        neg_rotation: random::<bool>(),
+                        rotation_speed: random::<f32>(),
                     });
                 }
             });
@@ -107,8 +117,17 @@ impl State {
 
     pub fn update(&mut self, tpf: f32) {
         for obj in self.objects.iter_mut() {
-            obj.transform.rotate(Quat::from_rotation_y(0.0003 * tpf));
+            obj.transform.rotate(Quat::from_rotation_y(
+                0.0001 * tpf * obj.rotation_speed * (if obj.neg_rotation { -1.0 } else { 1.0 }),
+            ));
         }
+        self.light.transform =
+            Transform::from_rotation(Quat::from_rotation_y(0.00002 * tpf)) * self.light.transform;
+        self.light.transform.look_at(vec3(0.0, 0.0, 0.0), Vec3::Y);
+
+        self.light.cam_projection =
+            self.light_projection * self.light.transform.compute_matrix().inverse();
+        self.light.texcoords_projection = self.texcoord_transform * self.light.cam_projection;
     }
 }
 

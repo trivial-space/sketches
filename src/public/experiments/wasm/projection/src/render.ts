@@ -48,7 +48,6 @@ export function renderInit(
 	glassGeometries: FormData[],
 	groundGeometry: FormData,
 	ground: ObjData,
-	light: LightData,
 ) {
 	glassGeometries
 		.map((g, i) => Q.getForm('glass' + i).update(g))
@@ -75,22 +74,20 @@ export function renderInit(
 			normalMat: ground.normal_mat,
 			color: ground.color,
 			projectedTex: () => projLayer.image(),
-			textureMat: light.texcoord_projection,
 		},
 	})
 }
 
-export function render(
-	frameData: {
-		objects: ObjData[]
-		camera_mat: number[]
-		camera_pos: number[]
-		cam_indices: number[]
-		proj_indices: number[]
-	},
-	light: LightData,
-) {
-	frameData.objects.forEach((o, i) => {
+export function render(data: {
+	objects: ObjData[]
+	camera_mat: number[]
+	camera_pos: number[]
+	cam_indices: number[]
+	proj_indices: number[]
+	light: LightData
+}) {
+	const light = data.light
+	data.objects.forEach((o, i) => {
 		glassSketches[i].update({
 			uniforms: {
 				modelMat: o.model_mat,
@@ -107,7 +104,7 @@ export function render(
 	})
 
 	projLayer.update({
-		sketches: frameData.proj_indices.map((i) => projectionSketches[i]),
+		sketches: data.proj_indices.map((i) => projectionSketches[i]),
 		uniforms: {
 			cameraMat: light.cam_projection,
 		},
@@ -115,14 +112,15 @@ export function render(
 
 	renderLayer.update({
 		sketches: [groundSketch].concat(
-			frameData.cam_indices.map((i) => glassSketches[i]),
+			data.cam_indices.map((i) => glassSketches[i]),
 		),
 		uniforms: {
 			lightDir: light.dir,
 			lightPos: light.pos,
 			lightColor: [1, 1, 1],
-			eyePos: frameData.camera_pos,
-			cameraMat: frameData.camera_mat,
+			eyePos: data.camera_pos,
+			cameraMat: data.camera_mat,
+			textureMat: light.texcoord_projection,
 		},
 	})
 

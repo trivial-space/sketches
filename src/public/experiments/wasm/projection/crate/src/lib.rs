@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use geom::{create_glass, create_ground};
 use serde::Serialize;
 use state::State;
@@ -39,24 +41,15 @@ struct BufferedObject {
 struct InitData {
     glass_geoms: Vec<BufferedGeometry>,
     ground_geom: BufferedGeometry,
-    light: Light,
     ground: BufferedObject,
 }
 
 #[wasm_bindgen]
 pub fn get_init_data() -> JsValue {
     let count = State::read().objects.len();
-    let light = &State::read().light;
     let mut data = InitData {
         glass_geoms: Vec::with_capacity(count),
         ground_geom: create_ground(),
-        light: Light {
-            color: light.color,
-            dir: light.transform.forward(),
-            pos: light.transform.translation,
-            texcoord_projection: light.texcoords_projection,
-            cam_projection: light.cam_projection,
-        },
         ground: BufferedObject {
             color: vec3(0.5, 0.5, 0.5),
             model_mat: Mat4::IDENTITY,
@@ -78,6 +71,22 @@ struct FrameData {
     objects: Vec<BufferedObject>,
     camera_mat: Mat4,
     camera_pos: Vec3,
+    light: Light,
+}
+
+#[wasm_bindgen]
+pub fn get_angle() -> f32 {
+    let s = State::read();
+    angle_from_translation(&s.light.transform.translation)
+}
+
+fn angle_from_translation(translation: &Vec3) -> f32 {
+    let dot = (-translation.xz()).normalize().dot(Vec2::Y);
+    let mut light_angle = f32::acos(dot);
+    if translation.x < 0.0 {
+        light_angle = 2.0 * PI - light_angle;
+    }
+    3.0 * PI - light_angle
 }
 
 #[wasm_bindgen]
@@ -85,8 +94,11 @@ pub fn get_frame_data() -> JsValue {
     let s = State::read();
     let cam = &s.camera;
     let objs = &s.objects;
+    let light = &s.light;
+    let translation = &light.transform.translation;
+
     let cam_indices = s.get_glass_indices(cam.rot_horizontal);
-    let proj_indices = s.get_glass_indices(0.0);
+    let proj_indices = s.get_glass_indices(angle_from_translation(translation));
 
     let objects = objs
         .iter()
@@ -103,6 +115,13 @@ pub fn get_frame_data() -> JsValue {
         camera_pos: cam.translation,
         cam_indices: cam_indices.to_vec(),
         proj_indices: proj_indices.to_vec(),
+        light: Light {
+            color: light.color,
+            dir: light.transform.forward(),
+            pos: light.transform.translation,
+            texcoord_projection: light.texcoords_projection,
+            cam_projection: light.cam_projection,
+        },
     })
     .unwrap()
 }

@@ -42,12 +42,32 @@ fn offset(scale: f32) -> f32 {
 }
 
 pub fn create_glass() -> BufferedGeometry {
-    let mut geom = MeshGeometry::new();
-    let tl = vec3(-1.0 + offset(1.5), 4.0 + offset(2.0), 0.0);
-    let tr = vec3(1.0 + offset(1.5), 4.0 + offset(2.0), 0.0);
+    let tl = vec3(-1.0 + offset(1.5), 4.0 + offset(2.0), offset(1.5));
+    let tr = vec3(1.0 + offset(1.5), 4.0 + offset(2.0), offset(1.5));
     let bl = vec3(-1.0, 0.0, 0.0);
     let br = vec3(1.0, 0.0, 0.0);
-    geom.add_face4(vert(tl), vert(tr), vert(br), vert(bl));
+
+    let mut grid = make_grid();
+    let col_left = (0..=20)
+        .map(|i| {
+            let t = i as f32 / 20.0;
+            Vec3::quadratic_bezier(t, bl, vec3(-1.0, 2.0, 0.0), tl)
+        })
+        .collect();
+    let col_right = (0..=20)
+        .map(|i| {
+            let t = i as f32 / 20.0;
+            Vec3::quadratic_bezier(t, br, vec3(1.0, 2.0, 0.0), tr)
+        })
+        .collect();
+    grid.add_col(col_left);
+    grid.add_col(col_right);
+    let grid = grid.subdivide(15, 0, Lerp::lerp);
+
+    let mut geom = MeshGeometry::new();
+    for quad in grid.to_ccw_quads() {
+        geom.add_face4(vert(quad[0]), vert(quad[1]), vert(quad[2]), vert(quad[3]));
+    }
 
     geom.generate_face_normals();
     geom.generate_vertex_normals();
