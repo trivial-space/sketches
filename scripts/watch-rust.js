@@ -13,7 +13,7 @@ const watcher = chokidar.watch(pathToWatch + '/**/*.rs')
 function onWatch(path) {
 	console.log('on rust change', path)
 	exec(
-		`npx wasm-pack build --target web ${pathToWatch}`,
+		`npx wasm-pack build --target web --no-pack ${pathToWatch}`,
 		(err, stdout, stderr) => {
 			if (err) {
 				console.error('something bad happend!', err)

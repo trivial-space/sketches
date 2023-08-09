@@ -87,7 +87,10 @@ pub fn create_ball1_geom() -> BufferedGeometry {
                 vert(v3.val, color, v3.x, v3.y),
                 vert(v4.val, color, v4.x, v4.y),
                 None,
-                Some(Vertex { pos: v1.val, color }),
+                Some(Vertex {
+                    pos: Vec3::ZERO,
+                    color,
+                }),
             );
         }
     }
