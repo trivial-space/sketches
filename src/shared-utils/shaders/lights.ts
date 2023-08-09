@@ -42,7 +42,7 @@ export const specularLight = (
 	const s = pow(max(dot(r, eyeDir), FLOAT0), shininess)
 
 	return ternary(
-		gt(dot(normal, lightDir), FLOAT0),
+		gt(dot(normal, eyeDir), FLOAT0),
 		mul(mul(surfaceSpecularColor, lightColor), s),
 		VEC3_0,
 	)

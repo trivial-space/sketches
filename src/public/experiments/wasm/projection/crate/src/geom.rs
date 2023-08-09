@@ -41,6 +41,9 @@ fn offset(scale: f32) -> f32 {
     (random::<f32>() - 0.5) * scale
 }
 
+const GRID_SIZE_Y: usize = 40;
+const GRID_SIZE_X: u32 = 25;
+
 pub fn create_glass() -> BufferedGeometry {
     let tl = vec3(-1.0 + offset(1.5), 4.0 + offset(2.0), offset(1.5));
     let tr = vec3(1.0 + offset(1.5), 4.0 + offset(2.0), offset(1.5));
@@ -48,24 +51,50 @@ pub fn create_glass() -> BufferedGeometry {
     let br = vec3(1.0, 0.0, 0.0);
 
     let mut grid = make_grid();
-    let col_left = (0..=20)
+    let col_left = (0..=GRID_SIZE_Y as usize)
         .map(|i| {
-            let t = i as f32 / 20.0;
-            Vec3::quadratic_bezier(t, bl, vec3(-1.0, 2.0, 0.0), tl)
+            let t = i as f32 / GRID_SIZE_Y as f32;
+            Vec3::quadratic_bezier(t, bl, vec3(-1.0, 2.0, 0.05), tl)
         })
         .collect();
-    let col_right = (0..=20)
+    let col_right = (0..=GRID_SIZE_Y as usize)
         .map(|i| {
-            let t = i as f32 / 20.0;
-            Vec3::quadratic_bezier(t, br, vec3(1.0, 2.0, 0.0), tr)
+            let t = i as f32 / GRID_SIZE_Y as f32;
+            Vec3::quadratic_bezier(t, br, vec3(1.0, 2.0, 0.05), tr)
         })
         .collect();
     grid.add_col(col_left);
     grid.add_col(col_right);
-    let grid = grid.subdivide(15, 0, Lerp::lerp);
+    let grid = grid.subdivide(GRID_SIZE_X, 0, Lerp::lerp);
+
+    let grid_back = grid.map(|v| vec3(v.val.x, v.val.y, v.val.z - 0.05));
+
+    let mut grid_top = make_grid();
+    grid_top.add_col(grid.last_row());
+    grid_top.add_col(grid_back.last_row());
+
+    let mut left_grid = make_grid();
+    left_grid.add_col(grid.first_col().clone());
+    left_grid.add_col(grid_back.first_col().clone());
+
+    let mut right_grid = make_grid();
+    right_grid.add_col(grid.last_col().clone());
+    right_grid.add_col(grid_back.last_col().clone());
 
     let mut geom = MeshGeometry::new();
     for quad in grid.to_ccw_quads() {
+        geom.add_face4(vert(quad[0]), vert(quad[1]), vert(quad[2]), vert(quad[3]));
+    }
+    for quad in grid_back.to_cw_quads() {
+        geom.add_face4(vert(quad[0]), vert(quad[1]), vert(quad[2]), vert(quad[3]));
+    }
+    for quad in grid_top.to_cw_quads() {
+        geom.add_face4(vert(quad[0]), vert(quad[1]), vert(quad[2]), vert(quad[3]));
+    }
+    for quad in left_grid.to_cw_quads() {
+        geom.add_face4(vert(quad[0]), vert(quad[1]), vert(quad[2]), vert(quad[3]));
+    }
+    for quad in right_grid.to_ccw_quads() {
         geom.add_face4(vert(quad[0]), vert(quad[1]), vert(quad[2]), vert(quad[3]));
     }
 
@@ -73,13 +102,13 @@ pub fn create_glass() -> BufferedGeometry {
     geom.generate_vertex_normals();
     geom.triangulate();
 
-    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormalFaceData)
+    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
 }
 
 pub fn create_ground() -> BufferedGeometry {
     let mut grid = make_grid();
-    grid.add_col(vec![vec3(-200.0, 0.0, -200.0), vec3(-200.0, 0.0, 200.0)]);
-    grid.add_col(vec![vec3(200.0, 0.0, -200.0), vec3(200.0, 0.0, 200.0)]);
+    grid.add_col(vec![vec3(-200.0, 0.0, 200.0), vec3(-200.0, 0.0, -200.0)]);
+    grid.add_col(vec![vec3(200.0, 0.0, 200.0), vec3(200.0, 0.0, -200.0)]);
     let grid = grid.subdivide(10, 10, Vec3::lerp);
     let mut geom = MeshGeometry::new();
     for quad in grid.to_ccw_quads() {
@@ -97,5 +126,5 @@ pub fn create_ground() -> BufferedGeometry {
     geom.generate_vertex_normals();
     geom.triangulate();
 
-    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormalFaceData)
+    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormals)
 }

@@ -21,8 +21,8 @@ export function initCamera(ctx: PainterContext, options: CameraOptions) {
 	const {
 		updateScreen,
 		updateTransform,
-		moveSpeed = 2,
-		lookSpeed = 2,
+		moveSpeed = 1,
+		lookSpeed = 1,
 	} = options
 
 	ctx.listen('camera', baseEvents.FRAME, ({ device: d }) => {

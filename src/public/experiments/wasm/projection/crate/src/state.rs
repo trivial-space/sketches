@@ -45,7 +45,7 @@ impl Default for State {
     fn default() -> Self {
         let camera = PerspectiveCamera::create(CamProps {
             fov: Some(0.8),
-            translation: Some(vec3(0.0, 1.5, 15.0)),
+            translation: Some(vec3(0.0, 1.5, 25.0)),
             ..default()
         });
 
@@ -78,13 +78,13 @@ impl Default for State {
         let grid_rows = [3, 4, 5, 4, 3];
         let distance_x = 5.0;
         let distance_z = f32::sin(PI / 3.0) * distance_x;
-        let top = -distance_z * grid_rows.len() as f32 / 2.0;
+        let top = -distance_z * (grid_rows.len() as f32 - 1.0) / 2.0;
 
         grid_rows
             .iter()
             .enumerate()
             .for_each(|(row_count, col_count)| {
-                let width = distance_x * (*col_count as f32);
+                let width = distance_x * (*col_count as f32 - 1.0);
                 let left = -width / 2.0;
 
                 for i in 0..*col_count {

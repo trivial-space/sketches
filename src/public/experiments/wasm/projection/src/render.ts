@@ -26,11 +26,21 @@ type LightData = {
 	texcoord_projection: number[]
 }
 
+Q.painter.updateDrawSettings({
+	enable: [Q.gl.BLEND, Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
+	cullFace: Q.gl.BACK,
+	blendFuncSeparate: [
+		Q.gl.SRC_ALPHA,
+		Q.gl.ONE_MINUS_SRC_ALPHA,
+		Q.gl.ZERO,
+		Q.gl.ONE,
+	],
+})
+
 const projLayer = Q.getLayer('proj').update({
 	width: 2048,
 	height: 2048,
 	drawSettings: {
-		enable: [Q.gl.DEPTH_TEST, Q.gl.BLEND],
 		clearBits: makeClear(Q.gl, 'depth', 'color'),
 		clearColor: [1, 1, 1, 1],
 	},
@@ -38,7 +48,6 @@ const projLayer = Q.getLayer('proj').update({
 
 const renderLayer = Q.getLayer('render').update({
 	drawSettings: {
-		enable: [Q.gl.DEPTH_TEST, Q.gl.BLEND],
 		clearBits: makeClear(Q.gl, 'depth', 'color'),
 		clearColor: [0, 0, 0, 1],
 	},
