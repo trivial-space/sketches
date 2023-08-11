@@ -4,7 +4,9 @@ use std::f32::consts::PI;
 use tvs_libs::{
     data_structures::grid::{make_grid_with_coord_ops, CIRCLE_COLS_COORD_OPS},
     geometry::{
-        mesh_geometry_3d::{MeshBufferedGeometryType, MeshGeometry, MeshVertex, Position3D},
+        mesh_geometry_3d::{
+            face_data, MeshBufferedGeometryType, MeshGeometry, MeshVertex, Position3D,
+        },
         vertex_index::VertIdx2Usize,
     },
     prelude::*,
@@ -86,18 +88,13 @@ pub fn create_ball1_geom() -> BufferedGeometry {
                 vert(v2.val, color, v2.x, v2.y),
                 vert(v3.val, color, v3.x, v3.y),
                 vert(v4.val, color, v4.x, v4.y),
-                None,
-                Some(Vertex {
+                face_data(Vertex {
                     pos: Vec3::ZERO,
                     color,
                 }),
             );
         }
     }
-
-    geom.generate_face_normals();
-    geom.generate_vertex_normals();
-    geom.triangulate();
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormalFaceData)
 }

@@ -3,7 +3,9 @@ use serde::Serialize;
 use tvs_libs::{
     data_structures::grid::make_grid,
     geometry::{
-        mesh_geometry_3d::{MeshBufferedGeometryType, MeshGeometry, MeshVertex, Position3D},
+        mesh_geometry_3d::{
+            face_normal, MeshBufferedGeometryType, MeshGeometry, MeshVertex, Position3D,
+        },
         vertex_index::VertIdx3f,
     },
     prelude::*,
@@ -98,10 +100,6 @@ pub fn create_glass() -> BufferedGeometry {
         geom.add_face4(vert(quad[0]), vert(quad[1]), vert(quad[2]), vert(quad[3]));
     }
 
-    geom.generate_face_normals();
-    geom.generate_vertex_normals();
-    geom.triangulate();
-
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
 }
 
@@ -117,14 +115,9 @@ pub fn create_ground() -> BufferedGeometry {
             vert(quad[1]),
             vert(quad[2]),
             vert(quad[3]),
-            Some(vec3(0.0, 1.0, 0.0)),
-            None,
+            face_normal(vec3(0.0, 1.0, 0.0)),
         );
     }
-
-    geom.generate_face_normals();
-    geom.generate_vertex_normals();
-    geom.triangulate();
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormals)
 }

@@ -1,6 +1,4 @@
-use tvs_libs::{
-    geometry::line_2d::Line, prelude::*, rendering::buffered_geometry::ToBufferedGeometry,
-};
+use tvs_libs::{geometry::line_2d::Line, prelude::*};
 use wasm_bindgen::prelude::*;
 
 #[derive(AppState)]
