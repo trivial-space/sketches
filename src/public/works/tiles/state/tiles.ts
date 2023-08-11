@@ -193,7 +193,10 @@ Q.listen('tiles', events.INIT, ({ tiles: t }) => {
 Q.listen('tiles', events.RESIZE, ({ tiles: t, ...s }) => {
 	const canvas = s.device.canvas
 	const aspect = canvas.width / canvas.height
-	t.colCount = Math.floor(Math.pow(canvas.width / 1000, 0.5) * t.tileDensity)
+	t.colCount = Math.floor(
+		Math.pow(canvas.width / s.device.sizeMultiplier / 1000, 0.5) *
+			t.tileDensity,
+	)
 	t.rowCount = Math.ceil(t.colCount / aspect)
 	makeGrid(t.colCount, t.rowCount, t.color, t.set, t.grid)
 	createActiveTiles(t)
