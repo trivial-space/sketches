@@ -6,7 +6,7 @@ import { events, Q } from './context'
 import { tiles } from './renderer'
 import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 
-// state.device.sizeMultiplier = window.devicePixelRatio
+Q.state.device.sizeMultiplier = window.devicePixelRatio
 
 addToLoop(() => {
 	Q.emit(events.FRAME)
