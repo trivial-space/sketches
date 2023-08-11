@@ -1,5 +1,5 @@
-import { KeyCodes } from 'tvs-libs/dist/events/keyboard'
-import { Buttons } from 'tvs-libs/dist/events/pointer'
+import { Buttons } from 'tvs-utils/dist/events/pointer'
+import { KeyboardCode } from 'tvs-utils/dist/events/keyboard'
 import { PainterContext, baseEvents } from 'tvs-utils/dist/app/painterState'
 
 interface CameraOptions {
@@ -37,23 +37,23 @@ export function initCamera(ctx: PainterContext, options: CameraOptions) {
 		const { keys, pointer } = d
 
 		if (
-			keys?.[KeyCodes.UP] ||
-			keys?.[KeyCodes.W] ||
+			keys.codes[KeyboardCode.ArrowUp] ||
+			keys.codes[KeyboardCode.KeyW] ||
 			(pointer?.holding && !pointer.pressed[Buttons.RIGHT])
 		) {
 			forward += moveDistance
 		}
 		if (
-			keys?.[KeyCodes.DOWN] ||
-			keys?.[KeyCodes.S] ||
+			keys.codes[KeyboardCode.ArrowDown] ||
+			keys.codes[KeyboardCode.KeyS] ||
 			pointer?.pressed[Buttons.RIGHT]
 		) {
 			forward -= moveDistance
 		}
-		if (keys?.[KeyCodes.LEFT] || keys?.[KeyCodes.A]) {
+		if (keys.codes[KeyboardCode.ArrowLeft] || keys.codes[KeyboardCode.KeyA]) {
 			left += moveDistance
 		}
-		if (keys?.[KeyCodes.RIGHT] || keys?.[KeyCodes.D]) {
+		if (keys.codes[KeyboardCode.ArrowRight] || keys.codes[KeyboardCode.KeyD]) {
 			left -= moveDistance
 		}
 

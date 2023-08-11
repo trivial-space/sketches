@@ -1,7 +1,7 @@
 import { mat4, quat } from 'gl-matrix'
 import { pushTransition } from '../../../../shared-utils/transitions'
 import { sign } from 'tvs-libs/dist/math/core'
-import { getRollQuat, getYawQuat } from 'tvs-libs/dist/math/geometry'
+import { getZRotQuat, getYRotQuat } from 'tvs-libs/dist/math/geometry'
 import { normalRand, randInt } from 'tvs-libs/dist/math/random'
 import { doTimes, pickRandom, times } from 'tvs-libs/dist/utils/sequence'
 import { events, Q } from '../context'
@@ -36,13 +36,13 @@ class TileState {
 	tileSpecId: string
 	tileSpec: TileSpec
 	turn: number
-	roll: number
+	zRot: number
 	color: Color
 	neighbours: (TileState | undefined)[] = []
 	flipped = false
-	yawDirection = 0
-	yawDelay = 0
-	yaw = 0
+	yRotDirection = 0
+	yRotDelay = 0
+	yRot = 0
 	height = 0
 	rotation = quat.create()
 	updateTransform = false
@@ -63,7 +63,7 @@ class TileState {
 		this.turn = randInt(3)
 		this.tileSpec = specs[this.tileSpecId]
 
-		this.roll = (this.turn * Math.PI) / 2
+		this.zRot = (this.turn * Math.PI) / 2
 	}
 
 	isConnected() {
@@ -279,7 +279,7 @@ function createActiveTiles(t: Tiles) {
 				const [iX, iY] = tile.gridIndex
 				tile.posOffset = [offX, offY]
 				tile.updateTransform = true
-				tile.yawDelay = (x + (t.rowCount - y + 1)) * 100
+				tile.yRotDelay = (x + (t.rowCount - y + 1)) * 100
 				tile.pos = [firstLeftIndex + iX, firstUpIndex + iY]
 				tiles.push(tile)
 			}
@@ -308,7 +308,7 @@ export function updateTiles(t: Tiles) {
 				duration,
 				easeFn: smooth,
 				onUpdate: (rot) => {
-					tile.roll += ((rot * Math.PI) / 2) * dir
+					tile.zRot += ((rot * Math.PI) / 2) * dir
 					tile.updateTransform = true
 				},
 				onComplete: () => {
@@ -337,10 +337,10 @@ export function updateTiles(t: Tiles) {
 			pushTransition(Q, {
 				duration,
 				easeFn: t.flipped ? acc : slow,
-				delay: tile.yawDelay,
+				delay: tile.yRotDelay,
 				onStart: () => tile.disconnect(),
 				onUpdate: (rot) => {
-					tile.yaw += rot * Math.PI
+					tile.yRot += rot * Math.PI
 					tile.height += rot * t.sinkHeight * (tile.flipped ? 1 : -1)
 					tile.updateTransform = true
 				},
@@ -356,8 +356,8 @@ export function updateTiles(t: Tiles) {
 			tile.updateTransform = false
 			quat.multiply(
 				tile.rotation,
-				getYawQuat(tile.yaw) as quat,
-				getRollQuat(tile.roll) as quat,
+				getYRotQuat(tile.yRot) as quat,
+				getZRotQuat(tile.zRot) as quat,
 			)
 			const [x, y] = tile.pos
 			const [offX, offY] = tile.posOffset

@@ -1,3 +1,4 @@
+import '../../../../../shared-utils/css/fullscreen.css'
 import init, {
 	get_angle,
 	get_frame_data,

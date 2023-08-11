@@ -5,7 +5,9 @@ export interface State extends PerspectiveViewportState {}
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 
-export const Q = getPainterContext<State>(canvas)
+export const Q = getPainterContext<State>(canvas, {
+	keepPointerDefault: true,
+})
 
 export const getCanvasSize = () => [canvas.width, canvas.height]
 

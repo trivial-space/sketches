@@ -1,7 +1,7 @@
 import { mat4, vec3 } from 'gl-matrix'
-import { KeyCodes, KeyState } from 'tvs-libs/dist/events/keyboard'
+import { KeyState, KeyboardCode } from 'tvs-utils/dist/events/keyboard'
 import { Constructor } from 'tvs-libs/dist/oop/mixins'
-import { PointerState, Buttons } from 'tvs-libs/dist/events/pointer'
+import { Buttons, PointerState } from 'tvs-utils/dist/events/pointer'
 
 export class Camera {
 	position: vec3 = [0, 0, 0]
@@ -106,23 +106,29 @@ export function WithInputNavigation<T extends Constructor<Camera>>(Cam: T) {
 		updatePosFromInput(speed: number, keys?: KeyState, pointer?: PointerState) {
 			if (!(keys || pointer)) return
 			if (
-				keys?.[KeyCodes.UP] ||
-				keys?.[KeyCodes.W] ||
+				keys?.codes[KeyboardCode.ArrowUp] ||
+				keys?.codes[KeyboardCode.KeyW] ||
 				(pointer?.holding && !pointer.pressed[Buttons.RIGHT])
 			) {
 				this.moveForward(speed)
 			}
 			if (
-				keys?.[KeyCodes.DOWN] ||
-				keys?.[KeyCodes.S] ||
+				keys?.codes[KeyboardCode.ArrowDown] ||
+				keys?.codes[KeyboardCode.KeyS] ||
 				pointer?.pressed[Buttons.RIGHT]
 			) {
 				this.moveForward(-speed)
 			}
-			if (keys?.[KeyCodes.LEFT] || keys?.[KeyCodes.A]) {
+			if (
+				keys?.codes[KeyboardCode.ArrowLeft] ||
+				keys?.codes[KeyboardCode.KeyA]
+			) {
 				this.moveLeft(speed)
 			}
-			if (keys?.[KeyCodes.RIGHT] || keys?.[KeyCodes.D]) {
+			if (
+				keys?.codes[KeyboardCode.ArrowRight] ||
+				keys?.codes[KeyboardCode.KeyD]
+			) {
 				this.moveLeft(-speed)
 			}
 		}

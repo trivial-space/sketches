@@ -1,3 +1,4 @@
+import '../../../../shared-utils/css/fullscreen.css'
 import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
 import { Q } from './context'
 import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'

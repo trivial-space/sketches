@@ -3,7 +3,6 @@
 /*.log
 node_modules
 yarn-error.log
-**/homage/videos
 dist
 /public
 target

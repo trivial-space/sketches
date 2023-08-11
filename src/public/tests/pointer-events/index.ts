@@ -1,10 +1,13 @@
-import { pointer } from 'tvs-libs/dist/events/pointer'
+import { pointer } from 'tvs-utils/dist/events/pointer'
 
 const code = document.getElementById('pointer-event-state')
 if (code) {
-	pointer({ enableRightButton: true }, (val) => {
-		code.innerHTML = JSON.stringify(val, null, '   ')
-	})
+	pointer(
+		(val) => {
+			code.innerHTML = JSON.stringify(val, null, '   ')
+		},
+		{ enableRightButton: true },
+	)
 }
 
 if (import.meta.hot) {

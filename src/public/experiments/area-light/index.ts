@@ -1,3 +1,4 @@
+import '../../../shared-utils/css/fullscreen.css'
 import './state'
 
 import { events, Q } from './context'

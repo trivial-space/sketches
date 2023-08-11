@@ -14,7 +14,7 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && rm -rf ./public && rm -rf ./dist && node build.js && rm ./dist/index.html && rm ./public/index.html",
     "start": "cd public && serve -p 5000",
     "test:types": "tsc --noEmit",

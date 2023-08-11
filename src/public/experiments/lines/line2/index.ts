@@ -6,12 +6,12 @@ import {
 	newLinePoint,
 	smouthenPoint,
 } from '../../../../shared-utils/geometry/lines_2d'
-import { Buttons } from 'tvs-libs/dist/events/pointer'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { Sketch } from 'tvs-painter/dist/sketch'
 import { lineFrag, lineVert } from './shaders'
 import { LinkedListOptions } from 'tvs-libs/dist/datastructures/double-linked-list'
 import { baseEvents } from 'tvs-utils/dist/app/painterState'
+import { Buttons } from 'tvs-utils/dist/events/pointer'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

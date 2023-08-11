@@ -1,3 +1,4 @@
+import '../../../shared-utils/css/fullscreen.css'
 import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { events, Q } from './context'
 import { scene, noiseTex2, lineTex, noiseLayer } from './renderer'

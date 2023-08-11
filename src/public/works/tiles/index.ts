@@ -1,3 +1,4 @@
+import '../../../shared-utils/css/fullscreen.css'
 import './state/tiles'
 import './viewport'
 
