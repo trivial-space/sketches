@@ -3,12 +3,7 @@ use serde::Serialize;
 use std::f32::consts::PI;
 use tvs_libs::{
     data_structures::grid::{make_grid_with_coord_ops, CIRCLE_COLS_COORD_OPS},
-    geometry::{
-        mesh_geometry_3d::{
-            face_data, MeshBufferedGeometryType, MeshGeometry, MeshVertex, Position3D,
-        },
-        vertex_index::VertIdx2Usize,
-    },
+    geometry::mesh_geometry_3d::{face_data, MeshBufferedGeometryType, MeshGeometry, Position3D},
     prelude::*,
     rendering::buffered_geometry::{
         vert_type, BufferedGeometry, BufferedVertexData, OverrideAttributesWith, VertexFormat,
@@ -44,21 +39,18 @@ impl Position3D for Vertex {
     }
 }
 
-fn vert(pos: Vec3, color: Vec3, x: usize, y: usize) -> MeshVertex<VertIdx2Usize, Vertex> {
-    MeshVertex {
-        data: Vertex { pos, color },
-        vertex_index: VertIdx2Usize(x, y),
-    }
+fn vert(pos: Vec3, color: Vec3) -> Vertex {
+    Vertex { pos, color }
 }
 
 pub fn create_ball1_geom() -> BufferedGeometry {
     let mut grid = make_grid_with_coord_ops(CIRCLE_COLS_COORD_OPS);
     let mut col1 = vec![];
-    let mut y = 5.0;
-    while y >= -5.0 {
+    let mut y = -5.0;
+    while y <= 5.0 {
         let x = f32::sqrt(25.0 - y * y);
         col1.push(vec3(x, y, 0.0));
-        y -= 0.5;
+        y += 0.5;
     }
     grid.add_col(col1.clone());
 
@@ -71,29 +63,22 @@ pub fn create_ball1_geom() -> BufferedGeometry {
     }
 
     let mut geom = MeshGeometry::new();
-    for y in 0..(grid.height - 1) {
-        for x in 0..grid.width {
-            let v1 = grid.vertex(x as i32, y as i32);
-            let v2 = v1.bottom().unwrap();
-            let v3 = v2.right().unwrap();
-            let v4 = v3.top().unwrap();
+    for quad in grid.to_ccw_quads() {
+        let r: f32 = random();
+        let g: f32 = random();
+        let b: f32 = random();
 
-            let r: f32 = random();
-            let g: f32 = random();
-            let b: f32 = random();
-
-            let color = vec3(r, g, b);
-            geom.add_face4_data(
-                vert(v1.val, color, v1.x, v1.y),
-                vert(v2.val, color, v2.x, v2.y),
-                vert(v3.val, color, v3.x, v3.y),
-                vert(v4.val, color, v4.x, v4.y),
-                face_data(Vertex {
-                    pos: Vec3::ZERO,
-                    color,
-                }),
-            );
-        }
+        let color = vec3(r, g, b);
+        geom.add_face4_data(
+            vert(quad[0], color),
+            vert(quad[1], color),
+            vert(quad[2], color),
+            vert(quad[3], color),
+            face_data(Vertex {
+                pos: Vec3::ZERO,
+                color,
+            }),
+        );
     }
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormalFaceData)
