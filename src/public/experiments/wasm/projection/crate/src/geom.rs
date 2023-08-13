@@ -2,7 +2,9 @@ use bytemuck::{Pod, Zeroable};
 use serde::Serialize;
 use tvs_libs::{
     data_structures::grid::make_grid_from_cols,
-    geometry::mesh_geometry_3d::{face_normal, MeshBufferedGeometryType, MeshGeometry, Position3D},
+    geometry::mesh_geometry_3d::{
+        face_normal, face_section, MeshBufferedGeometryType, MeshGeometry, Position3D,
+    },
     prelude::*,
     rendering::buffered_geometry::{
         vert_type, BufferedGeometry, BufferedVertexData, NoAttributeOverride, VertexFormat,
@@ -74,13 +76,13 @@ pub fn create_glass() -> BufferedGeometry {
     ]);
 
     let mut geom = MeshGeometry::new();
-    geom.add_grid_ccw_quads(&grid_front.map(|v| vert(v.val)));
-    geom.add_grid_cw_quads(&grid_back.map(|v| vert(v.val)));
-    geom.add_grid_cw_quads(&grid_top.map(|v| vert(v.val)));
-    geom.add_grid_cw_quads(&left_grid.map(|v| vert(v.val)));
-    geom.add_grid_ccw_quads(&right_grid.map(|v| vert(v.val)));
+    geom.add_grid_ccw_quads_data(&grid_front.map(|v| vert(v.val)), face_section(0));
+    geom.add_grid_cw_quads_data(&grid_back.map(|v| vert(v.val)), face_section(1));
+    geom.add_grid_cw_quads_data(&grid_top.map(|v| vert(v.val)), face_section(2));
+    geom.add_grid_cw_quads_data(&left_grid.map(|v| vert(v.val)), face_section(3));
+    geom.add_grid_ccw_quads_data(&right_grid.map(|v| vert(v.val)), face_section(4));
 
-    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
+    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormals)
 }
 
 pub fn create_ground() -> BufferedGeometry {
