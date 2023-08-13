@@ -58,7 +58,13 @@ pub fn create_ball1_geom() -> BufferedGeometry {
     let angle = (PI * 2.0) / stops as f32;
     for i in 1..stops {
         let q = Quat::from_rotation_y(angle * i as f32);
-        let col = col1.iter().map(|pos| q.mul_vec3(*pos)).collect();
+        let col = col1
+            .iter()
+            .map(|pos| {
+                let v = q.mul_vec3(*pos);
+                vec3(v.x, pos.y, v.z)
+            })
+            .collect();
         grid.add_col(col)
     }
 
@@ -69,16 +75,21 @@ pub fn create_ball1_geom() -> BufferedGeometry {
         let b: f32 = random();
 
         let color = vec3(r, g, b);
-        geom.add_face4_data(
-            vert(quad[0], color),
-            vert(quad[1], color),
-            vert(quad[2], color),
-            vert(quad[3], color),
-            face_data(Vertex {
-                pos: Vec3::ZERO,
-                color,
-            }),
-        );
+
+        let v0 = vert(quad[0], color);
+        let v1 = vert(quad[1], color);
+        let v2 = vert(quad[2], color);
+        let v3 = vert(quad[3], color);
+
+        if v0.pos.y == -5.0 {
+            // v0 == v1
+            geom.add_face3_data(v0, v2, v3, face_data(v0));
+        } else if v2.pos.y == 5.0 {
+            // v2 == v3
+            geom.add_face3_data(v0, v1, v2, face_data(v0));
+        } else {
+            geom.add_face4_data(v0, v1, v2, v3, face_data(v0));
+        }
     }
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormalFaceData)
@@ -87,6 +98,11 @@ pub fn create_ball1_geom() -> BufferedGeometry {
 #[test]
 fn test_ball1() {
     let res = create_ball1_geom();
-    print!("{:?}", res);
+    // println!("{:?}", res);
     assert!(res.buffer.len() > 0);
+    println!("buffer len: {}", res.buffer.len());
+    println!(
+        "index buffer len: {}",
+        res.indices.map(|i| i.len()).unwrap_or(0)
+    );
 }
