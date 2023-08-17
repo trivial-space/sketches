@@ -15,8 +15,9 @@ async function makeBuild() {
 		cwd: publicSrcDir,
 	})
 
+	// regenerate public index.html
+
 	const indexHtml = await readFile(resolve(publicSrcDir, 'index.html'), 'utf-8')
-	console.log(apps, indexHtml)
 	const $ = cheerio.load(indexHtml)
 	$('ul').html(
 		apps
@@ -27,6 +28,8 @@ async function makeBuild() {
 			.join('\n'),
 	)
 	await writeFile(resolve(publicSrcDir, 'index.html'), $.html())
+
+	// build complete repo as one app
 
 	if (!process.argv.includes('--skip-main')) {
 		await build({
@@ -44,6 +47,8 @@ async function makeBuild() {
 			},
 		})
 	}
+
+	// build each sketch individually
 
 	if (process.argv.includes('-a') || process.argv.includes('--all')) {
 		for (const app of apps) {
