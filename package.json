@@ -15,7 +15,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "tsc && rm -rf ./public && rm -rf ./dist && node build.js && rm ./dist/index.html && rm ./public/index.html",
+    "build": "tsc && rm -rf ./public && rm -rf ./dist && node build.js && prettier --write ./src/public/index.html",
+    "build:all": "tsc && rm -rf ./public && rm -rf ./dist && node build.js --all && prettier --write ./src/public/index.html",
     "start": "cd public && serve -p 5000",
     "test:types": "tsc --noEmit",
     "git-init": "git submodule update --init --recursive",
@@ -39,6 +40,7 @@
     "@types/serve-handler": "^6.1.1",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
+    "cheerio": "^1.0.0-rc.12",
     "chokidar": "^3.5.3",
     "eslint": "^8.1.0",
     "eslint-config-prettier": "^8.1.0",
@@ -50,7 +52,6 @@
     "serve-handler": "^6.1.3",
     "typescript": "^5.1.3",
     "vite": "^4.3.9",
-    "vite-plugin-list-directory-contents": "^1.4.5",
     "wasm-pack": "^0.12.0"
   },
   "engines": {
