@@ -4,6 +4,7 @@ members = [
 	"projects/libs-wasm",
 	"src/public/experiments/wasm/balls/crate",
 	"src/public/experiments/wasm/projection/crate",
+	"src/public/experiments/wasm/ssao/crate",
 	"src/public/experiments/strokes/stroke-wasm1/crate",
 ]
 

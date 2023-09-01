@@ -298,6 +298,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "tvs-sketch-ssao"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "console_error_panic_hook",
+ "js-sys",
+ "serde",
+ "serde-wasm-bindgen",
+ "tvs-libs",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "tvs-sketch-strokes1"
 version = "0.1.0"
 dependencies = [
