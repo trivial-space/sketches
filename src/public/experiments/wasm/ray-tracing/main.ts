@@ -21,6 +21,6 @@ init().then(() => {
 	ctx.putImageData(data, 0, 0)
 })
 
-if (import.meta.hot) {
-	import.meta.hot.accept()
-}
+// if (import.meta.hot) {
+// 	import.meta.hot.accept()
+// }
