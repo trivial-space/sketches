@@ -2,9 +2,7 @@ use bytemuck::{Pod, Zeroable};
 use serde::Serialize;
 use tvs_libs::{
     data_structures::grid::make_grid_from_cols,
-    geometry::mesh_geometry_3d::{
-        face_normal, face_section, MeshBufferedGeometryType, MeshGeometry, Position3D,
-    },
+    geometry::mesh_geometry_3d::{face_normal, MeshBufferedGeometryType, MeshGeometry, Position3D},
     prelude::*,
     rendering::buffered_geometry::{
         vert_type, BufferedGeometry, BufferedVertexData, NoAttributeOverride, VertexFormat,
@@ -36,53 +34,53 @@ fn offset(scale: f32) -> f32 {
     (random::<f32>() - 0.5) * scale
 }
 
-const GRID_SIZE_Y: usize = 40;
-const GRID_SIZE_X: u32 = 25;
-
 pub fn create_object() -> BufferedGeometry {
-    let tl = vec3(-1.0 + offset(1.5), 4.0 + offset(2.0), offset(1.5));
-    let tr = vec3(1.0 + offset(1.5), 4.0 + offset(2.0), offset(1.5));
-    let bl = vec3(-1.0, 0.0, 0.0);
-    let br = vec3(1.0, 0.0, 0.0);
+    let tl = vec3(-8.0, 9.0, 0.0);
+    let tr = vec3(8.0, 9.0, 0.0);
+    let bl = vec3(-8.0, 0.0, 0.0);
+    let br = vec3(8.0, 0.0, 0.0);
 
-    let col_left = (0..=GRID_SIZE_Y as usize)
-        .map(|i| {
-            let t = i as f32 / GRID_SIZE_Y as f32;
-            Vec3::quadratic_bezier(t, bl, vec3(-1.0, 2.0, 0.05), tl)
-        })
-        .collect();
-    let col_right = (0..=GRID_SIZE_Y as usize)
-        .map(|i| {
-            let t = i as f32 / GRID_SIZE_Y as f32;
-            Vec3::quadratic_bezier(t, br, vec3(1.0, 2.0, 0.05), tr)
-        })
-        .collect();
-
-    let grid_front =
-        make_grid_from_cols(vec![col_left, col_right]).subdivide(GRID_SIZE_X, 0, Lerp::lerp);
-
-    let grid_back = grid_front.map(|v| vec3(v.val.x, v.val.y, v.val.z - 0.05));
-
-    let grid_top = make_grid_from_cols(vec![grid_front.last_row(), grid_back.last_row()]);
-
-    let left_grid = make_grid_from_cols(vec![
-        grid_front.first_col().clone(),
-        grid_back.first_col().clone(),
-    ]);
-
-    let right_grid = make_grid_from_cols(vec![
-        grid_front.last_col().clone(),
-        grid_back.last_col().clone(),
-    ]);
+    let grid = make_grid_from_cols(vec![vec![tl, tr], vec![bl, br]]).subdivide(8, 15, Lerp::lerp);
 
     let mut geom = MeshGeometry::new();
-    geom.add_grid_ccw_quads_data(&grid_front.map(|v| vert(v.val)), face_section(0));
-    geom.add_grid_cw_quads_data(&grid_back.map(|v| vert(v.val)), face_section(1));
-    geom.add_grid_cw_quads_data(&grid_top.map(|v| vert(v.val)), face_section(2));
-    geom.add_grid_cw_quads_data(&left_grid.map(|v| vert(v.val)), face_section(3));
-    geom.add_grid_ccw_quads_data(&right_grid.map(|v| vert(v.val)), face_section(4));
 
-    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormals)
+    for quad in grid.to_cw_quads() {
+        let normal = vec3(
+            (random::<f32>() - 0.5) * 0.4,
+            (random::<f32>() - 0.5) * 0.4,
+            1.0,
+        )
+        .normalize();
+        let rot = Quat::from_rotation_arc(Vec3::Z, normal);
+        let offset = vec3(offset(0.1), offset(0.1), offset(0.1) + 0.4);
+
+        let center = quad.iter().fold(Vec3::ZERO, |acc, v| acc + *v) / 4.0;
+
+        let front = quad
+            .iter()
+            .map(|v| rot * (*v - center) + center + offset)
+            .rev()
+            .map(vert)
+            .collect::<Vec<_>>();
+
+        let back = quad.iter().map(|v| vert(*v)).collect::<Vec<_>>();
+
+        geom.add_face4_data(front[0], front[1], front[2], front[3], face_normal(normal));
+        geom.add_face4_data(
+            back[0],
+            back[1],
+            back[2],
+            back[3],
+            face_normal(normal * -1.0),
+        );
+
+        geom.add_face4(front[3], front[2], back[1], back[0]);
+        geom.add_face4(back[3], back[2], front[1], front[0]);
+        geom.add_face4(back[2], back[1], front[2], front[1]);
+        geom.add_face4(back[0], back[3], front[0], front[3]);
+    }
+
+    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
 }
 
 pub fn create_ground() -> BufferedGeometry {
