@@ -25,7 +25,7 @@ pub fn render_ray<F: Fn(Ray) -> [f32; 4]>(width: u32, height: u32, f: F) -> Vec<
 
         let ray = Ray {
             origin,
-            direction: pixel_center - origin,
+            direction: (pixel_center - origin).normalize(),
         };
 
         f(ray)
