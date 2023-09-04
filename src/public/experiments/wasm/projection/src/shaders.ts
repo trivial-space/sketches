@@ -31,9 +31,18 @@ import {
 	lte,
 	ternary,
 	VEC3_1,
+	Vec2Sym,
+	Sampler2DSym,
+	program,
+	uniform,
+	input,
+	$z,
 } from '@thi.ng/shader-ast'
-import { diffuseLighting } from '@thi.ng/shader-ast-stdlib'
-import { defShader } from '../../../../../shared-utils/shaders/ast'
+import { diffuseLighting, fit0111 } from '@thi.ng/shader-ast-stdlib'
+import {
+	defShader,
+	getFragmentGenerator,
+} from '../../../../../shared-utils/shaders/ast'
 import {
 	distanceDivisor,
 	specularLight,
@@ -236,3 +245,34 @@ export const groundShader = defShader({
 	],
 })
 console.log('groundShader', groundShader)
+
+const fs = getFragmentGenerator()
+let source: Sampler2DSym
+let rand: Sampler2DSym
+let vUv: Vec2Sym
+let color: Vec4Sym
+let noise: Vec4Sym
+
+const colorStep = 1 / 255
+
+export const colorGradeShader = fs(
+	program([
+		(source = uniform('sampler2D', 'source')),
+		(rand = uniform('sampler2D', 'rand')),
+		(vUv = input('vec2', 'coords')),
+		defMain(() => [
+			(color = sym(texture(source, vUv))),
+			(noise = sym(texture(rand, vUv))),
+			assign(
+				fs.gl_FragColor,
+				vec4(
+					add(
+						pow($xyz(color), vec3(0.85)),
+						mul(sub($xyz(noise), 0.5), colorStep),
+					),
+					1.0,
+				),
+			),
+		]),
+	]),
+)

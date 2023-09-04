@@ -1,8 +1,15 @@
 import { FormData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { Q } from './context'
+import { Q, getRndTex } from './context'
 import { Sketch } from 'tvs-painter/dist/sketch'
-import { glassLitShader, glassProjectionShader, groundShader } from './shaders'
+import {
+	colorGradeShader,
+	glassLitShader,
+	glassProjectionShader,
+	groundShader,
+} from './shaders'
+import { events } from '../../../aquarell/context'
+import { baseEvents } from 'tvs-utils/dist/app/painterState'
 
 const glassShade = Q.getShade('glass').update(glassLitShader)
 const glassProjShade = Q.getShade('glassProj').update(glassProjectionShader)
@@ -42,6 +49,10 @@ Q.state.device.sizeMultiplier = window.devicePixelRatio
 const projLayer = Q.getLayer('proj').update({
 	width: 2048,
 	height: 2048,
+	bufferStructure: {
+		magFilter: 'LINEAR',
+		minFilter: 'LINEAR',
+	},
 	drawSettings: {
 		clearBits: makeClear(Q.gl, 'depth', 'color'),
 		clearColor: [1, 1, 1, 1],
@@ -89,6 +100,20 @@ export function renderInit(
 	})
 }
 
+const randLayer = Q.getLayer('rand').update({
+	texture: {
+		data: getRndTex(),
+	},
+})
+
+Q.listen('render_resize', baseEvents.RESIZE, () => {
+	randLayer.update({
+		texture: { data: getRndTex() },
+	})
+	renderLayer.update()
+	projLayer.update()
+})
+
 export function render(data: {
 	objects: ObjData[]
 	camera_mat: number[]
@@ -135,5 +160,13 @@ export function render(data: {
 		},
 	})
 
-	Q.painter.compose(projLayer, renderLayer).show(renderLayer)
+	Q.painter.compose(projLayer, renderLayer).draw({
+		effects: Q.getEffect('colorGrade').update({
+			frag: colorGradeShader,
+			uniforms: {
+				source: renderLayer.image(),
+				rand: randLayer.image(),
+			},
+		}),
+	})
 }

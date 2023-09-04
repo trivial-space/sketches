@@ -35,8 +35,9 @@ init().then(() => {
 	addToLoop((tpf) => {
 		update(tpf)
 		Q.emit(baseEvents.FRAME)
+
 		const frameData = get_frame_data()
-		console.log(get_angle())
+		// console.log(get_angle())
 		// console.log('frameData', frameData)
 		render(frameData)
 	}, 'mainLoop')
