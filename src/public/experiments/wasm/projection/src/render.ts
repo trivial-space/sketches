@@ -8,7 +8,6 @@ import {
 	glassProjectionShader,
 	groundShader,
 } from './shaders'
-import { events } from '../../../aquarell/context'
 import { baseEvents } from 'tvs-utils/dist/app/painterState'
 
 const glassShade = Q.getShade('glass').update(glassLitShader)
