@@ -3,7 +3,6 @@ use tvs_libs::rendering::objects::Ray;
 use tvs_libs::rendering::texture::render_rgba;
 
 use crate::scene::Hittable;
-use crate::utils::random_in_unit_sphere;
 
 pub struct RenderProps {
     pub width: u32,
@@ -35,20 +34,23 @@ fn ray_color<H: Hittable>(ray: Ray, h: &H, depth: u32) -> Vec3 {
     }
 
     if let Some(hit) = h.hit(&ray, 0.001, f32::INFINITY) {
-        let direction = (hit.normal + random_in_unit_sphere().normalize()).try_normalize();
+        let direction = hit.normal + (random_in_unit_sphere().normalize());
+        let direction = if direction.length_squared() < 0.000001 {
+            hit.normal
+        } else {
+            direction.normalize()
+        };
 
         let ray = Ray {
             origin: hit.p,
-            direction: direction.unwrap_or(hit.normal),
+            direction,
         };
 
         return 0.5 * ray_color(ray, h, depth - 1);
     }
 
     let a = 0.5 * (ray.direction.y + 1.0);
-    let color = vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), a);
-
-    color
+    vec3(1.0, 1.0, 1.0).lerp(vec3(0.5, 0.7, 1.0), a)
 }
 
 pub fn render_ray<H: Hittable>(props: RenderProps, h: H) -> Vec<[f32; 4]> {
