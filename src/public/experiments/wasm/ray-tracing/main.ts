@@ -11,20 +11,25 @@ init().then(() => {
 	canvas.height = height
 	canvas.style.width = `${width * 2}px`
 	canvas.style.height = `${height * 2}px`
+	canvas.style.backgroundColor = 'black'
 	const ctx = canvas.getContext('2d')!
 
-	const timeBefore = performance.now()
-	const buffer = render(width, height)
-	const timeAfter = performance.now()
-
-	const data = new ImageData(width, height)
-	data.data.set(buffer)
-
-	ctx.putImageData(data, 0, 0)
-
 	const div = document.createElement('div')
-	div.innerHTML = `render time: ${timeAfter - timeBefore}ms`
+	div.innerHTML = 'rendering...'
 	document.body.appendChild(div)
+
+	setTimeout(() => {
+		const timeBefore = performance.now()
+		const buffer = render(width, height)
+		const timeAfter = performance.now()
+
+		const data = new ImageData(width, height)
+		data.data.set(buffer)
+
+		ctx.putImageData(data, 0, 0)
+
+		div.innerHTML = `done! render time: ${timeAfter - timeBefore}ms`
+	}, 100)
 })
 
 // if (import.meta.hot) {
