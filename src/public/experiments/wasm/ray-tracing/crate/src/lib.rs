@@ -1,11 +1,9 @@
 use js_sys::Uint8Array;
 use render::{render_ray, RenderProps};
+use scene::{DiffuseMaterial, MetalMaterial, SphereObject};
 use tvs_libs::{
     prelude::*,
-    rendering::{
-        objects::Sphere,
-        texture::{rgba_f32_to_u8, rgba_u8_to_buffer},
-    },
+    rendering::texture::{rgba_f32_to_u8, rgba_u8_to_buffer},
 };
 use wasm_bindgen::prelude::*;
 
@@ -20,29 +18,47 @@ pub fn setup() {
 
 fn generate_image(width: u32, height: u32) -> Vec<u8> {
     let mut world = scene::HittableList::new();
-    world.add(Sphere {
-        center: vec3(0.0, 0.0, -1.0),
-        radius: 0.5,
-    });
-    world.add(Sphere {
-        center: vec3(1.0, 0.0, -1.0),
-        radius: 0.5,
-    });
-    world.add(Sphere {
-        center: vec3(-1.0, 0.0, -1.0),
-        radius: 0.5,
-    });
-    world.add(Sphere {
-        center: vec3(0.0, -100.5, -1.0),
-        radius: 100.0,
-    });
+    let ground_material = DiffuseMaterial {
+        color: vec3(0.5, 0.5, 0.5),
+    };
+    let center_material = DiffuseMaterial {
+        color: vec3(1.0, 0.25, 0.25),
+    };
+    let left_material = MetalMaterial {
+        color: vec3(0.25, 0.25, 1.0),
+        roughness: 0.1,
+    };
+    let right_material = MetalMaterial {
+        color: vec3(0.25, 1.0, 0.25),
+        roughness: 0.7,
+    };
+    world.add(SphereObject::new(
+        vec3(0.0, 0.0, -2.0),
+        0.5,
+        &center_material,
+    ));
+    world.add(SphereObject::new(
+        vec3(1.0, 0.0, -2.0),
+        0.5,
+        &right_material,
+    ));
+    world.add(SphereObject::new(
+        vec3(-1.0, 0.0, -2.0),
+        0.5,
+        &left_material,
+    ));
+    world.add(SphereObject::new(
+        vec3(0.0, -100.5, -2.0),
+        100.0,
+        &ground_material,
+    ));
 
     let props = RenderProps {
         width,
         height,
         samples_per_pixel: 100,
         max_ray_bounces: 20,
-        focal_length: 0.9,
+        focal_length: 1.1,
         ..default()
     };
 

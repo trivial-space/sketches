@@ -34,19 +34,12 @@ fn ray_color<H: Hittable>(ray: Ray, h: &H, depth: u32) -> Vec3 {
     }
 
     if let Some(hit) = h.hit(&ray, 0.001, f32::INFINITY) {
-        let direction = hit.normal + (random_in_unit_sphere().normalize());
-        let direction = if direction.length_squared() < 0.000001 {
-            hit.normal
+        if let Some(scattered_ray) = hit.material.scatter(&ray, &hit) {
+            let emitted = hit.material.emit();
+            return emitted * ray_color(scattered_ray, h, depth - 1);
         } else {
-            direction.normalize()
-        };
-
-        let ray = Ray {
-            origin: hit.p,
-            direction,
-        };
-
-        return 0.5 * ray_color(ray, h, depth - 1);
+            return vec3(0.0, 0.0, 0.0);
+        }
     }
 
     let a = 0.5 * (ray.direction.y + 1.0);
