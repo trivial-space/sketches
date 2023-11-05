@@ -35,12 +35,6 @@ type LightData = {
 Q.painter.updateDrawSettings({
 	enable: [Q.gl.BLEND, Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
 	cullFace: Q.gl.BACK,
-	blendFuncSeparate: [
-		Q.gl.SRC_ALPHA,
-		Q.gl.ONE_MINUS_SRC_ALPHA,
-		Q.gl.ZERO,
-		Q.gl.ONE,
-	],
 })
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
