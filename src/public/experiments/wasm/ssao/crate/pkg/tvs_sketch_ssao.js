@@ -190,14 +190,6 @@ export function get_init_data() {
 }
 
 /**
-* @returns {number}
-*/
-export function get_angle() {
-    const ret = wasm.get_angle();
-    return ret;
-}
-
-/**
 * @returns {any}
 */
 export function get_frame_data() {
@@ -222,13 +214,6 @@ export function update_screen(width, height) {
 */
 export function update_camera(forward, left, up, rot_y, rot_x) {
     wasm.update_camera(forward, left, up, rot_y, rot_x);
-}
-
-/**
-* @param {number} tpf
-*/
-export function update(tpf) {
-    wasm.update(tpf);
 }
 
 function handleError(f, args) {
@@ -285,16 +270,8 @@ function __wbg_get_imports() {
         const ret = typeof(val) === 'object' && val !== null;
         return ret;
     };
-    imports.wbg.__wbindgen_error_new = function(arg0, arg1) {
-        const ret = new Error(getStringFromWasm0(arg0, arg1));
-        return addHeapObject(ret);
-    };
     imports.wbg.__wbindgen_number_new = function(arg0) {
         const ret = arg0;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_bigint_from_u64 = function(arg0) {
-        const ret = BigInt.asUintN(64, arg0);
         return addHeapObject(ret);
     };
     imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
@@ -486,7 +463,7 @@ async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
     if (typeof input === 'undefined') {
-        input = new URL('tvs_sketch_projection_bg.wasm', import.meta.url);
+        input = new URL('tvs_sketch_ssao_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 

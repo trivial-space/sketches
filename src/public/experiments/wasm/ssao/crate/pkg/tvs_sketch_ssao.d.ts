@@ -8,10 +8,6 @@ export function setup(): void;
 */
 export function get_init_data(): any;
 /**
-* @returns {number}
-*/
-export function get_angle(): number;
-/**
 * @returns {any}
 */
 export function get_frame_data(): any;
@@ -28,10 +24,6 @@ export function update_screen(width: number, height: number): void;
 * @param {number} rot_x
 */
 export function update_camera(forward: number, left: number, up: number, rot_y: number, rot_x: number): void;
-/**
-* @param {number} tpf
-*/
-export function update(tpf: number): void;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -42,8 +34,6 @@ export interface InitOutput {
   readonly get_frame_data: () => number;
   readonly update_screen: (a: number, b: number) => void;
   readonly update_camera: (a: number, b: number, c: number, d: number, e: number) => void;
-  readonly update: (a: number) => void;
-  readonly get_angle: () => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
