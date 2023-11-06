@@ -42,7 +42,7 @@ Q.state.device.sizeMultiplier = window.devicePixelRatio
 const projLayer = Q.getLayer('proj').update({
 	width: 2048,
 	height: 2048,
-	bufferStructure: {
+	bufferOptions: {
 		magFilter: 'LINEAR',
 		minFilter: 'LINEAR',
 	},

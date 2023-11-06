@@ -21,7 +21,7 @@ export const automaton = Q.getLayer('automaton').update({
 	width: bufferSize,
 	height: bufferSize,
 	selfReferencing: true,
-	bufferStructure: [
+	bufferOptions: [
 		{
 			flipY: true,
 		},

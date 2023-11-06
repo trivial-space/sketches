@@ -42,7 +42,7 @@ const reflSize = 256
 export const videoLights = videoTextures.map((t, i) => {
 	const id = 'vref' + i
 	return Q.getLayer(id).update({
-		bufferStructure: [
+		bufferOptions: [
 			{
 				minFilter: 'LINEAR',
 				magFilter: 'LINEAR',
@@ -108,7 +108,7 @@ export const mirrorScene = Q.getLayer('mirrorScene').update({
 	},
 	width: 256,
 	height: 256,
-	bufferStructure: [
+	bufferOptions: [
 		{
 			magFilter: 'LINEAR',
 			minFilter: 'LINEAR',

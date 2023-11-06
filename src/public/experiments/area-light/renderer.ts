@@ -86,7 +86,7 @@ export const scene = Q.getLayer('scene').update({
 		enable: [gl.DEPTH_TEST],
 		clearBits: makeClear(gl, 'color', 'depth'),
 	},
-	bufferStructure: [bufferSpec, bufferSpec, bufferSpec, bufferSpec],
+	bufferOptions: [bufferSpec, bufferSpec, bufferSpec, bufferSpec],
 })
 
 export const light = Q.getEffect('light').update({
