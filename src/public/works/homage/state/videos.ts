@@ -17,8 +17,9 @@ function createVideo(src: string) {
 	const video = document.createElement('video')
 	video.crossOrigin = 'anonymous'
 	video.loop = true
-	;(video as any).playsinline = true
-	video.autoplay
+	video.playsInline = true
+	video.autoplay = true
+	video.muted = true
 
 	const source1 = document.createElement('source')
 	source1.src = src + '.webm'
@@ -30,6 +31,8 @@ function createVideo(src: string) {
 
 	video.appendChild(source1)
 	video.appendChild(source2)
+
+	console.log(video)
 	return video
 }
 

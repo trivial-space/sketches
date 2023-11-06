@@ -15,7 +15,10 @@ const d = Q.get('device')
 
 videos.then((vs) => {
 	function startVideos() {
-		vs.forEach((v) => v.play())
+		vs.forEach((v) => {
+			v.muted = false
+			v.play()
+		})
 		d.canvas.removeEventListener('mousedown', startVideos)
 		d.canvas.removeEventListener('touchstart', startVideos)
 	}
