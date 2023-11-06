@@ -39,9 +39,12 @@ const renderUniforms = {
 	lightDir: [0, 0, -1],
 }
 
+renderLayer.update({
+	sketches: [groundSketch, objectSketch],
+})
+
 export function render(data: { camera_mat: number[]; camera_pos: number[] }) {
 	renderLayer.update({
-		sketches: [groundSketch, objectSketch],
 		uniforms: {
 			...renderUniforms,
 			eyePos: data.camera_pos,
