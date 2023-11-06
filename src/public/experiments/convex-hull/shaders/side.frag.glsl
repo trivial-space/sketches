@@ -9,10 +9,15 @@ uniform sampler2D source;
 varying vec2 coords;
 
 void main() {
-	vec2 v = p2 - p1;
-	vec2 p = p3 - p1;
+	// adjust coordinate system (flip y axis)
+	vec2 point1 = vec2(p1.x, size.y - p1.y);
+	vec2 point2 = vec2(p2.x, size.y - p2.y);
+	vec2 point3 = vec2(p3.x, size.y - p3.y);
+
+	vec2 v = point2 - point1;
+	vec2 p = point3 - point1;
 	vec2 pos = coords * size;
-	vec2 f = pos - p1;
+	vec2 f = pos - point1;
 
 	// f - (f * v) * v
 
@@ -22,13 +27,13 @@ void main() {
 
 	float vLength = length(v);
 	vec2 vn = v / vLength;
-	float dist = length(pos - (p1 + vn * clamp(dot(f, vn), 0.0, vLength)));
+	float dist = length(pos - (point1 + vn * clamp(dot(f, vn), 0.0, vLength)));
 	vec3 color = vec3(1.0, coords) * max(100.0 - dist, 0.0) / 100.0;
 	if (
 		directionPoint == 0.0
 		|| sign(directionFrag) != sign(directionPoint)
 		|| vLength < length(f)
-		|| vLength < length(pos - p2)
+		|| vLength < length(pos - point2)
 	) {
 		color = vec3(0.0);
 	}
