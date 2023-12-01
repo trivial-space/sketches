@@ -16,6 +16,7 @@ import {
 	length,
 	dot,
 	abs,
+	$w,
 } from '@thi.ng/shader-ast'
 import { diffuseLighting } from '@thi.ng/shader-ast-stdlib'
 import { defShader } from '../../../../../shared-utils/shaders/ast'
@@ -41,8 +42,13 @@ export const objectShader = defShader({
 	varying: {
 		vNormal: 'vec3',
 		vPos: 'vec3',
+		vDepth: 'float',
 	},
-	vs: (gl, uniforms, inp, out) => {
+	outputs: {
+		color: 'vec4',
+		normalDepth: 'vec4',
+	},
+	vs(gl, uniforms, inp, out) {
 		let pos: Vec4Sym
 		return [
 			defMain(() => [
@@ -50,6 +56,7 @@ export const objectShader = defShader({
 				assign(out.vPos, $xyz(pos)),
 				assign(gl.gl_Position, mul(uniforms.cameraMat, pos)),
 				assign(out.vNormal, inp.normal),
+				assign(out.vDepth, $w(gl.gl_Position)),
 			]),
 		]
 	},
@@ -87,7 +94,8 @@ export const objectShader = defShader({
 						divisor,
 					),
 				)),
-				assign(out.fragColor, vec4(diffuse, 0.8)),
+				assign(out.color, vec4(diffuse, 1.0)),
+				assign(out.normalDepth, vec4(inp.vNormal, inp.vDepth)),
 			]
 		}),
 	],

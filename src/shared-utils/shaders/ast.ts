@@ -8,15 +8,18 @@ import {
 } from '@thi.ng/webgl/api/shader'
 import { shaderSourceFromAST } from '@thi.ng/webgl/shader'
 
-export const getVertexGenerator = () =>
+export const getVertexGenerator = (glslVersion = GLSLVersion.GLES_100) =>
 	targetGLSL({
-		version: GLSLVersion.GLES_100,
+		version: glslVersion,
 		type: 'vs',
 	})
 
-export const getFragmentGenerator = (prelude = 'precision mediump float;') =>
+export const getFragmentGenerator = (
+	prelude = 'precision mediump float;',
+	glslVersion = GLSLVersion.GLES_100,
+) =>
 	targetGLSL({
-		version: GLSLVersion.GLES_100,
+		version: glslVersion,
 		type: 'fs',
 		prelude,
 	})
@@ -107,6 +110,11 @@ export const defShader = <
 	opts?: Partial<DefShaderOpts>,
 	version = GLSLVersion.GLES_300,
 ) => {
+	if (spec.outputs) {
+		Object.entries(spec.outputs).forEach(([k, v], i) => {
+			;(spec as any).outputs[k] = [v, i]
+		})
+	}
 	const vert = shaderSourceFromAST(spec as any, 'vs', version, opts)
 	const frag = shaderSourceFromAST(spec as any, 'fs', version, opts)
 	return { vert, frag }
