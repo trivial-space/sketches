@@ -10,6 +10,7 @@ import {
 	Vec4Sym,
 	assign,
 	defMain,
+	div,
 	input,
 	mul,
 	program,
@@ -17,6 +18,7 @@ import {
 	sym,
 	texture,
 	uniform,
+	vec3,
 	vec4,
 } from '@thi.ng/shader-ast'
 import { fit1101 } from '@thi.ng/shader-ast-stdlib'
@@ -203,7 +205,7 @@ let coords: Vec2Sym
 export const SAOFragmentShader = fs(
 	program([
 		(tDiffuse = uniform('sampler2D', 'tDiffuse')),
-		(tNormalDepth = uniform('sampler2D', 'tNormal')),
+		(tNormalDepth = uniform('sampler2D', 'tNormalDepth')),
 		(size = uniform('vec2', 'size')),
 
 		(cameraNear = uniform('float', 'cameraNear')),
@@ -226,7 +228,9 @@ export const SAOFragmentShader = fs(
 			(normalDepth = sym(texture(tNormalDepth, coords))),
 			(normal = sym($xyz(normalDepth))),
 			(depth = sym($w(normalDepth))),
-			assign(fs.gl_FragColor, vec4(fit1101(normal), 1.0)),
+			// assign(fs.gl_FragColor, vec4(fit1101(normal), 1.0)),
+			assign(fs.gl_FragColor, vec4(vec3(sub(1, div(depth, 20))), 1.0)),
+			// assign(fs.gl_FragColor, vec4(color, 1.0)),
 		]),
 	]),
 )

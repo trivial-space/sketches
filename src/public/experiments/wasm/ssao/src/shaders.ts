@@ -17,6 +17,7 @@ import {
 	dot,
 	abs,
 	$w,
+	index,
 } from '@thi.ng/shader-ast'
 import { diffuseLighting } from '@thi.ng/shader-ast-stdlib'
 import { defShader } from '../../../../../shared-utils/shaders/ast'
@@ -94,6 +95,8 @@ export const objectShader = defShader({
 						divisor,
 					),
 				)),
+				// assign(index(gl.gl_FragData, 0), vec4(diffuse, 1.0)),
+				// assign(index(gl.gl_FragData, 1), vec4(inp.vNormal, inp.vDepth)),
 				assign(out.color, vec4(diffuse, 1.0)),
 				assign(out.normalDepth, vec4(inp.vNormal, inp.vDepth)),
 			]
