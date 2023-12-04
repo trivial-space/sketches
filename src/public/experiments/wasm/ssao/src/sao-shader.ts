@@ -42,7 +42,6 @@ import {
 	vec2,
 	vec4,
 } from '@thi.ng/shader-ast'
-import { hash12, snoise2 } from '@thi.ng/shader-ast-stdlib'
 
 const fs = getFragmentGenerator()
 
@@ -174,7 +173,7 @@ const fs = getFragmentGenerator()
 export const defaultSAOUniforms = {
 	size: [512, 512],
 
-	scale: 0.1,
+	scale: 10,
 	intensity: 0.1,
 	bias: 0.5,
 
@@ -222,9 +221,6 @@ const NUM_SAMPLES = 7
 const ANGLE_STEP = (Math.PI * 2 * NUM_RINGS) / NUM_SAMPLES
 const INV_NUM_SAMPLES = 1 / NUM_SAMPLES
 
-// float rand(vec2 co){
-// 			return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-// 		}
 const rand = (co: Vec2Term) =>
 	fract(mul(43758.5453, sin(dot(co, vec2(12.9898, 78.233)))))
 
@@ -253,7 +249,9 @@ export const SAOFragmentShader = fs(
 			(centerViewNormal = sym($xyz(normalDepth))),
 
 			(angle = sym(mul(rand(add(coords, randomSeed)), TAU))),
-			(radius = sym(div(vec2(mul(kernelRadius, INV_NUM_SAMPLES)), size))),
+			(radius = sym(
+				div(vec2(mul(kernelRadius, INV_NUM_SAMPLES)), mul(size, depth)),
+			)),
 			(radiusStep = sym(radius)),
 			(occlusionSum = sym(float(0))),
 			(weightSum = sym(float(0))),
@@ -275,7 +273,7 @@ export const SAOFragmentShader = fs(
 					(sampleViewPosition = sym($xyz(texture(tViewPosition, sampleUv)))),
 					(viewDelta = sym(sub(sampleViewPosition, centerViewPosition))),
 					(viewDistance = sym(length(viewDelta))),
-					(scaledScreenDistance = sym(mul(scale, viewDistance))),
+					(scaledScreenDistance = sym(mul(div(1, scale), viewDistance))),
 					assign(
 						occlusionSum,
 						add(
