@@ -100,6 +100,7 @@ export function render(data: {
 	saoLayer.update({
 		uniforms: {
 			randomSeed: Math.random() * 10,
+			size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 			// randomSeed: 0,
 		},
 	})

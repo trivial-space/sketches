@@ -6,14 +6,15 @@ import {
 	FLOAT1,
 	FloatSym,
 	INT0,
-	Mat4Sym,
 	Sampler2DSym,
 	TAU,
 	Vec2Sym,
+	Vec2Term,
 	Vec3Sym,
 	Vec4Sym,
 	add,
 	assign,
+	cont,
 	cos,
 	defMain,
 	discard,
@@ -22,15 +23,16 @@ import {
 	eq,
 	float,
 	forLoop,
+	fract,
 	ifThen,
 	inc,
 	input,
 	int,
 	length,
 	lt,
+	lte,
 	max,
 	mul,
-	pow,
 	program,
 	sin,
 	sub,
@@ -38,10 +40,9 @@ import {
 	texture,
 	uniform,
 	vec2,
-	vec3,
 	vec4,
 } from '@thi.ng/shader-ast'
-import { fit1101, hash12, hash2, permute } from '@thi.ng/shader-ast-stdlib'
+import { hash12, snoise2 } from '@thi.ng/shader-ast-stdlib'
 
 const fs = getFragmentGenerator()
 
@@ -173,24 +174,18 @@ const fs = getFragmentGenerator()
 export const defaultSAOUniforms = {
 	size: [512, 512],
 
-	cameraNear: 0.1,
-	cameraFar: 100,
-
-	scale: 1,
+	scale: 0.1,
 	intensity: 0.1,
 	bias: 0.5,
 
 	minResolution: 0.0,
 	kernelRadius: 100.0,
-	// randomSeed: 0.0,
+	randomSeed: 0.0,
 } as const
 
 let tNormalDepth: Sampler2DSym
 let tViewPosition: Sampler2DSym
 let size: Vec2Sym
-
-let cameraNear: FloatSym
-let cameraFar: FloatSym
 
 let scale: FloatSym
 let intensity: FloatSym
@@ -209,8 +204,6 @@ let centerViewPosition: Vec3Sym
 
 let coords: Vec2Sym
 
-let scaleDividedByCameraFar: FloatSym
-let minResolutionMultipliedByCameraFar: FloatSym
 let angle: FloatSym
 let radius: Vec2Sym
 let radiusStep: Vec2Sym
@@ -219,6 +212,7 @@ let weightSum: FloatSym
 let sampleUv: Vec2Sym
 
 let sampleViewPosition: Vec3Sym
+let sampleNormalDepth: Vec4Sym
 let viewDelta: Vec3Sym
 let viewDistance: FloatSym
 let scaledScreenDistance: FloatSym
@@ -228,14 +222,17 @@ const NUM_SAMPLES = 7
 const ANGLE_STEP = (Math.PI * 2 * NUM_RINGS) / NUM_SAMPLES
 const INV_NUM_SAMPLES = 1 / NUM_SAMPLES
 
+// float rand(vec2 co){
+// 			return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+// 		}
+const rand = (co: Vec2Term) =>
+	fract(mul(43758.5453, sin(dot(co, vec2(12.9898, 78.233)))))
+
 export const SAOFragmentShader = fs(
 	program([
 		(tNormalDepth = uniform('sampler2D', 'tNormalDepth')),
 		(tViewPosition = uniform('sampler2D', 'tViewPosition')),
 		(size = uniform('vec2', 'size')),
-
-		(cameraNear = uniform('float', 'cameraNear')),
-		(cameraFar = uniform('float', 'cameraFar')),
 
 		(scale = uniform('float', 'scale')),
 		(intensity = uniform('float', 'intensity')),
@@ -250,14 +247,13 @@ export const SAOFragmentShader = fs(
 		defMain(() => [
 			(normalDepth = sym(texture(tNormalDepth, coords))),
 			(depth = sym($w(normalDepth))),
+			ifThen(lte(sub(depth, 1), FLOAT0), [discard]),
+
 			(centerViewPosition = sym($xyz(texture(tViewPosition, coords)))),
 			(centerViewNormal = sym($xyz(normalDepth))),
 
-			(scaleDividedByCameraFar = sym(div(scale, cameraFar))),
-			(minResolutionMultipliedByCameraFar = sym(mul(minResolution, cameraFar))),
-
-			(angle = sym(mul(hash12(add(coords, randomSeed)), TAU))),
-			(radius = sym(vec2(mul(kernelRadius, INV_NUM_SAMPLES)))),
+			(angle = sym(mul(rand(add(coords, randomSeed)), TAU))),
+			(radius = sym(div(vec2(mul(kernelRadius, INV_NUM_SAMPLES)), size))),
 			(radiusStep = sym(radius)),
 			(occlusionSum = sym(float(0))),
 			(weightSum = sym(float(0))),
@@ -273,12 +269,13 @@ export const SAOFragmentShader = fs(
 					assign(radius, add(radius, radiusStep)),
 					assign(angle, add(angle, ANGLE_STEP)),
 
+					(sampleNormalDepth = sym(texture(tNormalDepth, sampleUv))),
+					ifThen(lte(sub($w(sampleNormalDepth), 1), FLOAT0), [cont]),
+
 					(sampleViewPosition = sym($xyz(texture(tViewPosition, sampleUv)))),
 					(viewDelta = sym(sub(sampleViewPosition, centerViewPosition))),
 					(viewDistance = sym(length(viewDelta))),
-					(scaledScreenDistance = sym(
-						mul(scaleDividedByCameraFar, viewDistance),
-					)),
+					(scaledScreenDistance = sym(mul(scale, viewDistance))),
 					assign(
 						occlusionSum,
 						add(
@@ -289,10 +286,7 @@ export const SAOFragmentShader = fs(
 								div(
 									sub(
 										div(
-											sub(
-												dot(centerViewNormal, viewDelta),
-												minResolutionMultipliedByCameraFar,
-											),
+											sub(dot(centerViewNormal, viewDelta), minResolution),
 											scaledScreenDistance,
 										),
 										bias,
@@ -309,7 +303,7 @@ export const SAOFragmentShader = fs(
 				],
 			),
 
-			// ifThen(eq(weightSum, FLOAT0), [discard]),
+			ifThen(eq(weightSum, FLOAT0), [discard]),
 
 			assign(
 				fs.gl_FragColor,
@@ -321,7 +315,7 @@ export const SAOFragmentShader = fs(
 			// 	fs.gl_FragColor,
 			// 	vec4(fit1101(mul(centerViewPosition, 0.05)), 1.0),
 			// ),
-			// assign(fs.gl_FragColor, vec4(vec3(div(depth, 20)), 1.0)),
+			// assign(fs.gl_FragColor, vec4(vec3(div(sub(depth, 1), 10)), 1.0)),
 			// assign(fs.gl_FragColor, vec4(vec3(hash12(add(coords, randomSeed))), 1)),
 		]),
 	]),
