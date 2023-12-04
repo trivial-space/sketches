@@ -36,7 +36,7 @@ init().then(() => {
 		// for camera
 		Q.emit(baseEvents.FRAME)
 
-		render(get_frame_data())
+		render({ ...get_frame_data(), ...initData })
 	}, 'mainLoop')
 
 	startLoop()

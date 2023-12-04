@@ -2,68 +2,53 @@ import { getFragmentGenerator } from '../../../../../shared-utils/shaders/ast'
 import {
 	$w,
 	$xyz,
+	FLOAT0,
+	FLOAT1,
 	FloatSym,
+	INT0,
 	Mat4Sym,
 	Sampler2DSym,
+	TAU,
 	Vec2Sym,
 	Vec3Sym,
 	Vec4Sym,
+	add,
 	assign,
+	cos,
 	defMain,
+	discard,
 	div,
+	dot,
+	eq,
+	float,
+	forLoop,
+	ifThen,
+	inc,
 	input,
+	int,
+	length,
+	lt,
+	max,
 	mul,
+	pow,
 	program,
+	sin,
 	sub,
 	sym,
 	texture,
 	uniform,
+	vec2,
 	vec3,
 	vec4,
 } from '@thi.ng/shader-ast'
-import { fit1101 } from '@thi.ng/shader-ast-stdlib'
+import { fit1101, hash12, hash2, permute } from '@thi.ng/shader-ast-stdlib'
 
 const fs = getFragmentGenerator()
-
-export const defaultSAOUniforms = {
-	size: [512, 512],
-
-	cameraNear: 1,
-	cameraFar: 100,
-	cameraProjectionMatrix: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-	cameraInverseProjectionMatrix: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-
-	scale: 1.0,
-	intensity: 0.1,
-	bias: 0.5,
-
-	minResolution: 0.0,
-	kernelRadius: 100.0,
-	randomSeed: 0.0,
-} as const
-
-let tDiffuse: Sampler2DSym
-let tNormalDepth: Sampler2DSym
-let size: Vec2Sym
-
-let cameraNear: FloatSym
-let cameraFar: FloatSym
-let projMat: Mat4Sym
-let inverseProjMat: Mat4Sym
-
-let scale: FloatSym
-let intensity: FloatSym
-let bias: FloatSym
-
-let minResolution: FloatSym
-let kernelRadius: FloatSym
-let randomSeed: FloatSym
 
 // const SAOShader = {
 // 	defines: {
 // 		NUM_SAMPLES: 7,
 // 		NUM_RINGS: 4,
-// 		DIFFUSE_TEXTURE: 0,
 // 		PERSPECTIVE_CAMERA: 1,
 // 	},
 
@@ -72,10 +57,6 @@ let randomSeed: FloatSym
 // 		#include <common>
 
 // 		varying vec2 vUv;
-
-// 		#if DIFFUSE_TEXTURE == 1
-// 		uniform sampler2D tDiffuse;
-// 		#endif
 
 // 		uniform sampler2D tDepth;
 // 		uniform sampler2D tNormal;
@@ -96,14 +77,6 @@ let randomSeed: FloatSym
 // 		// RGBA depth
 
 // 		#include <packing>
-
-// 		vec4 getDefaultColor( const in vec2 screenPosition ) {
-// 			#if DIFFUSE_TEXTURE == 1
-// 			return texture2D( tDiffuse, vUv );
-// 			#else
-// 			return vec4( 1.0 );
-// 			#endif
-// 		}
 
 // 		float getDepth( const in vec2 screenPosition ) {
 // 			return texture2D( tDepth, screenPosition ).x;
@@ -190,28 +163,79 @@ let randomSeed: FloatSym
 
 // 			float ambientOcclusion = getAmbientOcclusion( viewPosition );
 
-// 			gl_FragColor = getDefaultColor( vUv );
+// 			gl_FragColor = vec(1.0);
 // 			gl_FragColor.xyz *=  1.0 - ambientOcclusion;
 // 		}`,
 // }
 
-let color: Vec3Sym
+// Uniforms
+
+export const defaultSAOUniforms = {
+	size: [512, 512],
+
+	cameraNear: 0.1,
+	cameraFar: 100,
+
+	scale: 1,
+	intensity: 0.1,
+	bias: 0.5,
+
+	minResolution: 0.0,
+	kernelRadius: 100.0,
+	// randomSeed: 0.0,
+} as const
+
+let tNormalDepth: Sampler2DSym
+let tViewPosition: Sampler2DSym
+let size: Vec2Sym
+
+let cameraNear: FloatSym
+let cameraFar: FloatSym
+
+let scale: FloatSym
+let intensity: FloatSym
+let bias: FloatSym
+
+let minResolution: FloatSym
+let kernelRadius: FloatSym
+let randomSeed: FloatSym
+
+// Variables
+
 let normalDepth: Vec4Sym
-let normal: Vec3Sym
+let centerViewNormal: Vec3Sym
 let depth: FloatSym
+let centerViewPosition: Vec3Sym
 
 let coords: Vec2Sym
 
+let scaleDividedByCameraFar: FloatSym
+let minResolutionMultipliedByCameraFar: FloatSym
+let angle: FloatSym
+let radius: Vec2Sym
+let radiusStep: Vec2Sym
+let occlusionSum: FloatSym
+let weightSum: FloatSym
+let sampleUv: Vec2Sym
+
+let sampleViewPosition: Vec3Sym
+let viewDelta: Vec3Sym
+let viewDistance: FloatSym
+let scaledScreenDistance: FloatSym
+
+const NUM_RINGS = 4
+const NUM_SAMPLES = 7
+const ANGLE_STEP = (Math.PI * 2 * NUM_RINGS) / NUM_SAMPLES
+const INV_NUM_SAMPLES = 1 / NUM_SAMPLES
+
 export const SAOFragmentShader = fs(
 	program([
-		(tDiffuse = uniform('sampler2D', 'tDiffuse')),
 		(tNormalDepth = uniform('sampler2D', 'tNormalDepth')),
+		(tViewPosition = uniform('sampler2D', 'tViewPosition')),
 		(size = uniform('vec2', 'size')),
 
 		(cameraNear = uniform('float', 'cameraNear')),
 		(cameraFar = uniform('float', 'cameraFar')),
-		(projMat = uniform('mat4', 'cameraProjectionMatrix')),
-		(inverseProjMat = uniform('mat4', 'cameraInverseProjectionMatrix')),
 
 		(scale = uniform('float', 'scale')),
 		(intensity = uniform('float', 'intensity')),
@@ -224,13 +248,82 @@ export const SAOFragmentShader = fs(
 		(coords = input('vec2', 'coords')),
 
 		defMain(() => [
-			(color = sym($xyz(texture(tDiffuse, coords)))),
 			(normalDepth = sym(texture(tNormalDepth, coords))),
-			(normal = sym($xyz(normalDepth))),
 			(depth = sym($w(normalDepth))),
-			// assign(fs.gl_FragColor, vec4(fit1101(normal), 1.0)),
-			assign(fs.gl_FragColor, vec4(vec3(sub(1, div(depth, 20))), 1.0)),
-			// assign(fs.gl_FragColor, vec4(color, 1.0)),
+			(centerViewPosition = sym($xyz(texture(tViewPosition, coords)))),
+			(centerViewNormal = sym($xyz(normalDepth))),
+
+			(scaleDividedByCameraFar = sym(div(scale, cameraFar))),
+			(minResolutionMultipliedByCameraFar = sym(mul(minResolution, cameraFar))),
+
+			(angle = sym(mul(hash12(add(coords, randomSeed)), TAU))),
+			(radius = sym(vec2(mul(kernelRadius, INV_NUM_SAMPLES)))),
+			(radiusStep = sym(radius)),
+			(occlusionSum = sym(float(0))),
+			(weightSum = sym(float(0))),
+
+			forLoop(
+				sym(INT0),
+				(i) => lt(i, int(NUM_SAMPLES)),
+				inc,
+				(i) => [
+					(sampleUv = sym(
+						add(coords, mul(vec2(cos(angle), sin(angle)), radius)),
+					)),
+					assign(radius, add(radius, radiusStep)),
+					assign(angle, add(angle, ANGLE_STEP)),
+
+					(sampleViewPosition = sym($xyz(texture(tViewPosition, sampleUv)))),
+					(viewDelta = sym(sub(sampleViewPosition, centerViewPosition))),
+					(viewDistance = sym(length(viewDelta))),
+					(scaledScreenDistance = sym(
+						mul(scaleDividedByCameraFar, viewDistance),
+					)),
+					assign(
+						occlusionSum,
+						add(
+							occlusionSum,
+
+							max(
+								float(0),
+								div(
+									sub(
+										div(
+											sub(
+												dot(centerViewNormal, viewDelta),
+												minResolutionMultipliedByCameraFar,
+											),
+											scaledScreenDistance,
+										),
+										bias,
+									),
+									add(
+										float(1),
+										mul(scaledScreenDistance, scaledScreenDistance),
+									),
+								),
+							),
+						),
+					),
+					assign(weightSum, add(weightSum, FLOAT1)),
+				],
+			),
+
+			// ifThen(eq(weightSum, FLOAT0), [discard]),
+
+			assign(
+				fs.gl_FragColor,
+				mul(vec4(1), sub(1, mul(occlusionSum, div(intensity, weightSum)))),
+			),
+
+			// assign(fs.gl_FragColor, vec4(fit1101(centerViewNormal), 1.0)),
+			// assign(
+			// 	fs.gl_FragColor,
+			// 	vec4(fit1101(mul(centerViewPosition, 0.05)), 1.0),
+			// ),
+			// assign(fs.gl_FragColor, vec4(vec3(div(depth, 20)), 1.0)),
+			// assign(fs.gl_FragColor, vec4(vec3(hash12(add(coords, randomSeed))), 1)),
 		]),
 	]),
 )
+console.log(SAOFragmentShader)
