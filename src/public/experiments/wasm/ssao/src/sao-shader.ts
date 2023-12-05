@@ -179,7 +179,6 @@ export const defaultSAOUniforms = {
 
 	minResolution: 0.0,
 	kernelRadius: 100.0,
-	randomSeed: 0.0,
 } as const
 
 let tNormalDepth: Sampler2DSym

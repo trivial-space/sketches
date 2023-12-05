@@ -101,7 +101,6 @@ export function render(data: {
 		uniforms: {
 			randomSeed: Math.random() * 10,
 			size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
-			// randomSeed: 0,
 		},
 	})
 	normalDepthPositionLayer.update({
