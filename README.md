@@ -8,8 +8,8 @@ Since a first prototype and exhibition in 2013, the main focus shifted to
 improve the technical workflow for creating and developing such virtual spaces.
 During a long research and learning period, some interconnected programming
 libraries and tools evolved, that improve the creation of web based virtual
-reality by code. Together they enable a live coding environment for WebGL
-scenes, with hot code and shader reloading as well as controlled application and
+reality by code. Together they enable a development environment for WebGL
+scenes, with hot code and shader reloading as well as application and
 WebGL state preservation in live coding sessions.
 
 This workflow builds on following libraries:
@@ -21,19 +21,17 @@ This workflow builds on following libraries:
 - [Libs-wasm](https://github.com/trivial-space/libs-wasm), collection of rust
   utilities for creative coding and geometric alorithms targeting web assembly.
 
-This repository is the primary development environment trivial space sketches.
+This is the primary repository for trivial space sketches.
 Experiments and works are build here, while working both on the programming
 tools as well as on artistic expressions.
 
 Basically everything here is work in progress. Intermediate results are
-published frequently to
+published to
 [sketches.trivialspace.net](https://sketches.trivialspace.net), which is just a
 statically hosted version of the `public` folder of this repository.
 
-Eventually, the work evolving here will lead to a relaunch of the
-[trivial space](https://trivialspace.net) platform. This playground and the
-[trivial space repository](https://github.com/trivial-space) are the main places
-where progress and updates can be observed.
+A curated selection of sketches is presented at the
+[trivial space](https://trivialspace.net) website.
 
 ## Local development
 
