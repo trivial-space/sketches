@@ -1,3 +1,4 @@
+import '../../../../shared-utils/css/fullscreen.css'
 import { events, Q } from './context'
 import { makeLine } from './state'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'

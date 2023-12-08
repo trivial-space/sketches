@@ -1,3 +1,4 @@
+import '../../../../shared-utils/css/fullscreen.css'
 import { events, Q } from './context'
 import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'

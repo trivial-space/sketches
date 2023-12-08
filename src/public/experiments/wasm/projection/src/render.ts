@@ -153,13 +153,15 @@ export function render(data: {
 		},
 	})
 
+	const effect = Q.getEffect('colorGrade').update({
+		frag: colorGradeShader,
+		uniforms: {
+			source: renderLayer.image(),
+			rand: randLayer.image(),
+		},
+	})
+
 	Q.painter.compose(projLayer, renderLayer).draw({
-		effects: Q.getEffect('colorGrade').update({
-			frag: colorGradeShader,
-			uniforms: {
-				source: renderLayer.image(),
-				rand: randLayer.image(),
-			},
-		}),
+		effects: effect,
 	})
 }

@@ -142,7 +142,7 @@ export const brushStrokeFrag = fs(
 				vec4(
 					// mix(vec3(0.2, 0.8, 0.6), vec3(0, 0.6, 0.2), noiseVal),
 					uColor,
-					clamp(float(0), float(1), mul(0.9, noiseVal)),
+					clamp(mul(0.9, noiseVal), float(0), float(1)),
 				),
 			),
 			// assign(fs.gl_FragColor, vec4(1, 0, 0, 1)),
