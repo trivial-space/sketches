@@ -26,6 +26,9 @@ import {
 	abs,
 	div,
 	clamp,
+	VEC3_1,
+	mix,
+	vec3,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 import { Texture } from 'tvs-painter/dist/texture'
@@ -85,6 +88,7 @@ let uTexScale: Vec2Sym
 let uEdgeSharpness: FloatSym
 let noise: Vec4Sym
 let noiseVal: FloatSym
+let alpha: FloatSym
 export const brushStrokeFrag = fs(
 	program([
 		(uSize = uniform('vec2', 'size')),
@@ -137,12 +141,15 @@ export const brushStrokeFrag = fs(
 			// 		),
 			// 	),
 			// ),
+			(alpha = sym(clamp(mul(0.9, noiseVal), float(0), float(1)))),
 			assign(
 				fs.gl_FragColor,
 				vec4(
-					// mix(vec3(0.2, 0.8, 0.6), vec3(0, 0.6, 0.2), noiseVal),
+					// mix(vec3(0.2, 0.8, 0.6), vec3(0, 0.6, 0.2), alpha),
+					// mix(VEC3_1, uColor, alpha),
+					// 1.0,
 					uColor,
-					clamp(mul(0.9, noiseVal), float(0), float(1)),
+					alpha,
 				),
 			),
 			// assign(fs.gl_FragColor, vec4(1, 0, 0, 1)),

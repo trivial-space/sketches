@@ -12,6 +12,26 @@ import {
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
 import { subdivideTiles, Tile } from './tiles'
 import { doTimes } from 'tvs-libs/dist/utils/sequence'
+import { getFragmentGenerator } from '../../../../shared-utils/shaders/ast'
+import {
+	$w,
+	$xyz,
+	assign,
+	defMain,
+	input,
+	mix,
+	program,
+	Sampler2DSym,
+	sub,
+	sym,
+	texture,
+	uniform,
+	Vec2Sym,
+	vec3,
+	Vec3Sym,
+	vec4,
+	Vec4Sym,
+} from '@thi.ng/shader-ast'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 const lineWidth = (Q.state.device.canvas.height * window.devicePixelRatio) / 32
@@ -39,13 +59,13 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 
 export const scene = Q.getLayer('scene').update({
 	drawSettings: {
-		clearBits: 0,
+		// clearBits: 0,
 		enable: [Q.gl.BLEND],
 		blendFuncSeparate: [
 			Q.gl.SRC_ALPHA,
 			Q.gl.ONE_MINUS_SRC_ALPHA,
+			Q.gl.DST_ALPHA,
 			Q.gl.SRC_ALPHA,
-			Q.gl.ONE,
 		],
 	},
 })
@@ -107,6 +127,28 @@ function animate() {
 	}
 }
 
+const fs = getFragmentGenerator('precision highp float;')
+let coords: Vec2Sym
+let source: Sampler2DSym
+let color: Vec4Sym
+const postProcessShader = fs(
+	program([
+		(coords = input('vec2', 'coords')),
+		(source = uniform('sampler2D', 'source')),
+		defMain(() => [
+			(color = sym(texture(source, coords))),
+			assign(fs.gl_FragColor, vec4(mix($xyz(color), vec3(1), $w(color)), 1)),
+		]),
+	]),
+)
+
+const effect = Q.getEffect('postProcess').update({
+	frag: postProcessShader,
+	uniforms: {
+		source: () => scene.image(),
+	},
+})
+
 function createLineAnimation(line: Line, color: [number, number, number]) {
 	const data = lineToFormCollection(line, {
 		lineWidth,
@@ -126,7 +168,9 @@ function createLineAnimation(line: Line, color: [number, number, number]) {
 			)
 
 		scene.update({ sketches })
-		Q.painter.compose(scene).show(scene)
+		Q.painter
+			.compose(scene) //.show(scene)
+			.draw({ effects: effect })
 	}
 
 	return render
