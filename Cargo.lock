@@ -285,6 +285,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tvs-sketch-bevel-lines-2d"
+version = "0.1.0"
+dependencies = [
+ "console_error_panic_hook",
+ "js-sys",
+ "serde-wasm-bindgen",
+ "tvs-libs",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "tvs-sketch-projection"
 version = "0.1.0"
 dependencies = [
