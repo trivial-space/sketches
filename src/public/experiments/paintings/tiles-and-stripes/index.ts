@@ -12,26 +12,6 @@ import {
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
 import { subdivideTiles, Tile } from './tiles'
 import { doTimes } from 'tvs-libs/dist/utils/sequence'
-import { getFragmentGenerator } from '../../../../shared-utils/shaders/ast'
-import {
-	$w,
-	$xyz,
-	assign,
-	defMain,
-	input,
-	mix,
-	program,
-	Sampler2DSym,
-	sub,
-	sym,
-	texture,
-	uniform,
-	Vec2Sym,
-	vec3,
-	Vec3Sym,
-	vec4,
-	Vec4Sym,
-} from '@thi.ng/shader-ast'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 const lineWidth = (Q.state.device.canvas.height * window.devicePixelRatio) / 32
@@ -127,20 +107,14 @@ function animate() {
 	}
 }
 
-const fs = getFragmentGenerator('precision highp float;')
-let coords: Vec2Sym
-let source: Sampler2DSym
-let color: Vec4Sym
-const postProcessShader = fs(
-	program([
-		(coords = input('vec2', 'coords')),
-		(source = uniform('sampler2D', 'source')),
-		defMain(() => [
-			(color = sym(texture(source, coords))),
-			assign(fs.gl_FragColor, vec4(mix($xyz(color), vec3(1), $w(color)), 1)),
-		]),
-	]),
-)
+const postProcessShader = `precision mediump float;
+uniform sampler2D source;
+varying vec2 coords;
+void main() {
+	vec4 color = texture2D(source, coords);
+	gl_FragColor = vec4(mix(color.xyz, vec3(1), color.w), 1.0);
+}
+`
 
 const effect = Q.getEffect('postProcess').update({
 	frag: postProcessShader,
