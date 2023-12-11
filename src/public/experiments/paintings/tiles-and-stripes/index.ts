@@ -2,10 +2,7 @@ import '../../../../shared-utils/css/fullscreen.css'
 import { events, Q } from './context'
 import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
-import {
-	Line,
-	lineToFormCollection,
-} from '../../../../shared-utils/geometry/lines_2d'
+import { lineToFormCollection } from '../../../../shared-utils/geometry/lines_2d'
 import {
 	brushStrokeFrag,
 	brushStrokeVert,
@@ -35,11 +32,23 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 	}),
 })
 
-// === scene ===
+let tiles: Tile[] = [
+	{
+		color: [1, 1, 1],
+		top: 0,
+		left: 0,
+		width: Q.gl.drawingBufferWidth * window.devicePixelRatio,
+		height: Q.gl.drawingBufferHeight * window.devicePixelRatio,
+	},
+]
+
+doTimes(() => {
+	tiles = subdivideTiles(tiles, lineWidth)
+}, 7)
 
 export const scene = Q.getLayer('scene').update({
 	drawSettings: {
-		// clearBits: 0,
+		clearBits: 0, // no clearing
 		enable: [Q.gl.BLEND],
 		blendFuncSeparate: [
 			Q.gl.SRC_ALPHA,
@@ -47,6 +56,52 @@ export const scene = Q.getLayer('scene').update({
 			Q.gl.DST_ALPHA,
 			Q.gl.SRC_ALPHA,
 		],
+	},
+})
+
+const lineSketches = tiles.map((t, i) => {
+	const line = makeBrushStroke({
+		left: t.left - lineWidth / 3,
+		top: t.top + lineWidth / 1.5,
+		width: t.width + lineWidth / 3,
+		height: t.height - lineWidth * 1.5,
+		offsetX: lineWidth * 0.7,
+		offsetY: lineWidth * 0.4,
+		steps: Math.floor(t.height / (lineWidth * 1.2)),
+		curveHeight: lineWidth,
+		heightFactorFunction: (n) => n * 1.5 - 0.6,
+	})
+
+	const data = lineToFormCollection(line, {
+		lineWidth,
+		storeType: 'DYNAMIC',
+		smouthCount: 3,
+	})
+
+	return data
+		.map((d, j) => Q.getForm('form' + i + '_' + j).update(d))
+		.map((form, j) =>
+			Q.getSketch('line' + i + '_' + j).update({
+				form,
+				shade,
+				uniforms: { color: t.color },
+			}),
+		)
+})
+
+const postProcessShader = `precision mediump float;
+uniform sampler2D source;
+varying vec2 coords;
+void main() {
+	vec4 color = texture2D(source, coords);
+	gl_FragColor = vec4(mix(color.xyz, vec3(1.0), color.w), 1.0);
+}
+`
+
+const effect = Q.getEffect('postProcess').update({
+	frag: postProcessShader,
+	uniforms: {
+		source: () => scene.image(),
 	},
 })
 
@@ -67,85 +122,10 @@ Q.listen('index', events.RESIZE, () => {
 
 	Q.painter.compose(scene)
 
-	animate()
-})
-
-let tiles: Tile[] = [
-	{
-		color: [1, 1, 1],
-		top: 0,
-		left: 0,
-		width: Q.gl.drawingBufferWidth * window.devicePixelRatio,
-		height: Q.gl.drawingBufferHeight * window.devicePixelRatio,
-	},
-]
-
-doTimes(() => {
-	tiles = subdivideTiles(tiles, lineWidth)
-}, 7)
-
-const animations = tiles.map((t) => {
-	return createLineAnimation(
-		makeBrushStroke({
-			left: t.left - lineWidth / 3,
-			top: t.top + lineWidth / 1.5,
-			width: t.width + lineWidth / 3,
-			height: t.height - lineWidth * 1.5,
-			offsetX: lineWidth * 0.7,
-			offsetY: lineWidth * 0.4,
-			steps: Math.floor(t.height / (lineWidth * 1.2)),
-			curveHeight: lineWidth,
-			heightFactorFunction: (n) => n * 1.5 - 0.6,
-		}),
-		t.color,
-	)
-})
-
-function animate() {
-	for (const run of animations) {
-		run()
-	}
-}
-
-const postProcessShader = `precision mediump float;
-uniform sampler2D source;
-varying vec2 coords;
-void main() {
-	vec4 color = texture2D(source, coords);
-	gl_FragColor = vec4(mix(color.xyz, vec3(1.0), color.w), 1.0);
-}
-`
-
-const effect = Q.getEffect('postProcess').update({
-	frag: postProcessShader,
-	uniforms: {
-		source: () => scene.image(),
-	},
-})
-
-function createLineAnimation(line: Line, color: [number, number, number]) {
-	const data = lineToFormCollection(line, {
-		lineWidth,
-		storeType: 'DYNAMIC',
-		smouthCount: 3,
-	})
-
-	function render() {
-		const sketches = data
-			.map((d, i) => Q.getForm('form' + i).update(d))
-			.map((form, i) =>
-				Q.getSketch('line' + i).update({
-					form,
-					shade,
-					uniforms: { color },
-				}),
-			)
-
+	for (const sketches of lineSketches) {
 		scene.update({ sketches })
-		Q.painter
-			.compose(scene) //.show(scene)
-			.draw({ effects: effect })
+		Q.painter.compose(scene)
 	}
 
-	return render
-}
+	Q.painter.draw({ effects: effect })
+})

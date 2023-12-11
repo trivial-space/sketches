@@ -42,7 +42,7 @@ export interface BrushStrokeUniforms {
 	edgeSharpness: number
 }
 
-const fs = getFragmentGenerator('precision highp float;')
+const fs = getFragmentGenerator('precision mediump float;')
 const vs = getVertexGenerator()
 
 // varyings
