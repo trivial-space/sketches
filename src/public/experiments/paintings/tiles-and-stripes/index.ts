@@ -112,7 +112,7 @@ uniform sampler2D source;
 varying vec2 coords;
 void main() {
 	vec4 color = texture2D(source, coords);
-	gl_FragColor = vec4(mix(color.xyz, vec3(1), color.w), 1.0);
+	gl_FragColor = vec4(mix(color.xyz, vec3(1.0), color.w), 1.0);
 }
 `
 
