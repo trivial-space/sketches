@@ -91,7 +91,6 @@ let noiseVal: FloatSym
 let alpha: FloatSym
 export const brushStrokeFrag = fs(
 	program([
-		(uSize = uniform('vec2', 'size')),
 		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
 		(uTexScale = uniform('vec2', 'texScale')),
 		(uColor = uniform('vec3', 'color')),
