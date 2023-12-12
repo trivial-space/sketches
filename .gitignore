@@ -6,4 +6,4 @@ yarn-error.log
 dist
 /public
 target
-**/create/pkg/.gitignore
+**/crate/pkg/.gitignore
