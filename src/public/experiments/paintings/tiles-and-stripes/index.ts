@@ -109,7 +109,7 @@ Q.listen('index', events.RESIZE, () => {
 	scene.update({
 		uniforms: {
 			noiseTex: noiseTex.image(),
-			size: () => [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+			size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 			texScale: [20, 1],
 			edgeSharpness: 3,
 		},
