@@ -20,11 +20,17 @@ init().then(() => {
 		directRender: true,
 	})
 	const render = () => {
-		const data = get_geom(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 20)
+		const data: any[] = get_geom(
+			Q.gl.drawingBufferWidth,
+			Q.gl.drawingBufferHeight,
+			4,
+		)
 		console.log('init', data)
-		const form = Q.getForm('line').update(wasmGeometryToFormData(data))
+		const forms = data.map((line, i) =>
+			Q.getForm('line' + i).update(wasmGeometryToFormData(line)),
+		)
 
-		const sketches = [form].map((form, i) =>
+		const sketches = forms.map((form, i) =>
 			Q.getSketch('line' + i).update({ form, shade }),
 		)
 		scene.update({
