@@ -23,7 +23,7 @@ init().then(() => {
 		const data: any[] = get_geom(
 			Q.gl.drawingBufferWidth,
 			Q.gl.drawingBufferHeight,
-			4,
+			20,
 		)
 		console.log('init', data)
 		const forms = data.map((line, i) =>

@@ -7,7 +7,7 @@ use tvs_libs::{
 use wasm_bindgen::prelude::*;
 
 fn rand_width() -> f32 {
-    random::<f32>() * 80.0 + 20.0
+    random::<f32>() * 280.0 + 20.0
 }
 
 #[wasm_bindgen]
