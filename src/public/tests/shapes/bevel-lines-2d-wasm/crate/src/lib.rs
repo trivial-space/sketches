@@ -1,7 +1,10 @@
 use std::f32::consts::PI;
 
 use tvs_libs::{
-    geometry::line_2d::{buffered_geometry::LineBufferedGeometryVec, line_vert_w, Line},
+    geometry::line_2d::{
+        buffered_geometry::{LineBufferedGeometryVec, LineGeometryProps},
+        line_vert_w, Line,
+    },
     prelude::*,
 };
 use wasm_bindgen::prelude::*;
@@ -44,7 +47,13 @@ pub fn get_geom(screen_width: usize, screen_height: usize, point_count: usize) -
 
     line = line.cleanup_vertices(0.5, 0.1, 0.1);
 
-    let lines = line.split_at_angle(PI * 2.0 / 3.0);
+    let lines = line.split_at_angle(PI * 3.0 / 4.0);
 
-    serde_wasm_bindgen::to_value(&lines.to_buffered_geometry()).unwrap()
+    serde_wasm_bindgen::to_value(&lines.to_buffered_geometry_with(LineGeometryProps {
+        smouth_depth: 4,
+        smouth_angle_threshold: 0.001,
+        smouth_min_length: 5.0,
+        ..default()
+    }))
+    .unwrap()
 }
