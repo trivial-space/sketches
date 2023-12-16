@@ -20,8 +20,8 @@ init().then(() => {
 	const scene = Q.getLayer('scene').update({
 		drawSettings: {
 			clearColor: [1, 1, 1, 1],
-			enable: [Q.gl.CULL_FACE],
-			cullFace: Q.gl.BACK,
+			// enable: [Q.gl.CULL_FACE],
+			// cullFace: Q.gl.BACK,
 		},
 		directRender: true,
 	})
