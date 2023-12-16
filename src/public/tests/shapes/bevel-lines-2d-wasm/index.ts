@@ -9,11 +9,11 @@ Q.state.device.sizeMultiplier = window.devicePixelRatio
 const shade = Q.getShade('line').update(shader)
 
 init().then(() => {
-	let t = performance.now() / 1000
-	for (let i = 0; i < 1000; i++) {
-		get_geom(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 20)
-	}
-	console.log('1000 lines: ', performance.now() / 1000 - t)
+	// let t = performance.now() / 1000
+	// for (let i = 0; i < 1000; i++) {
+	// 	get_geom(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 20)
+	// }
+	// console.log('1000 lines: ', performance.now() / 1000 - t)
 
 	// === scene ===
 
