@@ -1,17 +1,21 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+* @param {number} width
+* @param {number} height
+* @param {number} steps
 * @returns {any}
 */
-export function get_geom(): any;
+export function get_geom(width: number, height: number, steps: number): any;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly get_geom: () => number;
+  readonly get_geom: (a: number, b: number, c: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+  readonly __wbindgen_exn_store: (a: number) => void;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;

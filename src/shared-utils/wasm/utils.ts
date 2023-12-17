@@ -8,7 +8,7 @@ interface WasmVertexLayout {
 	size: number
 }
 
-interface WasmGeometry {
+export interface WasmGeometry {
 	buffer: Uint8Array
 	indices?: Uint8Array
 	vertex_size: number
