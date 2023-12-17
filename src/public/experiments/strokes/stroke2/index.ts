@@ -22,6 +22,7 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 			magFilter: 'LINEAR',
 			minFilter: 'LINEAR',
 			wrap: 'REPEAT',
+			type: 'UNSIGNED_BYTE',
 		},
 	}),
 })
