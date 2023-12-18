@@ -1,6 +1,5 @@
 use std::f32::consts::PI;
 
-use noise::{NoiseFn, Simplex};
 use tvs_libs::geometry::line_2d::buffered_geometry::{LineBufferedGeometryVec, LineGeometryProps};
 use tvs_libs::geometry::line_2d::Line;
 use tvs_libs::prelude::*;
@@ -13,7 +12,7 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
     } else {
         vec2(line.y, -line.x).normalize()
     };
-    let p3 = p1 + line * 0.5 + normal * (random::<f32>() * 0.3 * width);
+    let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.25) * 0.35 * width;
     (1..=10)
         .map(|t| {
             let t = t as f32 * 0.1;
@@ -24,65 +23,54 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
 
 #[wasm_bindgen]
 pub fn get_geom(width: f32, height: f32, steps: usize) -> JsValue {
-    let noise = Simplex::new(0);
-
     let step = height / steps as f32;
-    let start = vec2(-width / 2.0, -height / 2.0);
-    let end = vec2(width / 2.0, -height / 2.0 + step / 2.0);
+    let start = vec2(-width / 1.7, -height / 2.0);
+    let end = vec2(width / 1.7, -height / 2.0 + step / 2.0);
 
-    let seed_x = random::<f64>() * 20.0;
-    let seed_y = random::<f64>() * 20.0;
-
-    let delta_x = |i: usize| width * 0.24 * noise.get([i as f64, seed_x]) as f32;
-    let delta_y = |i: usize| step * 2.0 * noise.get([i as f64, seed_y]) as f32;
+    let delta_x = || width * 0.15 * (random::<f32>() * 2. - 1.);
+    let delta_y = || step * 0.5 * (random::<f32>() * 2. - 1.);
 
     let mut points = Vec::new();
 
     for i in 0..steps {
-        points.push(make_curve(
-            width,
-            start + vec2(delta_x(i), step * i as f32 + delta_y(i)),
-            end + vec2(
-                delta_x(i + steps as usize),
-                step * i as f32 + delta_y(i + steps as usize),
-            ),
-            false,
-        ));
-        points.push(make_curve(
-            width,
-            end + vec2(
-                delta_x(i + steps as usize),
-                step * i as f32 + delta_y(i + steps as usize),
-            ),
-            start + vec2(delta_x(i + 1), step * (i + 1) as f32 + delta_y(i + 1)),
-            true,
-        ));
+        points.push(start + vec2(delta_x(), step * i as f32 + delta_y()));
+        points.push(end + vec2(delta_x(), step * i as f32 + delta_y()));
     }
 
-    points.push(make_curve(
-        width,
-        start + vec2(delta_x(steps as usize), height + delta_y(steps as usize)),
-        end + vec2(
-            delta_x(steps as usize + steps as usize),
-            height + delta_y(steps as usize + steps as usize),
-        ),
-        false,
-    ));
+    points.push(start + vec2(delta_x(), height + delta_y()));
+    points.push(end + vec2(delta_x(), height + delta_y()));
 
-    let points = points.concat();
+    let points = points
+        .windows(2)
+        .enumerate()
+        .map(|(i, points)| {
+            let p1 = points[0];
+            let p2 = points[1];
+            make_curve(width, p1, p2, i % 2 != 0)
+        })
+        .collect::<Vec<_>>()
+        .concat();
 
-    let mut line = Line::new(height / (steps as f32) * 0.5);
+    let mut l = Line::new(1.0);
+    for p in points.clone() {
+        l.add(p)
+    }
+    let line_length = l.line_length();
+
+    let mut line = Line::new(height / (steps as f32) * 0.7);
+    let mut geoms = vec![];
+
     for p in points {
         line.add(p);
+        let lines = line.split_at_angle(PI * 2.0 / 3.0);
+        geoms.push(lines.to_buffered_geometry_with(LineGeometryProps {
+            smouth_depth: 4,
+            smouth_angle_threshold: 0.001,
+            smouth_min_length: 5.0,
+            total_length: Some(line_length),
+            ..default()
+        }))
     }
 
-    let lines = line.split_at_angle(PI * 3.0 / 4.0);
-
-    serde_wasm_bindgen::to_value(&lines.to_buffered_geometry_with(LineGeometryProps {
-        smouth_depth: 4,
-        smouth_angle_threshold: 0.001,
-        smouth_min_length: 5.0,
-        ..default()
-    }))
-    .unwrap()
+    serde_wasm_bindgen::to_value(&geoms).unwrap()
 }
