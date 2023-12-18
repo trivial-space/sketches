@@ -91,7 +91,8 @@ export const lineShader = defShader({
 				assign(noiseVal, fit1101(noiseVal)),
 
 				// adjust intensity
-				assign(noiseVal, add(0.1, noiseVal)),
+				assign(noiseVal, add(0.15, noiseVal)),
+				assign(noiseVal, clamp(noiseVal, float(0), float(1))),
 				assign(noiseVal, pow(noiseVal, float(0.25))),
 
 				// fade out edges
@@ -109,7 +110,7 @@ export const lineShader = defShader({
 					noiseVal,
 					mul(
 						noiseVal,
-						min(float(1), pow(sub(float(1.7), $x(ins.vUv)), float(5))),
+						min(float(1), pow(sub(float(1.6), $x(ins.vUv)), float(3))),
 					),
 				),
 
