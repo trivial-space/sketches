@@ -4,10 +4,13 @@ import {
 	WasmGeometry,
 	wasmGeometryToFormData,
 } from '../../../../../shared-utils/wasm/utils'
-import init, { get_geom } from '../crate/pkg/tvs_sketch_tile_fields'
+import init, { get_geom, setup } from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
 import { lineShader } from './shader'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
+import { shuffle } from 'tvs-libs/dist/utils/sequence'
+import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
+import { normalRand } from 'tvs-libs/dist/math/random'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -35,59 +38,52 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 
 init().then(() => {
 	const t = performance.now() / 1000
-	const geoms: WasmGeometry[][] = get_geom(
-		Q.gl.drawingBufferWidth,
-		Q.gl.drawingBufferHeight,
-		5,
-	)
+
+	setup(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 3)
+	const data: { hue: number; geometries: WasmGeometry[] }[] = get_geom()
+
 	console.log('generating line geom in: ', performance.now() / 1000 - t)
+	console.log('init', data)
 
-	console.log('init', geoms)
-
-	let i = 0
-
-	function render() {
-		const geom = geoms[i++]
-		const shade = Q.getShade('line').update(lineShader)
-		const sketches = geom.map((line, i) =>
+	const shade = Q.getShade('line').update(lineShader)
+	const sketches = shuffle(data).flatMap(({ geometries, hue }, i) => {
+		const color = hslToRGB(hsl((hue % 360) / 360, normalRand(), normalRand()))
+		return geometries.map((geom) =>
 			Q.getSketch('line' + i).update({
 				form: Q.getForm('line' + i).update(
-					wasmGeometryToFormData(line, 'DYNAMIC'),
+					wasmGeometryToFormData(geom, 'DYNAMIC'),
 				),
 				shade,
+				uniforms: {
+					color,
+				},
 			}),
 		)
+	})
 
-		Q.painter.draw({
-			effects: Q.getEffect('bg').update({
-				frag: 'precision mediump float; void main(void) {gl_FragColor = vec4(1.0);}',
-			}),
-		})
+	Q.painter.draw({
+		effects: Q.getEffect('bg').update({
+			frag: 'precision mediump float; void main(void) {gl_FragColor = vec4(1.0);}',
+		}),
+	})
 
-		Q.painter.updateDrawSettings({
-			blendEquationSeparate: [Q.gl.FUNC_ADD, Q.gl.MAX],
-			blendFuncSeparate: [
-				Q.gl.SRC_ALPHA,
-				Q.gl.ONE_MINUS_SRC_ALPHA,
-				Q.gl.ONE,
-				Q.gl.ONE,
-			],
-		})
+	Q.painter.updateDrawSettings({
+		blendEquationSeparate: [Q.gl.FUNC_ADD, Q.gl.MAX],
+		blendFuncSeparate: [
+			Q.gl.SRC_ALPHA,
+			Q.gl.ONE_MINUS_SRC_ALPHA,
+			Q.gl.ONE,
+			Q.gl.ONE,
+		],
+	})
 
-		Q.painter.draw({
-			sketches,
-			uniforms: {
-				size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
-				noiseTex: () => noiseTex.image(),
-			},
-		})
-
-		if (i < geoms.length) {
-			requestAnimationFrame(render)
-		}
-	}
-
-	render()
+	Q.painter.draw({
+		sketches,
+		uniforms: {
+			size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+			noiseTex: () => noiseTex.image(),
+		},
+	})
 })
 
 if (import.meta.hot) {

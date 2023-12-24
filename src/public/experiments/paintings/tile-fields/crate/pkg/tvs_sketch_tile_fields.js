@@ -178,11 +178,17 @@ function getInt32Memory0() {
 /**
 * @param {number} width
 * @param {number} height
-* @param {number} steps
+* @param {number} _color_count
+*/
+export function setup(width, height, _color_count) {
+    wasm.setup(width, height, _color_count);
+}
+
+/**
 * @returns {any}
 */
-export function get_geom(width, height, steps) {
-    const ret = wasm.get_geom(width, height, steps);
+export function get_geom() {
+    const ret = wasm.get_geom();
     return takeObject(ret);
 }
 

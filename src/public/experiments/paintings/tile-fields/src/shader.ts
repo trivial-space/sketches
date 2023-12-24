@@ -25,31 +25,6 @@ import {
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 import { defShader } from '../../../../../shared-utils/shaders/ast'
 
-export const shader = defShader({
-	attribs: {
-		position: 'vec2',
-		uv: 'vec2',
-	},
-	varying: {
-		vUv: 'vec2',
-	},
-	uniforms: {
-		size: 'vec2',
-	},
-	vs: (gl, uniforms, inp, out) => [
-		defMain(() => [
-			assign(out.vUv, inp.uv),
-			assign(
-				gl.gl_Position,
-				vec4(mul(div(inp.position, uniforms.size), vec2(1, -1)), 0, 1),
-			),
-		]),
-	],
-	fs: (gl, uniforms, inp, out) => [
-		defMain(() => [assign(out.fragColor, vec4(inp.vUv, 0, 1))]),
-	],
-})
-
 export const lineShader = defShader({
 	attribs: {
 		position: 'vec2',
@@ -59,6 +34,7 @@ export const lineShader = defShader({
 	uniforms: {
 		size: 'vec2',
 		noiseTex: 'sampler2D',
+		color: 'vec3',
 	},
 	varying: {
 		vUv: 'vec2',
@@ -70,7 +46,7 @@ export const lineShader = defShader({
 			assign(outs.vLocalUv, ins.localUv),
 			assign(
 				gl.gl_Position,
-				vec4(mul(div(ins.position, unis.size), vec2(1, -1)), 0, 1),
+				vec4(mul(fit0111(div(ins.position, unis.size)), vec2(1, -1)), 0, 1),
 			),
 		]),
 	],
@@ -116,10 +92,7 @@ export const lineShader = defShader({
 
 				assign(
 					outs.fragColor,
-					vec4(
-						vec3(0, 0.6, 0.2),
-						clamp(mul(0.9, noiseVal), float(0), float(1)),
-					),
+					vec4(unis.color, clamp(mul(0.9, noiseVal), float(0), float(1))),
 				),
 			]),
 		]
