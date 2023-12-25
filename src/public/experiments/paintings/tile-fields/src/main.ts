@@ -10,7 +10,8 @@ import { lineShader } from './shader'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import { shuffle } from 'tvs-libs/dist/utils/sequence'
 import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
-import { normalRand } from 'tvs-libs/dist/math/random'
+import { normalRand01, normalRand11 } from 'tvs-libs/dist/math/random'
+import { clamp } from 'tvs-libs/dist/math/core'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -39,27 +40,34 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 init().then(() => {
 	const t = performance.now() / 1000
 
-	setup(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 3)
-	const data: { hue: number; geometries: WasmGeometry[] }[] = get_geom()
+	setup(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 7)
+	const data: {
+		color: { hue: number; lightness: number }
+		geometries: WasmGeometry[]
+	}[] = get_geom()
 
 	console.log('generating line geom in: ', performance.now() / 1000 - t)
 	console.log('init', data)
 
 	const shade = Q.getShade('line').update(lineShader)
-	const sketches = shuffle(data).flatMap(({ geometries, hue }, i) => {
-		const color = hslToRGB(hsl((hue % 360) / 360, normalRand(), normalRand()))
-		return geometries.map((geom) =>
-			Q.getSketch('line' + i).update({
-				form: Q.getForm('line' + i).update(
-					wasmGeometryToFormData(geom, 'DYNAMIC'),
-				),
-				shade,
-				uniforms: {
-					color,
-				},
-			}),
-		)
-	})
+	const sketches = shuffle(data).flatMap(
+		({ geometries, color: { hue, lightness } }, i) => {
+			const color = hslToRGB(
+				hsl(hue, normalRand01(), clamp(0, 1, lightness + normalRand11() * 0.5)),
+			)
+			return geometries.map((geom) =>
+				Q.getSketch('line' + i).update({
+					form: Q.getForm('line' + i).update(
+						wasmGeometryToFormData(geom, 'DYNAMIC'),
+					),
+					shade,
+					uniforms: {
+						color,
+					},
+				}),
+			)
+		},
+	)
 
 	Q.painter.draw({
 		effects: Q.getEffect('bg').update({

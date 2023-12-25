@@ -3,9 +3,9 @@
 /**
 * @param {number} width
 * @param {number} height
-* @param {number} _color_count
+* @param {number} color_count
 */
-export function setup(width: number, height: number, _color_count: number): void;
+export function setup(width: number, height: number, color_count: number): void;
 /**
 * @returns {any}
 */

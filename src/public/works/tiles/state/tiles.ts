@@ -2,7 +2,7 @@ import { mat4, quat } from 'gl-matrix'
 import { pushTransition } from '../../../../shared-utils/transitions'
 import { sign } from 'tvs-libs/dist/math/core'
 import { getZRotQuat, getYRotQuat } from 'tvs-libs/dist/math/geometry'
-import { normalRand, randInt } from 'tvs-libs/dist/math/random'
+import { normalRand01, randInt } from 'tvs-libs/dist/math/random'
 import { doTimes, pickRandom, times } from 'tvs-libs/dist/utils/sequence'
 import { events, Q } from '../context'
 import { Set, sets, specs, TileSpec } from './data'
@@ -14,7 +14,7 @@ type Position = [number, number]
 export class Tiles {
 	tileSize = 3
 	tileDensity = 11
-	color = [normalRand(), normalRand(), normalRand()]
+	color = [normalRand01(), normalRand01(), normalRand01()]
 	set = pickRandom(sets)
 	animationDuration = 1700
 	animationChance = 0.01
@@ -55,9 +55,9 @@ class TileState {
 	) {
 		const [r, g, b] = baseColor
 		this.color = [
-			r + (normalRand() - 0.6) * 0.25,
-			g + (normalRand() - 0.6) * 0.25,
-			b + (normalRand() - 0.6) * 0.25,
+			r + (normalRand01() - 0.6) * 0.25,
+			g + (normalRand01() - 0.6) * 0.25,
+			b + (normalRand01() - 0.6) * 0.25,
 		]
 		this.tileSpecId = pickRandom(Object.keys(set))
 		this.turn = randInt(3)

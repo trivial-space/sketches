@@ -178,10 +178,10 @@ function getInt32Memory0() {
 /**
 * @param {number} width
 * @param {number} height
-* @param {number} _color_count
+* @param {number} color_count
 */
-export function setup(width, height, _color_count) {
-    wasm.setup(width, height, _color_count);
+export function setup(width, height, color_count) {
+    wasm.setup(width, height, color_count);
 }
 
 /**

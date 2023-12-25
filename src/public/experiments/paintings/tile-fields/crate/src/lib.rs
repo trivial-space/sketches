@@ -5,8 +5,14 @@ use tvs_libs::geometry::line_2d::Line;
 use tvs_libs::prelude::*;
 use tvs_libs::rendering::buffered_geometry::BufferedGeometry;
 use tvs_libs::utils::f32_utils::fit0111;
-use tvs_libs::utils::Pick;
+use tvs_libs::utils::rand_utils::{rand_int, random_normal_01, Pick};
 use wasm_bindgen::prelude::*;
+
+#[derive(Clone, Copy, Serialize)]
+struct Color {
+    hue: f32,
+    lightness: f32,
+}
 
 #[derive(Clone, Copy)]
 struct Tile {
@@ -14,16 +20,16 @@ struct Tile {
     left: f32,
     width: f32,
     height: f32,
-    hue: f32,
+    color: Color,
 }
 
-fn subdivide_tile<F: Fn() -> f32>(
+fn subdivide_tile<F: Fn() -> Color>(
     tile: Tile,
     min_size: f32,
     max_splits: usize,
     split_variance: f32,
     split_direction_variance: f32,
-    get_hue: F,
+    get_color: F,
 ) -> Vec<Tile> {
     if tile.width <= min_size || tile.height <= min_size {
         return vec![tile];
@@ -64,7 +70,7 @@ fn subdivide_tile<F: Fn() -> f32>(
                 width: length,
                 top: tile.top,
                 height: tile.height,
-                hue: get_hue(),
+                color: get_color(),
             }
         } else {
             Tile {
@@ -72,7 +78,7 @@ fn subdivide_tile<F: Fn() -> f32>(
                 width: tile.width,
                 top: start + tile.top,
                 height: length,
-                hue: get_hue(),
+                color: get_color(),
             }
         };
         tiles.push(new_tile);
@@ -89,14 +95,44 @@ struct State {
 
 const MAX_SPLIT_DEPTH: usize = 4;
 
-#[wasm_bindgen]
-pub fn setup(width: f32, height: f32, _color_count: u8) {
-    let hue1: f32 = random::<f32>() * 360.;
-    let hue2: f32 = hue1 + 120. + random_normal() * 60.;
-    let hue3: f32 = hue2 + 60. + random_normal() * 30.;
-    let hue4: f32 = hue2 + 120. + random_normal() * 60.;
+fn random_split(v: Vec<f32>) -> Vec<f32> {
+    let idx = rand_int(v.len() - 1);
+    let item_i = v[idx];
+    let item_ii = v[idx + 1];
 
-    let get_hue = || *[hue1, hue2, hue3, hue4].as_slice().pick();
+    let mut res = vec![];
+    for i in 0..=idx {
+        res.push(v[i]);
+        res.push(item_i.lerp(item_ii, random::<f32>()));
+    }
+    for i in (idx + 1)..v.len() {
+        res.push(v[i]);
+    }
+
+    res
+}
+
+#[wasm_bindgen]
+pub fn setup(width: f32, height: f32, color_count: u8) {
+    let mut hues: Vec<f32> = vec![0., 1.];
+    for _ in 0..color_count - 1 {
+        hues = random_split(hues);
+    }
+    hues.pop();
+
+    let hue_shift = random::<f32>();
+    let colors = hues
+        .into_iter()
+        .map(|h| {
+            let hue = h + hue_shift;
+            Color {
+                hue: hue - hue.floor(),
+                lightness: random_normal_01(),
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let get_color = || colors.pick().clone();
 
     let brush_size = height / 50.0;
 
@@ -105,7 +141,7 @@ pub fn setup(width: f32, height: f32, _color_count: u8) {
         left: 0.,
         width,
         height,
-        hue: get_hue(),
+        color: get_color(),
     };
 
     let mut tiles = vec![first_tile];
@@ -113,7 +149,7 @@ pub fn setup(width: f32, height: f32, _color_count: u8) {
     for _ in 0..MAX_SPLIT_DEPTH {
         let mut new_tiles = vec![];
         for tile in tiles {
-            new_tiles.append(&mut subdivide_tile(tile, 100., 2, 0.5, 0.5, get_hue));
+            new_tiles.append(&mut subdivide_tile(tile, 100., 2, 0.5, 0.5, get_color));
         }
         tiles = new_tiles;
     }
@@ -143,7 +179,7 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
 #[derive(Serialize)]
 struct LineGeometry {
     geometries: Vec<BufferedGeometry>,
-    hue: f32,
+    color: Color,
 }
 
 #[wasm_bindgen]
@@ -190,7 +226,7 @@ pub fn get_geom() -> JsValue {
         let lines = line.split_at_angle(PI * 2.0 / 3.0);
         geoms.push(LineGeometry {
             geometries: lines.to_buffered_geometry(),
-            hue: tile.hue,
+            color: tile.color,
         })
     }
 

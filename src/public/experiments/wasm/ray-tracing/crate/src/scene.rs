@@ -1,6 +1,7 @@
 use tvs_libs::{
     prelude::*,
     rendering::objects::{intersect_normalized_ray_sphere_within, Ray, Sphere},
+    utils::rand_utils::random_in_unit_sphere,
 };
 
 pub trait Material {
