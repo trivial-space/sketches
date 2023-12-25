@@ -8,7 +8,7 @@ import init, { get_geom, setup } from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
 import { lineShader } from './shader'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
-import { shuffle } from 'tvs-libs/dist/utils/sequence'
+import { doTimes, shuffle } from 'tvs-libs/dist/utils/sequence'
 import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
 import { normalRand01, normalRand11 } from 'tvs-libs/dist/math/random'
 import { clamp } from 'tvs-libs/dist/math/core'
@@ -41,33 +41,6 @@ init().then(() => {
 	const t = performance.now() / 1000
 
 	setup(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 7)
-	const data: {
-		color: { hue: number; lightness: number }
-		geometries: WasmGeometry[]
-	}[] = get_geom()
-
-	console.log('generating line geom in: ', performance.now() / 1000 - t)
-	console.log('init', data)
-
-	const shade = Q.getShade('line').update(lineShader)
-	const sketches = shuffle(data).flatMap(
-		({ geometries, color: { hue, lightness } }, i) => {
-			const color = hslToRGB(
-				hsl(hue, normalRand01(), clamp(0, 1, lightness + normalRand11() * 0.5)),
-			)
-			return geometries.map((geom, j) =>
-				Q.getSketch('line' + i + '_' + j).update({
-					form: Q.getForm('line' + i + '_' + j).update(
-						wasmGeometryToFormData(geom, 'DYNAMIC'),
-					),
-					shade,
-					uniforms: {
-						color,
-					},
-				}),
-			)
-		},
-	)
 
 	Q.painter.draw({
 		effects: Q.getEffect('bg').update({
@@ -85,13 +58,44 @@ init().then(() => {
 		],
 	})
 
-	Q.painter.draw({
-		sketches,
-		uniforms: {
-			size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
-			noiseTex: () => noiseTex.image(),
-		},
-	})
+	const shade = Q.getShade('line').update(lineShader)
+
+	doTimes(() => {
+		const data: {
+			color: { hue: number; lightness: number }
+			geometries: WasmGeometry[]
+		}[] = get_geom()
+		const sketches = shuffle(data).flatMap(
+			({ geometries, color: { hue, lightness } }, i) => {
+				const color = hslToRGB(
+					hsl(
+						hue,
+						normalRand01() * Math.random(),
+						clamp(0, 1, lightness + Math.random() * 0.8 - 0.4),
+					),
+				)
+				return geometries.map((geom, j) =>
+					Q.getSketch('line' + i + '_' + j).update({
+						form: Q.getForm('line' + i + '_' + j).update(
+							wasmGeometryToFormData(geom, 'DYNAMIC'),
+						),
+						shade,
+						uniforms: {
+							color,
+						},
+					}),
+				)
+			},
+		)
+
+		Q.painter.draw({
+			sketches,
+			uniforms: {
+				size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+				noiseTex: () => noiseTex.image(),
+			},
+		})
+	}, 10)
 })
 
 if (import.meta.hot) {

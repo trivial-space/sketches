@@ -86,13 +86,13 @@ export const lineShader = defShader({
 					noiseVal,
 					mul(
 						noiseVal,
-						min(float(1), pow(sub(float(1.6), $x(ins.vUv)), float(3))),
+						min(float(1), pow(sub(float(1.8), $x(ins.vUv)), float(3))),
 					),
 				),
 
 				assign(
 					outs.fragColor,
-					vec4(unis.color, clamp(mul(0.9, noiseVal), float(0), float(1))),
+					vec4(unis.color, clamp(mul(0.6, noiseVal), float(0), float(1))),
 				),
 			]),
 		]

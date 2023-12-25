@@ -93,8 +93,6 @@ struct State {
     brush_size: f32,
 }
 
-const MAX_SPLIT_DEPTH: usize = 4;
-
 fn random_split(v: Vec<f32>) -> Vec<f32> {
     let idx = rand_int(v.len() - 1);
     let item_i = v[idx];
@@ -146,7 +144,7 @@ pub fn setup(width: f32, height: f32, color_count: u8) {
 
     let mut tiles = vec![first_tile];
 
-    for _ in 0..MAX_SPLIT_DEPTH {
+    for _ in 0..(rand_int(6) + 1) {
         let mut new_tiles = vec![];
         for tile in tiles {
             new_tiles.append(&mut subdivide_tile(tile, 100., 2, 0.5, 0.5, get_color));
@@ -167,7 +165,7 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
     } else {
         vec2(line.y, -line.x).normalize()
     };
-    let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.25) * 0.35 * width;
+    let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.35) * 0.2 * width;
     (1..=10)
         .map(|t| {
             let t = t as f32 * 0.1;
@@ -189,23 +187,31 @@ pub fn get_geom() -> JsValue {
     let mut geoms = vec![];
 
     for tile in s.tiles.iter() {
-        let steps = ((tile.height * 1.5) / s.brush_size as f32).floor();
+        let brush_size = f32::max(s.brush_size, tile.height / 10.);
+        let steps = ((tile.height * 1.5) / brush_size as f32).floor();
         let step = tile.height / steps;
-        let start = vec2(tile.left, tile.top);
-        let end = vec2(tile.left + tile.width, tile.top);
+        let start = vec2(tile.left, tile.top + step);
+        let end = vec2(tile.left + tile.width, tile.top + step);
 
-        let delta_x = || tile.width * 0.15 * fit0111(random());
-        let delta_y = || step * 0.5 * fit0111(random());
+        let delta_x = || tile.width * 0.08 * fit0111(random());
+        let delta_y = || step * 0.2 * fit0111(random());
 
         let mut points = Vec::new();
 
-        for i in 0..steps as usize {
+        if random::<bool>() {
+            points.push(start + vec2(delta_x(), delta_y()));
+        }
+        points.push(end + vec2(delta_x(), delta_y()));
+
+        for i in 1..(steps - 1 as f32) as usize {
             points.push(start + vec2(delta_x(), step * i as f32 + delta_y()));
             points.push(end + vec2(delta_x(), step * i as f32 + delta_y()));
         }
 
-        points.push(start + vec2(delta_x(), tile.height + delta_y()));
-        points.push(end + vec2(delta_x(), tile.height + delta_y()));
+        points.push(start + vec2(delta_x(), tile.height - step + delta_y()));
+        if random::<bool>() {
+            points.push(end + vec2(delta_x(), tile.height - step + delta_y()));
+        }
 
         let points = points
             .windows(2)
@@ -218,7 +224,7 @@ pub fn get_geom() -> JsValue {
             .collect::<Vec<_>>()
             .concat();
 
-        let mut line = Line::new(s.brush_size);
+        let mut line = Line::new(brush_size);
         for p in points {
             line.add(p)
         }
