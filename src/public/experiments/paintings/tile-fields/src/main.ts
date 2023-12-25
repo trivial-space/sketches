@@ -55,9 +55,9 @@ init().then(() => {
 			const color = hslToRGB(
 				hsl(hue, normalRand01(), clamp(0, 1, lightness + normalRand11() * 0.5)),
 			)
-			return geometries.map((geom) =>
-				Q.getSketch('line' + i).update({
-					form: Q.getForm('line' + i).update(
+			return geometries.map((geom, j) =>
+				Q.getSketch('line' + i + '_' + j).update({
+					form: Q.getForm('line' + i + '_' + j).update(
 						wasmGeometryToFormData(geom, 'DYNAMIC'),
 					),
 					shade,

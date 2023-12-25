@@ -44,7 +44,7 @@ fn subdivide_tile<F: Fn() -> Color>(
         tile.height
     };
 
-    let tile_count = usize::max(max_splits, (tile_length / min_size).floor() as usize);
+    let tile_count = usize::min(max_splits, (tile_length / min_size).floor() as usize);
     if tile_count < 2 {
         return vec![tile];
     }
@@ -189,10 +189,10 @@ pub fn get_geom() -> JsValue {
     let mut geoms = vec![];
 
     for tile in s.tiles.iter() {
-        let steps = (tile.height * 1.5 / s.brush_size as f32).floor();
+        let steps = ((tile.height * 1.5) / s.brush_size as f32).floor();
         let step = tile.height / steps;
         let start = vec2(tile.left, tile.top);
-        let end = vec2(tile.left + tile.width, tile.top + tile.height);
+        let end = vec2(tile.left + tile.width, tile.top);
 
         let delta_x = || tile.width * 0.15 * fit0111(random());
         let delta_y = || step * 0.5 * fit0111(random());
@@ -219,7 +219,7 @@ pub fn get_geom() -> JsValue {
             .concat();
 
         let mut line = Line::new(s.brush_size);
-        for p in points.clone() {
+        for p in points {
             line.add(p)
         }
 
