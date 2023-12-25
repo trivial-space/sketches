@@ -8,19 +8,12 @@ import init, { get_geom, setup } from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
 import { lineShader } from './shader'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
-import { doTimes, shuffle } from 'tvs-libs/dist/utils/sequence'
+import { shuffle } from 'tvs-libs/dist/utils/sequence'
 import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
-import { normalRand01, normalRand11 } from 'tvs-libs/dist/math/random'
+import { normalRand01 } from 'tvs-libs/dist/math/random'
 import { clamp } from 'tvs-libs/dist/math/core'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
-
-Q.painter.updateDrawSettings({
-	enable: [Q.gl.CULL_FACE, Q.gl.BLEND],
-	clearBits: makeClear(Q.gl, 'color'),
-	cullFace: Q.gl.BACK,
-	clearColor: [1, 1, 1, 1],
-})
 
 export const noiseTex = Q.getLayer('noiseTex').update({
 	texture: getNoiseTextureData({
@@ -37,36 +30,40 @@ export const noiseTex = Q.getLayer('noiseTex').update({
 	}),
 })
 
+const animationLayer = Q.getLayer('animation').update({
+	drawSettings: {
+		enable: [Q.gl.CULL_FACE, Q.gl.BLEND],
+		clearBits: makeClear(Q.gl, 'color'),
+		cullFace: Q.gl.BACK,
+		clearColor: [1, 1, 1, 0],
+		// blendFuncSeparate: [
+		// 	Q.gl.SRC_ALPHA,
+		// 	Q.gl.ONE_MINUS_SRC_ALPHA,
+		// 	Q.gl.ONE_MINUS_DST_ALPHA,
+		// 	Q.gl.ONE_MINUS_SRC_ALPHA,
+		// ],
+	},
+})
+
+const backgroundLayer = Q.getLayer('background').update({})
+
+const renderLayer = Q.getLayer('render').update({})
+
 init().then(() => {
-	const t = performance.now() / 1000
-
 	setup(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 7)
-
-	Q.painter.draw({
-		effects: Q.getEffect('bg').update({
-			frag: 'precision mediump float; void main(void) {gl_FragColor = vec4(1.0);}',
-		}),
-	})
-
-	Q.painter.updateDrawSettings({
-		blendEquationSeparate: [Q.gl.FUNC_ADD, Q.gl.MAX],
-		blendFuncSeparate: [
-			Q.gl.SRC_ALPHA,
-			Q.gl.ONE_MINUS_SRC_ALPHA,
-			Q.gl.ONE,
-			Q.gl.ONE,
-		],
-	})
 
 	const shade = Q.getShade('line').update(lineShader)
 
-	doTimes(() => {
+	function renderBackground() {
 		const data: {
 			color: { hue: number; lightness: number }
-			geometries: WasmGeometry[]
+			geometries: WasmGeometry[][]
 		}[] = get_geom()
-		const sketches = shuffle(data).flatMap(
-			({ geometries, color: { hue, lightness } }, i) => {
+
+		console.log(data)
+
+		const tiles = shuffle(data).map(
+			({ geometries, color: { hue, lightness } }) => {
 				const color = hslToRGB(
 					hsl(
 						hue,
@@ -74,7 +71,29 @@ init().then(() => {
 						clamp(0, 1, lightness + Math.random() * 0.8 - 0.4),
 					),
 				)
-				return geometries.map((geom, j) =>
+
+				return { color, geometries }
+			},
+		)
+
+		let renderingTiles = data.length
+		let k = 0
+
+		function render() {
+			if (renderingTiles <= 0) {
+				return
+			}
+
+			const sketches = tiles.flatMap(({ geometries, color }, i) => {
+				let g = geometries[k]
+				if (!g) {
+					if (k === geometries.length) {
+						renderingTiles--
+					}
+					g = geometries[geometries.length - 1]
+				}
+
+				return g.map((geom, j) =>
 					Q.getSketch('line' + i + '_' + j).update({
 						form: Q.getForm('line' + i + '_' + j).update(
 							wasmGeometryToFormData(geom, 'DYNAMIC'),
@@ -85,19 +104,25 @@ init().then(() => {
 						},
 					}),
 				)
-			},
-		)
+			})
 
-		Q.painter.draw({
-			sketches,
-			uniforms: {
-				size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
-				noiseTex: () => noiseTex.image(),
-			},
-		})
-	}, 10)
+			animationLayer.update({
+				sketches,
+				uniforms: {
+					size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+					noiseTex: () => noiseTex.image(),
+				},
+			})
+
+			Q.painter.compose(animationLayer).show(animationLayer)
+
+			k++
+			console.log(k, renderingTiles)
+			requestAnimationFrame(render)
+		}
+
+		render()
+	}
+
+	renderBackground()
 })
-
-if (import.meta.hot) {
-	import.meta.hot.accept()
-}

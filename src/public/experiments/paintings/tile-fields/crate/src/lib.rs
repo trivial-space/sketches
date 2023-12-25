@@ -1,6 +1,6 @@
 use serde::Serialize;
 use std::f32::consts::PI;
-use tvs_libs::geometry::line_2d::buffered_geometry::LineBufferedGeometryVec;
+use tvs_libs::geometry::line_2d::buffered_geometry::{LineBufferedGeometryVec, LineGeometryProps};
 use tvs_libs::geometry::line_2d::Line;
 use tvs_libs::prelude::*;
 use tvs_libs::rendering::buffered_geometry::BufferedGeometry;
@@ -176,7 +176,7 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
 
 #[derive(Serialize)]
 struct LineGeometry {
-    geometries: Vec<BufferedGeometry>,
+    geometries: Vec<Vec<BufferedGeometry>>,
     color: Color,
 }
 
@@ -184,7 +184,7 @@ struct LineGeometry {
 pub fn get_geom() -> JsValue {
     let s = State::read();
 
-    let mut geoms = vec![];
+    let mut tiles = vec![];
 
     for tile in s.tiles.iter() {
         let brush_size = f32::max(s.brush_size, tile.height / 10.);
@@ -224,17 +224,29 @@ pub fn get_geom() -> JsValue {
             .collect::<Vec<_>>()
             .concat();
 
+        let mut l = Line::new(1.0);
+        for p in points.clone() {
+            l.add(p)
+        }
+        let line_length = l.line_length();
+
         let mut line = Line::new(brush_size);
+        let mut geoms = vec![];
+
         for p in points {
-            line.add(p)
+            line.add(p);
+            let lines = line.split_at_angle(PI * 2.0 / 3.0);
+            geoms.push(lines.to_buffered_geometry_with(LineGeometryProps {
+                total_length: Some(line_length),
+                ..default()
+            }));
         }
 
-        let lines = line.split_at_angle(PI * 2.0 / 3.0);
-        geoms.push(LineGeometry {
-            geometries: lines.to_buffered_geometry(),
+        tiles.push(LineGeometry {
+            geometries: geoms,
             color: tile.color,
-        })
+        });
     }
 
-    serde_wasm_bindgen::to_value(&geoms).unwrap()
+    serde_wasm_bindgen::to_value(&tiles).unwrap()
 }
