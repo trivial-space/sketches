@@ -3,7 +3,6 @@ import {
 	assign,
 	vec4,
 	mul,
-	vec3,
 	$y,
 	$x,
 	Vec4Sym,
@@ -21,9 +20,12 @@ import {
 	div,
 	min,
 	clamp,
+	mix,
+	$xyz,
+	vec3,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
-import { defShader } from '../../../../../shared-utils/shaders/ast'
+import { defFragment, defShader } from '../../../../../shared-utils/shaders/ast'
 
 export const lineShader = defShader({
 	attribs: {
@@ -92,7 +94,53 @@ export const lineShader = defShader({
 
 				assign(
 					outs.fragColor,
-					vec4(unis.color, clamp(mul(0.6, noiseVal), float(0), float(1))),
+					vec4(unis.color, clamp(mul(0.5, noiseVal), float(0), float(1))),
+				),
+			]),
+		]
+	},
+})
+
+export const bgFrag = defFragment({
+	uniforms: {
+		color: 'vec3',
+	},
+	fs(gl, unis, ins, outs) {
+		return [defMain(() => [assign(outs.fragColor, vec4(unis.color, 1))])]
+	},
+})
+
+export const copyFrag = defFragment({
+	uniforms: {
+		source: 'sampler2D',
+	},
+	fs(gl, unis, ins, outs) {
+		return [
+			defMain(() => [assign(outs.fragColor, texture(unis.source, ins.coords))]),
+		]
+	},
+})
+
+export const renderFrag = defFragment({
+	uniforms: {
+		background: 'sampler2D',
+		animation: 'sampler2D',
+	},
+	fs(gl, unis, ins, outs) {
+		let animation: Vec4Sym
+		return [
+			defMain(() => [
+				(animation = sym(texture(unis.animation, ins.coords))),
+				assign(
+					outs.fragColor,
+					vec4(
+						mix(
+							$xyz(texture(unis.background, ins.coords)),
+							$xyz(animation),
+							$w(animation),
+						),
+						1,
+					),
 				),
 			]),
 		]

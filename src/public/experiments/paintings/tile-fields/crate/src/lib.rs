@@ -190,8 +190,8 @@ pub fn get_geom() -> JsValue {
         let brush_size = f32::max(s.brush_size, tile.height / 10.);
         let steps = ((tile.height * 1.5) / brush_size as f32).floor();
         let step = tile.height / steps;
-        let start = vec2(tile.left, tile.top + step);
-        let end = vec2(tile.left + tile.width, tile.top + step);
+        let start_left = vec2(tile.left, tile.top + step * 0.5);
+        let start_right = vec2(tile.left + tile.width, tile.top + step * 0.5);
 
         let delta_x = || tile.width * 0.08 * fit0111(random());
         let delta_y = || step * 0.2 * fit0111(random());
@@ -199,18 +199,18 @@ pub fn get_geom() -> JsValue {
         let mut points = Vec::new();
 
         if random::<bool>() {
-            points.push(start + vec2(delta_x(), delta_y()));
+            points.push(start_left + vec2(delta_x(), delta_y()));
         }
-        points.push(end + vec2(delta_x(), delta_y()));
+        points.push(start_right + vec2(delta_x(), delta_y()));
 
         for i in 1..(steps - 1 as f32) as usize {
-            points.push(start + vec2(delta_x(), step * i as f32 + delta_y()));
-            points.push(end + vec2(delta_x(), step * i as f32 + delta_y()));
+            points.push(start_left + vec2(delta_x(), step * i as f32 + delta_y()));
+            points.push(start_right + vec2(delta_x(), step * i as f32 + delta_y()));
         }
 
-        points.push(start + vec2(delta_x(), tile.height - step + delta_y()));
+        points.push(start_left + vec2(delta_x(), tile.height - step + delta_y()));
         if random::<bool>() {
-            points.push(end + vec2(delta_x(), tile.height - step + delta_y()));
+            points.push(start_right + vec2(delta_x(), tile.height - step + delta_y()));
         }
 
         let points = points
