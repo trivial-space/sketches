@@ -1,6 +1,5 @@
 use serde::Serialize;
-use std::f32::consts::PI;
-use tvs_libs::geometry::line_2d::buffered_geometry::{LineBufferedGeometryVec, LineGeometryProps};
+use tvs_libs::geometry::line_2d::buffered_geometry::LineGeometryProps;
 use tvs_libs::geometry::line_2d::Line;
 use tvs_libs::prelude::*;
 use tvs_libs::rendering::buffered_geometry::BufferedGeometry;
@@ -125,14 +124,14 @@ pub fn setup(width: f32, height: f32, color_count: u8) {
             let hue = h + hue_shift;
             Color {
                 hue: hue - hue.floor(),
-                lightness: random_normal_01(),
+                lightness: (random::<f32>() + random::<f32>()) * 0.5,
             }
         })
         .collect::<Vec<_>>();
 
     let get_color = || colors.pick().clone();
 
-    let brush_size = height / 50.0;
+    let brush_size = height / 40.0;
 
     let first_tile = Tile {
         top: 0.,
@@ -144,7 +143,7 @@ pub fn setup(width: f32, height: f32, color_count: u8) {
 
     let mut tiles = vec![first_tile];
 
-    for _ in 0..(rand_int(6) + 1) {
+    for _ in 0..(rand_int(5) + 1) {
         let mut new_tiles = vec![];
         for tile in tiles {
             new_tiles.append(&mut subdivide_tile(tile, 100., 2, 0.5, 0.5, get_color));
@@ -166,7 +165,7 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
         vec2(line.y, -line.x).normalize()
     };
     let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.35) * 0.2 * width;
-    (1..=10)
+    (0..=10)
         .map(|t| {
             let t = t as f32 * 0.1;
             Vec2::quadratic_bezier(t, p1, p3, p2)
@@ -188,7 +187,7 @@ pub fn get_geom() -> JsValue {
 
     for tile in s.tiles.iter() {
         let brush_size = f32::max(s.brush_size, tile.height / 10.);
-        let steps = ((tile.height * 1.5) / brush_size as f32).floor();
+        let steps = ((tile.height * 1.3) / brush_size as f32).floor();
         let step = tile.height / steps;
         let start_left = vec2(tile.left, tile.top + step * 0.5);
         let start_right = vec2(tile.left + tile.width, tile.top + step * 0.5);
@@ -213,33 +212,42 @@ pub fn get_geom() -> JsValue {
             points.push(start_right + vec2(delta_x(), tile.height - step + delta_y()));
         }
 
-        let points = points
-            .windows(2)
-            .enumerate()
-            .map(|(i, points)| {
-                let p1 = points[0];
-                let p2 = points[1];
-                make_curve(tile.width, p1, p2, i % 2 != 0)
-            })
-            .collect::<Vec<_>>()
-            .concat();
+        let mut reverse = false;
+        let mut total_length = 0.0;
 
-        let mut l = Line::new(1.0);
-        for p in points.clone() {
-            l.add(p)
+        let mut lines = vec![];
+
+        for ps in points.windows(2) {
+            let p1 = ps[0];
+            let p2 = ps[1];
+            let points = make_curve(tile.width, p1, p2, reverse);
+            reverse = !reverse;
+
+            let mut l = Line::new_offset(brush_size, total_length);
+            let mut line_frames = vec![];
+
+            for p in points.clone() {
+                l.add(p);
+                line_frames.push(l.clone());
+            }
+
+            let line_length = l.line_length();
+            total_length += line_length;
+
+            lines.push(line_frames);
         }
-        let line_length = l.line_length();
 
-        let mut line = Line::new(brush_size);
         let mut geoms = vec![];
 
-        for p in points {
-            line.add(p);
-            let lines = line.split_at_angle(PI * 2.0 / 3.0);
-            geoms.push(lines.to_buffered_geometry_with(LineGeometryProps {
-                total_length: Some(line_length),
-                ..default()
-            }));
+        for l in lines {
+            let mut line_geoms = vec![];
+            for frame in l {
+                line_geoms.push(frame.to_buffered_geometry_with(LineGeometryProps {
+                    total_length: Some(total_length),
+                    ..default()
+                }));
+            }
+            geoms.push(line_geoms)
         }
 
         tiles.push(LineGeometry {

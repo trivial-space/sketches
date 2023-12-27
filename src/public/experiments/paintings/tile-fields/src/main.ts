@@ -9,8 +9,8 @@ import { Q } from './context'
 import { lineShader, renderFrag, bgFrag, copyFrag } from './shader'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import { shuffle } from 'tvs-libs/dist/utils/sequence'
-import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
-import { normalRand01 } from 'tvs-libs/dist/math/random'
+import { adjustHue, hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
+import { normalRand01, normalRand11 } from 'tvs-libs/dist/math/random'
 import { clamp } from 'tvs-libs/dist/math/core'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
@@ -71,6 +71,8 @@ init().then(() => {
 
 	const shade = Q.getShade('line').update(lineShader)
 
+	let initialPaint = true
+
 	function renderBackground() {
 		const data: {
 			color: { hue: number; lightness: number }
@@ -80,67 +82,109 @@ init().then(() => {
 		console.log(data)
 
 		const tiles = shuffle(data).map(
-			({ geometries, color: { hue, lightness } }) => {
+			({ geometries, color: { hue, lightness } }, i) => {
 				const color = hslToRGB(
 					hsl(
-						hue,
-						normalRand01() * Math.random(),
-						clamp(0, 1, lightness + Math.random() * 0.8 - 0.4),
+						adjustHue(hue + normalRand01() * 0.1),
+						Math.pow((Math.random() + Math.random()) / 2, 1.5),
+						clamp(0, 1, lightness + normalRand11() * 0.4),
 					),
 				)
 
-				return { color, geometries }
+				return { color, geometries, currentLine: 0, currentFrame: 0, id: i }
 			},
 		)
 
-		let renderingTiles = data.length
-		let k = 0
+		function renderBruches() {
+			if (!tiles.length) {
+				setTimeout(renderBackground, Math.random() * 4000)
+				return
+			}
 
-		function render() {
-			const sketches = tiles.flatMap(({ geometries, color }, i) => {
-				let g = geometries[k]
-				if (!g) {
-					if (k === geometries.length) {
-						renderingTiles--
-					}
-					g = geometries[geometries.length - 1]
+			const bruchCount = initialPaint
+				? tiles.length
+				: Math.floor(Math.random() * 2) + 1
+			const brushes = tiles.splice(0, bruchCount)
+
+			initialPaint = false
+
+			function render() {
+				const finishedLineSketches = brushes
+					.filter((t) => {
+						const l = t.geometries[t.currentLine]
+						return l && t.currentFrame === l.length - 1
+					})
+					.map((t) => {
+						const geom = t.geometries[t.currentLine][t.currentFrame]
+
+						t.currentFrame = 0
+						t.currentLine++
+
+						return Q.getSketch('line' + t.id).update({
+							form: Q.getForm('line' + t.id).update(
+								wasmGeometryToFormData(geom, 'DYNAMIC'),
+							),
+							shade,
+							uniforms: {
+								color: t.color,
+							},
+						})
+					})
+
+				console.log('rendering finished lines', finishedLineSketches.length)
+				if (finishedLineSketches.length > 0) {
+					animationLayer.update({
+						sketches: [copyEffect, ...finishedLineSketches],
+						uniforms: {
+							size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+							noiseTex: () => noiseTex.image(),
+							source: () => backgroundLayer.image(),
+						},
+					})
+					Q.painter.compose(animationLayer, backgroundLayer)
 				}
 
-				return g.map((geom, j) =>
-					Q.getSketch('line' + i + '_' + j).update({
-						form: Q.getForm('line' + i + '_' + j).update(
-							wasmGeometryToFormData(geom, 'DYNAMIC'),
-						),
-						shade,
+				const animationSketches = brushes
+					.filter((t) => t.geometries[t.currentLine])
+					.map((t) => {
+						const geom = t.geometries[t.currentLine][t.currentFrame]
+
+						t.currentFrame++
+
+						return Q.getSketch('line' + t.id).update({
+							form: Q.getForm('line' + t.id).update(
+								wasmGeometryToFormData(geom, 'DYNAMIC'),
+							),
+							shade,
+							uniforms: {
+								color: t.color,
+							},
+						})
+					})
+
+				console.log('rendering animation', animationSketches.length)
+				if (animationSketches.length > 0) {
+					animationLayer.update({
+						sketches: [copyEffect, ...animationSketches],
 						uniforms: {
-							color,
+							size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+							noiseTex: () => noiseTex.image(),
+							source: () => backgroundLayer.image(),
 						},
-					}),
-				)
-			})
+					})
 
-			animationLayer.update({
-				sketches: [copyEffect, ...sketches],
-				uniforms: {
-					size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
-					noiseTex: () => noiseTex.image(),
-					source: () => backgroundLayer.image(),
-				},
-			})
-
-			Q.painter.compose(animationLayer).show(animationLayer)
-
-			if (renderingTiles <= 0) {
-				Q.painter.compose(backgroundLayer)
-				setTimeout(renderBackground, 3000)
-			} else {
-				k++
-				console.log(k, renderingTiles)
-				requestAnimationFrame(render)
+					Q.painter.compose(animationLayer).show(animationLayer)
+					requestAnimationFrame(render)
+				} else {
+					Q.painter.show(animationLayer)
+					setTimeout(renderBruches, Math.random() * 4000)
+				}
 			}
+
+			render()
 		}
 
-		render()
+		renderBruches()
 	}
 
 	renderBackground()
