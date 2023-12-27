@@ -13,8 +13,7 @@ default = ["console_error_panic_hook"]
 [dependencies]
 
 tvs-libs.workspace = true
-# palette.workspace = true
-# noise.workspace = true
+bytemuck.workspace = true
 serde.workspace = true
 wasm-bindgen.workspace = true
 js-sys.workspace = true

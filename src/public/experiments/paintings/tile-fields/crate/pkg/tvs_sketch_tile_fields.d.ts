@@ -1,22 +1,37 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
-* @param {number} width
-* @param {number} height
-* @param {number} color_count
-*/
-export function setup(width: number, height: number, color_count: number): void;
-/**
+* @param {number} paintings_count
 * @returns {any}
 */
-export function get_geom(): any;
+export function setup(paintings_count: number): any;
+/**
+* @param {number} i
+* @returns {any}
+*/
+export function get_animated_geom(i: number): any;
+/**
+* @param {number} width
+* @param {number} height
+*/
+export function update_screen(width: number, height: number): void;
+/**
+* @param {number} forward
+* @param {number} left
+* @param {number} up
+* @param {number} rot_y
+* @param {number} rot_x
+*/
+export function update_camera(forward: number, left: number, up: number, rot_y: number, rot_x: number): void;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly setup: (a: number, b: number, c: number) => void;
-  readonly get_geom: () => number;
+  readonly setup: (a: number) => number;
+  readonly get_animated_geom: (a: number) => number;
+  readonly update_screen: (a: number, b: number) => void;
+  readonly update_camera: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_exn_store: (a: number) => void;

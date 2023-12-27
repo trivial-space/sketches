@@ -120,29 +120,3 @@ export const copyFrag = defFragment({
 		]
 	},
 })
-
-export const renderFrag = defFragment({
-	uniforms: {
-		background: 'sampler2D',
-		animation: 'sampler2D',
-	},
-	fs(gl, unis, ins, outs) {
-		let animation: Vec4Sym
-		return [
-			defMain(() => [
-				(animation = sym(texture(unis.animation, ins.coords))),
-				assign(
-					outs.fragColor,
-					vec4(
-						mix(
-							$xyz(texture(unis.background, ins.coords)),
-							$xyz(animation),
-							$w(animation),
-						),
-						1,
-					),
-				),
-			]),
-		]
-	},
-})

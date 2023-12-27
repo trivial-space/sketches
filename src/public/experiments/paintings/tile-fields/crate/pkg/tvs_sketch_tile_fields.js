@@ -176,20 +176,40 @@ function getInt32Memory0() {
     return cachedInt32Memory0;
 }
 /**
-* @param {number} width
-* @param {number} height
-* @param {number} color_count
+* @param {number} paintings_count
+* @returns {any}
 */
-export function setup(width, height, color_count) {
-    wasm.setup(width, height, color_count);
+export function setup(paintings_count) {
+    const ret = wasm.setup(paintings_count);
+    return takeObject(ret);
 }
 
 /**
+* @param {number} i
 * @returns {any}
 */
-export function get_geom() {
-    const ret = wasm.get_geom();
+export function get_animated_geom(i) {
+    const ret = wasm.get_animated_geom(i);
     return takeObject(ret);
+}
+
+/**
+* @param {number} width
+* @param {number} height
+*/
+export function update_screen(width, height) {
+    wasm.update_screen(width, height);
+}
+
+/**
+* @param {number} forward
+* @param {number} left
+* @param {number} up
+* @param {number} rot_y
+* @param {number} rot_x
+*/
+export function update_camera(forward, left, up, rot_y, rot_x) {
+    wasm.update_camera(forward, left, up, rot_y, rot_x);
 }
 
 function handleError(f, args) {
@@ -241,6 +261,10 @@ function __wbg_get_imports() {
         const ret = arg0;
         return addHeapObject(ret);
     };
+    imports.wbg.__wbindgen_bigint_from_u64 = function(arg0) {
+        const ret = BigInt.asUintN(64, arg0);
+        return addHeapObject(ret);
+    };
     imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
         const ret = getStringFromWasm0(arg0, arg1);
         return addHeapObject(ret);
@@ -249,13 +273,17 @@ function __wbg_get_imports() {
         const ret = getObject(arg0);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbg_set_9182712abebf82ef = function(arg0, arg1, arg2) {
-        getObject(arg0)[takeObject(arg1)] = takeObject(arg2);
-    };
     imports.wbg.__wbindgen_is_object = function(arg0) {
         const val = getObject(arg0);
         const ret = typeof(val) === 'object' && val !== null;
         return ret;
+    };
+    imports.wbg.__wbg_set_9182712abebf82ef = function(arg0, arg1, arg2) {
+        getObject(arg0)[takeObject(arg1)] = takeObject(arg2);
+    };
+    imports.wbg.__wbindgen_error_new = function(arg0, arg1) {
+        const ret = new Error(getStringFromWasm0(arg0, arg1));
+        return addHeapObject(ret);
     };
     imports.wbg.__wbg_crypto_c48a774b022d20ac = function(arg0) {
         const ret = getObject(arg0).crypto;

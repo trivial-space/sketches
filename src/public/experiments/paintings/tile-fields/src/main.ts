@@ -4,9 +4,12 @@ import {
 	WasmGeometry,
 	wasmGeometryToFormData,
 } from '../../../../../shared-utils/wasm/utils'
-import init, { get_geom, setup } from '../crate/pkg/tvs_sketch_tile_fields'
+import init, {
+	get_animated_geom,
+	setup,
+} from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
-import { lineShader, renderFrag, bgFrag, copyFrag } from './shader'
+import { lineShader, bgFrag, copyFrag } from './shader'
 import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import { shuffle } from 'tvs-libs/dist/utils/sequence'
 import { adjustHue, hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
@@ -67,7 +70,7 @@ backgroundLayer.update({
 })
 
 init().then(() => {
-	setup(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight, 7)
+	setup(7)
 
 	const shade = Q.getShade('line').update(lineShader)
 
