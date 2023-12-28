@@ -1,6 +1,12 @@
-import { Buttons } from 'tvs-utils/dist/events/pointer'
-import { KeyboardCode } from 'tvs-utils/dist/events/keyboard'
-import { PainterContext, baseEvents } from 'tvs-utils/dist/app/painterState'
+import { PainterContext, baseEvents } from '../app/painterState'
+import { KeyboardCode } from '../events/keyboard'
+import { Buttons } from '../events/pointer'
+
+interface CameraTransform {
+	pos: [number, number, number]
+	rot_horizontal: number
+	rot_vertical: number
+}
 
 interface CameraOptions {
 	updateTransform(
@@ -9,21 +15,40 @@ interface CameraOptions {
 		up: number,
 		rotationY: number,
 		rotationX: number,
-	): void
+	): CameraTransform
 	updateScreen(width: number, height: number): void
+	resetCamera(
+		x: number,
+		y: number,
+		z: number,
+		rotHorizontal: number,
+		rotVertical: number,
+	): void
 	moveSpeed?: number
 	lookSpeed?: number
 }
 
 let oldMouse = { x: 0, y: 0 }
+let oldCamera: CameraTransform | null = null
 
 export function initCamera(ctx: PainterContext, options: CameraOptions) {
 	const {
 		updateScreen,
 		updateTransform,
+		resetCamera,
 		moveSpeed = 1,
 		lookSpeed = 1,
 	} = options
+
+	if (oldCamera) {
+		resetCamera(
+			oldCamera.pos[0],
+			oldCamera.pos[1],
+			oldCamera.pos[2],
+			oldCamera.rot_horizontal,
+			oldCamera.rot_vertical,
+		)
+	}
 
 	ctx.listen('camera', baseEvents.FRAME, ({ device: d }) => {
 		let up = 0
@@ -78,7 +103,8 @@ export function initCamera(ctx: PainterContext, options: CameraOptions) {
 		}
 
 		if (left || forward || rotX || rotY) {
-			updateTransform(forward, left, up, rotY, rotX)
+			oldCamera = updateTransform(forward, left, up, rotY, rotX)
+			console.log('oldCamera', oldCamera)
 		}
 	})
 

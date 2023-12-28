@@ -8,7 +8,7 @@ import {
 	glassProjectionShader,
 	groundShader,
 } from './shaders'
-import { baseEvents } from 'tvs-utils/dist/app/painterState'
+import { baseEvents } from '../../../../../shared-utils/app/painterState'
 
 const glassShade = Q.getShade('glass').update(glassLitShader)
 const glassProjShade = Q.getShade('glassProj').update(glassProjectionShader)

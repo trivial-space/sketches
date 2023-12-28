@@ -3,7 +3,7 @@ import './state'
 
 import { events, Q } from './context'
 import { scene } from './renderer'
-import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
+import { addToLoop, startLoop } from '../../shared-utils/app/frameLoop'
 
 addToLoop(() => {
 	Q.emit(events.FRAME)

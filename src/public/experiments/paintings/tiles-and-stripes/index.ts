@@ -1,7 +1,6 @@
 import '../../../../shared-utils/css/fullscreen.css'
 import { events, Q } from './context'
 import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
-import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import { lineToFormCollection } from '../../../../shared-utils/geometry/lines_2d'
 import {
 	brushStrokeFrag,
@@ -9,6 +8,7 @@ import {
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
 import { subdivideTiles, Tile } from './tiles'
 import { doTimes } from 'tvs-libs/dist/utils/sequence'
+import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 const lineWidth = (Q.state.device.canvas.height * window.devicePixelRatio) / 32

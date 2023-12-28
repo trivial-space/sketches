@@ -3,11 +3,11 @@ use std::f32::consts::PI;
 use serde::Serialize;
 use tvs_libs::geometry::line_2d::buffered_geometry::LineGeometryProps;
 use tvs_libs::geometry::line_2d::Line;
-use tvs_libs::prelude::*;
 use tvs_libs::rendering::buffered_geometry::BufferedGeometry;
 use tvs_libs::rendering::camera::PerspectiveCamera;
 use tvs_libs::utils::f32_utils::fit0111;
 use tvs_libs::utils::rand_utils::{rand_int, Pick};
+use tvs_libs::{prelude::*, setup_camera_interactions};
 use wasm_bindgen::prelude::*;
 
 pub mod geom;
@@ -189,19 +189,19 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
 }
 
 #[derive(Serialize)]
-struct LineGeometry {
-    geometries: Vec<Vec<BufferedGeometry>>,
+pub struct TileData {
+    line_geometries: Vec<Vec<BufferedGeometry>>,
     color: Color,
 }
 
 #[derive(Serialize)]
 pub struct PaintingLayer {
-    lines: Vec<LineGeometry>,
+    tiles: Vec<TileData>,
     width: usize,
     height: usize,
 }
 
-pub fn get_painting_animated_layer(painting: &Painting) -> PaintingLayer {
+pub fn get_painting_animated_layer(painting: &Painting) -> Vec<TileData> {
     let mut tiles = vec![];
 
     for tile in painting.tiles.iter() {
@@ -246,17 +246,13 @@ pub fn get_painting_animated_layer(painting: &Painting) -> PaintingLayer {
             geoms.push(line_geoms)
         }
 
-        tiles.push(LineGeometry {
-            geometries: geoms,
+        tiles.push(TileData {
+            line_geometries: geoms,
             color: tile.color,
         });
     }
 
-    PaintingLayer {
-        lines: tiles,
-        width: painting.width,
-        height: painting.height,
-    }
+    tiles
 }
 
 pub fn get_painting_static_layer(painting: &Painting) -> PaintingLayer {
@@ -298,14 +294,14 @@ pub fn get_painting_static_layer(painting: &Painting) -> PaintingLayer {
             }));
         }
 
-        tiles.push(LineGeometry {
-            geometries: vec![geoms],
+        tiles.push(TileData {
+            line_geometries: vec![geoms],
             color: tile.color,
         });
     }
 
     PaintingLayer {
-        lines: tiles,
+        tiles,
         width: painting.width,
         height: painting.height,
     }
@@ -392,12 +388,4 @@ pub fn get_animated_geom(i: usize) -> JsValue {
     serde_wasm_bindgen::to_value(&painting).unwrap()
 }
 
-#[wasm_bindgen]
-pub fn update_screen(width: f32, height: f32) {
-    State::mutate(|s| s.camera.set_aspect_ratio(width / height))
-}
-
-#[wasm_bindgen]
-pub fn update_camera(forward: f32, left: f32, up: f32, rot_y: f32, rot_x: f32) {
-    State::mutate(|s| s.camera.update_transform(forward, left, up, rot_y, rot_x))
-}
+setup_camera_interactions!(State, camera);

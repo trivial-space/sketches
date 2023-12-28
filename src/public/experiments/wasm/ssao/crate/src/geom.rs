@@ -52,7 +52,12 @@ pub fn create_object() -> BufferedGeometry {
         )
         .normalize();
         let rot = Quat::from_rotation_arc(Vec3::Z, normal);
-        let offset = vec3(offset(0.1), offset(0.1), offset(0.1) + 0.4);
+        let offset_scale = 0.1;
+        let offset = vec3(
+            offset(offset_scale),
+            offset(offset_scale),
+            offset(offset_scale) + 0.4,
+        );
 
         let center = quad.iter().fold(Vec3::ZERO, |acc, v| acc + *v) / 4.0;
 

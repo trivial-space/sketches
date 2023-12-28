@@ -5,7 +5,7 @@ import { getBlurByAlphaEffect } from '../shaders/effects/blur'
 import { makeXZPlane } from '../geometry/helpers'
 import { groundVert, makeGroundFrag } from './mirror-scene-shaders'
 import { TaggedFn3 } from '@thi.ng/shader-ast'
-import { PainterContext, baseEvents } from 'tvs-utils/dist/app/painterState'
+import { PainterContext, baseEvents } from '../app/painterState'
 
 const sceneId = 'mirror-scene-ground'
 

@@ -1,4 +1,7 @@
-import { baseEvents, getPainterContext } from 'tvs-utils/dist/app/painterState'
+import {
+	getPainterContext,
+	baseEvents,
+} from '../../../../shared-utils/app/painterState'
 import { PerspectiveViewportState } from '../../../../shared-utils/vr/perspectiveViewport'
 
 export interface State extends PerspectiveViewportState {}

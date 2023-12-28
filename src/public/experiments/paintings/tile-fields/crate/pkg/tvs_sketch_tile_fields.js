@@ -207,9 +207,22 @@ export function update_screen(width, height) {
 * @param {number} up
 * @param {number} rot_y
 * @param {number} rot_x
+* @returns {any}
 */
 export function update_camera(forward, left, up, rot_y, rot_x) {
-    wasm.update_camera(forward, left, up, rot_y, rot_x);
+    const ret = wasm.update_camera(forward, left, up, rot_y, rot_x);
+    return takeObject(ret);
+}
+
+/**
+* @param {number} x
+* @param {number} y
+* @param {number} z
+* @param {number} rot_horizontal
+* @param {number} rot_vertical
+*/
+export function reset_camera(x, y, z, rot_horizontal, rot_vertical) {
+    wasm.reset_camera(x, y, z, rot_horizontal, rot_vertical);
 }
 
 function handleError(f, args) {

@@ -1,4 +1,7 @@
-import { getPainterContext, baseEvents } from 'tvs-utils/dist/app/painterState'
+import {
+	getPainterContext,
+	baseEvents,
+} from '../../../../shared-utils/app/painterState'
 import { PerspectiveViewportState } from '../../../../shared-utils/vr/perspectiveViewport'
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement

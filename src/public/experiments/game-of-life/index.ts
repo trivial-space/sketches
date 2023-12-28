@@ -1,4 +1,4 @@
-import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
+import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
 import { events, Q } from './context'
 import './paint'
 import { automaton, sketch } from './renderer'

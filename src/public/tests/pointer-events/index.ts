@@ -1,4 +1,4 @@
-import { pointer } from 'tvs-utils/dist/events/pointer'
+import { pointer } from '../../../shared-utils/events/pointer'
 
 const code = document.getElementById('pointer-event-state')
 if (code) {

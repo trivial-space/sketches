@@ -1,12 +1,12 @@
 import '../../../../shared-utils/css/fullscreen.css'
 import { events, Q } from './context'
 import { makeLine } from './state'
-import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import {
 	createLine,
 	lineToFormCollection,
 } from '../../../../shared-utils/geometry/lines_2d'
 import { lineShader } from './shaders'
+import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

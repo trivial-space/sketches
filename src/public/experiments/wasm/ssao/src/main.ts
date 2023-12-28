@@ -2,6 +2,7 @@ import '../../../../../shared-utils/css/fullscreen.css'
 import init, {
 	get_frame_data,
 	get_init_data,
+	reset_camera,
 	setup,
 	update_camera,
 	update_screen,
@@ -9,15 +10,16 @@ import init, {
 import { render, renderInit } from './render'
 import { wasmGeometryToFormData } from '../../../../../shared-utils/wasm/utils'
 import { Q } from './context'
-import { baseEvents } from 'tvs-utils/dist/app/painterState'
 import { initCamera } from '../../../../../shared-utils/vr/wasmCamera'
-import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
+import { addToLoop, startLoop } from '../../../../../shared-utils/app/frameLoop'
+import { baseEvents } from '../../../../../shared-utils/app/painterState'
 
 init().then(() => {
 	setup()
 	initCamera(Q, {
 		updateScreen: update_screen,
 		updateTransform: update_camera,
+		resetCamera: reset_camera,
 		moveSpeed: 1.5,
 	})
 	Q.emit(baseEvents.RESIZE)

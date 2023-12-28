@@ -3,10 +3,10 @@ import { mat4 } from 'gl-matrix'
 import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
 import { Q } from './context'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { createLines3DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { defined } from 'tvs-libs/dist/types'
-import { baseEvents } from 'tvs-utils/dist/app/painterState'
+import { addToLoop, startLoop } from '../../../../shared-utils/app/frameLoop'
+import { baseEvents } from '../../../../shared-utils/app/painterState'
 
 initPerspectiveViewport(Q, {
 	moveSpeed: 40,

@@ -1,8 +1,8 @@
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
-import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
+import { getNoiseTextureData } from '../../../shared-utils/graphics/texture-helpers'
 
 initPerspectiveViewport(Q, { position: [0, 0, 15] })
 

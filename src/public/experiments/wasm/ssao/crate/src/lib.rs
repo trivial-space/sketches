@@ -7,6 +7,7 @@ use tvs_libs::{
         camera::{CamProps, PerspectiveCamera},
         scene::normal_mat,
     },
+    setup_camera_interactions,
 };
 use wasm_bindgen::prelude::*;
 
@@ -90,12 +91,4 @@ pub fn get_frame_data() -> JsValue {
     .unwrap()
 }
 
-#[wasm_bindgen]
-pub fn update_screen(width: f32, height: f32) {
-    State::mutate(|s| s.camera.set_aspect_ratio(width / height))
-}
-
-#[wasm_bindgen]
-pub fn update_camera(forward: f32, left: f32, up: f32, rot_y: f32, rot_x: f32) {
-    State::mutate(|s| s.camera.update_transform(forward, left, up, rot_y, rot_x))
-}
+setup_camera_interactions!(State, camera);

@@ -1,5 +1,4 @@
 import { events, Q } from './context'
-import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import { lineToAnimatedFormCollection } from '../../../../shared-utils/geometry/lines_2d'
 import {
 	brushStrokeFrag,
@@ -7,6 +6,7 @@ import {
 	brushStrokeVert,
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
 import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
+import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

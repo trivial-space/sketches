@@ -22,8 +22,17 @@ export function update_screen(width: number, height: number): void;
 * @param {number} up
 * @param {number} rot_y
 * @param {number} rot_x
+* @returns {any}
 */
-export function update_camera(forward: number, left: number, up: number, rot_y: number, rot_x: number): void;
+export function update_camera(forward: number, left: number, up: number, rot_y: number, rot_x: number): any;
+/**
+* @param {number} x
+* @param {number} y
+* @param {number} z
+* @param {number} rot_horizontal
+* @param {number} rot_vertical
+*/
+export function reset_camera(x: number, y: number, z: number, rot_horizontal: number, rot_vertical: number): void;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
@@ -32,7 +41,8 @@ export interface InitOutput {
   readonly get_init_data: () => number;
   readonly get_frame_data: () => number;
   readonly update_screen: (a: number, b: number) => void;
-  readonly update_camera: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly update_camera: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly reset_camera: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly setup: () => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;

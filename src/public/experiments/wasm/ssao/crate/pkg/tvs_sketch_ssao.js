@@ -211,9 +211,22 @@ export function update_screen(width, height) {
 * @param {number} up
 * @param {number} rot_y
 * @param {number} rot_x
+* @returns {any}
 */
 export function update_camera(forward, left, up, rot_y, rot_x) {
-    wasm.update_camera(forward, left, up, rot_y, rot_x);
+    const ret = wasm.update_camera(forward, left, up, rot_y, rot_x);
+    return takeObject(ret);
+}
+
+/**
+* @param {number} x
+* @param {number} y
+* @param {number} z
+* @param {number} rot_horizontal
+* @param {number} rot_vertical
+*/
+export function reset_camera(x, y, z, rot_horizontal, rot_vertical) {
+    wasm.reset_camera(x, y, z, rot_horizontal, rot_vertical);
 }
 
 function handleError(f, args) {
@@ -278,7 +291,7 @@ function __wbg_get_imports() {
         const ret = typeof(val) === 'object' && val !== null;
         return ret;
     };
-    imports.wbg.__wbg_set_841ac57cff3d672b = function(arg0, arg1, arg2) {
+    imports.wbg.__wbg_set_9182712abebf82ef = function(arg0, arg1, arg2) {
         getObject(arg0)[takeObject(arg1)] = takeObject(arg2);
     };
     imports.wbg.__wbg_new_abda76e883ba8a5f = function() {

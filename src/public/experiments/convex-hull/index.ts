@@ -4,7 +4,11 @@ import blendFrag from './shaders/compose.frag.glsl?raw'
 import pointFrag from './shaders/point.frag.glsl?raw'
 import sideFrag from './shaders/side.frag.glsl?raw'
 import { createPoints2DSketch } from '../../../shared-utils/sketches/points/points'
-import { addToLoop, startLoop, stopLoop } from 'tvs-utils/dist/app/frameLoop'
+import {
+	addToLoop,
+	stopLoop,
+	startLoop,
+} from '../../../shared-utils/app/frameLoop'
 
 const { gl } = Q
 

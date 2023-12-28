@@ -3,7 +3,11 @@ import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lin
 import { createPoints2DSketch } from '../../../../shared-utils/sketches/points/points'
 import { Q } from './context'
 import { connections, nameSpaceCount, nodes, updateNodes } from './nodes'
-import { addToLoop, startLoop, stopLoop } from 'tvs-utils/dist/app/frameLoop'
+import {
+	addToLoop,
+	stopLoop,
+	startLoop,
+} from '../../../../shared-utils/app/frameLoop'
 
 export const points = createPoints2DSketch(Q, 'points', {
 	pointSize: 20,

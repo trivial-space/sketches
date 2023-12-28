@@ -7,7 +7,7 @@ import {
 import init, { get_geom } from '../crate/pkg/tvs_sketch_strokes1'
 import { Q } from './context'
 import { lineShader } from './shader'
-import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
+import { getNoiseTextureData } from '../../../../../shared-utils/graphics/texture-helpers'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

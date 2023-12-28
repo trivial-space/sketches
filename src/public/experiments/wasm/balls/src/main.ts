@@ -1,4 +1,3 @@
-import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import init, {
 	get_geom,
 	get_light,
@@ -9,6 +8,7 @@ import init, {
 } from '../crate/pkg/tvs_sketch_balls'
 import { render, renderInit } from './render'
 import { wasmGeometryToFormData } from '../../../../../shared-utils/wasm/utils'
+import { addToLoop, startLoop } from '../../../../../shared-utils/app/frameLoop'
 
 init().then(() => {
 	setup()

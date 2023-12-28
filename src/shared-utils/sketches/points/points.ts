@@ -4,7 +4,7 @@ import { point2DVert, point3DVert, pointFrag } from './points-shaders'
 import { DrawSettings, FormData } from 'tvs-painter/dist'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { mat4 } from 'gl-matrix'
-import { PainterContext } from 'tvs-utils/dist/app/painterState'
+import { PainterContext } from '../../app/painterState'
 
 interface PointsData {
 	positions?: Vec[]

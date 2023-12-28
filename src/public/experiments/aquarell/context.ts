@@ -1,8 +1,8 @@
 import {
 	BaseState,
-	getPainterContext,
 	baseEvents,
-} from 'tvs-utils/dist/app/painterState'
+	getPainterContext,
+} from '../../../shared-utils/app/painterState'
 
 export type State = BaseState
 

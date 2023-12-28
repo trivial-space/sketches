@@ -6,7 +6,7 @@ import { flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { triangulate } from 'tvs-libs/dist/geometry/quad'
 import { mat4 } from 'gl-matrix'
 import { createPoints2DSketch, createPoints3DSketch } from '../points/points'
-import { PainterContext } from 'tvs-utils/dist/app/painterState'
+import { PainterContext } from '../../app/painterState'
 
 interface LinesData {
 	points?: Vec[]

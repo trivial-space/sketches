@@ -6,13 +6,13 @@ import {
 } from '../../../../shared-utils/geometry/lines_2d'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { Sketch } from 'tvs-painter/dist/sketch'
-import { getNoiseTextureData } from 'tvs-utils/dist/graphics/texture-helpers'
 import {
 	brushStrokeFrag,
 	brushStrokeVert,
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
-import { baseEvents } from 'tvs-utils/dist/app/painterState'
-import { Buttons } from 'tvs-utils/dist/events/pointer'
+import { baseEvents } from '../../../../shared-utils/app/painterState'
+import { Buttons } from '../../../../shared-utils/events/pointer'
+import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

@@ -1,5 +1,5 @@
+import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
 import '../../../shared-utils/css/fullscreen.css'
-import { addToLoop, startLoop } from 'tvs-utils/dist/app/frameLoop'
 import { events, Q } from './context'
 import {
 	mirrorScene,

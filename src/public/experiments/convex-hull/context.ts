@@ -1,4 +1,7 @@
-import { getPainterContext, baseEvents } from 'tvs-utils/dist/app/painterState'
+import {
+	baseEvents,
+	getPainterContext,
+} from '../../../shared-utils/app/painterState'
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 

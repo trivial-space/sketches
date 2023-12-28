@@ -6,9 +6,9 @@ import {
 } from '../../../../shared-utils/geometry/lines_2d'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { baseEvents } from 'tvs-utils/dist/app/painterState'
-import { onNextFrame, startLoop } from 'tvs-utils/dist/app/frameLoop'
-import { Buttons } from 'tvs-utils/dist/events/pointer'
+import { onNextFrame } from '../../../../shared-utils/app/frameLoop'
+import { baseEvents } from '../../../../shared-utils/app/painterState'
+import { Buttons } from '../../../../shared-utils/events/pointer'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
