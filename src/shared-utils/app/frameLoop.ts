@@ -13,6 +13,7 @@ function processUpdates() {
 	oldTime = newTime
 
 	if (updateOnce) {
+		console.log('updateOnce', updateOnce)
 		for (const id in updateOnce) {
 			updateOnce[id](tpf)
 		}

@@ -194,6 +194,14 @@ export function get_animated_geom(i) {
 }
 
 /**
+* @returns {any}
+*/
+export function get_frame_data() {
+    const ret = wasm.get_frame_data();
+    return takeObject(ret);
+}
+
+/**
 * @param {number} width
 * @param {number} height
 */

@@ -13,12 +13,12 @@ import { clamp } from 'tvs-libs/dist/math/core'
 import { getNoiseTextureData } from '../../../../../shared-utils/graphics/texture-helpers'
 import { onNextFrame } from '../../../../../shared-utils/app/frameLoop'
 
-interface WasmTileData {
+export interface WasmTileData {
 	color: {
 		hue: number
 		lightness: number
 	}
-	tile_geometries: WasmGeometry[][]
+	line_geometries: WasmGeometry[][]
 }
 
 export const noiseTex = Q.getLayer('noiseTex').update({
@@ -40,7 +40,21 @@ const copyEffect = Q.getEffect('copy').update({
 	frag: copyFrag,
 })
 
+const bgInitEffect = Q.getEffect('bg').update({
+	frag: bgFrag,
+})
+
 const shade = Q.getShade('line').update(lineShader)
+
+function calculateColor(hue: number, lightness: number) {
+	return hslToRGB(
+		hsl(
+			adjustHue(hue + normalRand01() * 0.1),
+			Math.pow((Math.random() + Math.random()) / 2, 1.5),
+			clamp(0, 1, lightness + normalRand11() * 0.4),
+		),
+	)
+}
 
 export function setupPainting(
 	idx: number,
@@ -69,10 +83,13 @@ export function setupPainting(
 	const backgroundLayer = Q.getLayer('background' + idx).update({
 		width,
 		height,
-		effects: Q.getEffect('bg').update({
-			frag: bgFrag,
-			uniforms: { color: [0.5, 0.5, 0.5] },
-		}),
+		effects: bgInitEffect,
+		uniforms: {
+			color: calculateColor(
+				initialTiles[0].color.hue,
+				initialTiles[0].color.lightness,
+			),
+		},
 	})
 
 	Q.painter.compose(backgroundLayer)
@@ -84,16 +101,15 @@ export function setupPainting(
 		},
 	})
 
-	const initialSketches = shuffle(initialTiles).flatMap((t) => {
-		return t.tile_geometries[0].map((data, i) => {
-			return Q.getSketch('line' + idx + '_' + i).update({
-				form: Q.getForm('line' + idx + '_' + i).update(
+	const initialSketches = shuffle(initialTiles).flatMap((t, j) => {
+		const color = calculateColor(t.color.hue, t.color.lightness)
+		return t.line_geometries[0].map((data, i) => {
+			return Q.getSketch('line' + idx + '_' + i + '_' + j).update({
+				form: Q.getForm('line' + idx + '_' + i + '_' + j).update(
 					wasmGeometryToFormData(data, 'DYNAMIC'),
 				),
 				shade,
-				uniforms: {
-					color: t.color,
-				},
+				uniforms: { color },
 			})
 		})
 	})
@@ -113,14 +129,8 @@ export function setupPainting(
 		const data: WasmTileData[] = get_animated_geom(idx)
 
 		const tiles = shuffle(data).map(
-			({ tile_geometries: geometries, color: { hue, lightness } }, i) => {
-				const color = hslToRGB(
-					hsl(
-						adjustHue(hue + normalRand01() * 0.1),
-						Math.pow((Math.random() + Math.random()) / 2, 1.5),
-						clamp(0, 1, lightness + normalRand11() * 0.4),
-					),
-				)
+			({ line_geometries: geometries, color: { hue, lightness } }, i) => {
+				const color = calculateColor(hue, lightness)
 
 				return { color, geometries, currentLine: 0, currentFrame: 0, id: i }
 			},
@@ -132,8 +142,7 @@ export function setupPainting(
 				return
 			}
 
-			const bruchCount = Math.floor(Math.random() * 2) + 1
-			const brushes = tiles.splice(0, bruchCount)
+			const brushes = tiles.splice(0, 1)
 
 			function render() {
 				const finishedLineSketches = brushes
@@ -147,8 +156,8 @@ export function setupPainting(
 						t.currentFrame = 0
 						t.currentLine++
 
-						return Q.getSketch('line' + t.id).update({
-							form: Q.getForm('line' + t.id).update(
+						return Q.getSketch('line' + idx + '_' + t.id).update({
+							form: Q.getForm('line' + idx + '_' + t.id).update(
 								wasmGeometryToFormData(geom, 'DYNAMIC'),
 							),
 							shade,
@@ -177,8 +186,8 @@ export function setupPainting(
 
 						t.currentFrame++
 
-						return Q.getSketch('line' + t.id).update({
-							form: Q.getForm('line' + t.id).update(
+						return Q.getSketch('line' + idx + '_' + t.id).update({
+							form: Q.getForm('line' + idx + '_' + t.id).update(
 								wasmGeometryToFormData(geom, 'DYNAMIC'),
 							),
 							shade,
@@ -198,11 +207,11 @@ export function setupPainting(
 						},
 					})
 
-					Q.painter.compose(paintingLayer).show(paintingLayer)
-					onNextFrame(render, 'p' + idx)
+					Q.painter.compose(paintingLayer)
+					// onNextFrame(render, 'p' + idx)
+					requestAnimationFrame(render)
 				} else {
-					Q.painter.show(paintingLayer)
-					setTimeout(renderBruches, Math.random() * 4000)
+					setTimeout(renderBruches, Math.random() * 5000)
 				}
 			}
 
@@ -214,5 +223,5 @@ export function setupPainting(
 
 	renderLayer()
 
-	return { animationLayer: paintingLayer, backgroundLayer }
+	return paintingLayer
 }

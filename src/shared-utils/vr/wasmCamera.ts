@@ -104,7 +104,6 @@ export function initCamera(ctx: PainterContext, options: CameraOptions) {
 
 		if (left || forward || rotX || rotY) {
 			oldCamera = updateTransform(forward, left, up, rotY, rotX)
-			console.log('oldCamera', oldCamera)
 		}
 	})
 

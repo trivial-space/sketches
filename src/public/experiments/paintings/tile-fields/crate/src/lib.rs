@@ -4,7 +4,7 @@ use serde::Serialize;
 use tvs_libs::geometry::line_2d::buffered_geometry::LineGeometryProps;
 use tvs_libs::geometry::line_2d::Line;
 use tvs_libs::rendering::buffered_geometry::BufferedGeometry;
-use tvs_libs::rendering::camera::PerspectiveCamera;
+use tvs_libs::rendering::camera::{CamProps, PerspectiveCamera};
 use tvs_libs::utils::f32_utils::fit0111;
 use tvs_libs::utils::rand_utils::{rand_int, Pick};
 use tvs_libs::{prelude::*, setup_camera_interactions};
@@ -173,6 +173,7 @@ fn create_painting(width: usize, height: usize, color_count: u8) -> Painting {
 
 fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
     let line = p2 - p1;
+    let steps = ((line.length() / 45.).floor() as usize).max(8);
     let normal = if reverse {
         vec2(-line.y, line.x).normalize()
     } else {
@@ -180,9 +181,10 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
     };
     let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.65) * 0.15 * width;
     let p4 = p1 + line * 0.5 + normal * (random::<f32>() - 0.65) * 0.15 * width;
-    (0..=10)
+    (0..=steps)
         .map(|t| {
-            let t = t as f32 * 0.1;
+            let t = t as f32 / steps as f32;
+            // let t = t as f32 / 10.; // This is a really cool bug!!!
             Vec2::cubic_bezier(t, p1, p3, p4, p2)
         })
         .collect()
@@ -317,7 +319,7 @@ fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
 
     let mut points = Vec::new();
 
-    for i in 1..(steps * 2 as f32 - 1.0) as usize {
+    for i in 1..(steps * 2.) as usize {
         points.push(vec2(
             if is_left {
                 tile.left
@@ -351,10 +353,17 @@ fn angle_radius_to_vec(angle: f32, radius: f32) -> Vec2 {
 #[wasm_bindgen]
 pub fn setup(paintings_count: usize) -> JsValue {
     let paintings = (0..paintings_count)
-        .map(|_| create_painting(1000, 1000, 3))
+        .map(|_| create_painting(rand_int(1500) + 1500, rand_int(1500) + 1500, 3))
         .collect::<Vec<_>>();
+
     State::mutate(|s| {
+        let camera = PerspectiveCamera::create(CamProps {
+            translation: Some(vec3(0., 5., 0.)),
+            ..default()
+        });
+
         s.paintings = paintings.clone();
+        s.camera = camera;
     });
 
     let layers = paintings
@@ -362,13 +371,14 @@ pub fn setup(paintings_count: usize) -> JsValue {
         .enumerate()
         .map(|(i, p)| {
             let angle = i as f32 / paintings_count as f32 * 2. * PI;
-            let coords = angle_radius_to_vec(angle, 10.);
+            let coords = angle_radius_to_vec(angle, 25.);
             PaintingData {
                 painting: get_painting_static_layer(p),
                 canvas: CanvasData {
                     geometry: geom::create_canvas(p.width, p.height),
-                    mat: Mat4::from_rotation_translation(
-                        Quat::from_rotation_y(angle),
+                    mat: Mat4::from_scale_rotation_translation(
+                        vec3(0.75, 0.75, 0.75),
+                        Quat::from_rotation_y(-angle - PI * 0.5),
                         vec3(coords.x, 0., coords.y),
                     ),
                 },
@@ -386,6 +396,21 @@ pub fn get_animated_geom(i: usize) -> JsValue {
     let painting = get_painting_animated_layer(&s.paintings[i]);
 
     serde_wasm_bindgen::to_value(&painting).unwrap()
+}
+
+#[derive(Serialize)]
+struct FrameData {
+    camera: Mat4,
+}
+
+#[wasm_bindgen]
+pub fn get_frame_data() -> JsValue {
+    let s = State::read();
+
+    serde_wasm_bindgen::to_value(&FrameData {
+        camera: s.camera.view_proj_mat(),
+    })
+    .unwrap()
 }
 
 setup_camera_interactions!(State, camera);

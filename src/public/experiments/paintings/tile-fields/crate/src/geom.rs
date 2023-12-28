@@ -45,16 +45,16 @@ fn vert(pos: Vec3, uv: Vec2) -> Vertex {
 pub fn create_canvas(width: usize, height: usize) -> BufferedGeometry {
     let w = width as f32 / 200.;
     let h = height as f32 / 100.;
-    let tl = vert(vec3(-w, h + 0.5, 0.), vec2(0., 0.));
-    let tr = vert(vec3(w, h + 0.5, 0.), vec2(1., 0.));
-    let bl = vert(vec3(-w, 0.5, 0.0), vec2(0., 1.));
-    let br = vert(vec3(w, 0.5, 0.0), vec2(1., 1.));
+    let tl = vert(vec3(-w, h + 0.5, 0.), vec2(0., 1.));
+    let tr = vert(vec3(w, h + 0.5, 0.), vec2(1., 1.));
+    let bl = vert(vec3(-w, 0.5, 0.0), vec2(0., 0.));
+    let br = vert(vec3(w, 0.5, 0.0), vec2(1., 0.));
 
     let grid_front =
         make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10, Lerp::lerp);
 
     let grid_back =
-        grid_front.map(|v| vert(vec3(v.val.pos.x, v.val.pos.y, v.val.pos.z - 0.05), v.val.uv));
+        grid_front.map(|v| vert(vec3(v.val.pos.x, v.val.pos.y, v.val.pos.z - 0.25), v.val.uv));
 
     let grid_top = make_grid_from_cols(vec![grid_front.last_row(), grid_back.last_row()]);
 

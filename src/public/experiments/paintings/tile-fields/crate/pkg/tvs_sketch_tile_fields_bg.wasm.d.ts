@@ -3,6 +3,7 @@
 export const memory: WebAssembly.Memory;
 export function setup(a: number): number;
 export function get_animated_geom(a: number): number;
+export function get_frame_data(): number;
 export function update_screen(a: number, b: number): void;
 export function update_camera(a: number, b: number, c: number, d: number, e: number): number;
 export function reset_camera(a: number, b: number, c: number, d: number, e: number): void;

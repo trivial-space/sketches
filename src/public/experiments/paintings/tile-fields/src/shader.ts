@@ -120,3 +120,30 @@ export const copyFrag = defFragment({
 		]
 	},
 })
+
+export const canvasShader = defShader({
+	attribs: {
+		position: 'vec3',
+		uv: 'vec2',
+	},
+	uniforms: {
+		viewProjMat: 'mat4',
+		modelMat: 'mat4',
+		painting: 'sampler2D',
+	},
+	varying: {
+		vUv: 'vec2',
+	},
+	vs: (gl, unis, ins, outs) => [
+		defMain(() => [
+			assign(outs.vUv, ins.uv),
+			assign(
+				gl.gl_Position,
+				mul(unis.viewProjMat, mul(unis.modelMat, vec4(ins.position, 1))),
+			),
+		]),
+	],
+	fs: (gl, unis, ins, outs) => [
+		defMain(() => [assign(outs.fragColor, texture(unis.painting, ins.vUv))]),
+	],
+})

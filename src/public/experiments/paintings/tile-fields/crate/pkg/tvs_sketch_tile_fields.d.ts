@@ -11,6 +11,10 @@ export function setup(paintings_count: number): any;
 */
 export function get_animated_geom(i: number): any;
 /**
+* @returns {any}
+*/
+export function get_frame_data(): any;
+/**
 * @param {number} width
 * @param {number} height
 */
@@ -39,6 +43,7 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly setup: (a: number) => number;
   readonly get_animated_geom: (a: number) => number;
+  readonly get_frame_data: () => number;
   readonly update_screen: (a: number, b: number) => void;
   readonly update_camera: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly reset_camera: (a: number, b: number, c: number, d: number, e: number) => void;
