@@ -1,6 +1,7 @@
 use std::f32::consts::PI;
 
 use serde::Serialize;
+use tvs_libs::data_structures::neighbour_list::traits::WithNeighboursTransform;
 use tvs_libs::geometry::line_2d::buffered_geometry::LineGeometryProps;
 use tvs_libs::geometry::line_2d::Line;
 use tvs_libs::rendering::buffered_geometry::BufferedGeometry;
@@ -143,7 +144,7 @@ fn create_painting(width: usize, height: usize, color_count: u8) -> Painting {
 
     let get_color = || colors.pick().clone();
 
-    let brush_size = height as f32 / 40.0;
+    let brush_size = height as f32 / 50.0;
 
     let first_tile = Tile {
         top: 0.,
@@ -155,10 +156,20 @@ fn create_painting(width: usize, height: usize, color_count: u8) -> Painting {
 
     let mut tiles = vec![first_tile];
 
-    for _ in 0..(rand_int(5) + 1) {
+    let subdivide_count = rand_int(5) + 1;
+
+    for _ in 0..subdivide_count {
         let mut new_tiles = vec![];
         for tile in tiles {
-            new_tiles.append(&mut subdivide_tile(tile, 100., 2, 0.5, 0.5, get_color));
+            let max_splits = rand_int(3) + 2;
+            new_tiles.append(&mut subdivide_tile(
+                tile,
+                brush_size * 3.,
+                max_splits,
+                0.5,
+                0.5,
+                get_color,
+            ));
         }
         tiles = new_tiles;
     }
@@ -173,7 +184,7 @@ fn create_painting(width: usize, height: usize, color_count: u8) -> Painting {
 
 fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
     let line = p2 - p1;
-    let steps = ((line.length() / 45.).floor() as usize).max(8);
+    let steps = ((line.length() / 35.).floor() as usize).max(8);
     let normal = if reverse {
         vec2(-line.y, line.x).normalize()
     } else {
@@ -237,16 +248,20 @@ pub fn get_painting_animated_layer(painting: &Painting) -> Vec<TileData> {
 
         let mut geoms = vec![];
 
-        for l in lines {
+        lines.iter().with_neighbours().for_each(|(prev, l, next)| {
+            let prev_direction = prev.map(|p| p[p.len() - 1].last().dir);
+            let next_direction = next.map(|n| n[n.len() - 1].first().dir);
             let mut line_geoms = vec![];
             for frame in l {
                 line_geoms.push(frame.to_buffered_geometry_with(LineGeometryProps {
                     total_length: Some(total_length),
+                    prev_direction,
+                    next_direction,
                     ..default()
                 }));
             }
             geoms.push(line_geoms)
-        }
+        });
 
         tiles.push(TileData {
             line_geometries: geoms,
@@ -325,7 +340,7 @@ fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
                 tile.left
             } else {
                 tile.left + tile.width
-            } + delta() * 3.,
+            } + delta() * f32::min(tile.width / brush_size, 3.),
             tile.top + step * i as f32 * 0.5 + delta(),
         ));
         is_left = !is_left;
@@ -352,8 +367,9 @@ fn angle_radius_to_vec(angle: f32, radius: f32) -> Vec2 {
 
 #[wasm_bindgen]
 pub fn setup(paintings_count: usize) -> JsValue {
+    let color_count = 3 + rand_int(4) as u8;
     let paintings = (0..paintings_count)
-        .map(|_| create_painting(rand_int(1500) + 1500, rand_int(1500) + 1500, 3))
+        .map(|_| create_painting(rand_int(1200) + 1200, rand_int(1200) + 1200, color_count))
         .collect::<Vec<_>>();
 
     State::mutate(|s| {

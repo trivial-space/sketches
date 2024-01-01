@@ -65,6 +65,7 @@ export function setupPainting(
 	const paintingLayer = Q.getLayer('animation' + idx).update({
 		width,
 		height,
+		bufferOptions: [{ type: 'UNSIGNED_BYTE' }],
 		drawSettings: {
 			enable: [Q.gl.CULL_FACE, Q.gl.BLEND],
 			clearBits: makeClear(Q.gl, 'color'),
@@ -83,6 +84,7 @@ export function setupPainting(
 	const backgroundLayer = Q.getLayer('background' + idx).update({
 		width,
 		height,
+		bufferOptions: [{ type: 'UNSIGNED_BYTE' }],
 		effects: bgInitEffect,
 		uniforms: {
 			color: calculateColor(
@@ -104,8 +106,8 @@ export function setupPainting(
 	const initialSketches = shuffle(initialTiles).flatMap((t, j) => {
 		const color = calculateColor(t.color.hue, t.color.lightness)
 		return t.line_geometries[0].map((data, i) => {
-			return Q.getSketch('line' + idx + '_' + i + '_' + j).update({
-				form: Q.getForm('line' + idx + '_' + i + '_' + j).update(
+			return Q.getSketch('line_init' + idx + '_' + i + '_' + j).update({
+				form: Q.getForm('line_init' + idx + '_' + i + '_' + j).update(
 					wasmGeometryToFormData(data, 'DYNAMIC'),
 				),
 				shade,
@@ -208,8 +210,7 @@ export function setupPainting(
 					})
 
 					Q.painter.compose(paintingLayer)
-					// onNextFrame(render, 'p' + idx)
-					requestAnimationFrame(render)
+					onNextFrame(render, 'p' + idx)
 				} else {
 					setTimeout(renderBruches, Math.random() * 5000)
 				}
@@ -221,7 +222,7 @@ export function setupPainting(
 		renderBruches()
 	}
 
-	renderLayer()
+	setTimeout(renderLayer, Math.random() * 5000 + 100)
 
 	return paintingLayer
 }

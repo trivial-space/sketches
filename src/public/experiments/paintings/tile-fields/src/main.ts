@@ -41,15 +41,13 @@ init().then(() => {
 		resetCamera: reset_camera,
 		updateScreen: update_screen,
 		updateTransform: update_camera,
-		moveSpeed: 1.5,
+		moveSpeed: 2.5,
 	})
 	Q.emit(baseEvents.RESIZE)
 
 	const canvasForms = data.map((d, i) =>
 		Q.getForm('canvas' + i).update(wasmGeometryToFormData(d.canvas.geometry)),
 	)
-
-	console.log(data[0].painting.tiles)
 
 	const paintings = data.map((d, i) =>
 		setupPainting(i, d.painting.width, d.painting.height, d.painting.tiles),
@@ -71,7 +69,7 @@ init().then(() => {
 		drawSettings: {
 			enable: [Q.gl.DEPTH_TEST],
 			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,
-			clearColor: [0, 0, 0, 1],
+			clearColor: [0.9, 0.9, 0.9, 1],
 		},
 	})
 
