@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 
 use serde::Serialize;
 use tvs_libs::data_structures::neighbour_list::traits::WithNeighboursTransform;
-use tvs_libs::geometry::line_2d::buffered_geometry::LineGeometryProps;
+use tvs_libs::geometry::line_2d::buffered_geometry::{LineBufferedGeometryVec, LineGeometryProps};
 use tvs_libs::geometry::line_2d::Line;
 use tvs_libs::rendering::buffered_geometry::BufferedGeometry;
 use tvs_libs::rendering::camera::{CamProps, PerspectiveCamera};
@@ -190,8 +190,8 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
     } else {
         vec2(line.y, -line.x).normalize()
     };
-    let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.65) * 0.15 * width;
-    let p4 = p1 + line * 0.5 + normal * (random::<f32>() - 0.65) * 0.15 * width;
+    let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.6) * 0.15 * width;
+    let p4 = p1 + line * 0.5 + normal * (random::<f32>() - 0.6) * 0.15 * width;
     (0..=steps)
         .map(|t| {
             let t = t as f32 / steps as f32;
@@ -248,20 +248,26 @@ pub fn get_painting_animated_layer(painting: &Painting) -> Vec<TileData> {
 
         let mut geoms = vec![];
 
-        lines.iter().with_neighbours().for_each(|(prev, l, next)| {
-            let prev_direction = prev.map(|p| p[p.len() - 1].last().dir);
-            let next_direction = next.map(|n| n[n.len() - 1].first().dir);
-            let mut line_geoms = vec![];
-            for frame in l {
-                line_geoms.push(frame.to_buffered_geometry_with(LineGeometryProps {
-                    total_length: Some(total_length),
-                    prev_direction,
-                    next_direction,
-                    ..default()
-                }));
-            }
-            geoms.push(line_geoms)
-        });
+        lines
+            .iter()
+            .enumerate()
+            .with_neighbours()
+            .for_each(|(prev, l, next)| {
+                let prev_direction = prev.map(|p| p.1[p.1.len() - 1].last().dir);
+                let next_direction = next.map(|n| n.1[n.1.len() - 1].first().dir);
+                let mut line_geoms = vec![];
+                let i = l.0;
+                for frame in l.1 {
+                    line_geoms.push(frame.to_buffered_geometry_with(LineGeometryProps {
+                        total_length: Some(total_length),
+                        prev_direction,
+                        next_direction,
+                        swap_texture_orientation: i % 2 == 0,
+                        ..default()
+                    }));
+                }
+                geoms.push(line_geoms)
+            });
 
         tiles.push(TileData {
             line_geometries: geoms,
@@ -292,7 +298,7 @@ pub fn get_painting_static_layer(painting: &Painting) -> PaintingLayer {
 
             let mut l = Line::new_offset(brush_size, total_length);
 
-            for i in 1..ps.len() {
+            for i in 0..ps.len() {
                 l.add(ps[i]);
             }
 
@@ -302,17 +308,11 @@ pub fn get_painting_static_layer(painting: &Painting) -> PaintingLayer {
             lines.push(l);
         }
 
-        let mut geoms = vec![];
-
-        for l in lines {
-            geoms.push(l.to_buffered_geometry_with(LineGeometryProps {
+        tiles.push(TileData {
+            line_geometries: vec![lines.to_buffered_geometry_with(LineGeometryProps {
                 total_length: Some(total_length),
                 ..default()
-            }));
-        }
-
-        tiles.push(TileData {
-            line_geometries: vec![geoms],
+            })],
             color: tile.color,
         });
     }
