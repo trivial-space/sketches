@@ -103,29 +103,30 @@ export function setupPainting(
 		},
 	})
 
-	const initialSketches = shuffle(initialTiles).flatMap((t, j) => {
+	for (const t of shuffle(initialTiles)) {
 		const color = calculateColor(t.color.hue, t.color.lightness)
-		return t.line_geometries[0].map((data, i) => {
-			return Q.getSketch('line_init' + idx + '_' + i + '_' + j).update({
-				form: Q.getForm('line_init' + idx + '_' + i + '_' + j).update(
+
+		const initialSketches = t.line_geometries[0].map((data, i) => {
+			return Q.getSketch('line' + i).update({
+				form: Q.getForm('line' + i).update(
 					wasmGeometryToFormData(data, 'DYNAMIC'),
 				),
 				shade,
 				uniforms: { color },
 			})
 		})
-	})
 
-	paintingLayer.update({
-		sketches: [copyEffect, ...initialSketches],
-		uniforms: {
-			size: [width, height],
-			noiseTex: () => noiseTex.image(),
-			source: () => backgroundLayer.image(),
-		},
-	})
+		paintingLayer.update({
+			sketches: [copyEffect, ...initialSketches],
+			uniforms: {
+				size: [width, height],
+				noiseTex: () => noiseTex.image(),
+				source: () => backgroundLayer.image(),
+			},
+		})
 
-	Q.painter.compose(paintingLayer, backgroundLayer)
+		Q.painter.compose(paintingLayer, backgroundLayer)
+	}
 
 	function renderLayer() {
 		const data: WasmTileData[] = get_painting_animation(idx)
