@@ -45,10 +45,11 @@ fn vert(pos: Vec3, uv: Vec2) -> Vertex {
 pub fn create_canvas(width: usize, height: usize) -> BufferedGeometry {
     let w = width as f32 / 200.;
     let h = height as f32 / 100.;
-    let tl = vert(vec3(-w, h + 0.5, 0.), vec2(0., 1.));
-    let tr = vert(vec3(w, h + 0.5, 0.), vec2(1., 1.));
-    let bl = vert(vec3(-w, 0.5, 0.0), vec2(0., 0.));
-    let br = vert(vec3(w, 0.5, 0.0), vec2(1., 0.));
+    let b = 1.0;
+    let tl = vert(vec3(-w, h + b, 0.), vec2(0., 1.));
+    let tr = vert(vec3(w, h + b, 0.), vec2(1., 1.));
+    let bl = vert(vec3(-w, b, 0.0), vec2(0., 0.));
+    let br = vert(vec3(w, b, 0.0), vec2(1., 0.));
 
     let grid_front =
         make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10, Lerp::lerp);
@@ -68,25 +69,46 @@ pub fn create_canvas(width: usize, height: usize) -> BufferedGeometry {
         grid_back.last_col().clone(),
     ]);
 
+    let bottom_grid = make_grid_from_cols(vec![grid_front.first_row(), grid_back.first_row()]);
+
     let mut geom = MeshGeometry::new();
-    geom.add_grid_ccw_quads(&grid_front);
-    geom.add_grid_cw_quads(&grid_back);
-    geom.add_grid_cw_quads(&grid_top);
-    geom.add_grid_cw_quads(&left_grid);
-    geom.add_grid_ccw_quads(&right_grid);
+    geom.add_grid_ccw_quads_data(&grid_front, face_normal(Vec3::Z));
+    geom.add_grid_cw_quads_data(&grid_back, face_normal(-Vec3::Z));
+    geom.add_grid_cw_quads_data(&grid_top, face_normal(Vec3::Y));
+    geom.add_grid_cw_quads_data(&left_grid, face_normal(-Vec3::X));
+    geom.add_grid_ccw_quads_data(&right_grid, face_normal(Vec3::X));
+    geom.add_grid_cw_quads_data(&bottom_grid, face_normal(-Vec3::Y));
+
+    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
+}
+
+pub fn create_wall() -> BufferedGeometry {
+    let w = 20.;
+    let h = 40.;
+    let tl = vert(vec3(-w, h, -0.5), vec2(0., 1.));
+    let tr = vert(vec3(w, h, -0.5), vec2(1., 1.));
+    let bl = vert(vec3(-w, 0.0, -0.5), vec2(0., 0.));
+    let br = vert(vec3(w, 0.0, -0.5), vec2(1., 0.));
+
+    let grid_front =
+        make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10, Lerp::lerp);
+
+    let mut geom = MeshGeometry::new();
+    geom.add_grid_ccw_quads_data(&grid_front, face_normal(vec3(0.0, 0.0, 1.0)));
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
 }
 
 pub fn create_ground() -> BufferedGeometry {
+    let w = 40.;
     let grid = make_grid_from_cols(vec![
         vec![
-            vert(vec3(-200.0, 0.0, 200.0), vec2(0.0, 0.0)),
-            vert(vec3(-200.0, 0.0, -200.0), vec2(0.0, 1.0)),
+            vert(vec3(-w, 0.0, w), vec2(0.0, 0.0)),
+            vert(vec3(-w, 0.0, -w), vec2(0.0, 1.0)),
         ],
         vec![
-            vert(vec3(200.0, 0.0, 200.0), vec2(1.0, 0.0)),
-            vert(vec3(200.0, 0.0, -200.0), vec2(1.0, 1.0)),
+            vert(vec3(w, 0.0, w), vec2(1.0, 0.0)),
+            vert(vec3(w, 0.0, -w), vec2(1.0, 1.0)),
         ],
     ]);
     let grid = grid.subdivide(10, 10, Lerp::lerp);
@@ -94,5 +116,5 @@ pub fn create_ground() -> BufferedGeometry {
     let mut geom = MeshGeometry::new();
     geom.add_grid_ccw_quads_data(&grid, face_normal(vec3(0.0, 1.0, 0.0)));
 
-    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormals)
+    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
 }

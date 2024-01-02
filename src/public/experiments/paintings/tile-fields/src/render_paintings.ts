@@ -5,7 +5,7 @@ import {
 	WasmGeometry,
 	wasmGeometryToFormData,
 } from '../../../../../shared-utils/wasm/utils'
-import { get_animated_geom } from '../crate/pkg/tvs_sketch_tile_fields'
+import { get_painting_animation } from '../crate/pkg/tvs_sketch_tile_fields'
 import { shuffle } from 'tvs-libs/dist/utils/sequence'
 import { adjustHue, hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
 import { normalRand01, normalRand11 } from 'tvs-libs/dist/math/random'
@@ -128,7 +128,7 @@ export function setupPainting(
 	Q.painter.compose(paintingLayer, backgroundLayer)
 
 	function renderLayer() {
-		const data: WasmTileData[] = get_animated_geom(idx)
+		const data: WasmTileData[] = get_painting_animation(idx)
 
 		const tiles = shuffle(data).map(
 			({ line_geometries: geometries, color: { hue, lightness } }, i) => {

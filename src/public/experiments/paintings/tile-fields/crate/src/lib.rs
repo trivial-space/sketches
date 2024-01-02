@@ -1,5 +1,6 @@
 use std::f32::consts::PI;
 
+use geom::{create_ground, create_wall};
 use serde::Serialize;
 use tvs_libs::data_structures::neighbour_list::traits::WithNeighboursTransform;
 use tvs_libs::geometry::line_2d::buffered_geometry::{LineBufferedGeometryVec, LineGeometryProps};
@@ -12,6 +13,7 @@ use tvs_libs::{prelude::*, setup_camera_interactions};
 use wasm_bindgen::prelude::*;
 
 pub mod geom;
+pub mod utils;
 
 #[derive(Clone, Copy, Serialize)]
 struct Color {
@@ -207,13 +209,6 @@ pub struct TileData {
     color: Color,
 }
 
-#[derive(Serialize)]
-pub struct PaintingLayer {
-    tiles: Vec<TileData>,
-    width: usize,
-    height: usize,
-}
-
 pub fn get_painting_animated_layer(painting: &Painting) -> Vec<TileData> {
     let mut tiles = vec![];
 
@@ -278,7 +273,7 @@ pub fn get_painting_animated_layer(painting: &Painting) -> Vec<TileData> {
     tiles
 }
 
-pub fn get_painting_static_layer(painting: &Painting) -> PaintingLayer {
+pub fn get_painting_static_layer(painting: &Painting) -> Vec<TileData> {
     let mut tiles = vec![];
 
     for tile in painting.tiles.iter() {
@@ -317,11 +312,7 @@ pub fn get_painting_static_layer(painting: &Painting) -> PaintingLayer {
         });
     }
 
-    PaintingLayer {
-        tiles,
-        width: painting.width,
-        height: painting.height,
-    }
+    tiles
 }
 
 fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
@@ -349,26 +340,33 @@ fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
     (points, is_left)
 }
 
-#[derive(Serialize)]
-struct CanvasData {
-    geometry: BufferedGeometry,
-    mat: Mat4,
-}
-
-#[derive(Serialize)]
-struct PaintingData {
-    painting: PaintingLayer,
-    canvas: CanvasData,
-}
-
 fn angle_radius_to_vec(angle: f32, radius: f32) -> Vec2 {
     vec2(angle.cos(), angle.sin()) * radius
 }
 
+#[derive(Serialize)]
+struct PaintingData {
+    width: usize,
+    height: usize,
+    tiles: Vec<TileData>,
+    canvas_geometry: BufferedGeometry,
+    mat: Mat4,
+}
+
+#[derive(Serialize)]
+struct InitialData {
+    paintings: Vec<PaintingData>,
+    wall_geometry: BufferedGeometry,
+    ground_geometry: BufferedGeometry,
+    ceil_mat: Mat4,
+}
+
 #[wasm_bindgen]
-pub fn setup(paintings_count: usize) -> JsValue {
+pub fn get_init_data(paintings_count: usize) -> JsValue {
+    utils::set_panic_hook();
+
     let color_count = 3 + rand_int(4) as u8;
-    let paintings = (0..paintings_count)
+    let ps = (0..paintings_count)
         .map(|_| create_painting(rand_int(1200) + 1200, rand_int(1200) + 1200, color_count))
         .collect::<Vec<_>>();
 
@@ -378,35 +376,40 @@ pub fn setup(paintings_count: usize) -> JsValue {
             ..default()
         });
 
-        s.paintings = paintings.clone();
+        s.paintings = ps.clone();
         s.camera = camera;
     });
 
-    let layers = paintings
+    let paintings = ps
         .iter()
         .enumerate()
         .map(|(i, p)| {
             let angle = i as f32 / paintings_count as f32 * 2. * PI;
-            let coords = angle_radius_to_vec(angle, 25.);
+            let coords = angle_radius_to_vec(angle, 34.);
             PaintingData {
-                painting: get_painting_static_layer(p),
-                canvas: CanvasData {
-                    geometry: geom::create_canvas(p.width, p.height),
-                    mat: Mat4::from_scale_rotation_translation(
-                        vec3(0.75, 0.75, 0.75),
-                        Quat::from_rotation_y(-angle - PI * 0.5),
-                        vec3(coords.x, 0., coords.y),
-                    ),
-                },
+                width: p.width,
+                height: p.height,
+                tiles: get_painting_static_layer(p),
+                canvas_geometry: geom::create_canvas(p.width, p.height),
+                mat: Mat4::from_rotation_translation(
+                    Quat::from_rotation_y(-angle - PI * 0.5),
+                    vec3(coords.x, 0., coords.y),
+                ),
             }
         })
         .collect::<Vec<_>>();
 
-    serde_wasm_bindgen::to_value(&layers).unwrap()
+    serde_wasm_bindgen::to_value(&InitialData {
+        paintings,
+        wall_geometry: create_wall(),
+        ground_geometry: create_ground(),
+        ceil_mat: Mat4::from_rotation_translation(Quat::from_rotation_x(PI), Vec3::Y * 30.),
+    })
+    .unwrap()
 }
 
 #[wasm_bindgen]
-pub fn get_animated_geom(i: usize) -> JsValue {
+pub fn get_painting_animation(i: usize) -> JsValue {
     let s = State::read();
 
     let painting = get_painting_animated_layer(&s.paintings[i]);
@@ -427,6 +430,11 @@ pub fn get_frame_data() -> JsValue {
         camera: s.camera.view_proj_mat(),
     })
     .unwrap()
+}
+
+#[wasm_bindgen]
+pub fn setup() {
+    utils::set_panic_hook();
 }
 
 setup_camera_interactions!(State, camera);

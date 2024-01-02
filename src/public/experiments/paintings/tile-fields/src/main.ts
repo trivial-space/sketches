@@ -1,3 +1,4 @@
+import { mat4 } from 'gl-matrix'
 import { addToLoop, startLoop } from '../../../../../shared-utils/app/frameLoop'
 import { baseEvents } from '../../../../../shared-utils/app/painterState'
 import '../../../../../shared-utils/css/fullscreen.css'
@@ -6,36 +7,43 @@ import {
 	WasmGeometry,
 	wasmGeometryToFormData,
 } from '../../../../../shared-utils/wasm/utils'
-import { render } from '../../../wasm/balls/src/render'
 import init, {
 	reset_camera,
 	setup,
 	update_camera,
 	update_screen,
 	get_frame_data,
+	get_init_data,
 } from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
 import { WasmTileData, setupPainting } from './render_paintings'
-import { canvasShader } from './shader'
+import { canvasShader, wallShader } from './shader'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
 interface PaintingData {
-	painting: {
-		width: number
-		height: number
-		tiles: WasmTileData[]
-	}
-	canvas: {
-		geometry: WasmGeometry
-		mat: number[]
-	}
+	width: number
+	height: number
+	tiles: WasmTileData[]
+	canvas_geometry: WasmGeometry
+	mat: number[]
+}
+
+interface InitialData {
+	paintings: PaintingData[]
+	wall_geometry: WasmGeometry
+	ground_geometry: WasmGeometry
+	ceil_mat: number[]
 }
 
 const canvasShade = Q.getShade('canvas').update(canvasShader)
 
+const wallShade = Q.getShade('wall').update(wallShader)
+
 init().then(() => {
-	const data: PaintingData[] = setup(7)
+	setup()
+
+	const data: InitialData = get_init_data(7)
 
 	initCamera(Q, {
 		resetCamera: reset_camera,
@@ -45,12 +53,14 @@ init().then(() => {
 	})
 	Q.emit(baseEvents.RESIZE)
 
-	const canvasForms = data.map((d, i) =>
-		Q.getForm('canvas' + i).update(wasmGeometryToFormData(d.canvas.geometry)),
+	const ps = data.paintings
+
+	const canvasForms = ps.map((d, i) =>
+		Q.getForm('canvas' + i).update(wasmGeometryToFormData(d.canvas_geometry)),
 	)
 
-	const paintings = data.map((d, i) =>
-		setupPainting(i, d.painting.width, d.painting.height, d.painting.tiles),
+	const paintingLayers = ps.map((d, i) =>
+		setupPainting(i, d.width, d.height, d.tiles),
 	)
 
 	const canvasSketches = canvasForms.map((form, i) =>
@@ -58,14 +68,37 @@ init().then(() => {
 			form,
 			shade: canvasShade,
 			uniforms: {
-				modelMat: data[i].canvas.mat,
-				painting: () => paintings[i].image(),
+				modelMat: ps[i].mat,
+				painting: () => paintingLayers[i].image(),
 			},
 		}),
 	)
 
+	console.log(canvasSketches)
+
+	const wallForm = Q.getForm('wall').update(
+		wasmGeometryToFormData(data.wall_geometry),
+	)
+
+	const wallSketch = Q.getSketch('wall').update({
+		form: wallForm,
+		shade: wallShade,
+		uniforms: ps.map((d) => ({ modelMat: d.mat })),
+	})
+
+	const groundForm = Q.getForm('ground').update(
+		wasmGeometryToFormData(data.ground_geometry),
+	)
+
+	const groundSketch = Q.getSketch('ground').update({
+		form: groundForm,
+		shade: wallShade,
+		uniforms: [{ modelMat: mat4.create() }, { modelMat: data.ceil_mat }],
+	})
+
 	const renderLayer = Q.getLayer('render').update({
-		sketches: canvasSketches,
+		sketches: [...canvasSketches, wallSketch, groundSketch],
+		// sketches: canvasSketches,
 		drawSettings: {
 			enable: [Q.gl.DEPTH_TEST],
 			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,
@@ -85,13 +118,8 @@ init().then(() => {
 			},
 		})
 
-		// Q.painter.compose(renderLayer).show(paintings[0])
 		Q.painter.compose(renderLayer).show(renderLayer)
 	}, 'render')
 
 	startLoop()
 })
-
-if (import.meta.hot) {
-	import.meta.hot.accept()
-}

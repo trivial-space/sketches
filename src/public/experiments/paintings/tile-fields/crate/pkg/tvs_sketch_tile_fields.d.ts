@@ -4,16 +4,19 @@
 * @param {number} paintings_count
 * @returns {any}
 */
-export function setup(paintings_count: number): any;
+export function get_init_data(paintings_count: number): any;
 /**
 * @param {number} i
 * @returns {any}
 */
-export function get_animated_geom(i: number): any;
+export function get_painting_animation(i: number): any;
 /**
 * @returns {any}
 */
 export function get_frame_data(): any;
+/**
+*/
+export function setup(): void;
 /**
 * @param {number} width
 * @param {number} height
@@ -41,14 +44,16 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly setup: (a: number) => number;
-  readonly get_animated_geom: (a: number) => number;
+  readonly get_init_data: (a: number) => number;
+  readonly get_painting_animation: (a: number) => number;
   readonly get_frame_data: () => number;
   readonly update_screen: (a: number, b: number) => void;
   readonly update_camera: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly reset_camera: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly setup: () => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
 }
 

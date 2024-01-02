@@ -65,14 +65,13 @@ pub fn get_init_data() -> JsValue {
     serde_wasm_bindgen::to_value(&data).unwrap()
 }
 
-#[derive(Serialize)]
-struct FrameData {
-    cam_indices: Vec<usize>,
-    proj_indices: Vec<usize>,
-    objects: Vec<BufferedObject>,
-    camera_mat: Mat4,
-    camera_pos: Vec3,
-    light: Light,
+fn angle_from_translation(translation: &Vec3) -> f32 {
+    let dot = (-translation.xz()).normalize().dot(Vec2::Y);
+    let mut light_angle = f32::acos(dot);
+    if translation.x < 0.0 {
+        light_angle = 2.0 * PI - light_angle;
+    }
+    3.0 * PI - light_angle
 }
 
 #[wasm_bindgen]
@@ -81,13 +80,14 @@ pub fn get_angle() -> f32 {
     angle_from_translation(&s.light.transform.translation)
 }
 
-fn angle_from_translation(translation: &Vec3) -> f32 {
-    let dot = (-translation.xz()).normalize().dot(Vec2::Y);
-    let mut light_angle = f32::acos(dot);
-    if translation.x < 0.0 {
-        light_angle = 2.0 * PI - light_angle;
-    }
-    3.0 * PI - light_angle
+#[derive(Serialize)]
+struct FrameData {
+    cam_indices: Vec<usize>,
+    proj_indices: Vec<usize>,
+    objects: Vec<BufferedObject>,
+    camera_mat: Mat4,
+    camera_pos: Vec3,
+    light: Light,
 }
 
 #[wasm_bindgen]

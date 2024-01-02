@@ -20,12 +20,12 @@ import {
 	div,
 	min,
 	clamp,
-	mix,
-	$xyz,
 	vec3,
+	length,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 import { defFragment, defShader } from '../../../../../shared-utils/shaders/ast'
+import { vec } from 'tvs-libs/dist/math/vectors'
 
 export const lineShader = defShader({
 	attribs: {
@@ -146,4 +146,40 @@ export const canvasShader = defShader({
 	fs: (gl, unis, ins, outs) => [
 		defMain(() => [assign(outs.fragColor, texture(unis.painting, ins.vUv))]),
 	],
+})
+
+export const wallShader = defShader({
+	attribs: {
+		position: 'vec3',
+		uv: 'vec2',
+	},
+	uniforms: {
+		viewProjMat: 'mat4',
+		modelMat: 'mat4',
+	},
+	varying: {
+		vUv: 'vec2',
+	},
+	vs: (gl, unis, ins, outs) => [
+		defMain(() => [
+			assign(outs.vUv, ins.uv),
+			assign(
+				gl.gl_Position,
+				mul(unis.viewProjMat, mul(unis.modelMat, vec4(ins.position, 1))),
+			),
+		]),
+	],
+	fs: (gl, unis, ins, outs) => {
+		return [
+			defMain(() => [
+				assign(
+					outs.fragColor,
+					vec4(
+						vec3(pow(sub(1, div(length(fit0111(ins.vUv)), 1.5)), float(0.2))),
+						1,
+					),
+				),
+			]),
+		]
+	},
 })
