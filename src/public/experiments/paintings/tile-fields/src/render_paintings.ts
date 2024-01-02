@@ -144,76 +144,50 @@ export function setupPainting(
 				return
 			}
 
-			const brushes = tiles.splice(0, 1)
+			const brush = tiles.pop()!
 
 			function render() {
-				const finishedLineSketches = brushes
-					.filter((t) => {
-						const l = t.geometries[t.currentLine]
-						return l && t.currentFrame === l.length - 1
-					})
-					.map((t) => {
-						const geom = t.geometries[t.currentLine][t.currentFrame]
+				const geom = brush.geometries[brush.currentLine]?.[brush.currentFrame]
 
-						t.currentFrame = 0
-						t.currentLine++
-
-						return Q.getSketch('line' + idx + '_' + t.id).update({
-							form: Q.getForm('line' + idx + '_' + t.id).update(
-								wasmGeometryToFormData(geom, 'DYNAMIC'),
-							),
-							shade,
-							uniforms: {
-								color: t.color,
-							},
-						})
-					})
-
-				if (finishedLineSketches.length > 0) {
-					paintingLayer.update({
-						sketches: [copyEffect, ...finishedLineSketches],
-						uniforms: {
-							size: [width, height],
-							noiseTex: () => noiseTex.image(),
-							source: () => backgroundLayer.image(),
-						},
-					})
-					Q.painter.compose(paintingLayer, backgroundLayer)
+				if (!geom) {
+					setTimeout(renderBruches, Math.random() * 5000)
+					return
 				}
 
-				const animationSketches = brushes
-					.filter((t) => t.geometries[t.currentLine])
-					.map((t) => {
-						const geom = t.geometries[t.currentLine][t.currentFrame]
+				const sketch = Q.getSketch('line' + idx).update({
+					form: Q.getForm('line' + idx).update(
+						wasmGeometryToFormData(geom, 'DYNAMIC'),
+					),
+					shade,
+					uniforms: {
+						color: brush.color,
+					},
+				})
 
-						t.currentFrame++
+				paintingLayer.update({
+					sketches: [copyEffect, sketch],
+					uniforms: {
+						size: [width, height],
+						noiseTex: () => noiseTex.image(),
+						source: () => backgroundLayer.image(),
+					},
+				})
 
-						return Q.getSketch('line' + idx + '_' + t.id).update({
-							form: Q.getForm('line' + idx + '_' + t.id).update(
-								wasmGeometryToFormData(geom, 'DYNAMIC'),
-							),
-							shade,
-							uniforms: {
-								color: t.color,
-							},
-						})
-					})
+				const finished =
+					brush.geometries[brush.currentLine].length - 1 === brush.currentFrame
 
-				if (animationSketches.length > 0) {
-					paintingLayer.update({
-						sketches: [copyEffect, ...animationSketches],
-						uniforms: {
-							size: [width, height],
-							noiseTex: () => noiseTex.image(),
-							source: () => backgroundLayer.image(),
-						},
-					})
+				if (finished) {
+					brush.currentFrame = 0
+					brush.currentLine++
+
+					Q.painter.compose(paintingLayer, backgroundLayer)
+				} else {
+					brush.currentFrame++
 
 					Q.painter.compose(paintingLayer)
-					onNextFrame(render, 'p' + idx)
-				} else {
-					setTimeout(renderBruches, Math.random() * 5000)
 				}
+
+				onNextFrame(render, 'p' + idx)
 			}
 
 			render()

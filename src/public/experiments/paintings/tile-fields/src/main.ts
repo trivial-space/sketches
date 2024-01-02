@@ -43,7 +43,7 @@ const wallShade = Q.getShade('wall').update(wallShader)
 init().then(() => {
 	setup()
 
-	const data: InitialData = get_init_data(7)
+	const data: InitialData = get_init_data(6)
 
 	initCamera(Q, {
 		resetCamera: reset_camera,

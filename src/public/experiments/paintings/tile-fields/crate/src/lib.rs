@@ -230,7 +230,7 @@ pub fn get_painting_animated_layer(painting: &Painting) -> Vec<TileData> {
             let mut l = Line::new_offset(brush_size, total_length);
             let mut line_frames = vec![];
 
-            for p in points.clone() {
+            for p in points {
                 l.add(p);
                 line_frames.push(l.clone());
             }
@@ -316,7 +316,8 @@ pub fn get_painting_static_layer(painting: &Painting) -> Vec<TileData> {
 }
 
 fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
-    let steps = ((tile.height * 1.3) / brush_size as f32).floor();
+    let step_quotient = (tile.width / 2.).min(brush_size);
+    let steps = ((tile.height * 1.4) / step_quotient).floor().max(3.);
     let step = tile.height / steps;
 
     let mut is_left = random::<bool>();
@@ -331,7 +332,7 @@ fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
                 tile.left
             } else {
                 tile.left + tile.width
-            } + delta() * f32::min(tile.width / brush_size, 3.),
+            } + delta() * f32::max(tile.width / (brush_size * 3.), 2.),
             tile.top + step * i as f32 * 0.5 + delta(),
         ));
         is_left = !is_left;
