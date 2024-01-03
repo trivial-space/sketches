@@ -86,6 +86,16 @@ init().then(() => {
 		uniforms: ps.map((d) => ({ modelMat: d.mat })),
 	})
 
+	const reflectionLayer = Q.getLayer('reflection').update({
+		sketches: [...canvasSketches, wallSketch],
+		drawSettings: {
+			enable: [Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
+			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,
+			clearColor: [0.9, 0.9, 0.9, 1],
+			cullFace: Q.gl.BACK,
+		},
+	})
+
 	const groundForm = Q.getForm('ground').update(
 		wasmGeometryToFormData(data.ground_geometry),
 	)
@@ -100,9 +110,10 @@ init().then(() => {
 		sketches: [...canvasSketches, wallSketch, groundSketch],
 		// sketches: canvasSketches,
 		drawSettings: {
-			enable: [Q.gl.DEPTH_TEST],
+			enable: [Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
 			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,
 			clearColor: [0.9, 0.9, 0.9, 1],
+			cullFace: Q.gl.BACK,
 		},
 	})
 
@@ -111,6 +122,12 @@ init().then(() => {
 		Q.emit(baseEvents.FRAME)
 
 		const data = get_frame_data()
+
+		reflectionLayer.update({
+			uniforms: {
+				viewProjMat: data.reflected_camera,
+			},
+		})
 
 		renderLayer.update({
 			uniforms: {

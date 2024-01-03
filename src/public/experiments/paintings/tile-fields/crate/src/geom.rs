@@ -72,12 +72,12 @@ pub fn create_canvas(width: usize, height: usize) -> BufferedGeometry {
     let bottom_grid = make_grid_from_cols(vec![grid_front.first_row(), grid_back.first_row()]);
 
     let mut geom = MeshGeometry::new();
-    geom.add_grid_ccw_quads_data(&grid_front, face_normal(Vec3::Z));
-    geom.add_grid_cw_quads_data(&grid_back, face_normal(-Vec3::Z));
+    geom.add_grid_cw_quads_data(&grid_front, face_normal(Vec3::Z));
+    geom.add_grid_ccw_quads_data(&grid_back, face_normal(-Vec3::Z));
     geom.add_grid_cw_quads_data(&grid_top, face_normal(Vec3::Y));
-    geom.add_grid_cw_quads_data(&left_grid, face_normal(-Vec3::X));
-    geom.add_grid_ccw_quads_data(&right_grid, face_normal(Vec3::X));
-    geom.add_grid_cw_quads_data(&bottom_grid, face_normal(-Vec3::Y));
+    geom.add_grid_ccw_quads_data(&bottom_grid, face_normal(-Vec3::Y));
+    geom.add_grid_ccw_quads_data(&left_grid, face_normal(-Vec3::X));
+    geom.add_grid_cw_quads_data(&right_grid, face_normal(Vec3::X));
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
 }
@@ -90,11 +90,10 @@ pub fn create_wall() -> BufferedGeometry {
     let bl = vert(vec3(-w, 0.0, -0.5), vec2(0., 0.));
     let br = vert(vec3(w, 0.0, -0.5), vec2(1., 0.));
 
-    let grid_front =
-        make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10, Lerp::lerp);
+    let grid = make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10, Lerp::lerp);
 
     let mut geom = MeshGeometry::new();
-    geom.add_grid_ccw_quads_data(&grid_front, face_normal(vec3(0.0, 0.0, 1.0)));
+    geom.add_grid_cw_quads_data(&grid, face_normal(vec3(0.0, 0.0, 1.0)));
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::FaceNormals)
 }

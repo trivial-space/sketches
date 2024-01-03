@@ -175,7 +175,7 @@ export const wallShader = defShader({
 				assign(
 					outs.fragColor,
 					vec4(
-						vec3(pow(sub(1, div(length(fit0111(ins.vUv)), 1.5)), float(0.2))),
+						vec3(pow(sub(1, div(length(fit0111(ins.vUv)), 1.5)), float(0.15))),
 						1,
 					),
 				),
