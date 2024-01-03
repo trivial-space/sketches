@@ -184,7 +184,8 @@ fn create_painting(width: usize, height: usize, color_count: u8) -> Painting {
     }
 }
 
-fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
+fn make_curve(width: f32, brush_size: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
+    let normal_scale_factor = (brush_size / 6.) * (width / brush_size).min(15.);
     let line = p2 - p1;
     let steps = ((line.length() / 35.).floor() as usize).max(8);
     let normal = if reverse {
@@ -192,8 +193,8 @@ fn make_curve(width: f32, p1: Vec2, p2: Vec2, reverse: bool) -> Vec<Vec2> {
     } else {
         vec2(line.y, -line.x).normalize()
     };
-    let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.6) * 0.15 * width;
-    let p4 = p1 + line * 0.5 + normal * (random::<f32>() - 0.6) * 0.15 * width;
+    let p3 = p1 + line * 0.5 + normal * (random::<f32>() - 0.6) * normal_scale_factor;
+    let p4 = p1 + line * 0.5 + normal * (random::<f32>() - 0.6) * normal_scale_factor;
     (0..=steps)
         .map(|t| {
             let t = t as f32 / steps as f32;
@@ -224,7 +225,7 @@ pub fn get_painting_animated_layer(painting: &Painting) -> Vec<TileData> {
         for ps in points.windows(2) {
             let p1 = ps[0];
             let p2 = ps[1];
-            let points = make_curve(tile.width, p1, p2, is_left);
+            let points = make_curve(tile.width, brush_size, p1, p2, is_left);
             is_left = !is_left;
 
             let mut l = Line::new_offset(brush_size, total_length);
@@ -288,7 +289,7 @@ pub fn get_painting_static_layer(painting: &Painting) -> Vec<TileData> {
         for ps in points.windows(2) {
             let p1 = ps[0];
             let p2 = ps[1];
-            let ps = make_curve(tile.width, p1, p2, is_left);
+            let ps = make_curve(tile.width, brush_size, p1, p2, is_left);
             is_left = !is_left;
 
             let mut l = Line::new_offset(brush_size, total_length);
@@ -326,17 +327,38 @@ fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
 
     let mut points = Vec::new();
 
-    for i in 1..(steps * 2.) as usize {
+    let point_w_offset = step * 0.06;
+
+    points.push(vec2(
+        if is_left {
+            tile.left - point_w_offset
+        } else {
+            tile.left + tile.width + point_w_offset
+        } + delta() * f32::max(tile.width / (brush_size * 3.), 2.),
+        tile.top + step + delta(),
+    ));
+    is_left = !is_left;
+
+    for i in 1..(steps * 2. - 2.) as usize {
         points.push(vec2(
             if is_left {
-                tile.left
+                tile.left - point_w_offset
             } else {
-                tile.left + tile.width
+                tile.left + tile.width + point_w_offset
             } + delta() * f32::max(tile.width / (brush_size * 3.), 2.),
-            tile.top + step * i as f32 * 0.5 + delta(),
+            tile.top + step * i as f32 * 0.5 + step * 0.5 + delta(),
         ));
         is_left = !is_left;
     }
+
+    points.push(vec2(
+        if is_left {
+            tile.left - point_w_offset
+        } else {
+            tile.left + tile.width + point_w_offset
+        } + delta() * f32::max(tile.width / (brush_size * 3.), 2.),
+        tile.top + step * (steps - 1.) + delta(),
+    ));
 
     (points, is_left)
 }
