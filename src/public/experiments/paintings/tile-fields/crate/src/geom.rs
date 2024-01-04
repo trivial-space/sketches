@@ -55,7 +55,7 @@ pub fn create_canvas(width: usize, height: usize) -> BufferedGeometry {
         make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10, Lerp::lerp);
 
     let grid_back =
-        grid_front.map(|v| vert(vec3(v.val.pos.x, v.val.pos.y, v.val.pos.z - 0.25), v.val.uv));
+        grid_front.map(|v| vert(vec3(v.val.pos.x, v.val.pos.y, v.val.pos.z - 0.30), v.val.uv));
 
     let grid_top = make_grid_from_cols(vec![grid_front.last_row(), grid_back.last_row()]);
 
@@ -74,8 +74,8 @@ pub fn create_canvas(width: usize, height: usize) -> BufferedGeometry {
     let mut geom = MeshGeometry::new();
     geom.add_grid_cw_quads_data(&grid_front, face_normal(Vec3::Z));
     geom.add_grid_ccw_quads_data(&grid_back, face_normal(-Vec3::Z));
-    geom.add_grid_cw_quads_data(&grid_top, face_normal(Vec3::Y));
-    geom.add_grid_ccw_quads_data(&bottom_grid, face_normal(-Vec3::Y));
+    geom.add_grid_ccw_quads_data(&grid_top, face_normal(Vec3::Y));
+    geom.add_grid_cw_quads_data(&bottom_grid, face_normal(-Vec3::Y));
     geom.add_grid_ccw_quads_data(&left_grid, face_normal(-Vec3::X));
     geom.add_grid_cw_quads_data(&right_grid, face_normal(Vec3::X));
 

@@ -65,7 +65,7 @@ pub fn get_init_data(paintings_count: usize) -> JsValue {
         .enumerate()
         .map(|(i, p)| {
             let angle = i as f32 / paintings_count as f32 * 2. * PI;
-            let coords = angle_radius_to_vec(angle, 34.);
+            let coords = angle_radius_to_vec(angle, 31.);
             PaintingData {
                 width: p.width,
                 height: p.height,

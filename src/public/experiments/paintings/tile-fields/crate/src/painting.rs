@@ -247,7 +247,10 @@ pub fn get_painting_animated_layer(painting: &Painting) -> Vec<TileData> {
     let mut tiles = vec![];
 
     for tile in painting.tiles.iter() {
-        let brush_size = f32::max(painting.brush_size, tile.height / 10.);
+        let brush_size = painting
+            .brush_size
+            .max(tile.height / 10.)
+            .min(painting.brush_size * 3.);
 
         let (points, mut is_left) = get_line_edges(tile, brush_size);
 
@@ -312,7 +315,10 @@ pub fn get_painting_static_layer(painting: &Painting) -> Vec<TileData> {
     let mut tiles = vec![];
 
     for tile in painting.tiles.iter() {
-        let brush_size = f32::max(painting.brush_size, tile.height / 10.);
+        let brush_size = painting
+            .brush_size
+            .max(tile.height / 10.)
+            .min(painting.brush_size * 3.);
 
         let (points, mut is_left) = get_line_edges(tile, brush_size);
 
