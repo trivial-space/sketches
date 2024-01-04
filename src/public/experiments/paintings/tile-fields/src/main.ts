@@ -17,7 +17,7 @@ import init, {
 } from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
 import { WasmTileData, setupPainting } from './render_paintings'
-import { canvasShader, wallShader } from './shader'
+import { canvasShader, groundShader, wallShader } from './shader'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -37,8 +37,8 @@ interface InitialData {
 }
 
 const canvasShade = Q.getShade('canvas').update(canvasShader)
-
 const wallShade = Q.getShade('wall').update(wallShader)
+const groundShade = Q.getShade('ground').update(groundShader)
 
 init().then(() => {
 	setup()
@@ -90,12 +90,6 @@ init().then(() => {
 		wasmGeometryToFormData(data.ground_geometry),
 	)
 
-	const groundSketch = Q.getSketch('ground').update({
-		form: groundForm,
-		shade: wallShade,
-		uniforms: { modelMat: mat4.create() },
-	})
-
 	const ceilSketch = Q.getSketch('ceil').update({
 		form: groundForm,
 		shade: wallShade,
@@ -103,12 +97,24 @@ init().then(() => {
 	})
 
 	const reflectionLayer = Q.getLayer('reflection').update({
+		width: Q.gl.drawingBufferWidth / 2,
+		height: Q.gl.drawingBufferHeight / 2,
 		sketches: [wallSketch, ceilSketch, ...canvasSketches],
 		drawSettings: {
 			enable: [Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
 			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,
 			clearColor: [1, 1, 1, 1],
 			cullFace: Q.gl.BACK,
+		},
+	})
+
+	const groundSketch = Q.getSketch('ground').update({
+		form: groundForm,
+		shade: groundShade,
+		uniforms: {
+			size: () => [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+			reflection: () => reflectionLayer.image(),
+			color: [0.9, 0.85, 0.8],
 		},
 	})
 

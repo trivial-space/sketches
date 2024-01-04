@@ -22,6 +22,10 @@ import {
 	clamp,
 	vec3,
 	length,
+	$xy,
+	mix,
+	$xyz,
+	Vec2Sym,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 import { defFragment, defShader } from '../../../../../shared-utils/shaders/ast'
@@ -176,6 +180,53 @@ export const wallShader = defShader({
 					outs.fragColor,
 					vec4(
 						vec3(pow(sub(1, div(length(fit0111(ins.vUv)), 1.5)), float(0.15))),
+						1,
+					),
+				),
+			]),
+		]
+	},
+})
+
+export const groundShader = defShader({
+	attribs: {
+		position: 'vec3',
+		uv: 'vec2',
+	},
+	uniforms: {
+		viewProjMat: 'mat4',
+		reflection: 'sampler2D',
+		size: 'vec2',
+		color: 'vec3',
+	},
+	varying: {
+		vUv: 'vec2',
+	},
+	vs: (gl, unis, ins, outs) => [
+		defMain(() => [
+			assign(outs.vUv, ins.uv),
+			assign(gl.gl_Position, mul(unis.viewProjMat, vec4(ins.position, 1))),
+		]),
+	],
+	fs: (gl, unis, ins, outs) => {
+		let reflection: Vec4Sym
+		let uv: Vec2Sym
+		return [
+			defMain(() => [
+				(uv = sym(div($xy(gl.gl_FragCoord), unis.size))),
+				assign($y(uv), sub(1, $y(uv))),
+				(reflection = sym(texture(unis.reflection, uv))),
+				assign(
+					outs.fragColor,
+					vec4(
+						mix(
+							$xyz(reflection),
+							mul(
+								unis.color,
+								pow(sub(1, div(length(fit0111(ins.vUv)), 1.5)), float(0.25)),
+							),
+							float(0.9),
+						),
 						1,
 					),
 				),
