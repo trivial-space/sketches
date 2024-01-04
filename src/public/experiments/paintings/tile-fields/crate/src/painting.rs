@@ -189,18 +189,18 @@ fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
         } else {
             tile.left + tile.width + point_w_offset
         } + delta() * f32::max(tile.width / (brush_size * 3.), 2.),
-        tile.top + step + delta(),
+        tile.top + step * 1.3 + delta(),
     ));
     is_left = !is_left;
 
-    for i in 1..(steps * 2. - 2.) as usize {
+    for i in 1..(steps * 2. - 3.) as usize {
         points.push(vec2(
             if is_left {
                 tile.left - point_w_offset
             } else {
                 tile.left + tile.width + point_w_offset
             } + delta() * f32::max(tile.width / (brush_size * 3.), 2.),
-            tile.top + step * i as f32 * 0.5 + step * 0.5 + delta(),
+            tile.top + step * i as f32 * 0.5 + step * 0.8 + delta(),
         ));
         is_left = !is_left;
     }

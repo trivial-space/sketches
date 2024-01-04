@@ -103,14 +103,41 @@ export function setupPainting(
 		},
 	})
 
+	const longestBuffer = initialTiles.reduce(
+		(acc, t) => {
+			const longest = t.line_geometries[0].reduce(
+				(acc, g) => {
+					const maxCount = Math.max(acc[0], g.vertex_count)
+					const maxSize = Math.max(acc[1], g.vertex_size)
+					return [maxCount, maxSize]
+				},
+				[0, 0],
+			)
+			if (longest[0] > acc.count) {
+				acc.count = longest[0]
+				acc.size = Math.max(longest[1], acc.size)
+			}
+			return acc
+		},
+		{ count: 0, size: 0 },
+	)
+
+	console.log(longestBuffer)
+
+	const bufferSize = (longestBuffer.count + 4) * longestBuffer.size
+	const buffer = new Uint8Array(bufferSize)
+
 	for (const t of shuffle(initialTiles)) {
 		const color = calculateColor(t.color.hue, t.color.lightness)
 
 		const initialSketches = t.line_geometries[0].map((data, i) => {
+			const form = wasmGeometryToFormData(data, 'DYNAMIC')
+			form.elements = null
+			buffer.set(form.customLayout!.data!.buffer! as Uint8Array)
+			form.customLayout!.data!.buffer = buffer
+
 			return Q.getSketch('line' + i).update({
-				form: Q.getForm('line' + i).update(
-					wasmGeometryToFormData(data, 'DYNAMIC'),
-				),
+				form: Q.getForm('init_line' + idx + '_' + i).update(form),
 				shade,
 				uniforms: { color },
 			})
@@ -155,10 +182,13 @@ export function setupPainting(
 					return
 				}
 
-				const sketch = Q.getSketch('line' + idx).update({
-					form: Q.getForm('line' + idx).update(
-						wasmGeometryToFormData(geom, 'DYNAMIC'),
-					),
+				const form = wasmGeometryToFormData(geom, 'DYNAMIC')
+				form.elements = null
+				buffer.set(form.customLayout!.data!.buffer! as Uint8Array)
+				form.customLayout!.data!.buffer = buffer
+
+				const sketch = Q.getSketch('line').update({
+					form: Q.getForm('line' + idx).update(form),
 					shade,
 					uniforms: {
 						color: brush.color,
