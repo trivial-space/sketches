@@ -88,7 +88,7 @@ export const lineShader = defShader({
 					noiseVal,
 					mul(
 						noiseVal,
-						min(float(1), pow(sub(float(1.8), $x(ins.vUv)), float(3))),
+						min(float(1), pow(sub(float(1.85), $x(ins.vUv)), float(3))),
 					),
 				),
 
