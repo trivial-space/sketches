@@ -86,16 +86,6 @@ init().then(() => {
 		uniforms: ps.map((d) => ({ modelMat: d.mat })),
 	})
 
-	const reflectionLayer = Q.getLayer('reflection').update({
-		sketches: [...canvasSketches, wallSketch],
-		drawSettings: {
-			enable: [Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
-			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,
-			clearColor: [0.9, 0.9, 0.9, 1],
-			cullFace: Q.gl.BACK,
-		},
-	})
-
 	const groundForm = Q.getForm('ground').update(
 		wasmGeometryToFormData(data.ground_geometry),
 	)
@@ -103,16 +93,31 @@ init().then(() => {
 	const groundSketch = Q.getSketch('ground').update({
 		form: groundForm,
 		shade: wallShade,
-		uniforms: [{ modelMat: mat4.create() }, { modelMat: data.ceil_mat }],
+		uniforms: { modelMat: mat4.create() },
 	})
 
-	const renderLayer = Q.getLayer('render').update({
-		sketches: [...canvasSketches, wallSketch, groundSketch],
-		// sketches: canvasSketches,
+	const ceilSketch = Q.getSketch('ceil').update({
+		form: groundForm,
+		shade: wallShade,
+		uniforms: { modelMat: data.ceil_mat },
+	})
+
+	const reflectionLayer = Q.getLayer('reflection').update({
+		sketches: [wallSketch, ceilSketch, ...canvasSketches],
 		drawSettings: {
 			enable: [Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
 			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,
-			clearColor: [0.9, 0.9, 0.9, 1],
+			clearColor: [1, 1, 1, 1],
+			cullFace: Q.gl.BACK,
+		},
+	})
+
+	const renderLayer = Q.getLayer('render').update({
+		sketches: [wallSketch, groundSketch, ceilSketch, ...canvasSketches],
+		drawSettings: {
+			enable: [Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
+			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,
+			clearColor: [1, 1, 1, 1],
 			cullFace: Q.gl.BACK,
 		},
 	})
@@ -135,7 +140,7 @@ init().then(() => {
 			},
 		})
 
-		Q.painter.compose(renderLayer).show(renderLayer)
+		Q.painter.compose(reflectionLayer, renderLayer).show(renderLayer)
 	}, 'render')
 
 	startLoop()
