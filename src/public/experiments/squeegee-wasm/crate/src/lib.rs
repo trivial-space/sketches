@@ -1,7 +1,6 @@
-use tvs_libs::{
-    prelude::*,
-    utils::rand_utils::{rand_int, random_normal},
-};
+use serde::Serialize;
+use tvs_libs::prelude::*;
+use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
 #[derive(Default)]
 struct Actor {
@@ -20,42 +19,60 @@ struct State {
     time_to_next_gravity_update: f32,
 }
 
-const GRAVITY_JUMP_DURATION: f32 = 5.5;
-const SPRING_LENGTH: f32 = 20.;
+const GRAVITY_JUMP_DURATION: f32 = 3.5;
+const SPRING_LENGTH: f32 = 200.;
 
-pub fn update(seconds_per_frame: f32) {
+#[wasm_bindgen]
+pub fn setup(width: f32, height: f32) {
+    State::mutate(|s| {
+        s.width = width;
+        s.height = height;
+        s.gravity_center = vec2(rand_f32() * width, if random() { height } else { 0. });
+        s.puller.pos = vec2(width / 2., height / 2.);
+        s.brush.pos = vec2(width / 2. + SPRING_LENGTH, height / 2.);
+    });
+}
+
+#[derive(Serialize)]
+struct FrameData {
+    gravity_center: Vec2,
+    puller_pos: Vec2,
+    brush_pos: Vec2,
+}
+
+#[wasm_bindgen]
+pub fn update(seconds_per_frame: f32) -> JsValue {
     State::mutate(|s| {
         let gravity_time = s.time_since_gravity_update + seconds_per_frame;
+        let gravity_height = s.height / 6.;
+
         if gravity_time > s.time_to_next_gravity_update {
             s.time_since_gravity_update = 0.0;
             s.time_to_next_gravity_update =
-                GRAVITY_JUMP_DURATION + random_normal() * GRAVITY_JUMP_DURATION * 0.8;
+                GRAVITY_JUMP_DURATION + random_normal() * GRAVITY_JUMP_DURATION * 0.4;
 
-            let side = rand_int(4);
-            s.gravity_center = match side {
-                0 => Vec2::new(random::<f32>() * s.width, 0.),
-                1 => Vec2::new(random::<f32>() * s.width, s.height),
-                2 => Vec2::new(0., random::<f32>() * s.height),
-                _ => Vec2::new(s.width, random::<f32>() * s.height),
-            };
-            Vec2::new(
-                random::<f32>() * s.width * 1.5 - s.width * 0.5,
-                random::<f32>() * s.height * 1.5 - s.height * 0.5,
+            s.gravity_center = vec2(
+                rand_f32() * s.width / 2. + s.width / 4.,
+                if s.gravity_center.y == gravity_height {
+                    s.height - gravity_height
+                } else {
+                    gravity_height
+                },
             );
         } else {
             s.time_since_gravity_update = gravity_time;
         }
 
+        let is_top = s.gravity_center.y == gravity_height;
+
         // attract puller to gravity_center
 
         let puller_to_gravity = s.gravity_center - s.puller.pos;
-        let puller_to_gravity_dist = puller_to_gravity.length();
-        let puller_to_gravity_dir = puller_to_gravity / puller_to_gravity_dist;
-        let puller_to_gravity_force =
-            puller_to_gravity_dir * (puller_to_gravity_dist - SPRING_LENGTH) * 0.1;
-        s.puller.vel *= 0.9;
-        s.puller.vel += puller_to_gravity_force;
-        s.puller.pos += s.puller.vel * seconds_per_frame;
+        let puller_to_gravity_force = puller_to_gravity * seconds_per_frame * 0.14;
+
+        s.puller.vel *= 0.998;
+        s.puller.vel += puller_to_gravity_force.clamp(vec2(-0.08, -0.08), vec2(0.08, 0.08));
+        s.puller.pos += s.puller.vel;
 
         // attract brush to puller
 
@@ -63,9 +80,24 @@ pub fn update(seconds_per_frame: f32) {
         let brush_to_puller_dist = brush_to_puller.length();
         let brush_to_puller_dir = brush_to_puller / brush_to_puller_dist;
         let brush_to_puller_force =
-            brush_to_puller_dir * (brush_to_puller_dist - SPRING_LENGTH) * 0.1;
-        s.brush.vel *= 0.9;
+            brush_to_puller_dir * (brush_to_puller_dist - SPRING_LENGTH) * 1.9;
+
+        s.brush.vel *= 0.985;
         s.brush.vel += brush_to_puller_force;
+        // s.brush.vel += if is_top {
+        //     vec2(0., 3. * seconds_per_frame)
+        // } else {
+        //     vec2(0., -3. * seconds_per_frame)
+        // };
         s.brush.pos += s.brush.vel * seconds_per_frame;
+    });
+
+    let s = State::read();
+
+    serde_wasm_bindgen::to_value(&FrameData {
+        gravity_center: s.gravity_center,
+        puller_pos: s.puller.pos,
+        brush_pos: s.brush.pos,
     })
+    .unwrap()
 }
