@@ -83,7 +83,7 @@ init().then(() => {
 	const wallSketch = Q.getSketch('wall').update({
 		form: wallForm,
 		shade: wallShade,
-		uniforms: ps.map((d) => ({ modelMat: d.mat })),
+		uniforms: ps.map((d) => ({ modelMat: d.mat, color: [1, 1, 1] })),
 	})
 
 	const groundForm = Q.getForm('ground').update(
@@ -93,7 +93,7 @@ init().then(() => {
 	const ceilSketch = Q.getSketch('ceil').update({
 		form: groundForm,
 		shade: wallShade,
-		uniforms: { modelMat: data.ceil_mat },
+		uniforms: { modelMat: data.ceil_mat, color: [0.97, 0.97, 0.97] },
 	})
 
 	const reflectionLayer = Q.getLayer('reflection').update({

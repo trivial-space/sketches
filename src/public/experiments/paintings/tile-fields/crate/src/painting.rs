@@ -171,8 +171,7 @@ pub fn create_painting(width: usize, height: usize, color_count: u8) -> Painting
 }
 
 fn get_line_edges(tile: &Tile, brush_size: f32) -> (Vec<Vec2>, bool) {
-    let step_quotient = (tile.width / 2.).min(brush_size);
-    let steps = ((tile.height * 1.4) / step_quotient).floor().max(4.);
+    let steps = ((tile.height * 1.3) / brush_size).floor().max(4.);
     let step = tile.height / steps;
 
     let mut is_left = random::<bool>();

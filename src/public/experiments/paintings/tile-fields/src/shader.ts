@@ -160,6 +160,7 @@ export const wallShader = defShader({
 	uniforms: {
 		viewProjMat: 'mat4',
 		modelMat: 'mat4',
+		color: 'vec3',
 	},
 	varying: {
 		vUv: 'vec2',
@@ -179,7 +180,10 @@ export const wallShader = defShader({
 				assign(
 					outs.fragColor,
 					vec4(
-						vec3(pow(sub(1, div(length(fit0111(ins.vUv)), 1.5)), float(0.15))),
+						mul(
+							unis.color,
+							pow(sub(1, div(length(fit0111(ins.vUv)), 1.5)), float(0.15)),
+						),
 						1,
 					),
 				),
