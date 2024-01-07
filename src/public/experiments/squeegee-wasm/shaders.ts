@@ -97,7 +97,7 @@ export const diffuseFrag = defFragment({
 					mix(
 						vec4(1, 1, 1, 1),
 						vec4(mix($xyz(sourceColor), $xyz(brushColor), $w(brushColor)), 1),
-						float(0.9),
+						float(0.999),
 					),
 				),
 			]),

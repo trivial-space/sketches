@@ -33,7 +33,7 @@ const brushLayer = Q.getLayer('brush').update({
 	drawSettings: {
 		enable: [Q.gl.BLEND],
 		clearBits: Q.gl.COLOR_BUFFER_BIT,
-		clearColor: [1, 1, 1, 1],
+		clearColor: [1, 1, 1, 0],
 		blendEquationSeparate: [Q.gl.FUNC_ADD, Q.gl.MAX],
 		blendFuncSeparate: [
 			Q.gl.SRC_ALPHA,
