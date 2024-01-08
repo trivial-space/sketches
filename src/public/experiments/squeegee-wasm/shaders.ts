@@ -7,6 +7,7 @@ import {
 	Vec4Sym,
 	add,
 	assign,
+	clamp,
 	defMain,
 	div,
 	float,
@@ -14,10 +15,13 @@ import {
 	min,
 	mix,
 	mul,
+	pow,
+	powf,
 	sub,
 	sym,
 	texture,
 	vec2,
+	vec3,
 	vec4,
 } from '@thi.ng/shader-ast'
 import { fit0111 } from '@thi.ng/shader-ast-stdlib'
@@ -60,12 +64,13 @@ export const brushShader = defShader({
 						mix(float(0), float(1), inp.vIdx),
 						mix(float(1), float(0), inp.vIdx),
 						1,
-						sub(
-							1,
-							div(
+						clamp(
+							sub(
+								1,
 								add(mul($x(coords), $x(coords)), mul($y(coords), $y(coords))),
-								1.0,
 							),
+							float(0),
+							float(1),
 						),
 					),
 				),
@@ -94,10 +99,16 @@ export const diffuseFrag = defFragment({
 				(brushColor = sym(texture(unis.brush, inp.coords))),
 				assign(
 					out.fragColor,
-					mix(
-						vec4(1, 1, 1, 1),
-						vec4(mix($xyz(sourceColor), $xyz(brushColor), $w(brushColor)), 1),
-						float(0.999),
+					max(
+						vec4(0, 0, 0, 1),
+						vec4(
+							mix(
+								sub($xyz(sourceColor), vec3(0.00025)),
+								$xyz(brushColor),
+								mul(pow($w(brushColor), float(2)), 0.2),
+							),
+							1,
+						),
 					),
 				),
 			]),

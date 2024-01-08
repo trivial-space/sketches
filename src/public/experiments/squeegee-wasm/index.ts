@@ -1,3 +1,4 @@
+import '../../../shared-utils/css/fullscreen.css'
 import { Q } from './context'
 import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
 import init, { setup, update } from './crate/pkg/tvs_sketch_squeegee'
@@ -12,8 +13,6 @@ const points = createPoints2DSketch(Q, 'points1', {
 	pointSize: 40,
 })
 
-const whiteEffect = Q.getEffect('white').update({ frag: whiteFrag })
-
 const brushShade = Q.getShade('brush').update(brushShader)
 const brushForm = Q.getForm('brush')
 const brushSketch = Q.getSketch('brush').update({
@@ -21,26 +20,18 @@ const brushSketch = Q.getSketch('brush').update({
 	shade: brushShade,
 })
 
-const diffuseLayer = Q.getLayer('diffuse').update({
-	effects: whiteEffect,
-	selfReferencing: true,
-})
-
-Q.painter.compose(diffuseLayer)
-
 const brushLayer = Q.getLayer('brush').update({
 	sketches: brushSketch,
 	drawSettings: {
 		enable: [Q.gl.BLEND],
 		clearBits: Q.gl.COLOR_BUFFER_BIT,
-		clearColor: [1, 1, 1, 0],
+		clearColor: [0, 0, 0, 0],
 		blendEquationSeparate: [Q.gl.FUNC_ADD, Q.gl.MAX],
 		blendFuncSeparate: [
 			Q.gl.SRC_ALPHA,
 			Q.gl.ONE_MINUS_SRC_ALPHA,
 			Q.gl.SRC_ALPHA,
-			Q.gl.ONE_MINUS_SRC_ALPHA,
-			// Q.gl.SRC_ALPHA,
+			Q.gl.DST_ALPHA,
 		],
 	},
 })
@@ -50,12 +41,13 @@ const diffuseEffect = Q.getEffect('diffuse').update({
 	uniforms: { source: '0', brush: () => brushLayer.image() },
 })
 
+const diffuseLayer = Q.getLayer('diffuse').update({
+	selfReferencing: true,
+	sketches: diffuseEffect,
+})
+
 init().then(() => {
 	setup(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight)
-
-	diffuseLayer.update({
-		effects: diffuseEffect,
-	})
 
 	addToLoop((tpf) => {
 		const data = update(tpf / 1000)

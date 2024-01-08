@@ -84,7 +84,7 @@ pub fn setup(width: f32, height: f32) {
                 Particle {
                     idx,
                     pos: s.brush_center.pos + brush_normal * scale,
-                    width: rand_f32() * brush_width / 3. + brush_width * 0.2,
+                    width: rand_f32() * brush_width / 6. + brush_width * 0.1,
                     length: 0.,
                     length_offset: 0.,
                 }
@@ -174,9 +174,9 @@ pub fn update(seconds_per_frame: f32) -> JsValue {
         if let Some(dir) = brush_dir {
             let mut angle = s.brush_dir.angle_between(dir);
             if angle > PI / 2. {
-                angle = PI - angle;
+                angle = angle - PI;
             } else if angle < -PI / 2. {
-                angle = -PI + angle;
+                angle = PI + angle;
             }
 
             for p in s.brush_particles.iter_mut() {
