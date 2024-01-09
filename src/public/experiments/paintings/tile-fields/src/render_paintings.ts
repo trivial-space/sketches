@@ -13,8 +13,6 @@ import { get_painting_animation } from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
 import { bgFrag, copyFrag, lineShader } from './shader'
 
-const buffer = new Uint8Array(256 * 32)
-
 export interface WasmTileData {
 	color: {
 		hue: number
@@ -22,6 +20,16 @@ export interface WasmTileData {
 	}
 	line_geometries: WasmGeometry[][]
 }
+
+export interface PaintingData {
+	width: number
+	height: number
+	tiles: WasmTileData[]
+	canvas_geometry: WasmGeometry
+	mat: number[]
+}
+
+const buffer = new Uint8Array(256 * 32)
 
 export const noiseTex = Q.getLayer('noiseTex').update({
 	texture: getNoiseTextureData({

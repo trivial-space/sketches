@@ -2,6 +2,7 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export function get_init_data(a: number): number;
+export function get_single_painting(a: number, b: number, c: number): number;
 export function get_painting_animation(a: number): number;
 export function get_frame_data(): number;
 export function update_screen(a: number, b: number): void;

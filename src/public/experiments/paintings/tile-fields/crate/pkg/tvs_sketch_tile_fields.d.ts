@@ -6,6 +6,13 @@
 */
 export function get_init_data(paintings_count: number): any;
 /**
+* @param {number} width
+* @param {number} height
+* @param {number} color_count
+* @returns {any}
+*/
+export function get_single_painting(width: number, height: number, color_count: number): any;
+/**
 * @param {number} i
 * @returns {any}
 */
@@ -45,6 +52,7 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly get_init_data: (a: number) => number;
+  readonly get_single_painting: (a: number, b: number, c: number) => number;
   readonly get_painting_animation: (a: number) => number;
   readonly get_frame_data: () => number;
   readonly update_screen: (a: number, b: number) => void;

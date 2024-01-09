@@ -15,18 +15,10 @@ import init, {
 	get_init_data,
 } from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
-import { WasmTileData, setupPainting } from './render_paintings'
+import { PaintingData, setupPainting } from './render_paintings'
 import { canvasShader, groundShader, wallShader } from './shader'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
-
-interface PaintingData {
-	width: number
-	height: number
-	tiles: WasmTileData[]
-	canvas_geometry: WasmGeometry
-	mat: number[]
-}
 
 interface InitialData {
 	paintings: PaintingData[]

@@ -4,6 +4,7 @@ use painting::{
 };
 use serde::Serialize;
 use std::f32::consts::PI;
+use std::vec;
 use tvs_libs::rendering::buffered_geometry::BufferedGeometry;
 use tvs_libs::rendering::camera::{CamProps, PerspectiveCamera};
 use tvs_libs::utils::rand_utils::rand_int;
@@ -43,8 +44,6 @@ struct InitialData {
 
 #[wasm_bindgen]
 pub fn get_init_data(paintings_count: usize) -> JsValue {
-    utils::set_panic_hook();
-
     let color_count = 3 + rand_int(4) as u8;
     let ps = (0..paintings_count)
         .map(|_| create_painting(rand_int(1200) + 1200, rand_int(1200) + 1200, color_count))
@@ -84,6 +83,24 @@ pub fn get_init_data(paintings_count: usize) -> JsValue {
         wall_geometry: create_wall(),
         ground_geometry: create_ground(),
         ceil_mat: Mat4::from_rotation_translation(Quat::from_rotation_x(PI), Vec3::Y * 30.),
+    })
+    .unwrap()
+}
+
+#[wasm_bindgen]
+pub fn get_single_painting(width: usize, height: usize, color_count: u8) -> JsValue {
+    let p = create_painting(width, height, color_count);
+
+    State::mutate(|s| {
+        s.paintings = vec![p.clone()];
+    });
+
+    serde_wasm_bindgen::to_value(&PaintingData {
+        width: p.width,
+        height: p.height,
+        tiles: get_painting_static_layer(&p),
+        canvas_geometry: geom::create_canvas(p.width, p.height),
+        mat: Mat4::IDENTITY,
     })
     .unwrap()
 }

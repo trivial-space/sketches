@@ -185,6 +185,17 @@ export function get_init_data(paintings_count) {
 }
 
 /**
+* @param {number} width
+* @param {number} height
+* @param {number} color_count
+* @returns {any}
+*/
+export function get_single_painting(width, height, color_count) {
+    const ret = wasm.get_single_painting(width, height, color_count);
+    return takeObject(ret);
+}
+
+/**
 * @param {number} i
 * @returns {any}
 */
