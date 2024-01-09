@@ -98,7 +98,7 @@ export const lineShader = defShader({
 
 				assign(
 					outs.fragColor,
-					vec4(unis.color, clamp(mul(0.65, noiseVal), float(0), float(1))),
+					vec4(unis.color, clamp(mul(0.6, noiseVal), float(0), float(1))),
 				),
 			]),
 		]
