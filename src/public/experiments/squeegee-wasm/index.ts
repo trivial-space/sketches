@@ -24,7 +24,7 @@ const brushSketch = Q.getSketch('brush').update({
 })
 
 const brushLayer = Q.getLayer('brush').update({
-	sketches: [brushSketch, points.sketch],
+	sketches: [brushSketch],
 	width: BRUSH_LAYER_SIZE[0],
 	height: BRUSH_LAYER_SIZE[1],
 	drawSettings: {
