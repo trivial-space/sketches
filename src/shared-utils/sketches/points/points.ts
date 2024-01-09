@@ -14,6 +14,8 @@ interface PointsData {
 	dynamicForm?: boolean
 	drawSettings?: DrawSettings
 	frag?: string
+	width?: number
+	height?: number
 }
 
 export function createPoints2DSketch(
@@ -35,7 +37,10 @@ export function createPoints2DSketch(
 			shade,
 			uniforms: {
 				uPointSize: (data.pointSize || 1) * Q.state.device.sizeMultiplier,
-				uSize: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+				uSize: [
+					data.width || Q.gl.drawingBufferWidth,
+					data.height || Q.gl.drawingBufferHeight,
+				],
 				uColor: data.color || [0, 0, 0, 0],
 			},
 			drawSettings: data.drawSettings,

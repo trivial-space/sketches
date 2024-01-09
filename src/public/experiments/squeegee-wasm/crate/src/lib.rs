@@ -62,7 +62,7 @@ const PARTICLE_COUNT: usize = 20;
 #[wasm_bindgen]
 pub fn setup(width: f32, height: f32) {
     let spring_length = width / 6.;
-    let brush_width = width.min(height) / 5.;
+    let brush_width = width.min(height) / 3.5;
 
     State::mutate(|s| {
         s.width = width;
@@ -147,7 +147,7 @@ pub fn update(seconds_per_frame: f32) -> JsValue {
         // attract puller to gravity_center
 
         let puller_to_gravity = s.gravity_center - s.puller.pos;
-        let puller_to_gravity_force = puller_to_gravity * time * s.height / 250000.;
+        let puller_to_gravity_force = puller_to_gravity * time / 190.;
 
         s.puller.vel *= 0.99;
         s.puller.vel += puller_to_gravity_force; //.clamp(vec2(-0.08, -0.08), vec2(0.08, 0.08));
@@ -159,7 +159,7 @@ pub fn update(seconds_per_frame: f32) -> JsValue {
         let brush_to_puller_dist = brush_to_puller.length();
         let brush_to_puller_dir = brush_to_puller / brush_to_puller_dist;
         let brush_to_puller_force =
-            brush_to_puller_dir * (brush_to_puller_dist - s.spring_length) * 0.3;
+            brush_to_puller_dir * (brush_to_puller_dist - s.spring_length) * 0.2;
 
         let old_center = s.brush_center.pos;
 

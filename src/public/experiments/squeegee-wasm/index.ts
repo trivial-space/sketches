@@ -14,6 +14,8 @@ Q.state.device.sizeMultiplier = window.devicePixelRatio
 const points = createPoints2DSketch(Q, 'points1', {
 	dynamicForm: true,
 	pointSize: 40,
+	width: BRUSH_LAYER_SIZE[0],
+	height: BRUSH_LAYER_SIZE[1],
 })
 
 const brushShade = Q.getShade('brush').update(brushShader)
@@ -24,7 +26,7 @@ const brushSketch = Q.getSketch('brush').update({
 })
 
 const brushLayer = Q.getLayer('brush').update({
-	sketches: [brushSketch],
+	sketches: [brushSketch, points.sketch],
 	width: BRUSH_LAYER_SIZE[0],
 	height: BRUSH_LAYER_SIZE[1],
 	drawSettings: {
