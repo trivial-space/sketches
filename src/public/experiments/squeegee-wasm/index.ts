@@ -1,9 +1,9 @@
 import '../../../shared-utils/css/fullscreen.css'
-import { Q } from './context'
 import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
-import init, { setup, update } from './crate/pkg/tvs_sketch_squeegee'
 import { createPoints2DSketch } from '../../../shared-utils/sketches/points/points'
 import { wasmGeometryToFormData } from '../../../shared-utils/wasm/utils'
+import { Q } from './context'
+import init, { setup, update } from './crate/pkg/tvs_sketch_squeegee'
 import { brushShader, diffuseFrag } from './shaders'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio

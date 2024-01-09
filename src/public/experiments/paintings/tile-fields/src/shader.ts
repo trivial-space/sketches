@@ -20,7 +20,6 @@ import {
 	div,
 	min,
 	clamp,
-	vec3,
 	length,
 	$xy,
 	mix,
@@ -29,7 +28,6 @@ import {
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 import { defFragment, defShader } from '../../../../../shared-utils/shaders/ast'
-import { vec } from 'tvs-libs/dist/math/vectors'
 
 export const lineShader = defShader({
 	attribs: {
