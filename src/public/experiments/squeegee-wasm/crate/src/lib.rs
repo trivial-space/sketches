@@ -71,7 +71,7 @@ pub fn setup(width: f32, height: f32) {
         s.puller.pos = vec2(width / 2., height / 2.);
         s.brush_center.pos = vec2(width / 2., height / 2. + spring_length);
         s.spring_length = spring_length;
-        s.jump_duration = height / 1200.;
+        s.jump_duration = 2.5;
         s.brush_width = brush_width;
         s.brush_dir = vec2(0., -1.);
 

@@ -156,7 +156,9 @@ export function setupPainting(
 	}
 
 	function renderLayer() {
+		console.log('wasm get painting animation', idx)
 		const data: WasmTileData[] = get_painting_animation(idx)
+		console.log('wasm get painting animation end', idx)
 
 		const tiles = shuffle(data).map(
 			({ line_geometries: geometries, color: { hue, lightness } }, i) => {
@@ -207,6 +209,7 @@ export function setupPainting(
 				const finished =
 					brush.geometries[brush.currentLine].length - 1 === brush.currentFrame
 
+				console.log('rendering painting', idx, finished)
 				if (finished) {
 					brush.currentFrame = 0
 					brush.currentLine++
@@ -217,6 +220,7 @@ export function setupPainting(
 
 					Q.painter.compose(paintingLayer)
 				}
+				console.log('rendering painting end', idx)
 
 				onNextFrame(render, 'p' + idx)
 			}

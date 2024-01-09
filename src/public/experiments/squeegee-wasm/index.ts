@@ -1,10 +1,13 @@
 import '../../../shared-utils/css/fullscreen.css'
 import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
+import { baseEvents } from '../../../shared-utils/app/painterState'
 import { createPoints2DSketch } from '../../../shared-utils/sketches/points/points'
 import { wasmGeometryToFormData } from '../../../shared-utils/wasm/utils'
 import { Q } from './context'
 import init, { setup, update } from './crate/pkg/tvs_sketch_squeegee'
 import { brushShader, diffuseFrag } from './shaders'
+
+const BRUSH_LAYER_SIZE = [1024, 2048] as const
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -21,7 +24,9 @@ const brushSketch = Q.getSketch('brush').update({
 })
 
 const brushLayer = Q.getLayer('brush').update({
-	sketches: brushSketch,
+	sketches: [brushSketch, points.sketch],
+	width: BRUSH_LAYER_SIZE[0],
+	height: BRUSH_LAYER_SIZE[1],
 	drawSettings: {
 		enable: [Q.gl.BLEND],
 		clearBits: Q.gl.COLOR_BUFFER_BIT,
@@ -42,35 +47,45 @@ const diffuseEffect = Q.getEffect('diffuse').update({
 })
 
 const diffuseLayer = Q.getLayer('diffuse').update({
+	width: BRUSH_LAYER_SIZE[0],
+	height: BRUSH_LAYER_SIZE[1],
 	selfReferencing: true,
 	sketches: diffuseEffect,
 })
 
+Q.emit(baseEvents.RESIZE)
+
 init().then(() => {
-	setup(Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight)
+	setup(...BRUSH_LAYER_SIZE)
 
 	addToLoop((tpf) => {
+		console.log('wasm update')
 		const data = update(tpf / 1000)
+		console.log('wasm update end')
 
 		points.update({
 			positions: [data.gravity_center, data.puller_pos, data.brush_pos],
 			colors: [
-				[0, 0, 0, 1],
+				[0, 1, 0, 1],
 				[1, 0, 0, 1],
 				[0, 0, 1, 1],
 			],
 		})
 
+		console.log('form/sketch update')
 		brushSketch.update({
 			form: brushForm.update(
 				wasmGeometryToFormData(data.brush_geometry, 'DYNAMIC'),
 			),
 			uniforms: {
-				size: [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
+				size: BRUSH_LAYER_SIZE,
 			},
 		})
+		console.log('form/sketch update end')
 
+		console.log('render')
 		Q.painter.compose(brushLayer, diffuseLayer).show(diffuseLayer)
+		console.log('render end')
 	}, 'loop')
 
 	startLoop()
