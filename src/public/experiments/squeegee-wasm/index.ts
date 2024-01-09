@@ -61,9 +61,7 @@ init().then(() => {
 	setup(...BRUSH_LAYER_SIZE)
 
 	addToLoop((tpf) => {
-		console.log('wasm update')
 		const data = update(tpf / 1000)
-		console.log('wasm update end')
 
 		points.update({
 			positions: [data.gravity_center, data.puller_pos, data.brush_pos],
@@ -74,7 +72,6 @@ init().then(() => {
 			],
 		})
 
-		console.log('form/sketch update')
 		brushSketch.update({
 			form: brushForm.update(
 				wasmGeometryToFormData(data.brush_geometry, 'DYNAMIC'),
@@ -83,11 +80,8 @@ init().then(() => {
 				size: BRUSH_LAYER_SIZE,
 			},
 		})
-		console.log('form/sketch update end')
 
-		console.log('render')
 		Q.painter.compose(brushLayer, diffuseLayer).show(diffuseLayer)
-		console.log('render end')
 	}, 'loop')
 
 	startLoop()

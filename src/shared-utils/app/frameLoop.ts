@@ -26,9 +26,9 @@ function processUpdates() {
 	}
 
 	const updateOnceCurrent = updateOnce
-	updateOnce = null
 
 	if (updateOnceCurrent) {
+		updateOnce = null
 		for (const id in updateOnceCurrent) {
 			updateOnceCurrent[id](tpf)
 		}

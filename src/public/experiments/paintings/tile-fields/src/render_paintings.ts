@@ -1,7 +1,7 @@
 import { adjustHue, hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
 import { clamp } from 'tvs-libs/dist/math/core'
 import { normalRand01, normalRand11 } from 'tvs-libs/dist/math/random'
-import { shuffle } from 'tvs-libs/dist/utils/sequence'
+import { pickRandom, shuffle } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { onNextFrame } from '../../../../../shared-utils/app/frameLoop'
 import { getNoiseTextureData } from '../../../../../shared-utils/graphics/texture-helpers'
@@ -12,6 +12,8 @@ import {
 import { get_painting_animation } from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
 import { bgFrag, copyFrag, lineShader } from './shader'
+
+const buffer = new Uint8Array(256 * 32)
 
 export interface WasmTileData {
 	color: {
@@ -81,16 +83,15 @@ export function setupPainting(
 		},
 	})
 
+	const color = pickRandom(initialTiles)!.color
+
 	const backgroundLayer = Q.getLayer('background' + idx).update({
 		width,
 		height,
 		bufferOptions: [{ type: 'UNSIGNED_BYTE' }],
 		effects: bgInitEffect,
 		uniforms: {
-			color: calculateColor(
-				initialTiles[0].color.hue,
-				initialTiles[0].color.lightness,
-			),
+			color: calculateColor(color.hue, color.lightness),
 		},
 	})
 
@@ -124,9 +125,9 @@ export function setupPainting(
 
 	console.log(longestBuffer)
 
-	const bufferSize = (longestBuffer.count + 4) * longestBuffer.size
-	const buffer = new Uint8Array(bufferSize)
+	// const bufferSize = (longestBuffer.count + 4) * longestBuffer.size
 
+	// console.log('inital painting rendering', idx)
 	for (const t of shuffle(initialTiles)) {
 		const color = calculateColor(t.color.hue, t.color.lightness)
 
@@ -137,7 +138,7 @@ export function setupPainting(
 			form.customLayout!.data!.buffer = buffer
 
 			return Q.getSketch('line' + i).update({
-				form: Q.getForm('init_line' + idx + '_' + i).update(form),
+				form: Q.getForm('init_line' + i).update(form),
 				shade,
 				uniforms: { color },
 			})
@@ -154,11 +155,12 @@ export function setupPainting(
 
 		Q.painter.compose(paintingLayer, backgroundLayer)
 	}
+	// console.log('inital painting rendering end', idx)
 
 	function renderLayer() {
-		console.log('wasm get painting animation', idx)
+		// console.log('wasm get painting animation', idx)
 		const data: WasmTileData[] = get_painting_animation(idx)
-		console.log('wasm get painting animation end', idx)
+		// console.log('wasm get painting animation end', idx)
 
 		const tiles = shuffle(data).map(
 			({ line_geometries: geometries, color: { hue, lightness } }, i) => {
@@ -170,7 +172,10 @@ export function setupPainting(
 
 		function renderBruches() {
 			if (!tiles.length) {
-				setTimeout(renderLayer, Math.random() * 4000)
+				setTimeout(
+					() => onNextFrame(renderLayer, 'rl' + idx),
+					Math.random() * 4000 + 100,
+				)
 				return
 			}
 
@@ -180,7 +185,10 @@ export function setupPainting(
 				const geom = brush.geometries[brush.currentLine]?.[brush.currentFrame]
 
 				if (!geom) {
-					setTimeout(renderBruches, Math.random() * 5000)
+					setTimeout(
+						() => onNextFrame(renderBruches, 'rb' + idx),
+						Math.random() * 5000 + 100,
+					)
 					return
 				}
 
@@ -209,7 +217,7 @@ export function setupPainting(
 				const finished =
 					brush.geometries[brush.currentLine].length - 1 === brush.currentFrame
 
-				console.log('rendering painting', idx, finished)
+				// console.log('rendering painting', idx, finished)
 				if (finished) {
 					brush.currentFrame = 0
 					brush.currentLine++
@@ -220,9 +228,9 @@ export function setupPainting(
 
 					Q.painter.compose(paintingLayer)
 				}
-				console.log('rendering painting end', idx)
+				// console.log('rendering painting end', idx)
 
-				onNextFrame(render, 'p' + idx)
+				onNextFrame(render, 'rp' + idx)
 			}
 
 			render()
@@ -231,7 +239,10 @@ export function setupPainting(
 		renderBruches()
 	}
 
-	setTimeout(renderLayer, Math.random() * 5000 + 100)
+	setTimeout(
+		() => onNextFrame(renderLayer, 'rl' + idx),
+		Math.random() * 5000 + 100,
+	)
 
 	return paintingLayer
 }

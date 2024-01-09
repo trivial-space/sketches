@@ -40,13 +40,9 @@ const wallShade = Q.getShade('wall').update(wallShader)
 const groundShade = Q.getShade('ground').update(groundShader)
 
 init().then(() => {
-	console.log('wasm setup')
 	setup()
-	console.log('wasm end')
 
-	console.log('wasm get init data')
 	const data: InitialData = get_init_data(6)
-	console.log('wasm get init data end')
 
 	initCamera(Q, {
 		resetCamera: reset_camera,
@@ -76,8 +72,6 @@ init().then(() => {
 			},
 		}),
 	)
-
-	console.log(canvasSketches)
 
 	const wallForm = Q.getForm('wall').update(
 		wasmGeometryToFormData(data.wall_geometry),
@@ -135,9 +129,9 @@ init().then(() => {
 		// for camera
 		Q.emit(baseEvents.FRAME)
 
-		console.log('wasm get frame data')
+		// console.log('wasm get frame data')
 		const data = get_frame_data()
-		console.log('wasm get frame data end')
+		// console.log('wasm get frame data end')
 
 		reflectionLayer.update({
 			uniforms: {
@@ -151,9 +145,9 @@ init().then(() => {
 			},
 		})
 
-		console.log('render room')
+		// console.log('render room')
 		Q.painter.compose(reflectionLayer, renderLayer).show(renderLayer)
-		console.log('render room end')
+		// console.log('render room end')
 	}, 'render')
 
 	startLoop()
