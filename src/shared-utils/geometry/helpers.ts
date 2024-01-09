@@ -6,9 +6,9 @@ import {
 	extrudeBottom,
 	triangulate,
 } from 'tvs-libs/dist/geometry/quad'
+import { Vec } from 'tvs-libs/dist/math/vectors'
 import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { convertStackGLGeometry } from 'tvs-painter/dist/utils/stackgl'
-import { Vec } from 'tvs-libs/dist/math/vectors'
 
 const vertDiv = partial(divideVertical, 0.5, 0.5)
 const horzDiv = partial(divideHorizontal, 0.5, 0.5)

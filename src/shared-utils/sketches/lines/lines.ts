@@ -1,12 +1,12 @@
-import { Vec } from 'tvs-libs/dist/math/vectors'
-import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
-import { DrawSettings, FormData } from 'tvs-painter/dist'
-import { line2DVert, line3DVert, lineFrag } from './lines-shaders'
-import { flatten, times } from 'tvs-libs/dist/utils/sequence'
-import { triangulate } from 'tvs-libs/dist/geometry/quad'
 import { mat4 } from 'gl-matrix'
-import { createPoints2DSketch, createPoints3DSketch } from '../points/points'
+import { triangulate } from 'tvs-libs/dist/geometry/quad'
+import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
+import { Vec } from 'tvs-libs/dist/math/vectors'
+import { flatten, times } from 'tvs-libs/dist/utils/sequence'
+import { DrawSettings, FormData } from 'tvs-painter/dist'
 import { PainterContext } from '../../app/painterState'
+import { createPoints2DSketch, createPoints3DSketch } from '../points/points'
+import { line2DVert, line3DVert, lineFrag } from './lines-shaders'
 
 interface LinesData {
 	points?: Vec[]
@@ -100,7 +100,7 @@ function createLinesForm({ segments, points = [], ...data }: LinesData) {
 				flatten(
 					segments
 						? segments.flatMap(() => [c, c, c, c])
-						: flatten(times((i) => [c, c, c, c], points.length - 1)),
+						: flatten(times(() => [c, c, c, c], points.length - 1)),
 				),
 			),
 			storeType: data.dynamicForm ? 'DYNAMIC' : 'STATIC',

@@ -1,18 +1,18 @@
-import { events, Q } from './context'
+import { Sketch } from 'tvs-painter/dist/sketch'
+import { makeClear } from 'tvs-painter/dist/utils/context'
+import { baseEvents } from '../../../../shared-utils/app/painterState'
+import { Buttons } from '../../../../shared-utils/events/pointer'
 import {
 	createLine,
 	lineToFormCollection,
 	newLinePoint,
 } from '../../../../shared-utils/geometry/lines_2d'
-import { makeClear } from 'tvs-painter/dist/utils/context'
-import { Sketch } from 'tvs-painter/dist/sketch'
+import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
 import {
 	brushStrokeFrag,
 	brushStrokeVert,
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
-import { baseEvents } from '../../../../shared-utils/app/painterState'
-import { Buttons } from '../../../../shared-utils/events/pointer'
-import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
+import { events, Q } from './context'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

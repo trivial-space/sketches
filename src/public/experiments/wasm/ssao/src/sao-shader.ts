@@ -1,4 +1,3 @@
-import { getFragmentGenerator } from '../../../../../shared-utils/shaders/ast'
 import {
 	$w,
 	$xyz,
@@ -42,6 +41,7 @@ import {
 	vec2,
 	vec4,
 } from '@thi.ng/shader-ast'
+import { getFragmentGenerator } from '../../../../../shared-utils/shaders/ast'
 
 const fs = getFragmentGenerator()
 
@@ -259,7 +259,7 @@ export const SAOFragmentShader = fs(
 				sym(INT0),
 				(i) => lt(i, int(NUM_SAMPLES)),
 				inc,
-				(i) => [
+				(_i) => [
 					(sampleUv = sym(
 						add(coords, mul(vec2(cos(angle), sin(angle)), radius)),
 					)),

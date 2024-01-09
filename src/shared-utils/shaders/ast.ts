@@ -1,6 +1,6 @@
-import { targetGLSL, GLSLVersion, GLSLTarget } from '@thi.ng/shader-ast-glsl'
 import { Func, Sym, Vec2Sym } from '@thi.ng/shader-ast'
 import { Type } from '@thi.ng/shader-ast/api/types'
+import { targetGLSL, GLSLVersion, GLSLTarget } from '@thi.ng/shader-ast-glsl'
 import {
 	AttribType,
 	DefShaderOpts,

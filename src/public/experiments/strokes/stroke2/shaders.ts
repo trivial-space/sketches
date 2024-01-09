@@ -1,4 +1,3 @@
-import { defShader } from '../../../../shared-utils/shaders/ast'
 import {
 	defMain,
 	assign,
@@ -23,6 +22,7 @@ import {
 	min,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
+import { defShader } from '../../../../shared-utils/shaders/ast'
 
 export const lineShader = defShader({
 	attribs: {

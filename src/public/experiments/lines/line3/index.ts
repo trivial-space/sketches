@@ -1,27 +1,27 @@
-import { events, Q } from './context'
+import { makeClear } from 'tvs-painter/dist/utils/context'
+import { onNextFrame } from '../../../../shared-utils/app/frameLoop'
+import { baseEvents } from '../../../../shared-utils/app/painterState'
+import { Buttons } from '../../../../shared-utils/events/pointer'
 import {
 	createLine,
 	newLinePoint,
 	smouthenPoint,
 } from '../../../../shared-utils/geometry/lines_2d'
 import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
-import { makeClear } from 'tvs-painter/dist/utils/context'
-import { onNextFrame } from '../../../../shared-utils/app/frameLoop'
-import { baseEvents } from '../../../../shared-utils/app/painterState'
-import { Buttons } from '../../../../shared-utils/events/pointer'
+import { events, Q } from './context'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
 let currentLine1 = createLine().append(newLinePoint([0, 0]))
 let currentLine2 = createLine().append(newLinePoint([0, 0]))
 
-let currentLineSketch1 = createLines2DSketch(Q, 'current-line1', {
+const currentLineSketch1 = createLines2DSketch(Q, 'current-line1', {
 	dynamicForm: true,
 	color: [0.1, 0.1, 0, 1],
 	lineWidth: 5,
 })
 
-let currentLineSketch2 = createLines2DSketch(Q, 'current-line2', {
+const currentLineSketch2 = createLines2DSketch(Q, 'current-line2', {
 	dynamicForm: true,
 	color: [1, 0.1, 0.1, 1],
 	lineWidth: 5,
@@ -69,16 +69,20 @@ Q.listen('', baseEvents.POINTER, (s) => {
 
 			smouthenPoint(currentLine1.last?.prev, { depth: 2 })
 
-			onNextFrame(() => {
-				currentLineSketch1.update({
-					points: [...currentLine1!].map((p) => p.vertex),
-				})
-				currentLineSketch2.update({
-					points: [...currentLine2!].map((p) => p.vertex),
-				})
+			onNextFrame(
+				() => {
+					currentLineSketch1.update({
+						points: [...currentLine1!].map((p) => p.vertex),
+					})
+					currentLineSketch2.update({
+						points: [...currentLine2!].map((p) => p.vertex),
+					})
 
-				Q.painter.compose(scene)
-			}, 'update-and-paint')
+					Q.painter.compose(scene)
+				},
+				'update-and-paint',
+				true,
+			)
 		}
 	} else if (!val.dragging && dragging) {
 		dragging = false

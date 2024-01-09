@@ -26,9 +26,6 @@ import {
 	abs,
 	div,
 	clamp,
-	VEC3_1,
-	mix,
-	vec3,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
 import { Texture } from 'tvs-painter/dist/texture'

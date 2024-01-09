@@ -1,8 +1,4 @@
 import {
-	getFragmentGenerator,
-	getVertexGenerator,
-} from '../../../shared-utils/shaders/ast'
-import {
 	program,
 	defMain,
 	assign,
@@ -30,13 +26,16 @@ import {
 	sub,
 } from '@thi.ng/shader-ast'
 import { fit0111, fit1101 } from '@thi.ng/shader-ast-stdlib'
+import {
+	getFragmentGenerator,
+	getVertexGenerator,
+} from '../../../shared-utils/shaders/ast'
 
 const fs = getFragmentGenerator()
 const vs = getVertexGenerator()
 
 // varyings
 
-let vNormal: Vec3Sym
 let vUv: Vec2Sym
 
 // Vertex
@@ -70,7 +69,6 @@ export const lineFrag = fs(
 	// prettier-ignore
 	program([
 		(uNoiseTex = uniform('sampler2D', 'noiseTex')),
-		(vNormal = input('vec3', 'vNormal')),
 		(vUv = input('vec2', 'vUv')),
 		defMain(() => [
 			noise = sym(texture(uNoiseTex, mul(vUv, vec2(1.0, 10)))),

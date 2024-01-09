@@ -1,8 +1,8 @@
-import { times, flatten, range } from 'tvs-libs/dist/utils/sequence'
-import { createLine, newLinePoint } from '../../geometry/lines_2d'
-import { add, mul, normalize, sub, Vec } from 'tvs-libs/dist/math/vectors'
 import { bezierCurve3P } from 'tvs-libs/dist/geometry/curves'
 import { noise2d } from 'tvs-libs/dist/math/noise'
+import { add, mul, normalize, sub, Vec } from 'tvs-libs/dist/math/vectors'
+import { times, flatten, range } from 'tvs-libs/dist/utils/sequence'
+import { createLine, newLinePoint } from '../../geometry/lines_2d'
 
 interface BrushStrokeOptions {
 	width: number

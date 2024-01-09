@@ -36,9 +36,8 @@ import {
 	program,
 	uniform,
 	input,
-	$z,
 } from '@thi.ng/shader-ast'
-import { diffuseLighting, fit0111 } from '@thi.ng/shader-ast-stdlib'
+import { diffuseLighting } from '@thi.ng/shader-ast-stdlib'
 import {
 	defShader,
 	getFragmentGenerator,
@@ -144,7 +143,7 @@ export const glassProjectionShader = defShader({
 		cameraMat: 'mat4',
 		color: 'vec3',
 	},
-	vs: (gl, uniforms, inp, out) => {
+	vs: (gl, uniforms, inp, _out) => {
 		let pos: Vec4Sym
 		return [
 			defMain(() => [

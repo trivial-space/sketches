@@ -1,5 +1,6 @@
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import '../../../../../shared-utils/css/fullscreen.css'
+import { getNoiseTextureData } from '../../../../../shared-utils/graphics/texture-helpers'
 import {
 	WasmGeometry,
 	wasmGeometryToFormData,
@@ -7,7 +8,6 @@ import {
 import init, { get_geom } from '../crate/pkg/tvs_sketch_strokes1'
 import { Q } from './context'
 import { lineShader } from './shader'
-import { getNoiseTextureData } from '../../../../../shared-utils/graphics/texture-helpers'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

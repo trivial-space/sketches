@@ -1,10 +1,10 @@
+import { createMirrorScene } from '../../../shared-utils/vr/mirror-scene'
+import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
 import { Q } from './context'
 import { wallsForm } from './geometries'
 import wallsFrag from './glsl/walls.frag.glsl?raw'
 import wallsVert from './glsl/walls.vert.glsl?raw'
 import { wallsTransform } from './state'
-import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
-import { createMirrorScene } from '../../../shared-utils/vr/mirror-scene'
 
 initPerspectiveViewport(Q, {
 	position: [0, 3.4, 25],

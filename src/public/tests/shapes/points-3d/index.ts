@@ -1,11 +1,11 @@
-import { createPoints3DSketch } from '../../../../shared-utils/sketches/points/points'
-import { times } from 'tvs-libs/dist/utils/sequence'
 import { mat4 } from 'gl-matrix'
-import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
-import { Q } from './context'
+import { times } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { addToLoop, startLoop } from '../../../../shared-utils/app/frameLoop'
 import { baseEvents } from '../../../../shared-utils/app/painterState'
+import { createPoints3DSketch } from '../../../../shared-utils/sketches/points/points'
+import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
+import { Q } from './context'
 
 initPerspectiveViewport(Q, {
 	moveSpeed: 40,
@@ -53,7 +53,7 @@ addToLoop(() => {
 	Q.painter.draw({ sketches: points.sketch })
 }, 'loop')
 
-Q.listen('', baseEvents.RESIZE, (s) => points.update())
+Q.listen('', baseEvents.RESIZE, () => points.update())
 
 startLoop()
 

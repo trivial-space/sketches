@@ -18,7 +18,6 @@ import {
 	add,
 	$y,
 } from '@thi.ng/shader-ast'
-import { vec2 } from 'gl-matrix'
 
 /**
  *

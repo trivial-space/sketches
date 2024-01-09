@@ -1,4 +1,8 @@
 import '../../../../../shared-utils/css/fullscreen.css'
+import { addToLoop, startLoop } from '../../../../../shared-utils/app/frameLoop'
+import { baseEvents } from '../../../../../shared-utils/app/painterState'
+import { initCamera } from '../../../../../shared-utils/vr/wasmCamera'
+import { wasmGeometryToFormData } from '../../../../../shared-utils/wasm/utils'
 import init, {
 	get_frame_data,
 	get_init_data,
@@ -7,12 +11,8 @@ import init, {
 	update_camera,
 	update_screen,
 } from '../crate/pkg/tvs_sketch_ssao'
-import { render, renderInit } from './render'
-import { wasmGeometryToFormData } from '../../../../../shared-utils/wasm/utils'
 import { Q } from './context'
-import { initCamera } from '../../../../../shared-utils/vr/wasmCamera'
-import { addToLoop, startLoop } from '../../../../../shared-utils/app/frameLoop'
-import { baseEvents } from '../../../../../shared-utils/app/painterState'
+import { render, renderInit } from './render'
 
 init().then(() => {
 	setup()

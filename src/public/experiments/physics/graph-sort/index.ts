@@ -1,13 +1,13 @@
 import { hsl, hslToRGB } from 'tvs-libs/dist/graphics/colors'
-import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
-import { createPoints2DSketch } from '../../../../shared-utils/sketches/points/points'
-import { Q } from './context'
-import { connections, nameSpaceCount, nodes, updateNodes } from './nodes'
 import {
 	addToLoop,
 	stopLoop,
 	startLoop,
 } from '../../../../shared-utils/app/frameLoop'
+import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
+import { createPoints2DSketch } from '../../../../shared-utils/sketches/points/points'
+import { Q } from './context'
+import { connections, nameSpaceCount, nodes, updateNodes } from './nodes'
 
 export const points = createPoints2DSketch(Q, 'points', {
 	pointSize: 20,

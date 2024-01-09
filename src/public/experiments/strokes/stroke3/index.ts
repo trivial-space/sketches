@@ -1,12 +1,12 @@
-import { events, Q } from './context'
 import { lineToAnimatedFormCollection } from '../../../../shared-utils/geometry/lines_2d'
+import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
 import {
 	brushStrokeFrag,
 	BrushStrokeUniforms,
 	brushStrokeVert,
 } from '../../../../shared-utils/sketches/brushStrokes/brushStrokeLineShader'
 import { makeBrushStroke } from '../../../../shared-utils/sketches/brushStrokes/brushStrokes'
-import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
+import { events, Q } from './context'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -91,7 +91,7 @@ Q.listen('index', events.RESIZE, () => {
 	})
 
 	let i = 0
-	let max = data.length
+	const max = data.length
 	console.log(max)
 
 	function render() {

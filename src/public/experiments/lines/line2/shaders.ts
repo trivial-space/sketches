@@ -1,8 +1,4 @@
 import {
-	getFragmentGenerator,
-	getVertexGenerator,
-} from '../../../../shared-utils/shaders/ast'
-import {
 	program,
 	defMain,
 	assign,
@@ -18,6 +14,10 @@ import {
 	uniform,
 } from '@thi.ng/shader-ast'
 import { fit0111 } from '@thi.ng/shader-ast-stdlib'
+import {
+	getFragmentGenerator,
+	getVertexGenerator,
+} from '../../../../shared-utils/shaders/ast'
 
 const fs = getFragmentGenerator()
 const vs = getVertexGenerator()

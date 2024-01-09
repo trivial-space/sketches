@@ -1,6 +1,6 @@
+import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_3d'
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
-import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_3d'
 import { strokePatch } from './state'
 
 Q.state.time = 0

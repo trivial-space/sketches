@@ -1,4 +1,3 @@
-import { alter, M } from '../../../../shared-utils/fp'
 import { randInt, randIntInRange } from 'tvs-libs/dist/math/random'
 import {
 	add,
@@ -10,6 +9,7 @@ import {
 	Vec,
 } from 'tvs-libs/dist/math/vectors'
 import { flatten, times } from 'tvs-libs/dist/utils/sequence'
+import { alter, M } from '../../../../shared-utils/fp'
 import { canvas } from './context'
 
 export const nodeCount = 40

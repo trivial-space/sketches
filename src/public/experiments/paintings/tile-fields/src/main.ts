@@ -1,4 +1,3 @@
-import { mat4 } from 'gl-matrix'
 import { addToLoop, startLoop } from '../../../../../shared-utils/app/frameLoop'
 import { baseEvents } from '../../../../../shared-utils/app/painterState'
 import '../../../../../shared-utils/css/fullscreen.css'

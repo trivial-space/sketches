@@ -1,14 +1,14 @@
-import { canvas, Q } from './context'
-import { nodes, triples } from './nodes'
-import blendFrag from './shaders/compose.frag.glsl?raw'
-import pointFrag from './shaders/point.frag.glsl?raw'
-import sideFrag from './shaders/side.frag.glsl?raw'
-import { createPoints2DSketch } from '../../../shared-utils/sketches/points/points'
 import {
 	addToLoop,
 	stopLoop,
 	startLoop,
 } from '../../../shared-utils/app/frameLoop'
+import { createPoints2DSketch } from '../../../shared-utils/sketches/points/points'
+import { canvas, Q } from './context'
+import { nodes, triples } from './nodes'
+import blendFrag from './shaders/compose.frag.glsl?raw'
+import pointFrag from './shaders/point.frag.glsl?raw'
+import sideFrag from './shaders/side.frag.glsl?raw'
 
 const { gl } = Q
 

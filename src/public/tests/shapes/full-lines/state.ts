@@ -1,11 +1,11 @@
-import { times } from 'tvs-libs/dist/utils/sequence'
-import { events, Q } from './context'
 import { noise2d } from 'tvs-libs/dist/math/noise'
+import { times } from 'tvs-libs/dist/utils/sequence'
 import {
 	walkLine3D,
 	Line,
 	lineSegment,
 } from '../../../../shared-utils/geometry/lines_3d'
+import { events, Q } from './context'
 
 const last = <T>(arr: T[]) => arr[arr.length - 1]
 

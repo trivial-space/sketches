@@ -1,3 +1,5 @@
+import { noise2d } from 'tvs-libs/dist/math/noise'
+import { add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
 import {
 	times,
 	repeat,
@@ -5,10 +7,8 @@ import {
 	flatten,
 	window,
 } from 'tvs-libs/dist/utils/sequence'
-import { Q } from './context'
-import { noise2d } from 'tvs-libs/dist/math/noise'
 import { lineSegment } from '../../../../shared-utils/geometry/lines_3d'
-import { add, length, mul, sub } from 'tvs-libs/dist/math/vectors'
+import { Q } from './context'
 
 function easeOutQuad(x: number) {
 	return 1 - (1 - x) * (1 - x)
@@ -49,8 +49,8 @@ export function line(
 
 	return window(2, points)
 		.map(([p1, p2]) => {
-			let v = sub(p2, p1)
-			let l = length(v)
+			const v = sub(p2, p1)
+			const l = length(v)
 			return lineSegment({ vertex: p1, length: l, direction: mul(1 / l, v) })
 		})
 		.concat([

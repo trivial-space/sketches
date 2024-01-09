@@ -1,22 +1,22 @@
 import { FormData } from 'tvs-painter'
-import { makeClear } from 'tvs-painter/dist/utils/context'
-import { Q, getRndTex } from './context'
 import { Sketch } from 'tvs-painter/dist/sketch'
+import { makeClear } from 'tvs-painter/dist/utils/context'
+import { baseEvents } from '../../../../../shared-utils/app/painterState'
+import { Q, getRndTex } from './context'
 import {
 	colorGradeShader,
 	glassLitShader,
 	glassProjectionShader,
 	groundShader,
 } from './shaders'
-import { baseEvents } from '../../../../../shared-utils/app/painterState'
 
 const glassShade = Q.getShade('glass').update(glassLitShader)
 const glassProjShade = Q.getShade('glassProj').update(glassProjectionShader)
 const groundShade = Q.getShade('ground').update(groundShader)
 
-let projectionSketches: Sketch[] = []
-let glassSketches: Sketch[] = []
-let groundSketch = Q.getSketch('ground')
+const projectionSketches: Sketch[] = []
+const glassSketches: Sketch[] = []
+const groundSketch = Q.getSketch('ground')
 
 type ObjData = {
 	color: number[]

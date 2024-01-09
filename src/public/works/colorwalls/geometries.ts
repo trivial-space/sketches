@@ -9,10 +9,10 @@ import {
 	right,
 	triangulate,
 } from 'tvs-libs/dist/geometry/quad'
+import { normalRand01 } from 'tvs-libs/dist/math/random'
 import { flatten, times } from 'tvs-libs/dist/utils/sequence'
 import { convertStackGLGeometry } from 'tvs-painter/dist/utils/stackgl'
 import { Q } from './context'
-import { normalRand01 } from 'tvs-libs/dist/math/random'
 
 const vertDiv = partial(divideVertical, 0.5, 0.5)
 const horzDiv = partial(divideHorizontal, 0.5, 0.5)

@@ -1,6 +1,6 @@
+import { wasmGeometryToFormData } from '../../../../shared-utils/wasm/utils'
 import { events, Q } from './context'
 import init, { get_geom } from './crate/pkg/tvs_sketch_bevel_lines_2d'
-import { wasmGeometryToFormData } from '../../../../shared-utils/wasm/utils'
 import { shader } from './shaders'
 
 Q.state.time = 0

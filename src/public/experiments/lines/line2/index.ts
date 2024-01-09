@@ -1,4 +1,7 @@
-import { events, Q } from './context'
+import { LinkedListOptions } from 'tvs-libs/dist/datastructures/double-linked-list'
+import { Sketch } from 'tvs-painter/dist/sketch'
+import { makeClear } from 'tvs-painter/dist/utils/context'
+import { Buttons } from '../../../../shared-utils/events/pointer'
 import {
 	createLine,
 	LinePoint,
@@ -6,12 +9,8 @@ import {
 	newLinePoint,
 	smouthenPoint,
 } from '../../../../shared-utils/geometry/lines_2d'
-import { makeClear } from 'tvs-painter/dist/utils/context'
-import { Sketch } from 'tvs-painter/dist/sketch'
+import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
-import { LinkedListOptions } from 'tvs-libs/dist/datastructures/double-linked-list'
-import { baseEvents } from '../../../../shared-utils/app/painterState'
-import { Buttons } from '../../../../shared-utils/events/pointer'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 
@@ -56,7 +55,7 @@ const scene = Q.getLayer('scene').update({
 let dragging = false
 let startPoint: [number, number] = [0, 0]
 
-Q.listen('index', baseEvents.POINTER, (s) => {
+Q.listen('index', events.POINTER, (s) => {
 	const p = s.device.pointer
 	if (p.dragging) {
 		const m = Q.state.device.sizeMultiplier

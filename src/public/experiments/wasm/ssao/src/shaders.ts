@@ -44,7 +44,6 @@ export const objectShader = defShader({
 		vPos: 'vec3',
 	},
 	vs(gl, uniforms, inp, out) {
-		let pos: Vec4Sym
 		return [
 			defMain(() => [
 				assign(

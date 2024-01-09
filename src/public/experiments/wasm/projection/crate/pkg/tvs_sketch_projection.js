@@ -374,7 +374,7 @@ function __wbg_get_imports() {
         getObject(arg0).randomFillSync(takeObject(arg1));
     }, arguments) };
     imports.wbg.__wbg_new_898a68150f225f2e = function() {
-        const ret = new Array();
+        const ret = [];
         return addHeapObject(ret);
     };
     imports.wbg.__wbindgen_is_function = function(arg0) {

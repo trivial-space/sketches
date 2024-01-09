@@ -1,3 +1,5 @@
+import { quat, vec3 } from 'gl-matrix'
+import { side } from 'tvs-libs/dist/geometry/primitives'
 import {
 	Vec,
 	mul,
@@ -7,7 +9,6 @@ import {
 	normalize,
 	sub,
 } from 'tvs-libs/dist/math/vectors'
-import { quat, vec3 } from 'gl-matrix'
 import {
 	flatten,
 	reverse,
@@ -16,7 +17,6 @@ import {
 	window,
 } from 'tvs-libs/dist/utils/sequence'
 import { FormData, FormStoreType } from 'tvs-painter'
-import { side } from 'tvs-libs/dist/geometry/primitives'
 
 export interface LineSegment {
 	vertex: Vec

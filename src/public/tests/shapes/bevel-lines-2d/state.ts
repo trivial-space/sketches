@@ -10,7 +10,7 @@ export function strokePatch(
 	pointsCount: number,
 ) {
 	const points = times(
-		(i) =>
+		() =>
 			[(Math.random() - 0.5) * width, (Math.random() - 0.5) * height] as [
 				number,
 				number,

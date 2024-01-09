@@ -1,9 +1,9 @@
+import { defined } from 'tvs-libs/dist/types'
 import { times } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
-import { defined } from 'tvs-libs/dist/types'
 import { addToLoop, startLoop } from '../../../../shared-utils/app/frameLoop'
 import { getPainterContext } from '../../../../shared-utils/app/painterState'
+import { createLines2DSketch } from '../../../../shared-utils/sketches/lines/lines'
 
 export const canvas = document.getElementById('canvas') as HTMLCanvasElement
 

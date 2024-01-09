@@ -1,8 +1,8 @@
 import { FormData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { Q } from './context'
-import { normalDepthPositionShader, objectShader } from './shaders'
 import { SAOFragmentShader, defaultSAOUniforms } from './sao-shader'
+import { normalDepthPositionShader, objectShader } from './shaders'
 
 const groundSketch = Q.getSketch('ground')
 const objectSketch = Q.getSketch('object')

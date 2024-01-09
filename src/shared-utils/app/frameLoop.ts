@@ -2,7 +2,7 @@ type Callback = (tpf: number) => void
 
 let updateOnce: { [id: string]: Callback } | null = null
 let updateRepeat: { [id: string]: Callback } = {}
-let hasCallbacks = false
+let hasRepeatingCallbacks = false
 
 let isLoopRunning = false
 let uidCounter = 0
@@ -39,7 +39,7 @@ function processUpdates() {
 		return
 	}
 
-	if (hasCallbacks) {
+	if (hasRepeatingCallbacks) {
 		for (const id in updateRepeat) {
 			updateRepeat[id](tpf)
 		}
@@ -61,9 +61,14 @@ export function stopLoop() {
 	isLoopRunning = false
 }
 
-export function onNextFrame(fn: Callback, id?: string | number) {
+export function onNextFrame(
+	fn: Callback,
+	id?: string | number,
+	startImmediate = false,
+) {
 	id = id || fn.name || uidCounter++
-	const startAnimation = !updateOnce && !hasCallbacks
+	const startAnimation =
+		startImmediate || (!updateOnce && !hasRepeatingCallbacks)
 	updateOnce = updateOnce || {}
 	updateOnce[id] = fn
 	startAnimation && requestAnimationFrame(processUpdates)
@@ -73,7 +78,7 @@ export function onNextFrame(fn: Callback, id?: string | number) {
 export function addToLoop(fn: Callback, id?: string | number) {
 	id = id || fn.name || uidCounter++
 	updateRepeat[id] = fn
-	hasCallbacks = true
+	hasRepeatingCallbacks = true
 	return id
 }
 
@@ -82,7 +87,7 @@ export function removeFromLoop(id: Callback | string | number) {
 		id = id.name
 	}
 	delete updateRepeat[id]
-	hasCallbacks = Object.keys(updateRepeat).length > 0
+	hasRepeatingCallbacks = Object.keys(updateRepeat).length > 0
 }
 
 export function startLoop(

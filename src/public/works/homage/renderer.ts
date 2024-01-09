@@ -1,15 +1,15 @@
 import { mat4 } from 'gl-matrix'
-import { getBlurByAlphaEffect } from '../../../shared-utils/shaders/effects/blur'
 import { zip } from 'tvs-libs/dist/utils/sequence'
 import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
+import { getBlurByAlphaEffect } from '../../../shared-utils/shaders/effects/blur'
+import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
 import { events, getCanvasSize, Q } from './context'
 import { boxForm, planeForm } from './geometries'
 import { groundShade, objectShade, screenShade } from './shaders'
-import * as videos from './state/videos'
-import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
-import * as screens from './state/screens'
 import * as ground from './state/ground'
+import * as screens from './state/screens'
+import * as videos from './state/videos'
 
 const { gl, state: s } = Q
 

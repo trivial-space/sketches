@@ -1,8 +1,4 @@
 import {
-	getFragmentGenerator,
-	getVertexGenerator,
-} from '../../../shared-utils/shaders/ast'
-import {
 	program,
 	defMain,
 	assign,
@@ -19,15 +15,17 @@ import {
 	Sampler2DSym,
 	texture,
 	div,
-	$xy,
 	FloatSym,
 	sym,
 	$y,
 	ternary,
 	gt,
-	sub,
 	float,
 } from '@thi.ng/shader-ast'
+import {
+	getFragmentGenerator,
+	getVertexGenerator,
+} from '../../../shared-utils/shaders/ast'
 
 const fs = getFragmentGenerator()
 const vs = getVertexGenerator()

@@ -1,7 +1,7 @@
 import { LayerData } from 'tvs-painter'
 import { Layer } from 'tvs-painter/dist/layer'
-import frag from './blur_with_alpha.glsl?raw'
 import { PainterContext } from '../../app/painterState'
+import frag from './blur_with_alpha.glsl?raw'
 
 interface BlurOpts {
 	strength: number

@@ -1,9 +1,9 @@
-import { lineFrag, lineVert } from './shaders'
-import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_3d'
-import { strokePatch } from './state'
 import { clamp } from 'tvs-libs/dist/math/core'
-import { Q } from './context'
+import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_3d'
 import { getNoiseTextureData } from '../../../../shared-utils/graphics/texture-helpers'
+import { Q } from './context'
+import { lineFrag, lineVert } from './shaders'
+import { strokePatch } from './state'
 
 const shade = Q.getShade('line').update({
 	vert: lineVert,

@@ -1,11 +1,11 @@
 import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
+import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
 import { events, Q } from './context'
 import frag from './shaders/geo-frag.glsl?raw'
 import vert from './shaders/geo-vert.glsl?raw'
 import lightFrag from './shaders/light-frag.glsl?raw'
-import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
 import imgSrc from './tree.jpg'
 
 const { state: s, gl } = Q

@@ -2,9 +2,9 @@ import '../../../shared-utils/css/fullscreen.css'
 import './state/tiles'
 import './viewport'
 
+import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
 import { events, Q } from './context'
 import { tiles } from './renderer'
-import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
 
 Q.state.device.sizeMultiplier = window.devicePixelRatio
 

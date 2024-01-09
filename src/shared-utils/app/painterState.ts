@@ -5,10 +5,10 @@ import { Layer } from 'tvs-painter/dist/layer'
 import { Painter } from 'tvs-painter/dist/painter'
 import { Shade } from 'tvs-painter/dist/shade'
 import { Effect, Sketch } from 'tvs-painter/dist/sketch'
-import { addToLoop, onNextFrame } from './frameLoop'
-import { PointerState, pointer } from '../events/pointer'
-import { KeyState, keyboard } from '../events/keyboard'
 import { windowSize } from '../events/dom'
+import { KeyState, keyboard } from '../events/keyboard'
+import { PointerState, pointer } from '../events/pointer'
+import { addToLoop, onNextFrame } from './frameLoop'
 
 // === Painter ===
 

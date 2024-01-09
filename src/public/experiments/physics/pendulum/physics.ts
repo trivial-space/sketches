@@ -1,10 +1,10 @@
 import { partial } from 'tvs-libs/dist/fp/core'
+import { doTimes } from 'tvs-libs/dist/utils/sequence'
 import {
 	directionForce,
 	springForce,
 } from '../../../../shared-utils/physics/constraints'
 import { createParticle3D } from '../../../../shared-utils/physics/particle'
-import { doTimes } from 'tvs-libs/dist/utils/sequence'
 
 export const p1 = createParticle3D({ pos: [10, 50, 0], damping: 1, mass: 10 })
 export const p2 = createParticle3D({ pos: [20, 50, 0], damping: 1 })

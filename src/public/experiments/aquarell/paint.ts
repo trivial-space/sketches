@@ -12,7 +12,7 @@ for (let i = 0; i < data.data.length; i += 4) {
 
 ctx.putImageData(data, 0, 0)
 
-Q.listen('paint', events.CLEANUP_PAINT, (s) => {
+Q.listen('paint', events.CLEANUP_PAINT, () => {
 	ctx.fillStyle = 'black'
 	ctx.fillRect(0, 0, paint.width, paint.height)
 })

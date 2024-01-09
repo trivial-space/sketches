@@ -1,4 +1,12 @@
 import {
+	createDoubleLinkedList,
+	DoubleLinkedList,
+	DoubleLinkedNode,
+	LinkedListOptions,
+} from 'tvs-libs/dist/datastructures/double-linked-list'
+import { partial } from 'tvs-libs/dist/fp/core'
+import { lerp } from 'tvs-libs/dist/math/core'
+import {
 	mul,
 	add,
 	dot,
@@ -8,17 +16,9 @@ import {
 	div,
 	cross2D,
 } from 'tvs-libs/dist/math/vectors'
-import {
-	createDoubleLinkedList,
-	DoubleLinkedList,
-	DoubleLinkedNode,
-	LinkedListOptions,
-} from 'tvs-libs/dist/datastructures/double-linked-list'
 import { Maybe } from 'tvs-libs/dist/types'
-import { FormData, FormStoreType } from 'tvs-painter'
 import { doTimes, flatten, zip } from 'tvs-libs/dist/utils/sequence'
-import { lerp } from 'tvs-libs/dist/math/core'
-import { partial } from 'tvs-libs/dist/fp/core'
+import { FormData, FormStoreType } from 'tvs-painter'
 
 type Vec2D = [number, number]
 export interface LinePoint {
@@ -454,7 +454,7 @@ function lineToOutlinesAttributes(
 		let currentLocalLength = 0
 		const lengthNodes = [...line]
 		lengthNodes.pop()
-		let localLineLength = lengthNodes
+		const localLineLength = lengthNodes
 			.map((n) => n.length)
 			.reduce((a, b) => a + b, 0)
 

@@ -1,10 +1,10 @@
-import { Q, events } from './context'
-import { flatMap, times, flatten } from 'tvs-libs/dist/utils/sequence'
-import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
-import { lineFrag, lineVert } from './shaders'
 import { mat4 } from 'gl-matrix'
+import { flatMap, times, flatten } from 'tvs-libs/dist/utils/sequence'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { lineToTriangleStripGeometry } from '../../../../shared-utils/geometry/lines_3d'
+import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
+import { Q, events } from './context'
+import { lineFrag, lineVert } from './shaders'
 
 const { gl, state: s } = Q
 

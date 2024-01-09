@@ -1,5 +1,5 @@
-import { TextureData } from 'tvs-painter'
 import { tileNoise } from 'tvs-libs/dist/math/noise'
+import { TextureData } from 'tvs-painter'
 
 function to8Bit(noise: number) {
 	return Math.floor((noise + 1) * 127)

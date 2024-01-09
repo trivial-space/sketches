@@ -1,10 +1,10 @@
-import { Vec } from 'tvs-libs/dist/math/vectors'
-import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
-import { point2DVert, point3DVert, pointFrag } from './points-shaders'
-import { DrawSettings, FormData } from 'tvs-painter/dist'
-import { flatten } from 'tvs-libs/dist/utils/sequence'
 import { mat4 } from 'gl-matrix'
+import { ColorRGBA } from 'tvs-libs/dist/graphics/colors'
+import { Vec } from 'tvs-libs/dist/math/vectors'
+import { flatten } from 'tvs-libs/dist/utils/sequence'
+import { DrawSettings, FormData } from 'tvs-painter/dist'
 import { PainterContext } from '../../app/painterState'
+import { point2DVert, point3DVert, pointFrag } from './points-shaders'
 
 interface PointsData {
 	positions?: Vec[]

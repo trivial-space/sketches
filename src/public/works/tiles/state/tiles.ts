@@ -1,12 +1,12 @@
 import { mat4, quat } from 'gl-matrix'
-import { pushTransition } from '../../../../shared-utils/transitions'
 import { sign } from 'tvs-libs/dist/math/core'
 import { getZRotQuat, getYRotQuat } from 'tvs-libs/dist/math/geometry'
 import { normalRand01, randInt } from 'tvs-libs/dist/math/random'
+import { mapObj } from 'tvs-libs/dist/utils/object'
 import { doTimes, pickRandom, times } from 'tvs-libs/dist/utils/sequence'
+import { pushTransition } from '../../../../shared-utils/transitions'
 import { events, Q } from '../context'
 import { Set, sets, specs, TileSpec } from './data'
-import { mapObj } from 'tvs-libs/dist/utils/object'
 
 type Color = number[]
 type Position = [number, number]

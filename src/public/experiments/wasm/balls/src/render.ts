@@ -10,8 +10,8 @@ import {
 import { diffuseLighting, halfLambert } from '@thi.ng/shader-ast-stdlib'
 import { FormData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
-import { Q } from './context'
 import { defShader } from '../../../../../shared-utils/shaders/ast'
+import { Q } from './context'
 
 Q.painter.updateDrawSettings({
 	enable: [Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],

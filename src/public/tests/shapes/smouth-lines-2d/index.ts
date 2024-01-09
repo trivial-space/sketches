@@ -1,7 +1,7 @@
+import { lineToFormCollection } from '../../../../shared-utils/geometry/lines_2d'
 import { events, Q } from './context'
 import { lineFrag, lineVert } from './shaders'
 import { strokePatch, strokePatch2 } from './state'
-import { lineToFormCollection } from '../../../../shared-utils/geometry/lines_2d'
 
 Q.state.time = 0
 Q.state.device.sizeMultiplier = window.devicePixelRatio

@@ -1,23 +1,14 @@
-import { fit0111 } from '@thi.ng/shader-ast-stdlib'
 import {
-	defShader,
-	getFragmentGenerator,
-	getVertexGenerator,
-} from '../../../../shared-utils/shaders/ast'
-import {
-	program,
 	defMain,
 	assign,
 	vec4,
-	input,
-	output,
 	mul,
-	Vec2Sym,
 	$y,
 	$x,
 	vec2,
 	div,
 } from '@thi.ng/shader-ast'
+import { defShader } from '../../../../shared-utils/shaders/ast'
 
 // Fragment
 

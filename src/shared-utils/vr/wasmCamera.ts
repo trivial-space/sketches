@@ -28,7 +28,7 @@ interface CameraOptions {
 	lookSpeed?: number
 }
 
-let oldMouse = { x: 0, y: 0 }
+const oldMouse = { x: 0, y: 0 }
 let oldCamera: CameraTransform | null = null
 
 export function initCamera(ctx: PainterContext, options: CameraOptions) {
@@ -51,7 +51,7 @@ export function initCamera(ctx: PainterContext, options: CameraOptions) {
 	}
 
 	ctx.listen('camera', baseEvents.FRAME, ({ device: d }) => {
-		let up = 0
+		const up = 0
 		let left = 0
 		let forward = 0
 		let rotY = 0

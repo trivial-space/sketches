@@ -1,4 +1,3 @@
-import { getFragmentGenerator, getVertexGenerator } from '../shaders/ast'
 import {
 	program,
 	defMain,
@@ -27,17 +26,16 @@ import {
 	$w,
 	defn,
 	ret,
-	TaggedFn2,
 	TaggedFn3,
 	fract,
 	$x,
 	$y,
 	floor,
 	max,
-	sqrt,
 	pow,
 	float,
 } from '@thi.ng/shader-ast'
+import { getFragmentGenerator, getVertexGenerator } from '../shaders/ast'
 
 const fs = getFragmentGenerator()
 const vs = getVertexGenerator()

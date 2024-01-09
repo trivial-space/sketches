@@ -1,10 +1,10 @@
-import { events, Q } from './context'
 import {
 	walkLine3D,
 	lineSegment,
 	lineSegmentStartPoints,
 	lineSegmentsJoinPoints,
 } from '../../../shared-utils/geometry/lines_3d'
+import { events, Q } from './context'
 
 interface Step {
 	duration: number

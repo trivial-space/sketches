@@ -1,9 +1,9 @@
-import { Entities } from './state'
-import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
 import {
 	baseEvents,
 	getPainterContext,
 } from '../../shared-utils/app/painterState'
+import { PerspectiveViewportState } from '../../shared-utils/vr/perspectiveViewport'
+import { Entities } from './state'
 
 export interface State extends PerspectiveViewportState {
 	entities: Entities

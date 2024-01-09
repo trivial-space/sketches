@@ -1,12 +1,12 @@
 import '../../../../shared-utils/css/fullscreen.css'
-import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
-import { Q } from './context'
+import { addToLoop, startLoop } from '../../../../shared-utils/app/frameLoop'
+import { baseEvents } from '../../../../shared-utils/app/painterState'
 import { createLines3DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { createPoints3DSketch } from '../../../../shared-utils/sketches/points/points'
 import { createMirrorScene } from '../../../../shared-utils/vr/mirror-scene'
+import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
+import { Q } from './context'
 import { anchor, p1, p2, p3, update } from './physics'
-import { addToLoop, startLoop } from '../../../../shared-utils/app/frameLoop'
-import { baseEvents } from '../../../../shared-utils/app/painterState'
 
 initPerspectiveViewport(Q, {
 	moveSpeed: 10,
@@ -52,7 +52,7 @@ addToLoop((tpf) => {
 	Q.painter.compose(scene.mirrorScene, scene.scene).show(scene.scene)
 }, 'loop')
 
-Q.listen('', baseEvents.RESIZE, (s) => lines.update())
+Q.listen('', baseEvents.RESIZE, () => lines.update())
 
 startLoop()
 

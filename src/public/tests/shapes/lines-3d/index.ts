@@ -1,12 +1,12 @@
-import { times } from 'tvs-libs/dist/utils/sequence'
 import { mat4 } from 'gl-matrix'
-import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
-import { Q } from './context'
-import { makeClear } from 'tvs-painter/dist/utils/context'
-import { createLines3DSketch } from '../../../../shared-utils/sketches/lines/lines'
 import { defined } from 'tvs-libs/dist/types'
+import { times } from 'tvs-libs/dist/utils/sequence'
+import { makeClear } from 'tvs-painter/dist/utils/context'
 import { addToLoop, startLoop } from '../../../../shared-utils/app/frameLoop'
 import { baseEvents } from '../../../../shared-utils/app/painterState'
+import { createLines3DSketch } from '../../../../shared-utils/sketches/lines/lines'
+import { initPerspectiveViewport } from '../../../../shared-utils/vr/perspectiveViewport'
+import { Q } from './context'
 
 initPerspectiveViewport(Q, {
 	moveSpeed: 40,
@@ -57,7 +57,7 @@ addToLoop(() => {
 	})
 }, 'loop')
 
-Q.listen('', baseEvents.RESIZE, (s) => lines.update())
+Q.listen('', baseEvents.RESIZE, () => lines.update())
 
 startLoop()
 
