@@ -89,6 +89,7 @@ init().then(() => {
 		width: Q.gl.drawingBufferWidth / 2,
 		height: Q.gl.drawingBufferHeight / 2,
 		sketches: [wallSketch, ceilSketch, ...canvasSketches],
+		antialias: false,
 		drawSettings: {
 			enable: [Q.gl.DEPTH_TEST, Q.gl.CULL_FACE],
 			clearBits: Q.gl.COLOR_BUFFER_BIT | Q.gl.DEPTH_BUFFER_BIT,

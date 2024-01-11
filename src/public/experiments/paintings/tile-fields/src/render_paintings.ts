@@ -76,6 +76,7 @@ export function setupPainting(
 		width,
 		height,
 		bufferOptions: [{ type: 'UNSIGNED_BYTE' }],
+		antialias: false,
 		drawSettings: {
 			enable: [Q.gl.CULL_FACE, Q.gl.BLEND],
 			clearBits: makeClear(Q.gl, 'color'),
