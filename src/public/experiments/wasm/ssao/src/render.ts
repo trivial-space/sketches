@@ -29,6 +29,7 @@ const renderLayer = Q.getLayer('render').update({
 })
 
 const normalDepthPositionLayer = Q.getLayer('ndp').update({
+	bufferType: 'FLOAT',
 	bufferCount: 2,
 	sketches: [groundNDPSketch, objectNDPSketch],
 	drawSettings: {

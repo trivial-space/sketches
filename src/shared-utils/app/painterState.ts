@@ -90,7 +90,10 @@ export function getPainterContext<S extends BaseState>(
 	canvas: HTMLCanvasElement,
 	options?: PainterOptions & EventOpts,
 ): PainterContext<S> {
-	const { keepPointerDefault, propagatePointer, ...opts } = options || {}
+	const { keepPointerDefault, propagatePointer, ...opts } = {
+		antialias: true,
+		...options,
+	}
 	if (canvas !== currentCanvas) {
 		currentCanvas = canvas
 

@@ -29,7 +29,6 @@ const brushLayer = Q.getLayer('brush').update({
 	sketches: [brushSketch, points.sketch],
 	width: BRUSH_LAYER_SIZE[0],
 	height: BRUSH_LAYER_SIZE[1],
-	bufferOptions: [{ type: 'UNSIGNED_BYTE' }],
 	antialias: false,
 	drawSettings: {
 		enable: [Q.gl.BLEND],

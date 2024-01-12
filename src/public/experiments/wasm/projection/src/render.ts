@@ -53,6 +53,7 @@ const projLayer = Q.getLayer('proj').update({
 })
 
 const renderLayer = Q.getLayer('render').update({
+	// bufferType: 'FLOAT',
 	drawSettings: {
 		clearBits: makeClear(Q.gl, 'depth', 'color'),
 		clearColor: [0, 0, 0, 1],

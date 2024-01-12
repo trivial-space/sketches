@@ -1,4 +1,3 @@
-import { TextureData } from 'tvs-painter'
 import { makeClear } from 'tvs-painter/dist/utils/context'
 import { plane } from 'tvs-painter/dist/utils/geometry/plane'
 import { initPerspectiveViewport } from '../../../shared-utils/vr/perspectiveViewport'
@@ -75,7 +74,6 @@ const lightSketch = Q.getSketch('light').update({
 
 // Layers
 
-const bufferSpec: TextureData = { type: 'FLOAT' }
 export const scene = Q.getLayer('scene').update({
 	sketches: [lightSketch, groundSketch],
 	uniforms: {
@@ -86,7 +84,8 @@ export const scene = Q.getLayer('scene').update({
 		enable: [gl.DEPTH_TEST],
 		clearBits: makeClear(gl, 'color', 'depth'),
 	},
-	bufferOptions: [bufferSpec, bufferSpec, bufferSpec, bufferSpec],
+	bufferType: 'FLOAT',
+	bufferCount: 4,
 })
 
 export const light = Q.getEffect('light').update({

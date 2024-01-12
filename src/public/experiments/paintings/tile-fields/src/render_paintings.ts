@@ -75,7 +75,6 @@ export function setupPainting(
 	const paintingLayer = Q.getLayer('animation' + idx).update({
 		width,
 		height,
-		bufferOptions: [{ type: 'UNSIGNED_BYTE' }],
 		antialias: false,
 		drawSettings: {
 			enable: [Q.gl.CULL_FACE, Q.gl.BLEND],
@@ -97,7 +96,6 @@ export function setupPainting(
 	const backgroundLayer = Q.getLayer('background' + idx).update({
 		width,
 		height,
-		bufferOptions: [{ type: 'UNSIGNED_BYTE' }],
 		effects: bgInitEffect,
 		uniforms: {
 			color: calculateColor(color.hue, color.lightness),
