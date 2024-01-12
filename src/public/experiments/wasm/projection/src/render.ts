@@ -52,8 +52,10 @@ const projLayer = Q.getLayer('proj').update({
 	},
 })
 
+const canUseFloatBlending = Q.gl.getExtension('EXT_float_blend')
+
 const renderLayer = Q.getLayer('render').update({
-	// bufferType: 'FLOAT',
+	bufferType: canUseFloatBlending ? 'FLOAT' : 'UNSIGNED_BYTE',
 	drawSettings: {
 		clearBits: makeClear(Q.gl, 'depth', 'color'),
 		clearColor: [0, 0, 0, 1],
