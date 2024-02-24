@@ -15,9 +15,9 @@ mod geom;
 mod utils;
 
 #[derive(AppState)]
-pub struct State {
-    pub camera: PerspectiveCamera,
-    pub light: Transform,
+struct State {
+    camera: PerspectiveCamera,
+    light: Transform,
 }
 
 impl Default for State {

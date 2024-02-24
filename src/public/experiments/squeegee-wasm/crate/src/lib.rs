@@ -3,11 +3,17 @@ use std::f32::consts::PI;
 use bytemuck::{Pod, Zeroable};
 use serde::Serialize;
 use tvs_libs::{
+    data_structures::grid::make_grid_from_cols,
+    geometry::mesh_geometry_3d::{face_normal, MeshBufferedGeometryType, MeshGeometry, Position3D},
     prelude::*,
-    rendering::buffered_geometry::{
-        create_buffered_geometry_layout, vert_type, BufferedGeometry, BufferedVertexData,
-        RenderingPrimitive, VertexFormat, VertexType,
+    rendering::{
+        buffered_geometry::{
+            create_buffered_geometry_layout, vert_type, BufferedGeometry, BufferedVertexData,
+            NoAttributeOverride, RenderingPrimitive, VertexFormat, VertexType,
+        },
+        camera::{CamProps, PerspectiveCamera},
     },
+    setup_camera_interactions,
 };
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
@@ -55,6 +61,9 @@ struct State {
     brush_dir: Vec2,
     brush_width: f32,
     brush_particles: Vec<Particle>,
+
+    camera: PerspectiveCamera,
+    light: Transform,
 }
 
 const PARTICLE_COUNT: usize = 20;
@@ -90,8 +99,75 @@ pub fn setup(width: f32, height: f32) {
                 }
             })
             .collect();
+
+        s.camera = PerspectiveCamera::create(CamProps {
+            fov: Some(0.8),
+            translation: Some(vec3(0.0, 1.5, 5.0)),
+            ..default()
+        });
+
+        s.light =
+            Transform::from_translation(vec3(0., 3., 20.)).looking_at(vec3(0., 3., 0.), Vec3::Y);
     });
 }
+
+// === init data ===
+
+#[repr(C)]
+#[derive(Pod, Zeroable, Clone, Copy, Serialize)]
+struct Vertex {
+    pos: Vec3,
+}
+impl BufferedVertexData for Vertex {
+    fn vertex_layout() -> Vec<VertexType> {
+        vec![vert_type("position", VertexFormat::Float32x3)]
+    }
+}
+impl NoAttributeOverride for Vertex {}
+impl Position3D for Vertex {
+    fn position(&self) -> Vec3 {
+        self.pos
+    }
+}
+fn vert(pos: Vec3) -> Vertex {
+    Vertex { pos }
+}
+
+pub fn create_ground(width: f32, height: f32) -> BufferedGeometry {
+    let w_half = width / 2.;
+    let h_half = height / 2.;
+    let grid = make_grid_from_cols(vec![
+        vec![vec3(-w_half, 0.0, h_half), vec3(-w_half, 0.0, -h_half)],
+        vec![vec3(w_half, 0.0, h_half), vec3(w_half, 0.0, -h_half)],
+    ]);
+    let grid = grid.subdivide(w_half as u32, h_half as u32);
+
+    let mut geom = MeshGeometry::new();
+    geom.add_grid_ccw_quads_data(&grid.map(|v| vert(v.val)), face_normal(vec3(0.0, 1.0, 0.0)));
+
+    geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormals)
+}
+
+#[derive(Serialize)]
+struct InitData {
+    ground_geom: BufferedGeometry,
+    // light_pos: Vec3,
+    // light_dir: Vec3,
+}
+
+#[wasm_bindgen]
+pub fn get_init_data() -> JsValue {
+    let s = State::read();
+    let data = InitData {
+        ground_geom: create_ground(s.width, s.height),
+        // light_pos: s.light.translation,
+        // light_dir: s.light.forward(),
+    };
+
+    serde_wasm_bindgen::to_value(&data).unwrap()
+}
+
+// === frame data ===
 
 #[derive(Serialize)]
 struct FrameData {
@@ -100,6 +176,9 @@ struct FrameData {
     brush_pos: Vec2,
     brush_geometry: BufferedGeometry,
     brush_dir: Vec2,
+
+    view_mat: Mat4,
+    proj_mat: Mat4,
 }
 
 fn rotate_point(point: Vec2, center: Vec2, angle: f32) -> Vec2 {
@@ -213,6 +292,11 @@ pub fn update(seconds_per_frame: f32) -> JsValue {
         brush_pos: s.brush_center.pos,
         brush_geometry: geom,
         brush_dir: s.brush_dir,
+
+        view_mat: s.camera.view_mat(),
+        proj_mat: s.camera.projection_mat(),
     })
     .unwrap()
 }
+
+setup_camera_interactions!(State, camera);

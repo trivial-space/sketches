@@ -40,7 +40,7 @@ pub fn create_object() -> BufferedGeometry {
     let bl = vec3(-8.0, 0.0, 0.0);
     let br = vec3(8.0, 0.0, 0.0);
 
-    let grid = make_grid_from_cols(vec![vec![tl, tr], vec![bl, br]]).subdivide(8, 15, Lerp::lerp);
+    let grid = make_grid_from_cols(vec![vec![tl, tr], vec![bl, br]]).subdivide(8, 15);
 
     let mut geom = MeshGeometry::new();
 
@@ -93,7 +93,7 @@ pub fn create_ground() -> BufferedGeometry {
         vec![vec3(-200.0, 0.0, 200.0), vec3(-200.0, 0.0, -200.0)],
         vec![vec3(200.0, 0.0, 200.0), vec3(200.0, 0.0, -200.0)],
     ]);
-    let grid = grid.subdivide(10, 10, Vec3::lerp);
+    let grid = grid.subdivide(10, 10);
 
     let mut geom = MeshGeometry::new();
     geom.add_grid_ccw_quads_data(&grid.map(|v| vert(v.val)), face_normal(vec3(0.0, 1.0, 0.0)));

@@ -58,8 +58,7 @@ pub fn create_glass() -> BufferedGeometry {
         })
         .collect();
 
-    let grid_front =
-        make_grid_from_cols(vec![col_left, col_right]).subdivide(GRID_SIZE_X, 0, Lerp::lerp);
+    let grid_front = make_grid_from_cols(vec![col_left, col_right]).subdivide(GRID_SIZE_X, 0);
 
     let grid_back = grid_front.map(|v| vec3(v.val.x, v.val.y, v.val.z - 0.05));
 
@@ -90,7 +89,7 @@ pub fn create_ground() -> BufferedGeometry {
         vec![vec3(-200.0, 0.0, 200.0), vec3(-200.0, 0.0, -200.0)],
         vec![vec3(200.0, 0.0, 200.0), vec3(200.0, 0.0, -200.0)],
     ]);
-    let grid = grid.subdivide(10, 10, Vec3::lerp);
+    let grid = grid.subdivide(10, 10);
 
     let mut geom = MeshGeometry::new();
     geom.add_grid_ccw_quads_data(&grid.map(|v| vert(v.val)), face_normal(vec3(0.0, 1.0, 0.0)));

@@ -51,8 +51,7 @@ pub fn create_canvas(width: usize, height: usize) -> BufferedGeometry {
     let bl = vert(vec3(-w, b, 0.0), vec2(0., 0.));
     let br = vert(vec3(w, b, 0.0), vec2(1., 0.));
 
-    let grid_front =
-        make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10, Lerp::lerp);
+    let grid_front = make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10);
 
     let grid_back =
         grid_front.map(|v| vert(vec3(v.val.pos.x, v.val.pos.y, v.val.pos.z - 0.30), v.val.uv));
@@ -90,7 +89,7 @@ pub fn create_wall() -> BufferedGeometry {
     let bl = vert(vec3(-w, 0.0, -0.5), vec2(0., 0.));
     let br = vert(vec3(w, 0.0, -0.5), vec2(1., 0.));
 
-    let grid = make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10, Lerp::lerp);
+    let grid = make_grid_from_cols(vec![vec![tl, bl], vec![tr, br]]).subdivide(10, 10);
 
     let mut geom = MeshGeometry::new();
     geom.add_grid_cw_quads_data(&grid, face_normal(vec3(0.0, 0.0, 1.0)));
@@ -110,7 +109,7 @@ pub fn create_ground() -> BufferedGeometry {
             vert(vec3(w, 0.0, -w), vec2(1.0, 1.0)),
         ],
     ]);
-    let grid = grid.subdivide(10, 10, Lerp::lerp);
+    let grid = grid.subdivide(10, 10);
 
     let mut geom = MeshGeometry::new();
     geom.add_grid_ccw_quads_data(&grid, face_normal(vec3(0.0, 1.0, 0.0)));
