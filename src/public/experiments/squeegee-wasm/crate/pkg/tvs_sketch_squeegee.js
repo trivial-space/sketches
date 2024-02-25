@@ -184,12 +184,52 @@ export function setup(width, height) {
 }
 
 /**
+* @returns {any}
+*/
+export function get_init_data() {
+    const ret = wasm.get_init_data();
+    return takeObject(ret);
+}
+
+/**
 * @param {number} seconds_per_frame
 * @returns {any}
 */
 export function update(seconds_per_frame) {
     const ret = wasm.update(seconds_per_frame);
     return takeObject(ret);
+}
+
+/**
+* @param {number} width
+* @param {number} height
+*/
+export function update_screen(width, height) {
+    wasm.update_screen(width, height);
+}
+
+/**
+* @param {number} forward
+* @param {number} left
+* @param {number} up
+* @param {number} rot_y
+* @param {number} rot_x
+* @returns {any}
+*/
+export function update_camera(forward, left, up, rot_y, rot_x) {
+    const ret = wasm.update_camera(forward, left, up, rot_y, rot_x);
+    return takeObject(ret);
+}
+
+/**
+* @param {number} x
+* @param {number} y
+* @param {number} z
+* @param {number} rot_horizontal
+* @param {number} rot_vertical
+*/
+export function reset_camera(x, y, z, rot_horizontal, rot_vertical) {
+    wasm.reset_camera(x, y, z, rot_horizontal, rot_vertical);
 }
 
 function handleError(f, args) {

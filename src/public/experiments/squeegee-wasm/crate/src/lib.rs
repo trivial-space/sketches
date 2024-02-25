@@ -1,4 +1,4 @@
-use std::f32::consts::PI;
+use std::{f32::consts::PI, vec};
 
 use bytemuck::{Pod, Zeroable};
 use serde::Serialize;
@@ -102,7 +102,9 @@ pub fn setup(width: f32, height: f32) {
 
         s.camera = PerspectiveCamera::create(CamProps {
             fov: Some(0.8),
-            translation: Some(vec3(0.0, 1.5, 5.0)),
+            near: Some(1.),
+            far: Some(10000.),
+            translation: Some(vec3(0.0, 400.5, 500.0)),
             ..default()
         });
 
@@ -117,10 +119,14 @@ pub fn setup(width: f32, height: f32) {
 #[derive(Pod, Zeroable, Clone, Copy, Serialize)]
 struct Vertex {
     pos: Vec3,
+    uv: Vec2,
 }
 impl BufferedVertexData for Vertex {
     fn vertex_layout() -> Vec<VertexType> {
-        vec![vert_type("position", VertexFormat::Float32x3)]
+        vec![
+            vert_type("position", VertexFormat::Float32x3),
+            vert_type("uv", VertexFormat::Float32x2),
+        ]
     }
 }
 impl NoAttributeOverride for Vertex {}
@@ -129,28 +135,42 @@ impl Position3D for Vertex {
         self.pos
     }
 }
-fn vert(pos: Vec3) -> Vertex {
-    Vertex { pos }
+impl Lerp<f32> for Vertex {
+    fn lerp(self, other: Self, t: f32) -> Self {
+        Vertex {
+            pos: self.pos.lerp(other.pos, t),
+            uv: self.uv.lerp(other.uv, t),
+        }
+    }
+}
+fn vert(pos: Vec3, uv: Vec2) -> Vertex {
+    Vertex { pos, uv }
 }
 
 pub fn create_ground(width: f32, height: f32) -> BufferedGeometry {
     let w_half = width / 2.;
     let h_half = height / 2.;
     let grid = make_grid_from_cols(vec![
-        vec![vec3(-w_half, 0.0, h_half), vec3(-w_half, 0.0, -h_half)],
-        vec![vec3(w_half, 0.0, h_half), vec3(w_half, 0.0, -h_half)],
+        vec![
+            vert(vec3(-w_half, 0.0, h_half), vec2(0., 0.)),
+            vert(vec3(-w_half, 0.0, -h_half), vec2(0., 1.)),
+        ],
+        vec![
+            vert(vec3(w_half, 0.0, h_half), vec2(1., 0.)),
+            vert(vec3(w_half, 0.0, -h_half), vec2(1., 1.)),
+        ],
     ]);
-    let grid = grid.subdivide(w_half as u32, h_half as u32);
+    let grid = grid.subdivide(w_half as u32 / 2, h_half as u32 / 2);
 
     let mut geom = MeshGeometry::new();
-    geom.add_grid_ccw_quads_data(&grid.map(|v| vert(v.val)), face_normal(vec3(0.0, 1.0, 0.0)));
+    geom.add_grid_ccw_quads_data(&grid, face_normal(vec3(0.0, 1.0, 0.0)));
 
     geom.to_buffered_geometry_by_type(MeshBufferedGeometryType::VertexNormals)
 }
 
 #[derive(Serialize)]
 struct InitData {
-    ground_geom: BufferedGeometry,
+    plate_geom: BufferedGeometry,
     // light_pos: Vec3,
     // light_dir: Vec3,
 }
@@ -159,7 +179,7 @@ struct InitData {
 pub fn get_init_data() -> JsValue {
     let s = State::read();
     let data = InitData {
-        ground_geom: create_ground(s.width, s.height),
+        plate_geom: create_ground(s.width, s.height),
         // light_pos: s.light.translation,
         // light_dir: s.light.forward(),
     };

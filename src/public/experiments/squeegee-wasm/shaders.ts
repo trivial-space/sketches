@@ -3,7 +3,9 @@ import {
 	$x,
 	$xyz,
 	$y,
+	$z,
 	Vec2Sym,
+	Vec3Sym,
 	Vec4Sym,
 	add,
 	assign,
@@ -100,15 +102,60 @@ export const diffuseFrag = defFragment({
 					max(
 						vec4(0, 0, 0, 1),
 						vec4(
-							mix(
-								sub($xyz(sourceColor), vec3(0.00025)),
-								$xyz(brushColor),
-								mul(pow($w(brushColor), float(2)), 0.2),
+							vec3(
+								mix(
+									sub($y(sourceColor), mul($y(sourceColor), 0.0005)),
+									$y(brushColor),
+									mul(
+										pow(
+											mul(mul($w(brushColor), 0.5), $y(brushColor)),
+											float(2),
+										),
+										0.2,
+									),
+								),
 							),
 							1,
 						),
 					),
 				),
+			]),
+		]
+	},
+})
+
+export const plateShader = defShader({
+	attribs: {
+		position: 'vec3',
+		uv: 'vec2',
+	},
+	uniforms: {
+		view: 'mat4',
+		proj: 'mat4',
+		tex: 'sampler2D',
+	},
+	varying: {
+		vUv: 'vec2',
+	},
+	vs: (gl, unis, ins, outs) => {
+		let col: Vec4Sym
+		let pos: Vec3Sym
+		return [
+			defMain(() => [
+				(col = sym(texture(unis.tex, ins.uv))),
+				(pos = sym(ins.position)),
+				assign(outs.vUv, ins.uv),
+				assign($y(pos), mul($x(col), float(300))),
+				assign(gl.gl_Position, mul(unis.proj, mul(unis.view, vec4(pos, 1)))),
+			]),
+		]
+	},
+	fs: (gl, unis, ins, outs) => {
+		let col: Vec4Sym
+		return [
+			defMain(() => [
+				(col = sym(texture(unis.tex, ins.vUv))),
+				assign(outs.fragColor, vec4($xyz(col), 1)),
 			]),
 		]
 	},
