@@ -60,6 +60,7 @@ export const videos = Promise.all(
 						v.removeEventListener('canplay', success)
 						v.removeEventListener('canplaythrough', success)
 						if (loaded) {
+							console.log('loaded', v)
 							res(v)
 						} else {
 							rej('Video failed to load ' + v)
