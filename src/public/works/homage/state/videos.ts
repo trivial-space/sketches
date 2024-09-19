@@ -20,6 +20,7 @@ function createVideo(src: string) {
 	video.playsInline = true
 	video.autoplay = true
 	video.muted = true
+	video.preload = 'auto'
 
 	const source1 = document.createElement('source')
 	source1.src = src + '.webm'
@@ -44,14 +45,33 @@ export const videos = Promise.all(
 				new Promise<HTMLVideoElement>((res, rej) => {
 					const t = setTimeout(() => {
 						console.log('timeout', v)
-						rej('Video timeout ' + v)
+						finish(false)
 					}, loadTimeout)
 
-					v.addEventListener('canplay', () => {
-						res(v)
+					const i = setInterval(() => {
+						if (v.readyState >= 4) {
+							finish(true)
+						}
+					}, 1000)
+
+					const finish = (loaded: boolean) => {
 						clearTimeout(t)
-						console.log('loaded', v)
-					})
+						clearInterval(i)
+						v.removeEventListener('canplay', success)
+						v.removeEventListener('canplaythrough', success)
+						if (loaded) {
+							res(v)
+						} else {
+							rej('Video failed to load ' + v)
+						}
+					}
+
+					const success = () => finish(true)
+
+					v.addEventListener('canplay', success)
+					v.addEventListener('canplaythrough', success)
+
+					v.load()
 				}),
 		),
 )
