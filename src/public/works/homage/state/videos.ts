@@ -8,7 +8,7 @@ export const names = [
 
 const videosUrl =
 	import.meta.env.MODE === 'production'
-		? '//s3.eu-central-1.amazonaws.com/trivialspace.net/tvs1/'
+		? 'https://assets.trivialspace.net/videos/'
 		: 'videos/'
 
 const loadTimeout = 60000
