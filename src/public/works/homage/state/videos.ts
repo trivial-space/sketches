@@ -11,7 +11,7 @@ const videosUrl =
 		? 'https://assets.trivialspace.net/videos/'
 		: 'videos/'
 
-const loadTimeout = 60000
+const loadTimeout = 5 * 60 * 1000 // 5 minutes
 
 function createVideo(src: string) {
 	const video = document.createElement('video')
