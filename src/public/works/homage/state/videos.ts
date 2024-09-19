@@ -49,7 +49,7 @@ export const videos = Promise.all(
 					}, loadTimeout)
 
 					const i = setInterval(() => {
-						if (v.readyState >= 4) {
+						if (v.readyState >= 3) {
 							finish(true)
 						}
 					}, 1000)
