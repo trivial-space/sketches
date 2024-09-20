@@ -1,6 +1,7 @@
 import { addToLoop, startLoop } from '../../../../../shared-utils/app/frameLoop'
 import { baseEvents } from '../../../../../shared-utils/app/painterState'
 import '../../../../../shared-utils/css/fullscreen.css'
+import { getBlurByAlphaEffect } from '../../../../../shared-utils/shaders/effects/blur'
 import { initCamera } from '../../../../../shared-utils/vr/wasmCamera'
 import {
 	WasmGeometry,
@@ -96,6 +97,9 @@ init().then(() => {
 			clearColor: [1, 1, 1, 1],
 			cullFace: Q.gl.BACK,
 		},
+		effects: getBlurByAlphaEffect(Q, 'reflectionBlur', {
+			strength: 8,
+		}),
 	})
 
 	const groundSketch = Q.getSketch('ground').update({
@@ -104,7 +108,7 @@ init().then(() => {
 		uniforms: {
 			size: () => [Q.gl.drawingBufferWidth, Q.gl.drawingBufferHeight],
 			reflection: () => reflectionLayer.image(),
-			color: [0.9, 0.85, 0.8],
+			color: [0.85, 0.82, 0.8],
 		},
 	})
 

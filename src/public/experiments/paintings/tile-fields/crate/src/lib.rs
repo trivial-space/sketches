@@ -52,6 +52,7 @@ pub fn get_init_data(paintings_count: usize) -> JsValue {
     State::mutate(|s| {
         let camera = PerspectiveCamera::create(CamProps {
             translation: Some(vec3(0., 5., 0.)),
+            rot_horizontal: Some(PI / 2.),
             ..default()
         });
 

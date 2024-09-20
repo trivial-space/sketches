@@ -83,7 +83,7 @@ pub fn create_canvas(width: usize, height: usize) -> BufferedGeometry {
 
 pub fn create_wall() -> BufferedGeometry {
     let w = 20.;
-    let h = 40.;
+    let h = 37.;
     let tl = vert(vec3(-w, h, -0.5), vec2(0., 1.));
     let tr = vert(vec3(w, h, -0.5), vec2(1., 1.));
     let bl = vert(vec3(-w, 0.0, -0.5), vec2(0., 0.));
@@ -98,7 +98,7 @@ pub fn create_wall() -> BufferedGeometry {
 }
 
 pub fn create_ground() -> BufferedGeometry {
-    let w = 40.;
+    let w = 37.;
     let grid = make_grid_from_cols(vec![
         vec![
             vert(vec3(-w, 0.0, w), vec2(0.0, 0.0)),

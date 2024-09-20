@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { exec } from 'node:child_process'
 import chokidar from 'chokidar'
 import _ from 'lodash'
