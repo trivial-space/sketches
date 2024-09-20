@@ -3,13 +3,14 @@
     "target": "ESNext",
     "lib": ["ESNext", "dom"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "strict": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "noEmit": true,
-    "types": ["vite/client"]
+    "types": ["vite/client", "@cloudflare/workers-types"],
+    "skipLibCheck": true
   },
-  "include": ["./src", "./functions"]
+  "exclude": ["projects"]
 }
