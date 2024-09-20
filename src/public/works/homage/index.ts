@@ -11,7 +11,7 @@ import {
 import { videos } from './state/videos'
 
 const d = Q.get('device')
-// d.sizeMultiplier = 1.5
+d.sizeMultiplier = window.devicePixelRatio
 
 videos.forEach((vp, i) =>
 	vp.then(async (v) => {
