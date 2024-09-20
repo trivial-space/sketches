@@ -18,6 +18,11 @@ export function get_single_painting(width: number, height: number, color_count: 
 */
 export function get_painting_animation(i: number): any;
 /**
+* @param {number} i
+* @returns {any}
+*/
+export function get_painting_static(i: number): any;
+/**
 * @returns {any}
 */
 export function get_frame_data(): any;
@@ -54,6 +59,7 @@ export interface InitOutput {
   readonly get_init_data: (a: number) => number;
   readonly get_single_painting: (a: number, b: number, c: number) => number;
   readonly get_painting_animation: (a: number) => number;
+  readonly get_painting_static: (a: number) => number;
   readonly get_frame_data: () => number;
   readonly update_screen: (a: number, b: number) => void;
   readonly update_camera: (a: number, b: number, c: number, d: number, e: number) => number;

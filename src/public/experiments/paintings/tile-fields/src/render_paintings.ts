@@ -9,7 +9,10 @@ import {
 	WasmGeometry,
 	wasmGeometryToFormData,
 } from '../../../../../shared-utils/wasm/utils'
-import { get_painting_animation } from '../crate/pkg/tvs_sketch_tile_fields'
+import {
+	get_painting_animation,
+	get_painting_static,
+} from '../crate/pkg/tvs_sketch_tile_fields'
 import { Q } from './context'
 import { bgFrag, copyFrag, lineShader } from './shader'
 
@@ -132,10 +135,7 @@ export function setupPainting(
 
 	console.log(longestBuffer)
 
-	// const bufferSize = (longestBuffer.count + 4) * longestBuffer.size
-
-	// console.log('inital painting rendering', idx)
-	for (const t of shuffle(initialTiles)) {
+	function renderStaticTile(t: WasmTileData) {
 		const color = calculateColor(t.color.hue, t.color.lightness)
 
 		const initialSketches = t.line_geometries[0].map((data, i) => {
@@ -162,6 +162,17 @@ export function setupPainting(
 
 		Q.painter.compose(paintingLayer, backgroundLayer)
 	}
+
+	for (const t of shuffle(initialTiles)) {
+		renderStaticTile(t)
+	}
+
+	const secondTiles: WasmTileData[] = get_painting_static(idx)
+
+	for (const t of shuffle(secondTiles)) {
+		renderStaticTile(t)
+	}
+
 	// console.log('inital painting rendering end', idx)
 
 	function renderLayer() {

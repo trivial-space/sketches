@@ -205,6 +205,15 @@ export function get_painting_animation(i) {
 }
 
 /**
+* @param {number} i
+* @returns {any}
+*/
+export function get_painting_static(i) {
+    const ret = wasm.get_painting_static(i);
+    return takeObject(ret);
+}
+
+/**
 * @returns {any}
 */
 export function get_frame_data() {

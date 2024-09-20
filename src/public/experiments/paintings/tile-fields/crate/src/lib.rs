@@ -115,6 +115,15 @@ pub fn get_painting_animation(i: usize) -> JsValue {
     serde_wasm_bindgen::to_value(&painting).unwrap()
 }
 
+#[wasm_bindgen]
+pub fn get_painting_static(i: usize) -> JsValue {
+    let s = State::read();
+
+    let p = get_painting_static_layer(&s.paintings[i]);
+
+    serde_wasm_bindgen::to_value(&p).unwrap()
+}
+
 #[derive(Serialize)]
 struct FrameData {
     camera: Mat4,
