@@ -35,6 +35,7 @@
     "tvs-painter": "./projects/painter"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240903.0",
     "@types/node": "^20.11.20",
     "@types/serve-handler": "^6.1.1",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
