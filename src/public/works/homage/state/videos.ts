@@ -7,9 +7,7 @@ export const names = [
 ]
 
 const videosUrl =
-	import.meta.env.MODE === 'production'
-		? 'https://assets.trivialspace.net/videos/'
-		: 'videos/'
+	import.meta.env.MODE === 'production' ? '/assets/videos/' : 'videos/'
 
 const isIOS =
 	['iPad', 'iPhone', 'iPod'].some((s) => navigator.userAgent.includes(s)) ||
