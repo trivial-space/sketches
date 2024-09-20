@@ -125,7 +125,7 @@ pub fn create_painting(width: usize, height: usize, color_count: u8) -> Painting
             let hue = h + hue_shift;
             Color {
                 hue: hue - hue.floor(),
-                lightness: (random::<f32>() + random::<f32>()) * 0.5,
+                lightness: (random::<f32>() + random::<f32>()) * 0.4 + 0.1,
             }
         })
         .collect::<Vec<_>>();
