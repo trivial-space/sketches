@@ -11,15 +11,13 @@ const videosUrl =
 		? 'https://assets.trivialspace.net/videos/'
 		: 'videos/'
 
-const loadTimeout = 5 * 60 * 1000 // 5 minutes
+const loadTimeout = 2 * 60 * 1000 // 5 minutes
 
 function createVideo(src: string) {
 	const video = document.createElement('video')
 	video.crossOrigin = 'anonymous'
 	video.loop = true
 	video.playsInline = true
-	video.autoplay = true
-	video.muted = true
 	video.preload = 'auto'
 
 	const source1 = document.createElement('source')
@@ -33,46 +31,43 @@ function createVideo(src: string) {
 	video.appendChild(source1)
 	video.appendChild(source2)
 
-	console.log(video)
 	return video
 }
 
-export const videos = Promise.all(
-	names
-		.map((name) => createVideo(videosUrl + name))
-		.map(
-			(v) =>
-				new Promise<HTMLVideoElement>((res, rej) => {
-					const t = setTimeout(() => {
-						console.log('timeout', v)
-						finish(false)
-					}, loadTimeout)
+export const videos = names
+	.map((name) => createVideo(videosUrl + name))
+	.map(
+		(v) =>
+			new Promise<HTMLVideoElement>((res, rej) => {
+				const t = setTimeout(() => {
+					console.log('timeout', v)
+					finish(false)
+				}, loadTimeout)
 
-					const i = setInterval(() => {
-						if (v.readyState >= 3) {
-							finish(true)
-						}
-					}, 1000)
-
-					const finish = (loaded: boolean) => {
-						clearTimeout(t)
-						clearInterval(i)
-						v.removeEventListener('canplay', success)
-						v.removeEventListener('canplaythrough', success)
-						if (loaded) {
-							console.log('loaded', v)
-							res(v)
-						} else {
-							rej('Video failed to load ' + v)
-						}
+				const i = setInterval(() => {
+					if (v.readyState > 2) {
+						finish(true)
 					}
+				}, 1000)
 
-					const success = () => finish(true)
+				const finish = (loaded: boolean) => {
+					clearTimeout(t)
+					clearInterval(i)
+					v.removeEventListener('canplay', success)
+					v.removeEventListener('canplaythrough', success)
+					if (loaded) {
+						console.log('loaded', v)
+						res(v)
+					} else {
+						rej('Video failed to load ' + v)
+					}
+				}
 
-					v.addEventListener('canplay', success)
-					v.addEventListener('canplaythrough', success)
+				const success = () => finish(true)
 
-					v.load()
-				}),
-		),
-)
+				v.addEventListener('canplay', success)
+				v.addEventListener('canplaythrough', success)
+
+				v.load()
+			}),
+	)

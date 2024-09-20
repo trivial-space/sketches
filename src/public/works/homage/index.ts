@@ -1,50 +1,46 @@
 import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
 import '../../../shared-utils/css/fullscreen.css'
 import { events, Q } from './context'
-import {
-	mirrorScene,
-	scene,
-	videoLights,
-	videoTextureData,
-	videoTextures,
-} from './renderer'
+import { mirrorScene, scene, videoLights, videoTextures } from './renderer'
 import { videos } from './state/videos'
 
 const d = Q.get('device')
 // d.sizeMultiplier = 1.5
 
-const loadingMessage = document.getElementById('loading-message')
-videos
-	.then((vs) => {
-		loadingMessage!.remove()
-		function startVideos() {
-			vs.forEach((v) => {
-				if (!(v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2)) {
-					v.play()
-				}
-				v.muted = false
-			})
-			d.canvas.removeEventListener('mousedown', startVideos)
-			d.canvas.removeEventListener('touchstart', startVideos)
+videos.forEach((vp, i) =>
+	vp.then(async (v) => {
+		function startVideo() {
+			if (!(v.currentTime > 0) && v.readyState > 2) {
+				v.play()
+				d.canvas.removeEventListener('mousedown', startVideo)
+				d.canvas.removeEventListener('touchstart', startVideo)
+			}
 		}
-		d.canvas.addEventListener('mousedown', startVideos)
-		d.canvas.addEventListener('touchstart', startVideos)
+		d.canvas.addEventListener('mousedown', startVideo)
+		d.canvas.addEventListener('touchstart', startVideo)
+
+		await new Promise<void>((res) => {
+			setTimeout(() => {
+				res()
+			}, Math.random() * 5000)
+		})
+		videoTextures[i].update({
+			width: 0,
+			height: 0,
+		})
 
 		addToLoop(() => {
-			Q.emit(events.FRAME)
-			videoTextures.forEach((t, i) =>
-				t.update({ texture: { ...videoTextureData, asset: vs[i] } }),
-			)
-			Q.painter.compose(...videoLights, mirrorScene, scene)
-		}, 'render')
+			videoTextures[i].update({ texture: { asset: v } })
+		}, 'video' + i)
+	}),
+)
 
-		startLoop()
-	})
-	.catch((e) => {
-		loadingMessage!.textContent =
-			'Something went wrong, failed to load videos :('
-		console.error('Failed to load videos', e)
-	})
+addToLoop(() => {
+	Q.emit(events.FRAME)
+	Q.painter.compose(...videoLights, mirrorScene, scene)
+}, 'render')
+
+startLoop()
 
 if (import.meta.hot) {
 	import.meta.hot.accept()
