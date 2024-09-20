@@ -11,6 +11,11 @@ const videosUrl =
 		? 'https://assets.trivialspace.net/videos/'
 		: 'videos/'
 
+const isIOS =
+	['iPad', 'iPhone', 'iPod'].some((s) => navigator.userAgent.includes(s)) ||
+	// iPad on iOS 13 detection
+	(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+
 const loadTimeout = 2 * 60 * 1000 // 5 minutes
 
 function createVideo(src: string) {
@@ -19,17 +24,8 @@ function createVideo(src: string) {
 	video.loop = true
 	video.playsInline = true
 	video.preload = 'auto'
-
-	const source1 = document.createElement('source')
-	source1.src = src + '.webm'
-	source1.type = 'video/webm'
-
-	const source2 = document.createElement('source')
-	source2.src = src + '.mp4'
-	source2.type = 'video/mp4'
-
-	video.appendChild(source1)
-	video.appendChild(source2)
+	video.muted = isIOS
+	video.src = src + '.webm'
 
 	return video
 }

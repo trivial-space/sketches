@@ -15,16 +15,6 @@ const d = Q.get('device')
 
 videos.forEach((vp, i) =>
 	vp.then(async (v) => {
-		function startVideo() {
-			if (!(v.currentTime > 0) && v.readyState > 2) {
-				v.play()
-				d.canvas.removeEventListener('mousedown', startVideo)
-				d.canvas.removeEventListener('touchstart', startVideo)
-			}
-		}
-		d.canvas.addEventListener('mousedown', startVideo)
-		d.canvas.addEventListener('touchstart', startVideo)
-
 		videoTextures[i].update({
 			width: 0,
 			height: 0,
@@ -33,6 +23,16 @@ videos.forEach((vp, i) =>
 
 		Q.listen('video' + i, events.FRAME, () => {
 			videoTextures[i].update({ texture: { asset: v } })
+
+			if (v.readyState > 3 && (v.currentTime < 0.1 || v.paused)) {
+				function startVideo() {
+					v.play()
+					d.canvas.removeEventListener('mousedown', startVideo)
+					d.canvas.removeEventListener('touchstart', startVideo)
+				}
+				d.canvas.addEventListener('mousedown', startVideo)
+				d.canvas.addEventListener('touchstart', startVideo)
+			}
 		})
 	}),
 )
