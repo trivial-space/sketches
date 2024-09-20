@@ -33,6 +33,7 @@ Q.painter.updateDrawSettings({
 export const videoTextureData: TextureData = {
 	flipY: true,
 	minFilter: 'LINEAR',
+	magFilter: 'LINEAR',
 	wrap: 'CLAMP_TO_EDGE',
 }
 
@@ -40,7 +41,7 @@ export const videoTextures = videos.names.map((n) =>
 	Q.getLayer(n).update({
 		width: 1,
 		height: 1,
-		texture: { ...videoTextureData, data: new Uint8Array([25, 10, 15, 255]) },
+		texture: { data: new Uint8Array([25, 10, 15, 255]) },
 	}),
 )
 

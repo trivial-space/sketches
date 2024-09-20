@@ -1,7 +1,13 @@
 import { addToLoop, startLoop } from '../../../shared-utils/app/frameLoop'
 import '../../../shared-utils/css/fullscreen.css'
 import { events, Q } from './context'
-import { mirrorScene, scene, videoLights, videoTextures } from './renderer'
+import {
+	mirrorScene,
+	scene,
+	videoLights,
+	videoTextureData,
+	videoTextures,
+} from './renderer'
 import { videos } from './state/videos'
 
 const d = Q.get('device')
@@ -19,19 +25,15 @@ videos.forEach((vp, i) =>
 		d.canvas.addEventListener('mousedown', startVideo)
 		d.canvas.addEventListener('touchstart', startVideo)
 
-		await new Promise<void>((res) => {
-			setTimeout(() => {
-				res()
-			}, Math.random() * 5000)
-		})
 		videoTextures[i].update({
 			width: 0,
 			height: 0,
+			texture: { ...videoTextureData, asset: v },
 		})
 
-		addToLoop(() => {
+		Q.listen('video' + i, events.FRAME, () => {
 			videoTextures[i].update({ texture: { asset: v } })
-		}, 'video' + i)
+		})
 	}),
 )
 
